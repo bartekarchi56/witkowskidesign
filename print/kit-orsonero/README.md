@@ -65,7 +65,7 @@ Bartek
 
 Bartosz Witkowski · Witkowski Design
 +48 530 340 988 (WhatsApp)
-https://timbro.witkowskidesign.com
+https://witkowskidesign.com
 
 *Attach: `proposal-orsonero-en.pdf`, `orsonero-card-iphone.png`*
 
@@ -94,7 +94,7 @@ Bartek
 
 Bartosz Witkowski · Witkowski Design
 +48 530 340 988 (WhatsApp)
-https://timbro.witkowskidesign.com
+https://witkowskidesign.com
 
 *Allegati: `brochure-orsonero-it.pdf`, `orsonero-card-iphone.png`*
 
