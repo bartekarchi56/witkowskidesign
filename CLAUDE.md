@@ -2,7 +2,7 @@
 
 - The owner is **Bartosz Witkowski** (legal name, used on legal pages; "Bartek" in friendly copy like brochures). The owner's company is **Witkowski Design** (short name / handle: `witkowskidesign`). Never call it "Witkowski Studio" or "witkowski-studio", even though the repository was first created under that name.
 - The loyalty-card service built here is called **Timbro** (working name). Brand settings live in `assets/js/config.js`.
-- The website is published at `https://timbro.witkowskidesign.com/` (GitHub Pages custom domain, `CNAME` file; the domain is on Cloudflare). Printed QR codes use `siteUrl` in `assets/js/config.js`; regenerate the PDFs in `print/` with `node print/make-pdfs.js` whenever it changes.
+- The website is published at `https://timbro.witkowskidesign.com/` (GitHub Pages custom domain, `CNAME` file; the domain is on Cloudflare). Printed QR codes use `siteUrl` in `assets/js/config.js`; regenerate the PDFs in `print/` with `node print/make-pdfs.js` whenever it changes (then `node print/make-kit-orsonero.js` for the Orsonero kit).
 - Emails (sign-up, password reset) go through Resend SMTP from `noreply@witkowskidesign.com`, set in Supabase.
 - Subscriptions: Stripe via Supabase Edge Functions in `supabase/functions/` (setup in `supabase/STRIPE.md`). Stripe keys live only in Supabase secrets; never in the site, the repo or chat. Products/prices are found by lookup keys `timbro_<plan>_<month|year>`.
 - The owner's SQL editor accepts about 100 lines per paste: database changes go in `supabase/updates/` files under 100 lines; `node supabase/make-parts.js` regenerates `supabase/parts/`.

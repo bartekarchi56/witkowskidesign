@@ -45,7 +45,8 @@
 .offer li::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--pop);margin-right:10px}
 .offer .price{text-align:right}
 .offer .price b{display:block;font-size:56px;font-weight:800;font-stretch:112%;letter-spacing:-.04em;line-height:1}
-.offer .price span{color:#A9A9AE}
+.offer .price span{color:#A9A9AE;display:block}
+.offer .price .trial{color:#fff;font-weight:600;margin-top:6px}
 .offer .btn{margin-top:18px}
 .fine{font-size:14px;color:var(--muted);padding:32px 0 48px}
 @media (max-width:900px){
@@ -141,7 +142,7 @@
         <p data-i18n="x.p5"></p>
         <ul id="offer-list"></ul>
       </div>
-      <div class="price"><b id="offer-price"></b><span data-i18n="x.month"></span><br><a class="btn pop" href="../../app/dashboard.html?card=orsonero" data-i18n="x.openDash"></a></div>
+      <div class="price"><b id="offer-price"></b><span data-i18n="x.month"></span><span class="trial" id="offer-trial"></span><a class="btn pop" href="../../app/dashboard.html?card=orsonero" data-i18n="x.openDash"></a></div>
     </div>
   </section>
   <p class="fine" data-i18n="x.fine"></p>
@@ -169,7 +170,7 @@ I18N.add({
     'x.l3': 'Su Instagram', 'x.h3': 'Il post di lancio', 'x.p3': 'Formato 4:5 per il feed, con la didascalia già scritta.', 'x.copy': 'Copia la didascalia',
     'x.l4': 'La prima settimana', 'x.h4': 'Il piano di lancio',
     'x.l5': 'Il piano consigliato', 'x.h5': 'Plus: ci pensiamo noi.', 'x.p5': 'Per Orsonero consigliamo Plus: la carta la disegniamo noi con il vostro logo e i vostri colori, e il kit arriva stampato.',
-    'x.month': 'al mese, IVA esclusa', 'x.openDash': 'Apri l\'area di Orsonero',
+    'x.month': 'al mese, IVA esclusa', 'x.trial': 'I primi {days} giorni gratis, disdici quando vuoi', 'x.openDash': 'Apri l\'area di Orsonero',
     'x.fine': 'Proposta preparata da Witkowski Design per Orsonero Coffee, Milano. L\'orso dei timbri è un nostro disegno: nella carta vera usiamo il vostro logo.'
   },
   en: {
@@ -186,7 +187,7 @@ I18N.add({
     'x.l3': 'On Instagram', 'x.h3': 'The launch post', 'x.p3': '4:5 for the feed, with the caption already written.', 'x.copy': 'Copy the caption',
     'x.l4': 'The first week', 'x.h4': 'The launch plan',
     'x.l5': 'Recommended plan', 'x.h5': 'Plus: we handle it.', 'x.p5': 'For Orsonero we recommend Plus: we design the card with your logo and colours, and the kit arrives printed.',
-    'x.month': 'a month, excluding VAT', 'x.openDash': 'Open Orsonero\'s dashboard',
+    'x.month': 'a month, excluding VAT', 'x.trial': 'First {days} days free, cancel anytime', 'x.openDash': 'Open Orsonero\'s dashboard',
     'x.fine': 'Proposal prepared by Witkowski Design for Orsonero Coffee, Milan. The bear on the stamps is our own drawing: the real card uses your logo.'
   }
 });
@@ -212,6 +213,7 @@ I18N.add({
     $('week').innerHTML = MARKETING.plan(I18N.lang).map(([d, t]) => `<li><b>${UI.esc(d)}</b>${UI.esc(t)}</li>`).join('');
     const plus = CONFIG.plans.find(p => p.id === 'plus');
     $('offer-price').textContent = new Intl.NumberFormat(I18N.lang === 'it' ? 'it-IT' : 'en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(plus.month);
+    $('offer-trial').textContent = I18N.t('x.trial', { days: CONFIG.trialDays });
     $('offer-list').innerHTML = I18N.pick(plus).extras.map(x => `<li>${UI.esc(x)}</li>`).join('');
     const cv = await MARKETING.instagram(card, I18N.lang);
     $('insta').src = cv.toDataURL('image/png');
