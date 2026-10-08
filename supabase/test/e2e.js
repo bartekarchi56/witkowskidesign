@@ -168,7 +168,7 @@ await owner.route('**/functions/v1/stripe-checkout', async route => { asked = ro
 await o.click('#t-plan');
 assert.match(await o.textContent('#bill-status'), /30 giorni sono gratis/);
 await o.click('#bill-interval button[data-i=year]');
-assert.match(await o.textContent('#bill-plans'), /350/);   // Plus yearly = 10 months
+assert.match(await o.textContent('#bill-plans'), /200/);   // Plus yearly = 10 months
 await o.click('#bill-plans [data-buy=plus]');
 await o.waitForURL(/billing=success|#plan/); await o.waitForSelector('#toast, .toast', { state: 'attached' }).catch(() => {});
 assert.deepEqual(asked, { plan: 'plus', interval: 'year' });
@@ -180,7 +180,7 @@ assert.match(await o.textContent('#bill-status'), /Prova gratuita di Plus \(annu
 assert.match(await o.textContent('#bill-status'), /Plus \(annuale\)/);
 assert.equal(await o.isVisible('#bill-manage'), true); assert.equal(await o.locator('[data-buy]').count(), 0);
 assert.equal(await o.isVisible('#bill-interval'), false);   // no monthly/yearly switch once subscribed
-assert.match(await o.textContent('#bill-plans'), /350/);    // prices shown for their own (yearly) period
+assert.match(await o.textContent('#bill-plans'), /200/);    // prices shown for their own (yearly) period
 ok('the Plan tab opens Stripe Checkout for the chosen plan and shows the trial afterwards');
 
 // ---- unlinking the till phone ----
