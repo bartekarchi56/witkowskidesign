@@ -145,6 +145,28 @@ details p{color:var(--ink-2);padding:0 0 22px;max-width:40em}
 .visit h2{font-size:clamp(36px,5.4vw,72px)}
 .visit p{font-size:19px;color:var(--ink-2);margin-top:18px;max-width:30em}
 .visit .ctas{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.numbers{border-top:1.5px solid var(--ink)}
+.calc{display:grid;grid-template-columns:minmax(260px,.8fr) 1.2fr;gap:28px;align-items:start}
+.calc-in{display:grid;gap:22px;border:1.5px solid var(--line);border-radius:20px;padding:24px}
+.calc-in label{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:baseline;font-size:15px;color:var(--ink-2)}
+.calc-in output{font-weight:800;color:var(--ink);font-size:18px;font-variant-numeric:tabular-nums}
+.calc-in input{grid-column:1/-1;width:100%;accent-color:var(--pop);min-height:28px}
+.calc-figs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.fig{border:1.5px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.fig b{display:block;font-size:28px;font-weight:800;font-stretch:112%;letter-spacing:-.03em;line-height:1.1}
+.fig span{font-size:14px;color:var(--ink-2)}
+.fig.top{grid-column:1/-1;background:var(--ink);color:#fff;border-color:var(--ink)}
+.fig.top b{font-size:clamp(44px,6vw,64px)}
+.fig.top span{color:#C9C9CD}
+.calc-chart{border:1.5px solid var(--line);border-radius:16px;padding:16px 16px 6px;margin-top:12px}
+.chart-t{font-weight:700;margin-bottom:4px}
+.chart{position:relative;outline:none}
+.chart svg{display:block;overflow:visible}
+.chart-tip{position:absolute;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:8px;padding:6px 10px;pointer-events:none;white-space:nowrap;font-size:13px;line-height:1.3;z-index:2}
+.chart-tip b{display:block;font-size:15px}
+.chart-tip span{color:#C9C9CD}
+.calc-fine{margin-top:18px;font-size:14px;color:var(--muted);max-width:60em}
+@media (max-width:900px){.calc{grid-template-columns:1fr}.calc-figs{grid-template-columns:1fr 1fr}}
 footer{background:var(--ink);color:#fff;padding:40px 0}
 footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;font-size:14px}
 footer a{color:#fff;text-decoration:none;opacity:.8}
@@ -192,6 +214,7 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
       <li><a href="#come" data-i18n="nav.how"></a></li>
       <li><a href="#prova" data-i18n="nav.try"></a></li>
       <li><a href="#design" data-i18n="nav.help"></a></li>
+      <li><a href="#numeri" data-i18n="nav.numbers"></a></li>
       <li><a href="#prezzi" data-i18n="nav.pricing"></a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
@@ -352,6 +375,39 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
     </div>
   </section>
 
+  <!-- NUMBERS: what the card can be worth, with the café's own estimates -->
+  <section id="numeri" class="numbers">
+    <div class="wrap">
+      <div class="head" style="margin-bottom:36px">
+        <span class="label" data-i18n="n.label"></span>
+        <h2 class="display" data-i18n="n.title"></h2>
+        <p data-i18n="n.lede"></p>
+      </div>
+      <div class="calc">
+        <form class="calc-in" id="calc" onsubmit="return false">
+          <label><span data-i18n="n.regulars"></span><output id="o-regulars"></output><input type="range" name="regulars" min="30" max="1000" step="10" value="200"></label>
+          <label><span data-i18n="n.join"></span><output id="o-join"></output><input type="range" name="join" min="10" max="80" step="5" value="40"></label>
+          <label><span data-i18n="n.extra"></span><output id="o-extra"></output><input type="range" name="extra" min="0.5" max="4" step="0.5" value="1"></label>
+          <label><span data-i18n="n.ticket"></span><output id="o-ticket"></output><input type="range" name="ticket" min="1.5" max="15" step="0.5" value="3.5"></label>
+        </form>
+        <div class="calc-out">
+          <div class="calc-figs">
+            <div class="fig top"><b data-c="month"></b><span data-i18n="n.perMonth"></span></div>
+            <div class="fig"><b data-c="members"></b><span data-i18n="n.members"></span></div>
+            <div class="fig"><b data-c="visits"></b><span data-i18n="n.visits"></span></div>
+            <div class="fig"><b data-c="year"></b><span data-i18n="n.perYear"></span></div>
+            <div class="fig"><b data-c="payback"></b><span data-i18n="n.payback"></span></div>
+          </div>
+          <div class="calc-chart">
+            <p class="chart-t" data-i18n="n.chart"></p>
+            <div id="calc-chart"></div>
+          </div>
+        </div>
+      </div>
+      <p class="calc-fine"><span data-i18n="n.fine"></span> <a class="link" href="app/dashboard.html?card=the-coffee#results" data-i18n="n.see"></a></p>
+    </div>
+  </section>
+
   <!-- PRICING -->
   <section id="prezzi" class="pricing">
     <div class="wrap">
@@ -420,10 +476,11 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
 <script src="assets/js/store.js"></script>
 <script src="assets/js/ui.js"></script>
 <script src="assets/js/marketing.js"></script>
+<script src="assets/js/analytics.js"></script>
 <script>
 I18N.add({
   it: {
-    'nav.how': 'Come funziona', 'nav.try': 'Prova', 'nav.help': 'Design su misura', 'nav.pricing': 'Prezzi',
+    'nav.how': 'Come funziona', 'nav.try': 'Prova', 'nav.help': 'Design su misura', 'nav.numbers': 'Numeri', 'nav.pricing': 'Prezzi',
     'nav.login': 'Accedi', 'nav.start': 'Prova gratis',
     'hero.a': 'La carta fedeltà che nessuno', 'hero.b': 'perde.',
     'hero.lede': 'Una carta a timbri nel Wallet dei tuoi clienti, su iPhone e Android. Senza app e senza cartoncini. E non sei da solo: la disegniamo con te, la stampiamo e ti diamo i post per farla conoscere.',
@@ -459,6 +516,11 @@ I18N.add({
     'h.6': 'Una persona vera su WhatsApp', 'h.6p': 'Rispondiamo in italiano. A Milano passiamo anche di persona.',
     'h.sticker': 'Qui la carta fedeltà è digitale', 'h.stickerSub': 'Adesivo vetrina',
     'h.kitCap': 'Il kit stampato per The Coffee, Milano: poster A5 per la cassa e adesivo per la vetrina.',
+    'n.label': 'I numeri', 'n.title': 'Quanto può valere per il tuo locale.', 'n.lede': 'Muovi i cursori con i tuoi numeri: vedi quanto rende una carta che fa tornare i clienti.',
+    'n.regulars': 'Clienti abituali', 'n.join': 'Quanti prendono la carta', 'n.extra': 'Visite in più al mese, per chi ha la carta', 'n.ticket': 'Scontrino medio',
+    'n.perMonth': 'incasso in più al mese', 'n.members': 'clienti con la carta', 'n.visits': 'visite in più al mese', 'n.perYear': 'in più al primo anno', 'n.payback': 'scontrini al mese ripagano il piano Plus',
+    'n.chart': 'Incasso in più accumulato nel primo anno', 'n.month': 'mese {n}', 'n.total': '{v} in totale',
+    'n.fine': 'Stime con i numeri che scegli, non risultati garantiti. Ipotesi: i clienti si iscrivono nei primi 3 mesi; il costo dei premi (circa una consumazione ogni 8-10 visite) non è sottratto. Dopo l\'avvio, i numeri veri li vedi nella pagina Risultati.', 'n.see': 'Guarda un esempio dei Risultati',
     'p.label': 'Prezzi', 'p.title': 'Un abbonamento. Tutto incluso.', 'p.lede': 'I piani cambiano solo per quante sedi hai e quanto aiuto vuoi da noi.',
     'p.billing': 'Periodo di pagamento', 'p.monthly': 'Mensile', 'p.yearly': 'Annuale', 'p.save': '2 mesi gratis',
     'p.month': '/ mese', 'p.year': '/ anno', 'p.billedM': 'Pagamento mensile', 'p.billedY': 'Pari a {x} al mese',
@@ -477,7 +539,7 @@ I18N.add({
     'ft.dash': 'Area locale', 'ft.stamper': 'Timbratore per baristi', 'ft.example': 'Esempio: The Coffee', 'ft.terms': 'Termini e disdetta', 'ft.privacy': 'Privacy'
   },
   en: {
-    'nav.how': 'How it works', 'nav.try': 'Try it', 'nav.help': 'Custom design', 'nav.pricing': 'Pricing',
+    'nav.how': 'How it works', 'nav.try': 'Try it', 'nav.help': 'Custom design', 'nav.numbers': 'Numbers', 'nav.pricing': 'Pricing',
     'nav.login': 'Log in', 'nav.start': 'Try it free',
     'hero.a': 'The loyalty card nobody', 'hero.b': 'loses.',
     'hero.lede': 'A stamp card in your customers\' Wallet, on iPhone and Android. No app, no paper cards. And you\'re not on your own: we design it with you, print it and hand you the posts to promote it.',
@@ -513,6 +575,11 @@ I18N.add({
     'h.6': 'A real person on WhatsApp', 'h.6p': 'We answer in Italian and English. In Milan we also come by in person.',
     'h.sticker': 'Our loyalty card is digital', 'h.stickerSub': 'Window sticker',
     'h.kitCap': 'The printed kit for The Coffee, Milan: A5 poster for the till and a window sticker.',
+    'n.label': 'The numbers', 'n.title': 'What it can be worth for your café.', 'n.lede': 'Move the sliders with your own numbers: see what a card that brings customers back adds up to.',
+    'n.regulars': 'Regular customers', 'n.join': 'How many take the card', 'n.extra': 'Extra visits a month, per card holder', 'n.ticket': 'Average ticket',
+    'n.perMonth': 'extra takings a month', 'n.members': 'customers with the card', 'n.visits': 'extra visits a month', 'n.perYear': 'extra in the first year', 'n.payback': 'tickets a month pay for the Plus plan',
+    'n.chart': 'Extra takings added up over the first year', 'n.month': 'month {n}', 'n.total': '{v} in total',
+    'n.fine': 'Estimates with the numbers you pick, not guaranteed results. Assumptions: customers join over the first 3 months; the cost of rewards (about one drink every 8 to 10 visits) is not subtracted. Once you start, the real numbers are on your Results page.', 'n.see': 'See an example of the Results page',
     'p.label': 'Pricing', 'p.title': 'One subscription. Everything included.', 'p.lede': 'Plans only differ in how many locations you have and how much help you want from us.',
     'p.billing': 'Billing period', 'p.monthly': 'Monthly', 'p.yearly': 'Yearly', 'p.save': '2 months free',
     'p.month': '/ month', 'p.year': '/ year', 'p.billedM': 'Billed monthly', 'p.billedY': 'Works out at {x} a month',
@@ -677,11 +744,36 @@ I18N.add({
     document.getElementById('gallery').innerHTML = ex.map(([c, k]) => `<figure>${UI.renderPass(c, null, { stamps: 5, platform: 'apple' })}<figcaption>${I18N.t(k)}</figcaption></figure>`).join('');
   }
 
+  // ---------- the numbers: a calculator with the café's own estimates ----------
+  const calc = document.getElementById('calc');
+  function numbers() {
+    const it = L() === 'it', loc = it ? 'it-IT' : 'en-IE';
+    const eur = (n, d = 0) => new Intl.NumberFormat(loc, { style: 'currency', currency: 'EUR', maximumFractionDigits: d, minimumFractionDigits: d }).format(n);
+    const v = Object.fromEntries([...new FormData(calc)].map(([k, x]) => [k, Number(x)]));
+    document.getElementById('o-regulars').textContent = v.regulars.toLocaleString(loc);
+    document.getElementById('o-join').textContent = v.join + '%';
+    document.getElementById('o-extra').textContent = String(v.extra).replace('.', it ? ',' : '.');
+    document.getElementById('o-ticket').textContent = eur(v.ticket, 2);
+    const members = Math.round(v.regulars * v.join / 100), visits = members * v.extra, month = visits * v.ticket;
+    // Customers join over the first three months, then the card runs at full speed.
+    const ramp = [0.35, 0.7, 1], months = Array.from({ length: 12 }, (_, i) => month * (ramp[i] ?? 1));
+    const year = months.reduce((a, b) => a + b, 0), plus = CONFIG.plans.find(p => p.id === 'plus').month;
+    const set = (k, n, f) => ANALYTICS.countUp(document.querySelector(`[data-c="${k}"]`), n, f);
+    set('month', month, n => eur(n)); set('members', members, n => Math.round(n).toLocaleString(loc));
+    set('visits', visits, n => Math.round(n).toLocaleString(loc)); set('year', year, n => eur(n));
+    set('payback', Math.ceil(plus / v.ticket), n => Math.round(n).toLocaleString(loc));
+    let acc = 0;
+    ANALYTICS.line(document.getElementById('calc-chart'), months.map((m, i) => ({ t: i + 1, v: Math.round(acc += m) })),
+      { label: I18N.t('n.chart'), fmt: n => eur(n), date: (t, long) => long ? I18N.t('n.month', { n: t }) : I18N.t('n.month', { n: t }), height: 200 });
+  }
+  calc.addEventListener('input', numbers);
+  let calcTimer; window.addEventListener('resize', () => { clearTimeout(calcTimer); calcTimer = setTimeout(numbers, 200); });
+
   function all() {
     I18N.apply();
     hero(); drawTypes(); drawStyles();
     if (!rewardTouched) form.reward.value = I18N.pick(tpl()).reward;
-    builder(); kit(); plans(); contact(); gallery();
+    builder(); kit(); plans(); contact(); gallery(); numbers();
     document.title = L() === 'it' ? 'Timbro · La carta fedeltà digitale per il tuo bar' : 'Timbro · The digital loyalty card for your café';
   }
   // ?bar=Name (used by the brochure QR) opens the builder with that name.

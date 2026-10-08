@@ -116,6 +116,12 @@ assert.match(await o.textContent('#stats'), /2/);
 assert.match(await o.textContent('#devices').catch(() => ''), /|/);
 ok('owner sees Giulia and the stamps in Customers');
 
+await o.click('#t-results');
+await o.waitForFunction(() => document.querySelector('[data-k=visits]')?.textContent === '2' && document.querySelector('[data-k=members]')?.textContent === '1', null, { timeout: 8000 });
+assert.equal(await o.isVisible('#res-sample'), true);   // "not much data yet" + an example to look at
+assert.equal(await o.locator('#ch-growth svg').count(), 1);
+ok('Results counts the real visits (1 customer, 2 visits) and draws the charts');
+
 // ---- owner proposes a design; designer approves in the Studio ----
 await o.click('#t-design');
 const black = await o.locator('#editor input[value="#0B0B0C"]').first().getAttribute('id');

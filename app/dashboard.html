@@ -58,6 +58,41 @@ details.en[open]{padding-bottom:4px}
 .review.approved{background:var(--wash)}
 .review b{display:block;margin-bottom:2px}
 .which button{font-size:12px}
+.res-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.res-head .sec-sub{margin-bottom:0}
+.res-sample{background:var(--pop-wash);border-radius:12px;padding:12px 16px;margin:0 0 18px;font-size:15px}
+.res-top{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:12px;margin-bottom:12px}
+.kpi{border:1.5px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .lab{font-size:14px;color:var(--ink-2)}
+.kpi .val{font-size:34px;font-weight:800;font-stretch:112%;letter-spacing:-.03em;line-height:1.05}
+.kpi.hero .val{font-size:56px}
+.kpi .delta{font-size:13px;color:var(--muted)}
+.kpi .delta b{color:var(--ink);font-weight:700}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.card-box{border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 10px;min-width:0}
+.card-box.wide{grid-column:1/-1}
+.card-box h3{font-size:17px;font-weight:700}
+.card-box .note{font-size:14px;color:var(--muted);margin:2px 0 6px}
+.chart{position:relative;outline:none}
+.chart:focus-visible{box-shadow:0 0 0 3px var(--pop-wash);border-radius:8px}
+.chart svg{display:block;overflow:visible}
+.chart g:focus{outline:none}
+.chart g.on .col,.chart g:focus .col{opacity:.75}
+.chart-tip{position:absolute;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:8px;padding:6px 10px;pointer-events:none;white-space:nowrap;font-size:13px;line-height:1.3;z-index:2}
+.chart-tip b{display:block;font-size:15px}
+.chart-tip span{color:#C9C9CD}
+.people{list-style:none;margin:6px 0 10px;padding:0}
+.people li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1.5px solid var(--line);font-size:15px}
+.people li span:last-child{color:var(--muted);font-variant-numeric:tabular-nums}
+.money{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:end;margin-top:8px}
+.money label{display:grid;gap:6px;font-size:14px;color:var(--ink-2)}
+.money input{min-height:44px}
+.money .out b{display:block;font-size:26px;font-weight:800;font-stretch:112%;letter-spacing:-.02em}
+.money .out span{font-size:14px;color:var(--ink-2)}
+.res-table summary{cursor:pointer;font-weight:600;margin:6px 0 10px}
+.res-table table{font-size:14px}
+@media (max-width:980px){.res-top{grid-template-columns:1fr 1fr}.kpi.hero{grid-column:1/-1}.money{grid-template-columns:1fr 1fr}}
+@media (max-width:700px){.res-grid{grid-template-columns:1fr}}
 .bill-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:4px 0 22px}
 .seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:999px;padding:2px}
 .seg button{font:600 14px/1 var(--font);padding:9px 14px;border:0;border-radius:999px;background:transparent;color:var(--ink);cursor:pointer}
@@ -188,6 +223,7 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
     <button role="tab" id="t-print" aria-controls="tab-print" data-tab="print" data-i18n="d.tPrint"></button>
     <button role="tab" id="t-promote" aria-controls="tab-promote" data-tab="promote" data-i18n="d.tPromote"></button>
     <button role="tab" id="t-customers" aria-controls="tab-customers" data-tab="customers" data-i18n="d.tCustomers"></button>
+    <button role="tab" id="t-results" aria-controls="tab-results" data-tab="results" data-i18n="d.tResults"></button>
     <button role="tab" id="t-till" aria-controls="tab-till" data-tab="till" data-i18n="d.tTill"></button>
     <button role="tab" id="t-plan" aria-controls="tab-plan" data-tab="plan" data-i18n="d.tPlan"></button>
   </div>
@@ -344,6 +380,20 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
     <p class="help"><span data-i18n="d.billFine"></span> <a href="../legal/#disdetta" target="_blank" data-i18n="d.billTerms"></a></p>
   </section>
 
+  <!-- RESULTS: what the card does for the café, from its own visit history -->
+  <section role="tabpanel" id="tab-results" aria-labelledby="t-results" hidden>
+    <div class="res-head">
+      <div><h2 class="sec" data-i18n="d.resT"></h2><p class="sec-sub" data-i18n="d.resP"></p></div>
+      <div class="seg" id="res-range" role="group">
+        <button type="button" data-d="30" aria-pressed="true" data-i18n="d.r30"></button>
+        <button type="button" data-d="90" aria-pressed="false" data-i18n="d.r90"></button>
+        <button type="button" data-d="0" aria-pressed="false" data-i18n="d.rAll"></button>
+      </div>
+    </div>
+    <p class="res-sample" id="res-sample" hidden><span id="res-sample-t"></span> <button class="link" type="button" id="res-sample-b"></button></p>
+    <div id="res"></div>
+  </section>
+
   <!-- CUSTOMERS -->
   <section role="tabpanel" id="tab-customers" aria-labelledby="t-customers" hidden>
     <div class="stats" id="stats"></div>
@@ -359,6 +409,7 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
 <script src="../assets/js/ui.js"></script>
 <script src="../assets/js/remote.js"></script>
 <script src="../assets/js/marketing.js"></script>
+<script src="../assets/js/analytics.js"></script>
 <script src="../assets/js/design-editor.js"></script>
 <script>
 I18N.add({
@@ -390,6 +441,18 @@ I18N.add({
     'd.rvPending': 'In attesa di approvazione', 'd.rvPendingP': 'I clienti vedono ancora il design attuale. Ti avvisiamo appena è approvato.',
     'd.rvRequest': 'Richiesta inviata. Witkowski Design aggiorna il design e te lo mostra:', 'd.rvChanges': 'Witkowski Design chiede una modifica', 'd.rvApproved': 'Design approvato', 'd.rvApprovedP': 'È quello che vedono i tuoi clienti.',
     'd.vLive': 'Attuale', 'd.vDraft': 'Proposta',
+    'd.tResults': 'Risultati', 'd.resT': 'Cosa fa la carta per il tuo locale', 'd.resP': 'I numeri delle visite timbrate: chi si iscrive, chi torna, quando e quanto spende.',
+    'd.r30': '30 giorni', 'd.r90': '90 giorni', 'd.rAll': 'Sempre',
+    'd.resDemo': 'Dati di esempio: così appare questa pagina dopo qualche settimana di carta.', 'd.resEmpty': 'Ancora pochi dati: i grafici si riempiono con le prime visite.', 'd.resShowEx': 'Vedi un esempio', 'd.resShowMine': 'Torna ai tuoi dati', 'd.resExample': 'Stai guardando un esempio.',
+    'd.kMembers': 'Clienti con la carta', 'd.kNew': '{n} nuovi', 'd.kVisits': 'Visite timbrate', 'd.kReturning': 'Clienti che tornano', 'd.kReturningN': '2 o più visite', 'd.kPer': 'Visite per cliente', 'd.kPerN': 'in media, nel periodo', 'd.kRewards': 'Premi dati',
+    'd.vsPrev': 'rispetto al periodo prima', 'd.vsNone': 'nessun dato prima',
+    'd.cGrowth': 'Clienti iscritti', 'd.cGrowthN': 'Totale delle carte attive nel tempo.', 'd.cVisits': 'Visite', 'd.cVisitsN': { day: 'Visite timbrate al giorno.', week: 'Visite timbrate a settimana.', month: 'Visite timbrate al mese.' },
+    'd.cDays': 'Giorni più pieni', 'd.cDaysN': 'Visite per giorno della settimana.', 'd.cHours': 'Orari', 'd.cHoursN': 'Visite per ora del giorno.',
+    'd.days': ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'], 'd.daysLong': ['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'], 'd.weekOf': 'settimana dal {d}',
+    'd.close': 'Quasi al premio', 'd.closeN': 'A 1 o 2 timbri dal premio: alla prossima visita festeggiali.', 'd.lapsed': 'Non tornano da 30 giorni', 'd.lapsedN': 'Un post o un timbro doppio per una settimana li riporta al bancone.', 'd.nobody': 'Nessuno, per ora.', 'd.andMore': 'e altri {n}',
+    'd.money': 'Quanto vale', 'd.moneyN': 'Una stima con i tuoi numeri. Non tutta la spesa nasce dalla carta, ma sono i clienti che tornano.',
+    'd.ticket': 'Scontrino medio (€)', 'd.rewardCost': 'Costo di un premio per te (€)', 'd.spent': 'spesi dai clienti con la carta', 'd.rewardsCost': 'costo dei premi',
+    'd.table': 'Vedi i numeri in tabella', 'd.tDate': 'Periodo', 'd.tVisits': 'Visite', 'd.tMembers': 'Iscritti',
     'd.tPlan': 'Abbonamento', 'd.planT': 'Il tuo abbonamento', 'd.monthly': 'Mensile', 'd.yearly': 'Annuale (2 mesi gratis)', 'd.manage': 'Gestisci o disdici', 'd.monthlyShort': 'mensile', 'd.yearlyShort': 'annuale',
     'd.manageHint': 'Per cambiare piano, cambiare carta, scaricare le fatture o disdire, usa "Gestisci o disdici".',
     'd.billNone': 'Scegli un piano: i primi {days} giorni sono gratis, poi paghi con carta o addebito SEPA. Disdici quando vuoi.',
@@ -455,6 +518,18 @@ I18N.add({
     'd.rvPending': 'Waiting for approval', 'd.rvPendingP': 'Customers still see the current design. We\'ll let you know as soon as it\'s approved.',
     'd.rvRequest': 'Request sent. Witkowski Design will update the design and show you:', 'd.rvChanges': 'Witkowski Design asked for a change', 'd.rvApproved': 'Design approved', 'd.rvApprovedP': 'This is what your customers see.',
     'd.vLive': 'Current', 'd.vDraft': 'Proposal',
+    'd.tResults': 'Results', 'd.resT': 'What the card does for your café', 'd.resP': 'The numbers behind the stamped visits: who joins, who comes back, when, and what they spend.',
+    'd.r30': '30 days', 'd.r90': '90 days', 'd.rAll': 'All time',
+    'd.resDemo': 'Example data: this is how this page looks after a few weeks with the card.', 'd.resEmpty': 'Not much data yet: the charts fill up with the first visits.', 'd.resShowEx': 'See an example', 'd.resShowMine': 'Back to your data', 'd.resExample': 'You are looking at an example.',
+    'd.kMembers': 'Customers with the card', 'd.kNew': '{n} new', 'd.kVisits': 'Stamped visits', 'd.kReturning': 'Customers who come back', 'd.kReturningN': '2 or more visits', 'd.kPer': 'Visits per customer', 'd.kPerN': 'on average, in the period', 'd.kRewards': 'Rewards given',
+    'd.vsPrev': 'vs the period before', 'd.vsNone': 'no earlier data',
+    'd.cGrowth': 'Customers with the card', 'd.cGrowthN': 'Total cards over time.', 'd.cVisits': 'Visits', 'd.cVisitsN': { day: 'Stamped visits per day.', week: 'Stamped visits per week.', month: 'Stamped visits per month.' },
+    'd.cDays': 'Busiest days', 'd.cDaysN': 'Visits by day of the week.', 'd.cHours': 'Hours', 'd.cHoursN': 'Visits by hour of the day.',
+    'd.days': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], 'd.daysLong': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], 'd.weekOf': 'week from {d}',
+    'd.close': 'Almost at the reward', 'd.closeN': '1 or 2 stamps away: make a fuss of them next visit.', 'd.lapsed': 'Not back for 30 days', 'd.lapsedN': 'A post or a double-stamp week brings them back to the counter.', 'd.nobody': 'Nobody, for now.', 'd.andMore': 'and {n} more',
+    'd.money': 'What it is worth', 'd.moneyN': 'An estimate with your numbers. Not all of this spending comes from the card, but these are the customers who come back.',
+    'd.ticket': 'Average ticket (€)', 'd.rewardCost': 'What a reward costs you (€)', 'd.spent': 'spent by card customers', 'd.rewardsCost': 'cost of rewards',
+    'd.table': 'See the numbers as a table', 'd.tDate': 'Period', 'd.tVisits': 'Visits', 'd.tMembers': 'Members',
     'd.tPlan': 'Plan', 'd.planT': 'Your subscription', 'd.monthly': 'Monthly', 'd.yearly': 'Yearly (2 months free)', 'd.manage': 'Manage or cancel', 'd.monthlyShort': 'monthly', 'd.yearlyShort': 'yearly',
     'd.manageHint': 'To change plan or card, download invoices or cancel, use "Manage or cancel".',
     'd.billNone': 'Pick a plan: the first {days} days are free, then you pay by card or SEPA direct debit. Cancel any time.',
@@ -664,6 +739,7 @@ I18N.add({
     editor.set(draft); renderReview(); setView('draft');
     dirty = false; $('status').textContent = '';
     renderPrint(); renderPromote(); renderCustomers();
+    if (!$('tab-results').hidden) renderResults();
     history.replaceState(null, '', `?card=${current.id}${location.hash}`);
   }
   $('card-select').addEventListener('change', e => loadCard(e.target.value));
@@ -755,6 +831,7 @@ I18N.add({
       tb.setAttribute('aria-selected', String(on)); tb.tabIndex = on ? 0 : -1;
       $('tab-' + tb.dataset.tab).hidden = !on;
     });
+    if (name === 'results') renderResults();
     history.replaceState(null, '', location.search + '#' + name);
   }
   tabs.forEach((tb, i) => {
@@ -801,7 +878,85 @@ I18N.add({
     instaLang = I18N.lang;
     renderPrint(); renderPromote(); renderCustomers(); renderDevices();
   });
-  Store.onChange(() => { current = Store.getCard(current.id) || current; renderCustomers(); renderReview(); setView(view); });
+  Store.onChange(() => { current = Store.getCard(current.id) || current; renderCustomers(); renderReview(); setView(view); if (!$('tab-results').hidden) renderResults(); });
+
+  // ---------- results: numbers and charts from the café's own visits (assets/js/analytics.js) ----------
+  let resDays = 30, resExample = false;
+  const resPrefs = () => { try { return JSON.parse(localStorage.getItem('timbro:results:' + current.id)) || {}; } catch (e) { return {}; } };
+  const saveResPrefs = p => { try { localStorage.setItem('timbro:results:' + current.id, JSON.stringify(p)); } catch (e) { /* not saved */ } };
+  const euro = (n, d = 0) => new Intl.NumberFormat(I18N.lang === 'it' ? 'it-IT' : 'en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: d, minimumFractionDigits: d }).format(n);
+  const num = n => Math.round(n).toLocaleString(I18N.lang === 'it' ? 'it-IT' : 'en-GB');
+  const dateFmt = (t, long) => new Date(t).toLocaleDateString(I18N.lang === 'it' ? 'it-IT' : 'en-GB', long ? { weekday: 'short', day: 'numeric', month: 'long' } : { day: 'numeric', month: 'short' });
+  function delta(now, before, hasBefore) {
+    if (!hasBefore) return `<span class="delta">${I18N.t('d.vsNone')}</span>`;
+    const d = before ? Math.round((now - before) / before * 100) : 100;
+    return `<span class="delta"><b>${d >= 0 ? '▲' : '▼'} ${Math.abs(d)}%</b> ${I18N.t('d.vsPrev')}</span>`;
+  }
+  function renderResults() {
+    if (!current) return;
+    const real = Store.listCustomers(current.id);
+    const demo = !Store.remote || Remote.demo;
+    const useExample = demo || resExample;
+    $('res-sample').hidden = !(useExample || real.length < 3);
+    $('res-sample-t').textContent = I18N.t(demo ? 'd.resDemo' : resExample ? 'd.resExample' : 'd.resEmpty');
+    $('res-sample-b').hidden = demo;
+    $('res-sample-b').textContent = I18N.t(resExample ? 'd.resShowMine' : 'd.resShowEx');
+    $('res-range').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.d) === resDays)));
+    const customers = useExample ? ANALYTICS.sample(current) : real;
+    const r = ANALYTICS.compute(current, customers, { days: resDays });
+    const hasBefore = resDays > 0 && customers.some(c => (c.joinedAt || 0) < r.from);
+    const prefs = resPrefs(), ticket = prefs.ticket ?? 3.5, rewardCost = prefs.rewardCost ?? 1.2;
+    const people = list => list.length ? `<ul class="people">${list.slice(0, 5).map(c => `<li><span>${UI.esc(c.name)}</span><span>${c.stamps}/${current.stampsNeeded} · ${UI.timeAgo(c.lastVisit || c.joinedAt)}</span></li>`).join('')}</ul>${list.length > 5 ? `<p class="note">${I18N.t('d.andMore', { n: list.length - 5 })}</p>` : ''}` : `<p class="note">${I18N.t('d.nobody')}</p>`;
+    const rows = r.visitSeries.map(p => `<tr><td>${r.bucket === 'week' ? I18N.t('d.weekOf', { d: dateFmt(p.t) }) : r.bucket === 'month' ? new Date(p.t).toLocaleDateString(I18N.lang === 'it' ? 'it-IT' : 'en-GB', { month: 'long', year: 'numeric' }) : dateFmt(p.t, true)}</td><td>${p.v}</td></tr>`).join('');
+    $('res').innerHTML = `
+      <div class="res-top">
+        <div class="kpi hero"><span class="lab">${I18N.t('d.kMembers')}</span><span class="val" data-k="members"></span><span class="delta"><b>+${num(r.newMembers)}</b> ${I18N.t('d.kNew', { n: '' }).trim()} · ${I18N.t(resDays ? (resDays === 30 ? 'd.r30' : 'd.r90') : 'd.rAll').toLowerCase()}</span></div>
+        <div class="kpi"><span class="lab">${I18N.t('d.kVisits')}</span><span class="val" data-k="visits"></span>${delta(r.visits, r.prevVisits, hasBefore)}</div>
+        <div class="kpi"><span class="lab">${I18N.t('d.kReturning')}</span><span class="val" data-k="returning"></span><span class="delta">${I18N.t('d.kReturningN')}</span></div>
+        <div class="kpi"><span class="lab">${I18N.t('d.kPer')}</span><span class="val" data-k="per"></span><span class="delta">${I18N.t('d.kPerN')}</span></div>
+        <div class="kpi"><span class="lab">${I18N.t('d.kRewards')}</span><span class="val" data-k="rewards"></span>${delta(r.rewards, r.prevRewards, hasBefore)}</div>
+      </div>
+      <div class="res-grid">
+        <div class="card-box"><h3>${I18N.t('d.cGrowth')}</h3><p class="note">${I18N.t('d.cGrowthN')}</p><div id="ch-growth"></div></div>
+        <div class="card-box"><h3>${I18N.t('d.cVisits')}</h3><p class="note">${I18N.t('d.cVisitsN')[r.bucket]}</p><div id="ch-visits"></div></div>
+        <div class="card-box"><h3>${I18N.t('d.cDays')}</h3><p class="note">${I18N.t('d.cDaysN')}</p><div id="ch-days"></div></div>
+        <div class="card-box"><h3>${I18N.t('d.cHours')}</h3><p class="note">${I18N.t('d.cHoursN')}</p><div id="ch-hours"></div></div>
+        <div class="card-box"><h3>${I18N.t('d.close')} · ${r.close.length}</h3><p class="note">${I18N.t('d.closeN')}</p>${people(r.close)}</div>
+        <div class="card-box"><h3>${I18N.t('d.lapsed')} · ${r.lapsed.length}</h3><p class="note">${I18N.t('d.lapsedN')}</p>${people(r.lapsed)}</div>
+        <div class="card-box wide"><h3>${I18N.t('d.money')}</h3><p class="note">${I18N.t('d.moneyN')}</p>
+          <div class="money">
+            <label>${I18N.t('d.ticket')}<input type="number" min="0" step="0.1" id="res-ticket" value="${ticket}"></label>
+            <label>${I18N.t('d.rewardCost')}<input type="number" min="0" step="0.1" id="res-reward" value="${rewardCost}"></label>
+            <div class="out"><b id="res-spent"></b><span>${I18N.t('d.spent')}</span></div>
+            <div class="out"><b id="res-cost"></b><span>${I18N.t('d.rewardsCost')}</span></div>
+          </div>
+          <details class="res-table"><summary>${I18N.t('d.table')}</summary><div class="table-wrap"><table><thead><tr><th>${I18N.t('d.tDate')}</th><th>${I18N.t('d.tVisits')}</th></tr></thead><tbody>${rows}</tbody></table></div></details>
+        </div>
+      </div>`;
+    const k = n => $('res').querySelector(`[data-k="${n}"]`);
+    ANALYTICS.countUp(k('members'), r.members, num);
+    ANALYTICS.countUp(k('visits'), r.visits, num);
+    ANALYTICS.countUp(k('returning'), r.returningRate * 100, n => Math.round(n) + '%');
+    ANALYTICS.countUp(k('per'), r.perVisitor, n => n.toFixed(1).replace('.', I18N.lang === 'it' ? ',' : '.'));
+    ANALYTICS.countUp(k('rewards'), r.rewards, num);
+    const money = () => {
+      const t = Math.max(0, Number($('res-ticket').value) || 0), c = Math.max(0, Number($('res-reward').value) || 0);
+      $('res-spent').textContent = euro(r.visits * t); $('res-cost').textContent = euro(r.rewards * c);
+      if (!useExample) saveResPrefs({ ticket: t, rewardCost: c });
+    };
+    $('res-ticket').addEventListener('input', money); $('res-reward').addEventListener('input', money); money();
+    ANALYTICS.line($('ch-growth'), r.growth, { label: I18N.t('d.cGrowth'), fmt: num, date: dateFmt });
+    const days = I18N.t('d.days'), long = I18N.t('d.daysLong');
+    ANALYTICS.columns($('ch-visits'), r.visitSeries.map(p => ({ v: p.v, label: r.bucket === 'month' ? new Date(p.t).toLocaleDateString(I18N.lang === 'it' ? 'it-IT' : 'en-GB', { month: 'short' }) : dateFmt(p.t),
+      title: r.bucket === 'week' ? I18N.t('d.weekOf', { d: dateFmt(p.t) }) : r.bucket === 'month' ? new Date(p.t).toLocaleDateString(I18N.lang === 'it' ? 'it-IT' : 'en-GB', { month: 'long', year: 'numeric' }) : dateFmt(p.t, true) })), { label: I18N.t('d.cVisits'), fmt: num });
+    ANALYTICS.columns($('ch-days'), r.weekday.map((v, i) => ({ v, label: days[i], title: long[i] })), { label: I18N.t('d.cDays'), fmt: num, height: 180 });
+    const open = r.hours.map((v, h) => ({ v, h })).filter(x => x.h >= 6 && x.h <= 22);
+    ANALYTICS.columns($('ch-hours'), open.map(x => ({ v: x.v, label: String(x.h), title: `${x.h}:00-${x.h + 1}:00` })), { label: I18N.t('d.cHours'), fmt: num, height: 180 });
+  }
+  $('res-range').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { resDays = Number(b.dataset.d); renderResults(); } });
+  $('res-sample-b').addEventListener('click', () => { resExample = !resExample; renderResults(); });
+  document.addEventListener('langchange', () => { if (!$('tab-results').hidden) renderResults(); });
+  let resTimer; window.addEventListener('resize', () => { clearTimeout(resTimer); resTimer = setTimeout(() => { if (!$('tab-results').hidden) renderResults(); }, 200); });
 
   // ---------- plan: the subscription (Stripe, see supabase/functions/) ----------
   let billing = null, interval = 'month';
@@ -851,7 +1006,7 @@ I18N.add({
     I18N.apply();
     controls();
     const q = new URLSearchParams(location.search);
-    const startTab = ['design', 'print', 'promote', 'customers', 'till', 'plan'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'design';
+    const startTab = ['design', 'print', 'promote', 'customers', 'results', 'till', 'plan'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'design';
     // In the demo, keep the till and the dashboard in the demo too.
     if (Remote.demo) document.querySelectorAll('a[href="stamper.html"]').forEach(a => a.href = 'stamper.html?demo');
     if (Remote.enabled) {

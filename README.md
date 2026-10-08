@@ -10,8 +10,8 @@ Digital stamp cards for cafés, bakeries and shops, with help on the design and 
 
 | Page | For | File |
 |---|---|---|
-| Website with live builder and pricing | Café owners deciding to sign up | `index.html` |
-| Dashboard: card texts, design changes (sent for your approval), print, promote, customers | The café owner | `app/dashboard.html` |
+| Website with live builder, a "what it's worth" calculator and pricing | Café owners deciding to sign up | `index.html` |
+| Dashboard: card texts, design changes (sent for your approval), print, promote, customers, **Results** (members, visits, returning customers, busiest days and hours, who is close to a reward or hasn't come back, estimated spend) | The café owner | `app/dashboard.html` (charts: `assets/js/analytics.js`) |
 | **Studio**: design each card, review and approve cafés' changes | You (Witkowski Design) | `studio/` |
 | Customer card | Customers, on their phone | `app/card.html?card=<id>` |
 | Stamper | Staff at the till | `app/stamper.html` |
