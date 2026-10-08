@@ -212,9 +212,9 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
     <a class="brand" href="#top" aria-label="Timbro"><span class="brand-mark" aria-hidden="true"></span>Timbro</a>
     <ul>
       <li><a href="#come" data-i18n="nav.how"></a></li>
+      <li><a href="#numeri" data-i18n="nav.numbers"></a></li>
       <li><a href="#prova" data-i18n="nav.try"></a></li>
       <li><a href="#design" data-i18n="nav.help"></a></li>
-      <li><a href="#numeri" data-i18n="nav.numbers"></a></li>
       <li><a href="#prezzi" data-i18n="nav.pricing"></a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
@@ -276,6 +276,39 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
         <li class="step"><h3 data-i18n="how.s2"></h3><p data-i18n="how.s2p"></p><span class="who" data-i18n="how.s2w"></span></li>
         <li class="step"><h3 data-i18n="how.s3"></h3><p data-i18n="how.s3p"></p><span class="who" data-i18n="how.s3w"></span></li>
       </ol>
+    </div>
+  </section>
+
+  <!-- NUMBERS: what the card can be worth, with the café's own estimates -->
+  <section id="numeri" class="numbers">
+    <div class="wrap">
+      <div class="head" style="margin-bottom:36px">
+        <span class="label" data-i18n="n.label"></span>
+        <h2 class="display" data-i18n="n.title"></h2>
+        <p data-i18n="n.lede"></p>
+      </div>
+      <div class="calc">
+        <form class="calc-in" id="calc" onsubmit="return false">
+          <label><span data-i18n="n.regulars"></span><output id="o-regulars"></output><input type="range" name="regulars" min="30" max="1000" step="10" value="200"></label>
+          <label><span data-i18n="n.join"></span><output id="o-join"></output><input type="range" name="join" min="10" max="80" step="5" value="40"></label>
+          <label><span data-i18n="n.extra"></span><output id="o-extra"></output><input type="range" name="extra" min="0.5" max="4" step="0.5" value="1"></label>
+          <label><span data-i18n="n.ticket"></span><output id="o-ticket"></output><input type="range" name="ticket" min="1.5" max="15" step="0.5" value="3.5"></label>
+        </form>
+        <div class="calc-out">
+          <div class="calc-figs">
+            <div class="fig top"><b data-c="month"></b><span data-i18n="n.perMonth"></span></div>
+            <div class="fig"><b data-c="members"></b><span data-i18n="n.members"></span></div>
+            <div class="fig"><b data-c="visits"></b><span data-i18n="n.visits"></span></div>
+            <div class="fig"><b data-c="year"></b><span data-i18n="n.perYear"></span></div>
+            <div class="fig"><b data-c="payback"></b><span data-i18n="n.payback"></span></div>
+          </div>
+          <div class="calc-chart">
+            <p class="chart-t" data-i18n="n.chart"></p>
+            <div id="calc-chart"></div>
+          </div>
+        </div>
+      </div>
+      <p class="calc-fine"><span data-i18n="n.fine"></span> <a class="link" href="app/dashboard.html?card=the-coffee#results" data-i18n="n.see"></a></p>
     </div>
   </section>
 
@@ -372,39 +405,6 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
         </div>
         <figcaption class="kit-cap" data-i18n="h.kitCap"></figcaption>
       </figure>
-    </div>
-  </section>
-
-  <!-- NUMBERS: what the card can be worth, with the café's own estimates -->
-  <section id="numeri" class="numbers">
-    <div class="wrap">
-      <div class="head" style="margin-bottom:36px">
-        <span class="label" data-i18n="n.label"></span>
-        <h2 class="display" data-i18n="n.title"></h2>
-        <p data-i18n="n.lede"></p>
-      </div>
-      <div class="calc">
-        <form class="calc-in" id="calc" onsubmit="return false">
-          <label><span data-i18n="n.regulars"></span><output id="o-regulars"></output><input type="range" name="regulars" min="30" max="1000" step="10" value="200"></label>
-          <label><span data-i18n="n.join"></span><output id="o-join"></output><input type="range" name="join" min="10" max="80" step="5" value="40"></label>
-          <label><span data-i18n="n.extra"></span><output id="o-extra"></output><input type="range" name="extra" min="0.5" max="4" step="0.5" value="1"></label>
-          <label><span data-i18n="n.ticket"></span><output id="o-ticket"></output><input type="range" name="ticket" min="1.5" max="15" step="0.5" value="3.5"></label>
-        </form>
-        <div class="calc-out">
-          <div class="calc-figs">
-            <div class="fig top"><b data-c="month"></b><span data-i18n="n.perMonth"></span></div>
-            <div class="fig"><b data-c="members"></b><span data-i18n="n.members"></span></div>
-            <div class="fig"><b data-c="visits"></b><span data-i18n="n.visits"></span></div>
-            <div class="fig"><b data-c="year"></b><span data-i18n="n.perYear"></span></div>
-            <div class="fig"><b data-c="payback"></b><span data-i18n="n.payback"></span></div>
-          </div>
-          <div class="calc-chart">
-            <p class="chart-t" data-i18n="n.chart"></p>
-            <div id="calc-chart"></div>
-          </div>
-        </div>
-      </div>
-      <p class="calc-fine"><span data-i18n="n.fine"></span> <a class="link" href="app/dashboard.html?card=the-coffee#results" data-i18n="n.see"></a></p>
     </div>
   </section>
 
