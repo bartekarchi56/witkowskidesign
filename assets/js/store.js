@@ -119,6 +119,16 @@
       return saved;
     },
 
+    // Notification texts (dashboard → Notifications). Saved straight away, like texts.
+    saveMessages(cardId, messages) {
+      const db = load(), card = db.cards[cardId];
+      if (!card) return null;
+      card.messages = messages; card.updatedAt = Date.now();
+      save(db);
+      sync(() => Remote.saveMessages(cardId, messages));
+      return card;
+    },
+
     // ---- customers (one per person per card) ----
     join(cardId, name) {
       const db = load();

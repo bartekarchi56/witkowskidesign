@@ -122,13 +122,23 @@ assert.equal((await call(users.ownerA, 'owner_data')).cards[0].plan, 'pro');   /
 assert.equal((await call(users.designer, 'admin_cards')).find(c => c.id === id).billing.status, 'canceled');
 ok('only the Stripe functions change billing; a paid plan reaches the cards; you see the status in the Studio');
 
+// ---- notification messages: owners save their own, cleaned ----
+const msgs = { close: { on: true, left: 9, it: 'Ancora {left}!', en: 'x'.repeat(500) }, remind: { on: true, days: 2 }, near: { on: true, lat: '45.47', lng: '9.2' }, evil: { on: true } };
+await rejects(call(anon, 'owner_save_messages', { p_card_id: id, p_messages: msgs }), /permission denied/);
+await rejects(call(users.ownerB, 'owner_save_messages', { p_card_id: id, p_messages: msgs }), /another café/);
+const withMsgs = await call(users.ownerA, 'owner_save_messages', { p_card_id: id, p_messages: msgs });
+assert.equal(withMsgs.messages.close.left, 3); assert.equal(withMsgs.messages.close.en.length, 140);
+assert.equal(withMsgs.messages.remind.days, 7); assert.equal(withMsgs.messages.near.lat, 45.47); assert.equal(withMsgs.messages.evil, undefined);
+assert.equal((await call(anon, 'get_card', { p_card_id: id })).messages.close.it, 'Ancora {left}!');
+ok('owners save their own notification texts; limits and unknown keys are cleaned');
+
 // ---- no function is open by accident (Postgres lets PUBLIC run new functions) ----
 const open = async role => (await pool.query(`select coalesce(string_agg(p.proname, ',' order by p.proname), '') as f from pg_proc p
   join pg_namespace s on s.oid = p.pronamespace where s.nspname = 'timbro' and has_function_privilege($1, p.oid, 'execute')`, [role])).rows[0].f.split(',').filter(Boolean);
 const PUBLIC_FNS = ['device_link', 'get_card', 'get_my_card', 'join_card', 'stamper_lookup', 'stamper_redeem', 'stamper_stamp'];
 assert.deepEqual(await open('anon'), PUBLIC_FNS);
 assert.deepEqual(await open('authenticated'), [...PUBLIC_FNS, 'admin_ask_changes', 'admin_cards', 'admin_publish', 'admin_set_plan',
-  'owner_data', 'owner_link_code', 'owner_remove_device', 'owner_save_card', 'owner_send_design'].sort());
+  'owner_data', 'owner_link_code', 'owner_remove_device', 'owner_save_card', 'owner_save_messages', 'owner_send_design'].sort());
 ok('only the intended functions can be called by visitors and logged-in users');
 
 console.log(`\nAll ${n} checks passed.`);

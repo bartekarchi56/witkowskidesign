@@ -54,3 +54,27 @@ assert.equal(claims.typ, 'savetowallet');
 assert.equal(claims.payload.loyaltyObjects[0].barcode.value, 'K7M2QX');
 assert.equal(claims.payload.loyaltyObjects[0].loyaltyPoints.balance.string, '3/10');
 console.log('google ok:', claims.payload.loyaltyObjects[0].id);
+
+// The café's own messages: "almost there" replaces the plain stamps alert, and the café's location goes on the pass.
+const near = readPassRequest({
+  lang: 'it',
+  card: { id: 'orsonero', business: 'Orsonero', title: 'Carta', reward: 'un caffè a scelta', stampsNeeded: 8,
+    messages: { close: { on: true, left: 2, it: 'Dai {name}, ancora {left}!' }, near: { on: true, lat: 45.4781, lng: 9.2061 }, evil: { on: true } } },
+  customer: { id: 'abc123', name: 'Marta', stamps: 6 }
+});
+assert.equal(near.card.messages.evil, undefined);
+const passJson = buf => { const f = path.join(dir, 'm.pkpass'); fs.writeFileSync(f, buf); return JSON.parse(execSync(`unzip -p ${f} pass.json`).toString()); };
+const p2 = passJson(await buildApplePass(near));
+assert.equal(p2.storeCard.backFields[0].value, 'Dai Marta, ancora 2 timbri!');
+assert.equal(p2.storeCard.backFields[0].changeMessage, '%@');
+assert.equal(p2.storeCard.headerFields[0].changeMessage, undefined);
+assert.deepEqual(p2.locations[0], { latitude: 45.4781, longitude: 9.2061, relevantText: 'Sei vicino a Orsonero: ancora 2 timbri per un caffè a scelta.' });
+// Far from the reward: a quiet line and the usual "Stamps: %@" alert; a server notice (reminder) wins.
+const far = { ...near, customer: { ...near.customer, stamps: 1 } };
+const p3 = passJson(await buildApplePass(far));
+assert.equal(p3.storeCard.backFields[0].value, 'Un timbro a ogni visita.'); assert.equal(p3.storeCard.headerFields[0].changeMessage, 'Timbri: %@');
+const p4 = passJson(await buildApplePass({ ...far, notice: 'Ci manchi!' }));
+assert.equal(p4.storeCard.backFields[0].value, 'Ci manchi!');
+const g2 = jwt.decode(buildGoogleSaveUrl(near, 'https://timbro.example').split('/').pop());
+assert.equal(g2.payload.loyaltyObjects[0].messages[0].body, 'Dai Marta, ancora 2 timbri!');
+console.log('messages ok: almost-there text, location, reminder notice, Google message');

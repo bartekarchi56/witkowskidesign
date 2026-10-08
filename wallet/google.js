@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { settings } from './settings.js';
 import { colours } from './images.js';
 import { LABELS } from './input.js';
+import { currentMessage } from './messages.js';
 
 const safe = s => s.replace(/[^\w.-]/g, '_');
 
@@ -39,6 +40,9 @@ export function buildGoogleSaveUrl({ card, customer, lang }, origin) {
     barcode: { type: 'QR_CODE', value: customer.id, alternateText: customer.id },
     heroImage: img('/img/strip', { ...look, need: card.stampsNeeded, have: customer.stamps })
   };
+  // The café's own message ("almost there", "reward ready") on the pass.
+  const news = currentMessage(card, customer, lang);
+  if (news) loyaltyObject.messages = [{ id: 'news', header: card.business, body: news }];
   const token = jwt.sign({
     iss: serviceAccount.client_email,
     aud: 'google',

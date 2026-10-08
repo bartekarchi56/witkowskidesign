@@ -58,6 +58,50 @@ details.en[open]{padding-bottom:4px}
 .review.approved{background:var(--wash)}
 .review b{display:block;margin-bottom:2px}
 .which button{font-size:12px}
+.nt{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start}
+.nt-rules{display:grid;gap:14px}
+.rule{border:1.5px solid var(--line);border-radius:16px;padding:18px;margin:0;min-width:0}
+.rule.off .rule-body{opacity:.45}
+.rule-head{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.rule-head input{width:44px;height:26px;flex:none;appearance:none;border-radius:999px;background:#D6D6D3;position:relative;cursor:pointer;transition:background .15s;margin:0}
+.rule-head input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .15s}
+.rule-head input:checked{background:var(--pop)}
+.rule-head input:checked::after{transform:translateX(18px)}
+.rule-head input:focus-visible{outline:3px solid var(--pop-wash);outline-offset:2px}
+.rule-head b{display:block;font-size:17px}
+.rule-head small{display:block;color:var(--ink-2);font-size:14px;margin-top:2px}
+.rule-body{margin-top:14px;display:grid;gap:10px}
+.rule-opts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--ink-2)}
+.rule-opts select{width:auto;min-height:40px;padding:6px 10px}
+.rule .field{margin:0}
+.rule .field > span{display:flex;justify-content:space-between;font-size:14px}
+.rule .field em{font-style:normal;color:var(--muted);font-weight:400;font-variant-numeric:tabular-nums}
+.rule textarea{min-height:64px;resize:vertical}
+.vars{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.vars button{font:500 13px/1 var(--mono);padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);cursor:pointer}
+.vars button:hover{border-color:var(--ink)}
+.nt-save{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.nt-preview{position:sticky;top:16px;display:grid;justify-items:center;gap:12px}
+.lock{width:300px;min-height:560px;border-radius:44px;border:10px solid #111;padding:44px 12px 20px;background:radial-gradient(120% 80% at 20% 0%,#3B3F8F 0%,#15172E 55%,#0B0B0C 100%);color:#fff;display:flex;flex-direction:column;gap:8px;box-shadow:0 30px 60px -30px rgba(0,0,0,.5)}
+.lock .clock{text-align:center;margin-bottom:14px}
+.lock .clock b{display:block;font-size:64px;font-weight:600;letter-spacing:-.02em;line-height:1}
+.lock .clock span{font-size:15px;opacity:.85}
+.lock .tag{font:500 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;opacity:.6;margin:6px 6px 0}
+.ntf{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;padding:10px 12px;border-radius:18px;background:rgba(245,245,247,.82);color:#111;backdrop-filter:blur(10px)}
+.ntf .ic{width:34px;height:34px;border-radius:8px;display:grid;place-items:center}
+.ntf .ic i{width:14px;height:14px;border-radius:50%}
+.ntf .top{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.ntf .top b{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ntf .top span{color:#6B6B70;flex:none}
+.ntf p{font-size:13.5px;line-height:1.35;margin-top:1px}
+.lock.google{border-radius:34px;background:radial-gradient(120% 80% at 80% 0%,#3A5A7A 0%,#16202B 60%,#0B0B0C 100%)}
+.lock.google .clock b{font-weight:400}
+.lock.google .ntf{border-radius:24px;background:#fff;grid-template-columns:1fr}
+.lock.google .ntf .ic{display:none}
+.lock.google .app{display:flex;align-items:center;gap:6px;font-size:12px;color:#5F6368}
+.lock.google .app i{width:16px;height:16px;border-radius:50%;display:inline-block}
+.lock .empty{opacity:.7;font-size:14px;text-align:center;margin-top:30px}
+@media (max-width:900px){.nt{grid-template-columns:1fr}.nt-preview{position:static;order:-1}.lock{min-height:0;width:100%;max-width:320px}}
 .res-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
 .res-head .sec-sub{margin-bottom:0}
 .res-sample{background:var(--pop-wash);border-radius:12px;padding:12px 16px;margin:0 0 18px;font-size:15px}
@@ -224,6 +268,7 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
     <button role="tab" id="t-promote" aria-controls="tab-promote" data-tab="promote" data-i18n="d.tPromote"></button>
     <button role="tab" id="t-customers" aria-controls="tab-customers" data-tab="customers" data-i18n="d.tCustomers"></button>
     <button role="tab" id="t-results" aria-controls="tab-results" data-tab="results" data-i18n="d.tResults"></button>
+    <button role="tab" id="t-notify" aria-controls="tab-notify" data-tab="notify" data-i18n="d.tNotify"></button>
     <button role="tab" id="t-till" aria-controls="tab-till" data-tab="till" data-i18n="d.tTill"></button>
     <button role="tab" id="t-plan" aria-controls="tab-plan" data-tab="plan" data-i18n="d.tPlan"></button>
   </div>
@@ -394,6 +439,20 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
     <div id="res"></div>
   </section>
 
+  <!-- NOTIFICATIONS: the café's own messages for customers' Wallet cards -->
+  <section role="tabpanel" id="tab-notify" aria-labelledby="t-notify" hidden>
+    <h2 class="sec" data-i18n="d.ntT"></h2>
+    <p class="sec-sub" data-i18n="d.ntP"></p>
+    <p class="res-sample" data-i18n="d.ntSoon"></p>
+    <div class="nt">
+      <form id="nt-form" class="nt-rules" onsubmit="return false"></form>
+      <aside class="nt-preview" aria-label="Preview">
+        <div id="nt-plat"></div>
+        <div class="lock" id="nt-lock" aria-live="polite"></div>
+      </aside>
+    </div>
+  </section>
+
   <!-- CUSTOMERS -->
   <section role="tabpanel" id="tab-customers" aria-labelledby="t-customers" hidden>
     <div class="stats" id="stats"></div>
@@ -441,6 +500,14 @@ I18N.add({
     'd.rvPending': 'In attesa di approvazione', 'd.rvPendingP': 'I clienti vedono ancora il design attuale. Ti avvisiamo appena è approvato.',
     'd.rvRequest': 'Richiesta inviata. Witkowski Design aggiorna il design e te lo mostra:', 'd.rvChanges': 'Witkowski Design chiede una modifica', 'd.rvApproved': 'Design approvato', 'd.rvApprovedP': 'È quello che vedono i tuoi clienti.',
     'd.vLive': 'Attuale', 'd.vDraft': 'Proposta',
+    'd.tNotify': 'Notifiche', 'd.ntT': 'Notifiche ai tuoi clienti', 'd.ntP': 'Messaggi automatici sul telefono di chi ha la carta: li scrivi tu, con il tono del tuo locale.',
+    'd.ntSoon': 'L\'invio sul telefono parte con le carte Apple Wallet e Google Wallet, che stiamo attivando. Intanto "Quasi al premio" e "Premio pronto" compaiono già sulla carta web dei clienti.',
+    'd.nClose': 'Quasi al premio', 'd.nCloseW': 'Quando a un cliente mancano pochi timbri.', 'd.nCloseOpt': 'Quando mancano', 'd.nStamps1': '1 timbro', 'd.nStampsN': '{n} timbri',
+    'd.nReady': 'Premio pronto', 'd.nReadyW': 'Quando la carta è piena.',
+    'd.nRemind': 'Promemoria', 'd.nRemindW': 'Se un cliente non passa da un po\'. Al massimo uno ogni volta.', 'd.nRemindOpt': 'Dopo', 'd.nDays': '{n} giorni senza visite',
+    'd.nNear': 'Vicino al locale', 'd.nNearW': 'La carta appare sulla schermata di blocco quando il cliente passa vicino. Solo iPhone.', 'd.nUseHere': 'Usa la mia posizione (sono al locale)', 'd.nSaved': 'Posizione: {p}', 'd.nNoPlace': 'Nessuna posizione: premi il pulsante quando sei al locale.', 'd.nRemovePlace': 'Rimuovi', 'd.nGeoErr': 'Non riesco a leggere la posizione. Controlla i permessi del browser.',
+    'd.nIt': 'Italiano', 'd.nEn': 'English (turisti)', 'd.nInsert': 'Inserisci:', 'd.vName': 'nome', 'd.vLeft': 'timbri mancanti', 'd.vReward': 'premio', 'd.vBusiness': 'locale',
+    'd.nSave': 'Salva le notifiche', 'd.nSavedOk': 'Notifiche salvate.', 'd.nNow': 'ora', 'd.nNone': 'Accendi una notifica per vedere l\'anteprima.', 'd.nExample': 'Giulia',
     'd.tResults': 'Risultati', 'd.resT': 'Cosa fa la carta per il tuo locale', 'd.resP': 'I numeri delle visite timbrate: chi si iscrive, chi torna, quando e quanto spende.',
     'd.r30': '30 giorni', 'd.r90': '90 giorni', 'd.rAll': 'Sempre',
     'd.resDemo': 'Dati di esempio: così appare questa pagina dopo qualche settimana di carta.', 'd.resEmpty': 'Ancora pochi dati: i grafici si riempiono con le prime visite.', 'd.resShowEx': 'Vedi un esempio', 'd.resShowMine': 'Torna ai tuoi dati', 'd.resExample': 'Stai guardando un esempio.',
@@ -518,6 +585,14 @@ I18N.add({
     'd.rvPending': 'Waiting for approval', 'd.rvPendingP': 'Customers still see the current design. We\'ll let you know as soon as it\'s approved.',
     'd.rvRequest': 'Request sent. Witkowski Design will update the design and show you:', 'd.rvChanges': 'Witkowski Design asked for a change', 'd.rvApproved': 'Design approved', 'd.rvApprovedP': 'This is what your customers see.',
     'd.vLive': 'Current', 'd.vDraft': 'Proposal',
+    'd.tNotify': 'Notifications', 'd.ntT': 'Notifications to your customers', 'd.ntP': 'Automatic messages on the phones of people with your card: you write them, in your café\'s own voice.',
+    'd.ntSoon': 'Sending to phones starts with Apple Wallet and Google Wallet cards, which we are switching on. Meanwhile "Almost there" and "Reward ready" already show on customers\' web card.',
+    'd.nClose': 'Almost there', 'd.nCloseW': 'When a customer is a few stamps from the reward.', 'd.nCloseOpt': 'When there are', 'd.nStamps1': '1 stamp left', 'd.nStampsN': '{n} stamps left',
+    'd.nReady': 'Reward ready', 'd.nReadyW': 'When the card is full.',
+    'd.nRemind': 'Reminder', 'd.nRemindW': 'When a customer hasn\'t been in for a while. At most one each time.', 'd.nRemindOpt': 'After', 'd.nDays': '{n} days without a visit',
+    'd.nNear': 'Near the café', 'd.nNearW': 'The card shows on the lock screen when the customer walks nearby. iPhone only.', 'd.nUseHere': 'Use my location (I am at the café)', 'd.nSaved': 'Location: {p}', 'd.nNoPlace': 'No location yet: press the button while you are at the café.', 'd.nRemovePlace': 'Remove', 'd.nGeoErr': 'Can\'t read your location. Check the browser\'s permission.',
+    'd.nIt': 'Italiano', 'd.nEn': 'English (tourists)', 'd.nInsert': 'Insert:', 'd.vName': 'name', 'd.vLeft': 'stamps left', 'd.vReward': 'reward', 'd.vBusiness': 'café',
+    'd.nSave': 'Save notifications', 'd.nSavedOk': 'Notifications saved.', 'd.nNow': 'now', 'd.nNone': 'Switch a notification on to see the preview.', 'd.nExample': 'Emma',
     'd.tResults': 'Results', 'd.resT': 'What the card does for your café', 'd.resP': 'The numbers behind the stamped visits: who joins, who comes back, when, and what they spend.',
     'd.r30': '30 days', 'd.r90': '90 days', 'd.rAll': 'All time',
     'd.resDemo': 'Example data: this is how this page looks after a few weeks with the card.', 'd.resEmpty': 'Not much data yet: the charts fill up with the first visits.', 'd.resShowEx': 'See an example', 'd.resShowMine': 'Back to your data', 'd.resExample': 'You are looking at an example.',
@@ -740,6 +815,7 @@ I18N.add({
     dirty = false; $('status').textContent = '';
     renderPrint(); renderPromote(); renderCustomers();
     if (!$('tab-results').hidden) renderResults();
+    if (!$('tab-notify').hidden) renderNotify();
     history.replaceState(null, '', `?card=${current.id}${location.hash}`);
   }
   $('card-select').addEventListener('change', e => loadCard(e.target.value));
@@ -832,6 +908,7 @@ I18N.add({
       $('tab-' + tb.dataset.tab).hidden = !on;
     });
     if (name === 'results') renderResults();
+    if (name === 'notify') renderNotify();
     history.replaceState(null, '', location.search + '#' + name);
   }
   tabs.forEach((tb, i) => {
@@ -879,6 +956,96 @@ I18N.add({
     renderPrint(); renderPromote(); renderCustomers(); renderDevices();
   });
   Store.onChange(() => { current = Store.getCard(current.id) || current; renderCustomers(); renderReview(); setView(view); if (!$('tab-results').hidden) renderResults(); });
+
+  // ---------- notifications: the café's own messages (UI.messagesOf / UI.fillMessage) ----------
+  const NT = ['close', 'ready', 'remind', 'near'];
+  const NT_NAMES = { close: ['d.nClose', 'd.nCloseW'], ready: ['d.nReady', 'd.nReadyW'], remind: ['d.nRemind', 'd.nRemindW'], near: ['d.nNear', 'd.nNearW'] };
+  let ntDraft = null, ntField = null, ntCard = null;   // ntField: the last text box used, for the insert buttons
+  const ntBox = k => $('nt-form').querySelector(`[data-k="${k}"]`);
+  function renderNotify(keepDraft) {
+    if (!current) return;
+    if (!keepDraft || !ntDraft || ntCard !== current.id) { ntDraft = JSON.parse(JSON.stringify(UI.messagesOf(current))); ntCard = current.id; }
+    const t = k => I18N.t(k);
+    const opts = {
+      close: `<label>${t('d.nCloseOpt')} <select data-f="left">${[1, 2, 3].map(n => `<option value="${n}">${n === 1 ? t('d.nStamps1') : I18N.t('d.nStampsN', { n })}</option>`).join('')}</select></label>`,
+      remind: `<label>${t('d.nRemindOpt')} <select data-f="days">${[14, 21, 30, 45, 60].map(n => `<option value="${n}">${I18N.t('d.nDays', { n })}</option>`).join('')}</select></label>`,
+      near: `<button class="btn line small" type="button" data-geo>${t('d.nUseHere')}</button><span data-place></span><button class="link" type="button" data-noplace hidden>${t('d.nRemovePlace')}</button>`
+    };
+    $('nt-form').innerHTML = NT.map(k => `
+      <fieldset class="rule" data-k="${k}">
+        <label class="rule-head"><input type="checkbox" data-f="on"><span><b>${t(NT_NAMES[k][0])}</b><small>${t(NT_NAMES[k][1])}</small></span></label>
+        <div class="rule-body">
+          ${opts[k] ? `<div class="rule-opts">${opts[k]}</div>` : ''}
+          ${['it', 'en'].map(l => `<label class="field"><span>${t(l === 'it' ? 'd.nIt' : 'd.nEn')} <em data-count="${l}"></em></span><textarea data-f="${l}" maxlength="140" rows="2"></textarea></label>`).join('')}
+          <div class="vars"><span>${t('d.nInsert')}</span>${[['name', 'd.vName'], ['left', 'd.vLeft'], ['reward', 'd.vReward'], ['business', 'd.vBusiness']].map(([v, l]) => `<button type="button" data-var="{${v}}">${t(l)}</button>`).join('')}</div>
+        </div>
+      </fieldset>`).join('') + `<div class="nt-save"><button class="btn pop" type="button" id="nt-save">${t('d.nSave')}</button></div>`;
+    NT.forEach(k => ntBox(k).querySelectorAll('[data-f]').forEach(f => {
+      const v = ntDraft[k][f.dataset.f];
+      if (f.type === 'checkbox') f.checked = !!v; else if (v != null) f.value = v;
+    }));
+    ntSync();
+  }
+  function ntRead() {
+    NT.forEach(k => {
+      const box = ntBox(k), m = ntDraft[k];
+      box.querySelectorAll('[data-f]').forEach(f => { m[f.dataset.f] = f.type === 'checkbox' ? f.checked : f.tagName === 'SELECT' ? Number(f.value) : f.value; });
+      box.classList.toggle('off', !m.on);
+      box.querySelectorAll('[data-count]').forEach(e => { e.textContent = `${(m[e.dataset.count] || '').length}/140`; });
+    });
+    const near = ntDraft.near, has = near.lat != null && near.lng != null;
+    $('nt-form').querySelector('[data-place]').textContent = has ? I18N.t('d.nSaved', { p: `${Number(near.lat).toFixed(4)}, ${Number(near.lng).toFixed(4)}` }) : I18N.t('d.nNoPlace');
+    $('nt-form').querySelector('[data-noplace]').hidden = !has;
+  }
+  // A phone lock screen with the switched-on messages, filled in with an example customer.
+  function ntPreview() {
+    const lang = I18N.lang === 'en' ? 'en' : 'it', google = UI.getPlatform() === 'google', loc = lang === 'it' ? 'it-IT' : 'en-GB';
+    const name = (Store.listCustomers(current.id)[0] || {}).name || I18N.t('d.nExample');
+    const left = { close: ntDraft.close.left || 1, ready: 0, remind: 3, near: 2 };
+    const now = new Date(), ink = UI.esc(current.ink || '#2B32FF'), bg = UI.esc(current.color || '#FFFFFF'), biz = UI.esc(current.business || '');
+    const items = NT.filter(k => ntDraft[k].on).map(k => {
+      const text = UI.esc(UI.fillMessage(ntDraft[k][lang], current, { name: name.split(' ')[0], left: left[k], lang }));
+      return `<p class="tag">${UI.esc(I18N.t(NT_NAMES[k][0]))}</p><div class="ntf">${google
+        ? `<div><div class="app"><i style="background:${ink}"></i>Google Wallet · ${I18N.t('d.nNow')}</div><div class="top"><b>${biz}</b></div><p>${text}</p></div>`
+        : `<span class="ic" style="background:${bg};box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)"><i style="background:${ink}"></i></span><div><div class="top"><b>${biz}</b><span>${I18N.t('d.nNow')}</span></div><p>${text}</p></div>`}</div>`;
+    });
+    $('nt-lock').className = 'lock' + (google ? ' google' : '');
+    $('nt-lock').innerHTML = `<div class="clock"><b>${now.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })}</b><span>${UI.esc(now.toLocaleDateString(loc, { weekday: 'long', day: 'numeric', month: 'long' }))}</span></div>`
+      + (items.join('') || `<p class="empty">${I18N.t('d.nNone')}</p>`);
+  }
+  const ntSync = () => { ntRead(); ntPreview(); };
+  $('nt-form').addEventListener('input', ntSync);
+  $('nt-form').addEventListener('change', ntSync);
+  $('nt-form').addEventListener('focusin', e => { if (e.target.tagName === 'TEXTAREA') ntField = e.target; });
+  $('nt-form').addEventListener('click', e => {
+    const v = e.target.closest('[data-var]');
+    if (v) {
+      const box = v.closest('.rule'), ta = ntField && box.contains(ntField) ? ntField : box.querySelector('textarea');
+      const at = ta.selectionStart ?? ta.value.length, end = ta.selectionEnd ?? at;
+      ta.value = (ta.value.slice(0, at) + v.dataset.var + ta.value.slice(end)).slice(0, 140);
+      ta.focus(); ta.setSelectionRange(at + v.dataset.var.length, at + v.dataset.var.length);
+      ntSync(); return;
+    }
+    if (e.target.closest('[data-geo]')) {
+      if (!navigator.geolocation) { UI.toast(I18N.t('d.nGeoErr')); return; }
+      navigator.geolocation.getCurrentPosition(p => {
+        ntDraft.near.lat = Math.round(p.coords.latitude * 1e6) / 1e6; ntDraft.near.lng = Math.round(p.coords.longitude * 1e6) / 1e6;
+        ntBox('near').querySelector('[data-f="on"]').checked = true; ntSync();
+      }, () => UI.toast(I18N.t('d.nGeoErr')), { enableHighAccuracy: true, timeout: 15000 });
+      return;
+    }
+    if (e.target.closest('[data-noplace]')) { delete ntDraft.near.lat; delete ntDraft.near.lng; ntSync(); return; }
+    if (e.target.closest('#nt-save')) {
+      ntRead();
+      const keep = { close: ['on', 'left', 'it', 'en'], ready: ['on', 'it', 'en'], remind: ['on', 'days', 'it', 'en'], near: ['on', 'it', 'en', 'lat', 'lng'] };
+      const out = {};
+      NT.forEach(k => { out[k] = {}; keep[k].forEach(f => { if (ntDraft[k][f] != null && ntDraft[k][f] !== '') out[k][f] = ntDraft[k][f]; }); });
+      current = Store.saveMessages(current.id, out) || current;
+      UI.toast(I18N.t('d.nSavedOk'));
+    }
+  });
+  UI.platformSwitch($('nt-plat'), () => { if (!$('tab-notify').hidden) ntPreview(); });
+  document.addEventListener('langchange', () => { if (!$('tab-notify').hidden) renderNotify(true); });
 
   // ---------- results: numbers and charts from the café's own visits (assets/js/analytics.js) ----------
   let resDays = 30, resExample = false;
@@ -1006,7 +1173,7 @@ I18N.add({
     I18N.apply();
     controls();
     const q = new URLSearchParams(location.search);
-    const startTab = ['design', 'print', 'promote', 'customers', 'results', 'till', 'plan'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'design';
+    const startTab = ['design', 'print', 'promote', 'customers', 'results', 'notify', 'till', 'plan'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'design';
     // In the demo, keep the till and the dashboard in the demo too.
     if (Remote.demo) document.querySelectorAll('a[href="stamper.html"]').forEach(a => a.href = 'stamper.html?demo');
     if (Remote.enabled) {

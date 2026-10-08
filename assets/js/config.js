@@ -44,6 +44,15 @@ window.CONFIG = {
     updated: '2026-10-03' // date shown as "last updated"
   },
 
+  // Default notification texts; each café can change them (dashboard → Notifications).
+  // {name} first name · {left} stamps to go ("1 timbro", "3 stamps") · {reward} · {business}
+  messages: {
+    close:  { on: true, left: 1, it: 'Ancora {left} per {reward}! Ti aspettiamo da {business}.', en: 'Just {left} to go for {reward}! See you at {business}.' },
+    ready:  { on: true, it: '{name}, il tuo premio è pronto: {reward}. Mostra la carta alla cassa.', en: '{name}, your reward is ready: {reward}. Show your card at the till.' },
+    remind: { on: true, days: 21, it: 'Ciao {name}! Ancora {left} per {reward}. Passa a trovarci da {business}.', en: 'Hi {name}! Just {left} to go for {reward}. Come and see us at {business}.' },
+    near:   { on: false, it: 'Sei vicino a {business}: ancora {left} per {reward}.', en: 'You are near {business}: {left} to go for {reward}.' }
+  },
+
   currency: '€',
   trialDays: 30,
   yearlyMonths: 10,       // pay 10 months, get 12

@@ -3,13 +3,19 @@ import { PKPass } from 'passkit-generator';
 import { settings } from './settings.js';
 import { colours, rgb, strip, icon, logo } from './images.js';
 import { LABELS } from './input.js';
+import { currentMessage, nearLocation } from './messages.js';
 
-export async function buildApplePass({ card, customer, lang }) {
+// notice: an extra message from the server (e.g. a reminder) shown as the news.
+export async function buildApplePass({ card, customer, lang, notice }) {
   const L = LABELS[lang];
   const { bg, fg } = colours(card);
   const en = lang === 'en';
   const title = (en && card.titleEn) || card.title;
   const reward = (en && card.rewardEn) || card.reward;
+  // The café's own message. Wallet shows it on the lock screen when this field
+  // changes; while there is one, the plain "Stamps: 7/8" alert is left out.
+  const news = currentMessage(card, customer, lang, notice);
+  const near = nearLocation(card, customer, lang);
 
   const passJson = {
     formatVersion: 1,
@@ -22,18 +28,20 @@ export async function buildApplePass({ card, customer, lang }) {
     foregroundColor: rgb(fg),
     labelColor: rgb(fg),
     storeCard: {
-      headerFields: [{ key: 'stamps', label: L.stamps, value: `${customer.stamps}/${card.stampsNeeded}`, changeMessage: L.change }],
+      headerFields: [{ key: 'stamps', label: L.stamps, value: `${customer.stamps}/${card.stampsNeeded}`, ...(news ? {} : { changeMessage: L.change }) }],
       secondaryFields: [
         { key: 'reward', label: L.reward, value: reward },
         { key: 'member', label: L.member, value: customer.name, textAlignment: 'PKTextAlignmentRight' }
       ],
       backFields: [
+        { key: 'news', label: L.news, value: news || L.quiet, changeMessage: '%@' },
         { key: 'how', label: L.how, value: L.howText(card.stampsNeeded) },
         { key: 'code', label: 'Code', value: customer.id },
         { key: 'by', label: L.by, value: settings.brand }
       ]
     },
-    barcodes: [{ format: 'PKBarcodeFormatQR', message: customer.id, messageEncoding: 'iso-8859-1', altText: customer.id }]
+    barcodes: [{ format: 'PKBarcodeFormatQR', message: customer.id, messageEncoding: 'iso-8859-1', altText: customer.id }],
+    ...(near ? { locations: [near], maxDistance: 150 } : {})
   };
 
   // With an uploaded logo Apple shows the image; without one, the name as text.

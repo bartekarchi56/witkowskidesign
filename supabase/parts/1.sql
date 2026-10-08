@@ -42,6 +42,8 @@ create table if not exists cards (
   updated_at     timestamptz not null default now()
 );
 
+alter table cards add column if not exists messages jsonb not null default '{}'::jsonb;
+
 create table if not exists customers (
   id           text primary key check (id ~ '^[A-Z0-9]{6}$'),   -- the code under the QR
   card_id      text not null references cards(id) on delete cascade,
@@ -92,5 +94,3 @@ alter table customers  enable row level security;
 alter table devices    enable row level security;
 
 alter table link_codes enable row level security;
-
-alter table events     enable row level security;

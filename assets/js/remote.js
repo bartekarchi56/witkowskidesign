@@ -84,6 +84,7 @@
     checkout: (plan, interval) => edge('stripe-checkout', { plan, interval }),
     billingPortal: () => edge('stripe-portal'),
     saveCard: card => rpc('owner_save_card', { p_card: card }),
+    saveMessages: (cardId, messages) => rpc('owner_save_messages', { p_card_id: cardId, p_messages: messages }),
     sendDesign: (cardId, kind, design, note, images, links) => rpc('owner_send_design', { p_card_id: cardId, p_kind: kind, p_design: design, p_note: note, p_images: images, p_links: links }),
     linkCode: () => rpc('owner_link_code'),
     removeDevice: id => rpc('owner_remove_device', { p_device_id: id }),

@@ -245,5 +245,24 @@
     return out;
   }
 
-  window.UI = { walletAssets, lookOf, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
+  // The café's notification texts merged over the defaults in config.js.
+  function messagesOf(card) {
+    const mine = (card && card.messages) || {}, out = {};
+    for (const k of Object.keys(CONFIG.messages)) {
+      out[k] = { ...CONFIG.messages[k], ...(mine[k] || {}) };
+      ['it', 'en'].forEach(l => { if (!out[k][l]) out[k][l] = CONFIG.messages[k][l]; });
+    }
+    return out;
+  }
+  // Fills {name} {left} {reward} {business}; {left} carries its noun ("1 timbro", "3 stamps").
+  function fillMessage(text, card, { name = '', left = 1, lang = 'it' } = {}) {
+    const en = lang === 'en';
+    const noun = en ? (left === 1 ? 'stamp' : 'stamps') : (left === 1 ? 'timbro' : 'timbri');
+    const reward = (en && card.rewardEn) || card.reward || '';
+    return String(text || '').replace(/\{(name|left|reward|business)\}/g, (_, k) =>
+      k === 'name' ? (name || (en ? 'there' : '')) : k === 'left' ? `${left} ${noun}` : k === 'reward' ? reward : card.business || '')
+      .replace(/^\s*[,!]\s*/, '').replace(/\s{2,}/g, ' ').trim().replace(/^./, c => c.toUpperCase());
+  }
+
+  window.UI = { messagesOf, fillMessage, walletAssets, lookOf, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
 })();

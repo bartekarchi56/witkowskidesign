@@ -122,6 +122,15 @@ assert.equal(await o.isVisible('#res-sample'), true);   // "not much data yet" +
 assert.equal(await o.locator('#ch-growth svg').count(), 1);
 ok('Results counts the real visits (1 customer, 2 visits) and draws the charts');
 
+await o.click('#t-notify');
+await o.fill('[data-k=close] textarea[data-f=it]', 'Dai {name}, ancora {left}!');
+await o.selectOption('[data-k=remind] select[data-f=days]', '30');
+assert.match(await o.textContent('#nt-lock'), /Dai Giulia, ancora 1 timbro!/);
+await o.click('#nt-save'); await o.waitForTimeout(800);
+const saved = (await pool.query('select messages from timbro.cards where id = $1', [cardId])).rows[0].messages;
+assert.equal(saved.close.it, 'Dai {name}, ancora {left}!'); assert.equal(saved.remind.days, 30); assert.equal(saved.near.on, false);
+ok('the owner writes their own notification texts, sees them on a phone preview and saves them');
+
 // ---- owner proposes a design; designer approves in the Studio ----
 await o.click('#t-design');
 const black = await o.locator('#editor input[value="#0B0B0C"]').first().getAttribute('id');

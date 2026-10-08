@@ -3,6 +3,8 @@
 // PROTOTYPE NOTE: the website keeps data in the browser, so the page sends the
 // card to us. Once there is a database, look the card and customer up by ID
 // here instead of trusting what the browser sends.
+import { readMessages } from './messages.js';
+
 const str = (v, max) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max);
 
 export function readPassRequest(raw) {
@@ -20,7 +22,8 @@ export function readPassRequest(raw) {
     stripImage: typeof card.stripImage === 'string' && card.stripImage.length < 900000 ? card.stripImage : '',
     markImage: typeof card.markImage === 'string' && card.markImage.length < 200000 ? card.markImage : '',
     shape: str(card.shape, 10), mark: str(card.mark, 10), markText: str(card.markText, 2),
-    empty: str(card.empty, 10), strip: str(card.strip, 7), tagline: str(card.tagline, 30)
+    empty: str(card.empty, 10), strip: str(card.strip, 7), tagline: str(card.tagline, 30),
+    messages: readMessages(card.messages)
   };
   const m = {
     id: str(customer.id, 6).toUpperCase(),
@@ -35,6 +38,6 @@ export function readPassRequest(raw) {
 }
 
 export const LABELS = {
-  it: { stamps: 'TIMBRI', reward: 'PREMIO', member: 'CLIENTE', how: 'Come funziona', howText: n => `Mostra il codice alla cassa a ogni visita: ricevi un timbro. Dopo ${n} timbri ricevi il premio.`, by: 'Carta fedeltà con', change: 'Timbri: %@', points: 'Timbri' },
-  en: { stamps: 'STAMPS', reward: 'REWARD', member: 'MEMBER', how: 'How it works', howText: n => `Show the code at the till every visit to get a stamp. After ${n} stamps you get the reward.`, by: 'Loyalty card by', change: 'Stamps: %@', points: 'Stamps' }
+  it: { stamps: 'TIMBRI', reward: 'PREMIO', member: 'CLIENTE', how: 'Come funziona', howText: n => `Mostra il codice alla cassa a ogni visita: ricevi un timbro. Dopo ${n} timbri ricevi il premio.`, by: 'Carta fedeltà con', change: 'Timbri: %@', points: 'Timbri', news: 'Novità', quiet: 'Un timbro a ogni visita.' },
+  en: { stamps: 'STAMPS', reward: 'REWARD', member: 'MEMBER', how: 'How it works', howText: n => `Show the code at the till every visit to get a stamp. After ${n} stamps you get the reward.`, by: 'Loyalty card by', change: 'Stamps: %@', points: 'Stamps', news: 'News', quiet: 'One stamp every visit.' }
 };

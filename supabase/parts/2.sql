@@ -1,6 +1,8 @@
 -- Timbro database, part 2 of 6. Run the parts in order.
 set search_path = timbro, extensions;
 
+alter table events     enable row level security;
+
 alter table admins     enable row level security;
 
 create or replace function _hash(t text) returns text
@@ -73,7 +75,7 @@ as $$
   select c.design || jsonb_build_object(
     'id', c.id, 'business', c.business, 'city', c.city, 'type', c.type,
     'title', c.title, 'reward', c.reward, 'titleEn', c.title_en, 'rewardEn', c.reward_en,
-    'stampsNeeded', c.stamps_needed, 'plan', c.plan,
+    'stampsNeeded', c.stamps_needed, 'plan', c.plan, 'messages', c.messages,
     'createdAt', (extract(epoch from c.created_at) * 1000)::bigint,
     'updatedAt', (extract(epoch from c.updated_at) * 1000)::bigint
   ) || case when with_review and c.review is not null then jsonb_build_object('review', c.review) else '{}'::jsonb end

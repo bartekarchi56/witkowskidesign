@@ -17,6 +17,7 @@ main{max-width:420px;margin:0 auto;padding:16px 16px 48px;display:grid;gap:18px;
 .box form{margin-top:20px}
 .fine{font-size:14px;color:var(--muted);text-align:center;margin-top:12px}
 .left{text-align:center;color:var(--ink-2)}
+.left.mine{background:var(--pop-wash);color:var(--ink);border-radius:14px;padding:12px 16px;font-weight:600}
 .left b{color:var(--pop)}
 .wallet{display:grid;gap:10px;width:100%;justify-items:center}
 .wallet form{width:100%}
@@ -160,13 +161,17 @@ I18N.add({
     last = me.stamps;
 
     const left = card.stampsNeeded - me.stamps;
+    // The café's own "almost there" / "reward ready" message (dashboard → Notifications), if switched on.
+    const msgs = UI.messagesOf(card), lang = I18N.lang === 'en' ? 'en' : 'it';
+    const own = left <= 0 ? (msgs.ready.on && msgs.ready) : left <= (msgs.close.left || 1) ? (msgs.close.on && msgs.close) : null;
+    const ownText = own ? UI.fillMessage(own[lang], card, { name: me.name, left, lang }) : '';
     const events = me.history.slice(-5).reverse().map(h => {
       const what = h.type === 'joined' ? t('c.joined') : h.type === 'redeem' ? t('c.redeem') : t(h.type === 'stamp' ? 'c.stamp' : 'c.unstamp', { n: h.n });
       return `<li><span>${what}</span><span>${new Date(h.t).toLocaleDateString(I18N.lang === 'it' ? 'it-IT' : 'en-GB', { day: 'numeric', month: 'short' })}</span></li>`;
     }).join('');
 
     app.innerHTML = `${UI.renderPass(card, me, { pop })}
-      <p class="left">${left > 0 ? t('c.left', { n: left, reward: UI.esc(w.reward) }) : t('c.claim')}</p>
+      ${ownText ? `<p class="left mine">${UI.esc(ownText)}</p>` : `<p class="left">${left > 0 ? t('c.left', { n: left, reward: UI.esc(w.reward) }) : t('c.claim')}</p>`}
       <div class="wallet">${walletButtons(card, me)}
       </div>
       ${CONFIG.walletApi ? '' : `<p class="note">${t('c.walletNote')}</p>`}
