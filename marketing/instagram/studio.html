@@ -125,6 +125,16 @@ html,body{margin:0;background:#CFCFCF}
 .cta span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
 .cta .go{flex:0 0 auto;background:var(--pop);color:#fff;font-weight:700;font-size:15px;padding:13px 18px;border-radius:999px;white-space:nowrap}
 .byline{font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+/* showcase: 3D phone on a dark stage */
+.cam{position:absolute;inset:0;perspective:1500px;perspective-origin:50% 50%}
+.cam .iph{left:0;top:0;transform-style:preserve-3d;box-shadow:inset 0 0 0 1.5px #6a6a72,inset 0 0 0 4px #0b0b0c,0 0 0 1px rgba(255,255,255,.08),0 50px 120px -30px rgba(43,50,255,.6)}
+.pop3d{position:absolute;background:#fff;border-radius:16px;box-shadow:0 30px 50px -18px rgba(0,0,0,.55);backface-visibility:hidden}
+.conf{position:absolute;width:38px;height:38px;border-radius:50%;background:var(--pop);color:#fff;display:grid;place-items:center;box-shadow:0 10px 20px -8px rgba(43,50,255,.8)}
+.conf svg{width:20px;height:20px}
+.topfade{position:absolute;left:0;right:0;top:0;height:330px;background:linear-gradient(#0B0B0C 0%,rgba(11,11,12,.92) 45%,rgba(11,11,12,0) 100%)}
+.hook.w{color:#fff}
+.hook.w em{font-style:normal;color:#7B80FF}
 </style>
 </head>
 <body>
@@ -689,6 +699,123 @@ function adHero(kind, animate) {
 ASSETS['ad-hero'] = { size: 'feed', build() { adHero('feed'); } };
 ASSETS['ad-hero-story'] = { size: 'story', build() { adHero('story'); } };
 ASSETS['reel-ad-hero'] = { size: 'story', duration: 7.5, cover: 7, build() { return adHero('story', true); } };
+
+
+// ---------- showcase: an Apple-style 3D phone video ----------
+const lerp = (a, b, p) => a + (b - a) * p;
+function camAt(keys, t) {   // interpolates {x,y,z,rx,ry,rz,k} between keyframes, eased
+  if (t <= keys[0].t) return keys[0];
+  for (let i = 0; i < keys.length - 1; i++) {
+    const a = keys[i], b = keys[i + 1];
+    if (t < b.t) { const p = eInOut((t - a.t) / (b.t - a.t)); const o = {}; for (const k of ['x', 'y', 'z', 'rx', 'ry', 'rz', 'k']) o[k] = lerp(a[k] ?? 0, b[k] ?? 0, p); return o; }
+  }
+  return keys[keys.length - 1];
+}
+const place = (node, c) => { node.style.transform = `translate3d(${(c.x - 165).toFixed(1)}px,${(c.y - 345).toFixed(1)}px,${(c.z || 0).toFixed(1)}px) rotateX(${(c.rx || 0).toFixed(2)}deg) rotateY(${(c.ry || 0).toFixed(2)}deg) rotateZ(${(c.rz || 0).toFixed(2)}deg) scale(${c.k.toFixed(4)})`; };
+
+ASSETS['reel-showcase'] = { size: 'story', duration: 17.4, cover: 1.9, build() {
+  stage.style.background = '#0B0B0C';
+  const glow = el(`<div class="abs" style="inset:0"></div>`);
+  const cam = el(`<div class="cam"></div>`);
+  const mk = (card, show) => { const p = iphone(card, ''); cam.appendChild(p.el); if (!show) p.msg.style.display = 'none'; p.el.querySelector('.code').style.display = show ? '' : 'none'; return p; };
+  const side = (id, mark) => ({ ...YOUR, ...look(id), markText: mark || '珈' });
+  const left = mk(side('giappone'), false), right = mk(side('milano'), false);
+  const main = mk({ ...YOUR }, true);
+  left.card.set(6); right.card.set(6);
+
+  // the "one stamp to go" message lifts out of the screen
+  main.card.set(9);
+  const m = main.msg, scr = main.el.querySelector('.scr');
+  const flo = document.createElement('div');
+  flo.className = 'pop3d';
+  flo.style.cssText = `left:${12 + m.offsetLeft}px;top:${12 + m.offsetTop}px;width:${m.offsetWidth}px;padding:13px 14px;font:600 14px/1.35 -apple-system,"SF Pro Text",var(--font);display:flex;gap:10px`;
+  flo.innerHTML = `<span style="flex:0 0 9px;height:9px;margin-top:5px;border-radius:50%;background:var(--pop)"></span><span>${esc(m.textContent)}</span>`;
+  main.el.appendChild(flo);
+  // floating results tiles (example data)
+  const card = { ...YOUR, id: 'demo' }, all = ANALYTICS.compute(card, ANALYTICS.sample(card));
+  const pts = all.growth, max = pts[pts.length - 1].v;
+  const d = pts.map((q, i) => `${i ? 'L' : 'M'}${(i / (pts.length - 1) * 180 + 4).toFixed(1)} ${(76 - q.v / max * 70).toFixed(1)}`).join(' ');
+  const wk = all.weekday, wmax = Math.max(...wk);
+  const tA = document.createElement('div'); tA.className = 'pop3d';
+  tA.style.cssText = 'left:-40px;top:120px;width:210px;padding:14px';
+  tA.innerHTML = `<div style="font-size:12px;color:var(--muted)">${L('Clienti con la carta', 'Customers with the card')}</div><svg viewBox="0 0 188 80" style="width:100%;height:auto;margin-top:6px"><path d="${d}" pathLength="1" fill="none" stroke="var(--pop)" stroke-width="4" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/></svg><div class="lbl" style="font-size:9px;margin-top:4px">${L('Dati di esempio', 'Example data')}</div>`;
+  const tB = document.createElement('div'); tB.className = 'pop3d';
+  tB.style.cssText = 'left:170px;top:440px;width:200px;padding:14px';
+  tB.innerHTML = `<div style="font-size:12px;color:var(--muted)">${L('Visite per giorno', 'Visits by day')}</div><div style="display:flex;gap:6px;align-items:flex-end;height:70px;margin-top:8px">${wk.map(v => `<span class="bar" style="flex:1;background:var(--pop);border-radius:4px 4px 1px 1px;height:${(v / wmax * 100).toFixed(0)}%;transform-origin:bottom"></span>`).join('')}</div>`;
+  main.el.append(tA, tB);
+  const line = tA.querySelector('path'), bars = [...tB.querySelectorAll('.bar')];
+  // stamps that burst out when the card is full
+  const conf = Array.from({ length: 14 }, (_, i) => {
+    const c = document.createElement('div'); c.className = 'conf'; c.innerHTML = UI.icon('cup');
+    c.style.left = '146px'; c.style.top = '190px'; main.el.appendChild(c);
+    const a = i / 14 * Math.PI * 2 + (i % 2) * .3, r = 170 + (i * 37) % 90;
+    return { c, dx: Math.cos(a) * r, dy: Math.sin(a) * r * .9 - 40, dz: 160 + (i * 53) % 220, rot: (i % 2 ? 1 : -1) * (90 + i * 20) };
+  });
+
+  const fade = el(`<div class="topfade"></div>`);
+  const hook = el(`<h1 class="hook w"></h1>`);
+  const end = endCard(14.8);
+  const H = [
+    [L('Il tuo bar.', 'Your café.') + `<br><em>${L('Sul telefono.', 'On the phone.')}</em>`, .3],
+    [L('Ogni caffè, un timbro.', 'Every coffee, a stamp.'), 2.6],
+    [L('A un timbro dal premio.', 'One stamp from the reward.'), 5.1],
+    [L('Il decimo è offerto.', 'The tenth is on us.'), 7.7],
+    [L('Il tuo stile. Il tuo timbro.', 'Your style. Your stamp.'), 9.9],
+    [L('E vedi chi torna.', 'And you see who comes back.'), 12.4]
+  ];
+  const KM = [
+    { t: 0, x: 270, y: 1350, z: 0, rx: 28, ry: -55, rz: 10, k: .86 },
+    { t: 1.7, x: 270, y: 610, rx: 8, ry: -22, rz: 2, k: .86 },
+    { t: 2.5, x: 272, y: 600, rx: 6, ry: -17, rz: 1.5, k: .88 },
+    { t: 3.1, x: 286, y: 800, rx: 4, ry: -9, rz: 0, k: 1.7 },
+    { t: 4.8, x: 280, y: 790, rx: 3, ry: -4, rz: 0, k: 1.76 },
+    { t: 5.5, x: 255, y: 610, rx: 7, ry: 24, rz: -2, k: .98 },
+    { t: 7.3, x: 258, y: 600, rx: 5, ry: 18, rz: -1.5, k: 1 },
+    { t: 7.9, x: 270, y: 620, rx: 0, ry: 0, rz: 0, k: .94 },
+    { t: 9.6, x: 270, y: 610, rx: 0, ry: 0, rz: 0, k: .96 },
+    { t: 10.2, x: 270, y: 650, rx: 2, ry: 0, rz: 0, k: .74 },
+    { t: 12.0, x: 270, y: 645, rx: 2, ry: -6, rz: 0, k: .75 },
+    { t: 12.7, x: 290, y: 620, rx: 8, ry: -20, rz: 1.5, k: .86 },
+    { t: 14.6, x: 288, y: 615, rx: 6, ry: -26, rz: 1.5, k: .88 }
+  ];
+  const side3 = (sign) => [
+    { t: 0, x: 270 + sign * 500, y: 660, z: -300, rx: 2, ry: -sign * 40, rz: 0, k: .64 },
+    { t: 9.9, x: 270 + sign * 500, y: 660, z: -300, rx: 2, ry: -sign * 40, rz: 0, k: .64 },
+    { t: 10.6, x: 270 + sign * 175, y: 660, z: -180, rx: 2, ry: -sign * 26, rz: 0, k: .64 },
+    { t: 12.0, x: 270 + sign * 168, y: 655, z: -180, rx: 2, ry: -sign * 30, rz: 0, k: .64 },
+    { t: 12.6, x: 270 + sign * 520, y: 660, z: -300, rx: 2, ry: -sign * 40, rz: 0, k: .64 }
+  ];
+  const KL = side3(-1), KR = side3(1);
+  const times = [3.3, 3.8, 4.3, 8.0];
+  return t => {
+    const gx = 50 + 18 * Math.sin(t * .45), gy = 55 + 10 * Math.cos(t * .37);
+    glow.style.background = `radial-gradient(70% 45% at ${gx.toFixed(1)}% ${gy.toFixed(1)}%, rgba(43,50,255,.42) 0%, rgba(43,50,255,0) 70%)`;
+    place(main.el, camAt(KM, t)); place(left.el, camAt(KL, t)); place(right.el, camAt(KR, t));
+    let i = 0; while (i + 1 < H.length && t >= H[i + 1][1]) i++;
+    crossText(hook, H.map(h => h[0].includes('<br>') ? h[0] : esc(h[0])), H.map(h => h[1]), t);
+    const [n, age] = stampsAt(t, times, 6);
+    main.card.set(n, age);
+    const full = n >= 10;
+    main.msg.textContent = full ? UI.fillMessage(CONFIG.messages.ready[lang], YOUR, { name: L('Giulia', 'Emma'), lang }) : m.textContent;
+    main.msg.style.opacity = n >= 9 && !(t > 5.4 && t < 7.6) ? 1 : 0;
+    const up = eOut(seg(t, 5.4, 6.0)), down = eInOut(seg(t, 7.2, 7.6));
+    const z = 130 * up * (1 - down);
+    flo.style.transform = `translateZ(${z.toFixed(1)}px) scale(${(1 + .1 * up * (1 - down)).toFixed(3)})`;
+    flo.style.opacity = t > 5.4 && t < 7.6 ? 1 : 0;
+    conf.forEach((o, j) => {
+      const p = eOut(seg(t, 8.0 + j * .015, 9.2)), f = seg(t, 8.9, 9.6);
+      o.c.style.transform = `translate3d(${(o.dx * p).toFixed(1)}px,${(o.dy * p + 60 * f * f).toFixed(1)}px,${(o.dz * p).toFixed(1)}px) rotate(${(o.rot * p).toFixed(1)}deg) scale(${(p ? .6 + .6 * p : 0).toFixed(3)})`;
+      o.c.style.opacity = p > 0 ? 1 - f : 0;
+    });
+    const ta = eOut(seg(t, 12.7, 13.2)), tb = eOut(seg(t, 12.95, 13.45));
+    tA.style.transform = `translateZ(${(200 * ta).toFixed(1)}px)`; tA.style.opacity = ta;
+    tB.style.transform = `translateZ(${(260 * tb).toFixed(1)}px)`; tB.style.opacity = tb;
+    line.setAttribute('stroke-dashoffset', (1 - eInOut(seg(t, 13.1, 14.3))).toFixed(4));
+    bars.forEach((b, j) => { b.style.transform = `scaleY(${eOut(seg(t, 13.3 + j * .08, 13.8 + j * .08)).toFixed(3)})`; });
+    fade.style.opacity = 1;
+    end(t);
+  };
+} };
 
 // ---------- run ----------
 window.ASSETS = Object.fromEntries(Object.entries(ASSETS).map(([k, v]) => [k, { size: v.size, slides: v.slides || 0, duration: v.duration || 0, cover: v.cover || 0 }]));

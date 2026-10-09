@@ -18,6 +18,7 @@ Milan cafés mostly read Italian: post the `it/` version with the Italian captio
 | `ad-hero.png` | Feed 4:5 | The ad: the card on an iPhone, four features, price and "30 days free" |
 | `ad-hero-story.png` | Story 9:16 | The same ad for stories |
 | `reel-ad-hero.mp4` | Reel 9:16, 7.5 s | The ad, animated: the phone turns in, stamps land, price and offer appear |
+| `reel-showcase.mp4` | Reel 9:16, 17.4 s | 3D product video on a dark stage: the phone flies in, stamps land in close-up, the message lifts out of the screen, stamps burst at ten, three styles, results tiles |
 | `post-intro.png` | Feed 4:5 | The card on the phone: what Timbro is |
 | `post-paper-vs-phone.png` | Feed 4:5 | Paper card vs phone card |
 | `carousel-mistakes-1…7.png` | Carousel 4:5 | 5 loyalty card mistakes |
@@ -45,14 +46,15 @@ The reels have no sound on purpose: add a trending sound or music from Instagram
 - **Link:** https://timbro.witkowskidesign.com
 - **Highlights:** Come funziona (`highlight-how`), Prezzi (`highlight-prices`), Esempi (`highlight-examples`), FAQ (`highlight-faq`), Contatti (`highlight-contact`). Fill them with stories made from the reels and posts.
 
-## Posting plan (4 weeks, 3 posts a week)
+## Posting plan (5 weeks, 3 posts a week)
 
 | Week | Monday | Wednesday | Friday |
 |---|---|---|---|
 | 1 | `ad-hero` (pin it) | `reel-stamps` | `carousel-mistakes` |
-| 2 | `reel-paper-to-phone` | `post-paper-vs-phone` | `reel-how` |
+| 2 | `reel-showcase` | `post-paper-vs-phone` | `reel-how` |
 | 3 | `carousel-tricks` | `reel-styles` | `post-prices` |
 | 4 | `reel-results` | `post-not-just-coffee` | `reel-not-just-coffee` |
+| 5 | `reel-paper-to-phone` | `post-prices` again as a story | `reel-ad-hero` |
 
 Post the first three on the same day before you start sharing the page, so it doesn't look empty. Reply to every comment in the first hour.
 
@@ -76,6 +78,23 @@ Use it as the pinned post, for paid promotion, and as a story with a link sticke
 > 30 days free, then from €10 a month. Link in bio.
 >
 > #loyaltycard #coffeeshopowner #smallbusiness #cafe #milan
+
+### reel-showcase
+Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9.9, 12.4 and 14.8 seconds.
+
+**IT**
+> Il tuo bar, sul telefono ☕
+> Ogni caffè un timbro, al decimo offre il bar. Lo stile lo scegli tu, e vedi chi torna. Niente app, niente cartoncini.
+> 30 giorni gratis: link in bio.
+>
+> #cartafedeltà #barmilano #caffè #design #milano
+
+**EN**
+> Your café, on the phone ☕
+> Every coffee a stamp, the tenth is on the house. You pick the style, and you see who comes back. No app, no paper cards.
+> 30 days free: link in bio.
+>
+> #loyaltycard #coffeeshop #productdesign #smallbusiness #milan
 
 ### post-intro
 **IT**
