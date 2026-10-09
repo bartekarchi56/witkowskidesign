@@ -130,8 +130,8 @@ html,body{margin:0;background:#CFCFCF}
 .cam{position:absolute;inset:0;perspective:1500px;perspective-origin:50% 50%}
 .cam .iph{left:0;top:0;transform-style:preserve-3d;box-shadow:inset 0 0 0 1.5px #6a6a72,inset 0 0 0 4px #0b0b0c,0 0 0 1px rgba(255,255,255,.08),0 50px 120px -30px rgba(43,50,255,.6)}
 .pop3d{position:absolute;background:#fff;border-radius:16px;box-shadow:0 30px 50px -18px rgba(0,0,0,.55);backface-visibility:hidden}
-.conf{position:absolute;width:38px;height:38px;border-radius:50%;background:var(--pop);color:#fff;display:grid;place-items:center;box-shadow:0 10px 20px -8px rgba(43,50,255,.8)}
-.conf svg{width:20px;height:20px}
+.conf{position:absolute;width:42px;height:42px;border-radius:10px;background:#fff;display:grid;place-items:center;box-shadow:0 10px 20px -8px rgba(43,50,255,.8)}
+.conf svg{width:36px;height:36px}
 .topfade{position:absolute;left:0;right:0;top:0;height:330px;background:linear-gradient(#0B0B0C 0%,rgba(11,11,12,.92) 45%,rgba(11,11,12,0) 100%)}
 .hook.w{color:#fff}
 .hook.w em{font-style:normal;color:#7B80FF}
@@ -188,20 +188,19 @@ const foot = (right) => el(`<div class="foot">${brand(stage.classList.contains('
 // The example card is "your café": the viewer pictures their own place.
 const YOUR = {
   business: L('Il tuo bar', 'Your café'), title: L('Carta caffè', 'Coffee card'), reward: L('un caffè gratis', 'a free coffee'),
-  stampsNeeded: 10, icon: 'cup', color: '#FFFFFF', ink: '#2B32FF', shape: 'dot', mark: 'icon', empty: 'soft', font: 'sans', strip: ''
+  stampsNeeded: 10, color: '#FFFFFF', ink: '#2B32FF', stamp: 'sole', font: 'sans', strip: ''
 };
 const look = id => CONFIG.styles.find(s => s.id === id).look;
-const CUP_ART = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#2B32FF"/><path d="M27 40h36v13a17 17 0 0 1-17 17h-2a17 17 0 0 1-17-17z" fill="#fff"/><path d="M63 44h5a8 8 0 0 1 0 16h-5" fill="none" stroke="#fff" stroke-width="5"/><path d="M37 22c-3 4 3 7 0 11M47 22c-3 4 3 7 0 11" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>');
 
 const TPL = [
-  { id: 'gelateria', biz: L('La tua gelateria', 'Your gelato shop'), color: '#FFF3EC', ink: '#E5577F', shape: 'dot', empty: 'soft' },
-  { id: 'aperitivo', biz: L('Il tuo cocktail bar', 'Your cocktail bar'), color: '#0B0B0C', ink: '#F07A2E', shape: 'ring', empty: 'outline' },
-  { id: 'pasticceria', biz: L('La tua pasticceria', 'Your bakery'), color: '#F3EEE4', ink: '#4A2E21', shape: 'square', empty: 'dashed', font: 'serif' },
-  { id: 'parrucchiere', biz: L('Il tuo salone', 'Your salon'), color: '#0B0B0C', ink: '#C9A24A', shape: 'ring', empty: 'outline', font: 'wide' }
+  { id: 'gelateria', biz: L('La tua gelateria', 'Your gelato shop'), color: '#FFF3EC', ink: '#E5577F', stamp: 'sole' },
+  { id: 'aperitivo', biz: L('Il tuo cocktail bar', 'Your cocktail bar'), color: '#0B0B0C', ink: '#F07A2E', stamp: 'stella' },
+  { id: 'pasticceria', biz: L('La tua pasticceria', 'Your bakery'), color: '#F3EEE4', ink: '#4A2E21', stamp: 'fiore', font: 'serif' },
+  { id: 'parrucchiere', biz: L('Il tuo salone', 'Your salon'), color: '#0B0B0C', ink: '#C9A24A', stamp: 'albero', font: 'wide' }
 ].map(x => {
   const t = CONFIG.templates.find(tp => tp.id === x.id);
   return { label: I18N.pick(t).type, card: { business: x.biz, title: I18N.pick(t).title, reward: I18N.pick(t).reward, stampsNeeded: t.stamps, icon: t.icon,
-    color: x.color, ink: x.ink, shape: x.shape, mark: 'icon', empty: x.empty, font: x.font || 'sans', strip: '' } };
+    color: x.color, ink: x.ink, stamp: x.stamp, font: x.font || 'sans', strip: '' } };
 });
 
 // A card that can be re-drawn with n stamps; the newest stamp lands like a rubber stamp.
@@ -240,11 +239,6 @@ function paperCard(stamps = 7) {
     dots += `<div class="pp-dot">${i < stamps ? `<div style="transform:rotate(${r}deg) translate(${(i % 3) - 1}px,${(i % 2) - .5}px)">${UI.inkStamp('CAFFÈ · BAR · CAFFÈ · BAR ·')}</div>` : ''}</div>`;
   }
   return `<div class="paper"><div class="pp-top"><b>${L('Bar', 'Café')}</b><span>${L('Carta fedeltà', 'Loyalty card')}</span></div><div class="pp-grid">${dots}</div><div class="pp-small">${L('10 timbri, un caffè gratis', '10 stamps, a free coffee')}</div></div>`;
-}
-function markDot(card, inner) {   // one stamp, on its own, for illustrations
-  const lk = card;
-  return `<div class="pass" style="--c:${lk.color};--t:${UI.textOn(lk.color)};--s:${lk.ink};--sb:${lk.strip || lk.color};width:84px;background:transparent;box-shadow:none;overflow:visible">
-    <span class="wp-dot s-${lk.shape} on" style="--r:-6deg;width:84px">${inner}</span></div>`;
 }
 
 // The closing card of every reel, from `start` seconds.
@@ -334,7 +328,7 @@ const ERR = [
   null,
   [L('Troppi timbri', 'Too many stamps'), L('12 timbri sono 12 settimane per chi viene una volta a settimana. Con 8 il premio sembra vicino.', '12 stamps is 12 weeks for a once-a-week regular. With 8, the reward feels close.')],
   [L('Un premio vago', 'A vague reward'), L('«10% di sconto» si dimentica. «Un caffè a scelta, offerto da noi» fa tornare.', '"10% off" is forgettable. "Any coffee, on us" brings people back.')],
-  [L('Una carta uguale a tutte', 'A card like every other'), L('Il timbro può avere la forma del tuo locale: una tazza, un sigillo, il tuo logo.', 'The stamp can take your café\'s shape: a cup, a seal, your logo.')],
+  [L('Una carta uguale a tutte', 'A card like every other'), L('Scegli il timbro del tuo locale: un sole, un ramo d\'ulivo, un\'onda, o il tuo logo.', 'Pick your café\'s stamp: a sun, an olive branch, a wave, or your own logo.')],
   [L('Nessuno sa che esiste', 'Nobody knows it exists'), L('Poster alla cassa, adesivo in vetrina e un barista che lo dice ad alta voce.', 'A poster at the till, a sticker on the window and staff who mention it.')],
   [L('Non contare', 'Not counting'), L('Se non sai quanti clienti tornano, non sai se la carta funziona.', 'If you don\'t know how many customers come back, you can\'t tell if it works.')]
 ];
@@ -383,12 +377,8 @@ ASSETS['carousel-mistakes'] = { size: 'feed', slides: 7, build(s) {
       <span class="chip" style="background:var(--wash);color:var(--muted);text-decoration:line-through">${L('10% di sconto', '10% off')}</span>
       <span class="chip" style="background:var(--pop-wash);color:var(--pop);box-shadow:inset 0 0 0 1.5px var(--pop)">✓ ${L('Un caffè a scelta, offerto da noi', 'Any coffee, on us')}</span></div>`);
   } else if (s === 4) {
-    const items = [
-      [markDot({ color: '#FFFFFF', ink: '#2B32FF', shape: 'dot' }, UI.icon('cup')), L('Una tazza', 'A cup')],
-      [markDot({ color: '#FFFFFF', ink: '#B5442E', shape: 'hanko', strip: '#FFFFFF' }, '<b>珈</b>'), L('Un sigillo', 'A seal')],
-      [`<img src="${CUP_ART}" alt="" style="width:84px;height:84px;transform:rotate(7deg)">`, L('Il tuo logo', 'Your logo')]
-    ];
-    el(`<div class="abs" style="left:36px;right:36px;top:${top + 10}px;display:flex;gap:44px">${items.map(([m, l]) => `<div style="display:grid;gap:12px;justify-items:center">${m}<span class="lbl">${esc(l)}</span></div>`).join('')}</div>`);
+    const items = [['sole', '#2B32FF', -5], ['ramo', '#B5442E', 4], ['onda', '#0B0B0C', -3]];
+    el(`<div class="abs" style="left:36px;right:36px;top:${top + 4}px;display:flex;gap:40px">${items.map(([id, ink, r]) => `<div style="display:grid;gap:12px;justify-items:center"><div style="width:96px;transform:rotate(${r}deg)">${STAMPS.svg(id, ink)}</div><span class="lbl">${esc(I18N.pick(STAMPS.list.find(x => x.id === id)))}</span></div>`).join('')}</div>`);
   } else if (s === 5) {
     el(`<div class="abs poster" style="left:36px;top:${top - 6}px;transform:rotate(-3deg)"><h4>${esc(L('Raccogli 10 timbri.', 'Collect 10 stamps.'))}</h4><div class="q">${UI.qrSvg(CONFIG.siteUrl)}</div><small>${esc(L('Inquadra il codice', 'Scan the code'))}</small></div>`);
     el(`<div class="abs blue" style="left:300px;top:${top + 40}px;width:150px;transform:rotate(10deg)">${UI.inkStamp(L('CARTA FEDELTÀ · QUI · CARTA FEDELTÀ · QUI ·', 'LOYALTY CARD · HERE · LOYALTY CARD · HERE ·'))}</div>`);
@@ -412,13 +402,13 @@ ASSETS['carousel-tricks'] = { size: 'feed', slides: 5, build(s) {
   }
   if (s === 5) return ctaSlide(L('Tutti e 3 sono già dentro Timbro.', 'All 3 are built into Timbro.'), eight, 7);
   const T = [null, null,
-    [L('Il timbro con la tua forma', 'A stamp in your shape'), L('Una tazza, un sigillo giapponese, il tuo logo: la carta diventa vostra, non un coupon.', 'A cup, a Japanese seal, your logo: the card becomes yours, not a coupon.')],
+    [L('Il timbro con la tua forma', 'A stamp in your shape'), L('Un sole, un ramo d\'ulivo, il tuo logo: la carta diventa vostra, non un coupon.', 'A sun, an olive branch, your logo: the card becomes yours, not a coupon.')],
     [L('Il primo timbro è un regalo', 'The first stamp is a gift'), L('Nella settimana di lancio regala il primo timbro. Partire da 1 su 8 fa sembrare il premio più vicino.', 'In launch week, give the first stamp free. Starting at 1 of 8 makes the reward feel closer.')],
     [L('Scrivi a chi manca un timbro', 'Talk to people one stamp away'), L('È la visita più facile da conquistare: il premio è a un caffè di distanza.', 'It\'s the easiest visit you\'ll ever win: the reward is one coffee away.')]
   ];
   let y = slideHead(s, 5, T[s][0], T[s][1]);
   if (s === 2) {
-    const c = solo({ ...YOUR, ...look('giappone'), markText: '珈' }, 300, '', { compact: true }); c.card.set(6); fit(c.el, y + 34, 596, -3);
+    const c = solo({ ...YOUR, ...look('giappone') }, 300, '', { compact: true }); c.card.set(6); fit(c.el, y + 34, 596, -3);
   } else if (s === 3) {
     const cite = el(`<p class="abs lbl" style="left:36px;right:36px;top:${y + 10}px;text-transform:none;letter-spacing:.02em">${L('«Effetto del progresso regalato»: Nunes e Drèze, 2006', '"The endowed progress effect": Nunes and Drèze, 2006')}</p>`);
     y = cite.offsetTop + cite.offsetHeight;
@@ -510,16 +500,16 @@ ASSETS['reel-styles'] = { size: 'story', duration: 11.5, cover: 2.2, build() {
   const p = phone(YOUR, { css: 'left:90px;top:340px', big: true });
   const end = endCard(8.3, L('Disegnata su misura per il tuo locale.', 'Designed around your place.'));
   return t => {
-    crossText(hook, [esc(L('Scegli lo stile del tuo bar.', 'Pick your café\'s style.')), esc(L('…o usa il tuo logo come timbro.', '…or make your logo the stamp.'))], [0, 6.4], t);
+    crossText(hook, [esc(L('Scegli lo stile del tuo bar.', 'Pick your café\'s style.')), esc(L('Sei timbri, o il tuo logo.', 'Six stamps, or your own logo.'))], [0, 6.4], t);
     p.el.style.transform = `translateY(${((1 - eOut(seg(t, .15, .9))) * 640).toFixed(1)}px)`;
     const i = Math.min(ids.length - 1, Math.floor(Math.max(0, t - .9) / 1.1));
     const custom = t >= 6.4;
     const st = CONFIG.styles[i];
-    const extra = custom ? { ...look('minimal'), stampImage: CUP_ART, strip: '#ECEDFF' } : { ...st.look, markText: '珈' };
+    const extra = custom ? { ...look('minimal'), stamp: 'albero', ink: '#2B32FF', strip: '#ECEDFF' } : { ...st.look };
     const switchAt = custom ? 6.4 : .9 + i * 1.1;
     p.card.set(6, t - switchAt < .4 && t > 1 ? t - switchAt : 9, extra);
     const k = eOut(seg(t, switchAt, switchAt + .3));
-    chip.textContent = custom ? L('Il tuo logo', 'Your logo') : I18N.pick(st);
+    chip.textContent = custom ? I18N.pick(STAMPS.list.find(x => x.id === 'albero')) : I18N.pick(st);
     chip.style.transform = `translateX(-50%) scale(${(.85 + .15 * k).toFixed(3)})`;
     chip.style.opacity = seg(t, .6, .9) * (1 - seg(t, 8.0, 8.3));
     end(t);
@@ -725,7 +715,7 @@ ASSETS['reel-showcase'] = { size: 'story', duration: 17.4, cover: 1.9, build() {
   const glow = el(`<div class="abs" style="inset:0"></div>`);
   const cam = el(`<div class="cam"></div>`);
   const mk = (card, show) => { const p = iphone(card, ''); cam.appendChild(p.el); if (!show) p.msg.style.display = 'none'; p.el.querySelector('.code').style.display = show ? '' : 'none'; return p; };
-  const side = (id, mark) => ({ ...YOUR, ...look(id), markText: mark || '珈' });
+  const side = id => ({ ...YOUR, ...look(id) });
   const left = mk(side('giappone'), false), right = mk(side('milano'), false);
   const main = mk({ ...YOUR }, true);
   left.card.set(6); right.card.set(6);
@@ -753,7 +743,7 @@ ASSETS['reel-showcase'] = { size: 'story', duration: 17.4, cover: 1.9, build() {
   const line = tA.querySelector('path'), bars = [...tB.querySelectorAll('.bar')];
   // stamps that burst out when the card is full
   const conf = Array.from({ length: 14 }, (_, i) => {
-    const c = document.createElement('div'); c.className = 'conf'; c.innerHTML = UI.icon('cup');
+    const c = document.createElement('div'); c.className = 'conf'; c.innerHTML = STAMPS.svg(STAMPS.list[i % 6].id, '#2B32FF');
     c.style.left = '146px'; c.style.top = '190px'; main.el.appendChild(c);
     const a = i / 14 * Math.PI * 2 + (i % 2) * .3, r = 170 + (i * 37) % 90;
     return { c, dx: Math.cos(a) * r, dy: Math.sin(a) * r * .9 - 40, dz: 160 + (i * 53) % 220, rot: (i % 2 ? 1 : -1) * (90 + i * 20) };
@@ -841,7 +831,7 @@ ASSETS['stamps-inks'] = { size: 'feed', build() {
   el(`<div class="abs" style="left:28px;right:28px;top:66px;display:grid;gap:10px">${inks.map(([c, n]) => `<div style="display:grid;grid-template-columns:70px repeat(6,1fr);align-items:center;gap:6px">
     <span class="lbl" style="color:#6E665A;font-size:10px">${esc(n)}</span>${STAMPS.list.map((x, i) => `<div style="transform:rotate(${[-4, 3, -2, 5, -3, 2][i]}deg)">${STAMPS.svg(x.id, c)}</div>`).join('')}</div>`).join('')}</div>`);
   el(`<div class="abs lbl" style="left:36px;top:322px;color:#6E665A">${L('Sulla carta', 'On the card')}</div>`);
-  const card = { ...YOUR, stampsNeeded: 10, color: '#FFFFFF', ink: '#2B32FF', shape: 'dot', mark: 'none', empty: 'outline', strip: '#F2EDE1', stampImage: STAMPS.dataUrl('ramo', '#2B32FF') };
+  const card = { ...YOUR, stampsNeeded: 10, color: '#FFFFFF', ink: '#2B32FF', stamp: 'ramo', strip: '#F2EDE1' };
   const c = solo(card, 300, '', { compact: true }); c.card.set(7); fit(c.el, 346, 640, -2);
 } };
 

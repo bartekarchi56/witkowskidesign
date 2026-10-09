@@ -19,6 +19,7 @@ Milan cafés mostly read Italian: post the `it/` version with the Italian captio
 | `ad-hero-story.png` | Story 9:16 | The same ad for stories |
 | `reel-ad-hero.mp4` | Reel 9:16, 7.5 s | The ad, animated: the phone turns in, stamps land, price and offer appear |
 | `reel-showcase.mp4` | Reel 9:16, 17.4 s | 3D product video on a dark stage: the phone flies in, stamps land in close-up, the message lifts out of the screen, stamps burst at ten, three styles, results tiles |
+| `stamps-sheet.png`, `stamps-inks.png` | 1:1, 4:5 | The six standard stamps; in three inks and on the card |
 | `post-intro.png` | Feed 4:5 | The card on the phone: what Timbro is |
 | `post-paper-vs-phone.png` | Feed 4:5 | Paper card vs phone card |
 | `carousel-mistakes-1…7.png` | Carousel 4:5 | 5 loyalty card mistakes |
@@ -27,7 +28,7 @@ Milan cafés mostly read Italian: post the `it/` version with the Italian captio
 | `post-not-just-coffee.png` | Feed 4:5 | Gelato shop, cocktail bar, bakery, salon |
 | `reel-stamps.mp4` | Reel 9:16, 12 s | Ten mornings, ten stamps, a free coffee |
 | `reel-paper-to-phone.mp4` | Reel 9:16, 11.8 s | The paper card left at home, then the phone card |
-| `reel-styles.mp4` | Reel 9:16, 11.5 s | Five card styles, then your logo as the stamp |
+| `reel-styles.mp4` | Reel 9:16, 11.5 s | Five card styles, each with its stamp, then the sixth stamp |
 | `reel-results.mp4` | Reel 9:16, 11.5 s | What the café sees (example data) |
 | `reel-how.mp4` | Reel 9:16, 13 s | How it works in 3 steps |
 | `reel-not-just-coffee.mp4` | Reel 9:16, 11.8 s | Four other kinds of shops |
@@ -210,13 +211,13 @@ Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9
 
 ### reel-styles
 **IT**
-> Minimal, giapponese, Milano sera, bottega… o il tuo logo come timbro.
+> Timbro, minimal, giapponese, Milano sera, bottega: sei timbri da scegliere, o il tuo logo.
 > Quale stile sceglieresti per il tuo bar? 👇 Con il piano Plus la carta la disegniamo noi.
 >
 > #cartafedeltà #graphicdesign #branding #barmilano #design
 
 **EN**
-> Minimal, Japanese, Milan night, bottega… or your own logo as the stamp.
+> Timbro, minimal, Japanese, Milan night, bottega: six stamps to choose from, or your own logo.
 > Which style fits your café? 👇 On the Plus plan, we design the card for you.
 >
 > #loyaltycard #graphicdesign #branding #cafedesign #design
