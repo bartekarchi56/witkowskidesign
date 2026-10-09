@@ -135,6 +135,12 @@ html,body{margin:0;background:#CFCFCF}
 .topfade{position:absolute;left:0;right:0;top:0;height:330px;background:linear-gradient(#0B0B0C 0%,rgba(11,11,12,.92) 45%,rgba(11,11,12,0) 100%)}
 .hook.w{color:#fff}
 .hook.w em{font-style:normal;color:#7B80FF}
+
+/* stamp design sheets */
+#stage.paper-bg{background-color:#F2EDE1;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .26 0 0 0 0 .18 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.st{display:grid;justify-items:center;gap:12px}
+.st svg{display:block}
+.st span{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#6E665A}
 </style>
 </head>
 <body>
@@ -146,6 +152,7 @@ html,body{margin:0;background:#CFCFCF}
 <script src="../../assets/js/store.js"></script>
 <script src="../../assets/js/ui.js"></script>
 <script src="../../assets/js/analytics.js"></script>
+<script src="../../assets/js/stamps.js"></script>
 <script>
 /*
  * Timbro's Instagram assets, drawn with the real card renderer.
@@ -815,6 +822,27 @@ ASSETS['reel-showcase'] = { size: 'story', duration: 17.4, cover: 1.9, build() {
     fade.style.opacity = 1;
     end(t);
   };
+} };
+
+
+// ---------- the standard stamps: design sheets ----------
+ASSETS['stamps-sheet'] = { size: 'square', build() {
+  stage.classList.add('paper-bg');
+  el(`<div class="abs lbl" style="left:36px;top:32px;color:#6E665A">${L('Timbro · i timbri', 'Timbro · the stamps')}</div>`);
+  el(`<div class="abs lbl" style="right:36px;top:32px;color:#6E665A">6 / 6</div>`);
+  const rot = [-4, 3, -2, 5, -3, 2];
+  el(`<div class="abs" style="left:30px;right:30px;top:112px;display:grid;grid-template-columns:repeat(3,1fr);row-gap:40px">${STAMPS.list.map((x, i) =>
+    `<div class="st"><div style="width:122px;transform:rotate(${rot[i]}deg)">${STAMPS.svg(x.id, '#2B32FF')}</div><span>${esc(I18N.pick(x))}</span></div>`).join('')}</div>`);
+} };
+ASSETS['stamps-inks'] = { size: 'feed', build() {
+  stage.classList.add('paper-bg');
+  el(`<div class="abs lbl" style="left:36px;top:32px;color:#6E665A">${L('Un inchiostro per ogni locale', 'One ink for every place')}</div>`);
+  const inks = [['#2B32FF', L('Blu', 'Blue')], ['#B5442E', L('Terracotta', 'Terracotta')], ['#1A1A1A', L('Nero', 'Black')]];
+  el(`<div class="abs" style="left:28px;right:28px;top:66px;display:grid;gap:10px">${inks.map(([c, n]) => `<div style="display:grid;grid-template-columns:70px repeat(6,1fr);align-items:center;gap:6px">
+    <span class="lbl" style="color:#6E665A;font-size:10px">${esc(n)}</span>${STAMPS.list.map((x, i) => `<div style="transform:rotate(${[-4, 3, -2, 5, -3, 2][i]}deg)">${STAMPS.svg(x.id, c)}</div>`).join('')}</div>`).join('')}</div>`);
+  el(`<div class="abs lbl" style="left:36px;top:322px;color:#6E665A">${L('Sulla carta', 'On the card')}</div>`);
+  const card = { ...YOUR, stampsNeeded: 10, color: '#FFFFFF', ink: '#2B32FF', shape: 'dot', mark: 'none', empty: 'outline', strip: '#F2EDE1', stampImage: STAMPS.dataUrl('ramo', '#2B32FF') };
+  const c = solo(card, 300, '', { compact: true }); c.card.set(7); fit(c.el, 346, 640, -2);
 } };
 
 // ---------- run ----------
