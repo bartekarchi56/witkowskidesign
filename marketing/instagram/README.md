@@ -84,6 +84,7 @@ Use it as the pinned post, for paid promotion, and as a story with a link sticke
 Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9.9, 12.4 and 14.8 seconds.
 
 **Voiceover (ElevenLabs).** Model Multilingual v2 (it reads the `<break>` tags), a warm, relaxed voice, Stability 50, Similarity 75, Style 20, speed 1.0. Paste one block, then nudge the clip in the editor so each line starts on its shot. Keep the music about 15 dB under the voice. If the voice says "Tim-bro", write "Teembro".
+`en/reel-showcase-voice.mp4` is the EN reel with the ElevenLabs take, each line moved onto its shot and the end card held 0.9 s longer (18.3 s, -16 LUFS). Make it again if the reel changes.
 
 | Time | Shot | EN | IT |
 |---|---|---|---|
