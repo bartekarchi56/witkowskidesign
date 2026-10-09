@@ -83,6 +83,26 @@ Use it as the pinned post, for paid promotion, and as a story with a link sticke
 ### reel-showcase
 Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9.9, 12.4 and 14.8 seconds.
 
+**Voiceover (ElevenLabs).** Model Multilingual v2 (it reads the `<break>` tags), a warm, relaxed voice, Stability 50, Similarity 75, Style 20, speed 1.0. Paste one block, then nudge the clip in the editor so each line starts on its shot. Keep the music about 15 dB under the voice. If the voice says "Tim-bro", write "Teembro".
+
+| Time | Shot | EN | IT |
+|---|---|---|---|
+| 0.3 | The phone flies in | Your café. On the phone. | Il tuo bar. Sul telefono. |
+| 2.6 | Stamps land | Every coffee, a stamp. | Ogni caffè, un timbro. |
+| 5.1 | The message lifts out | One stamp away? We remind them. | Manca un timbro? Glielo ricordiamo noi. |
+| 7.7 | Stamps burst | The tenth is on the house. | Il decimo è offerto. |
+| 9.9 | Three styles | Your style. Your stamp. | Il tuo stile. Il tuo timbro. |
+| 12.4 | Results | And you see who comes back. | E vedi chi torna. |
+| 15.2 | End card | Timbro. No app. Thirty days free. | Timbro. Niente app. Trenta giorni gratis. |
+
+```
+<break time="0.3s" /> Your café. On the phone. <break time="0.7s" /> Every coffee, a stamp. <break time="1.1s" /> One stamp away? We remind them. <break time="0.6s" /> The tenth is on the house. <break time="0.6s" /> Your style. Your stamp. <break time="0.9s" /> And you see who comes back. <break time="1.2s" /> Timbro. No app. Thirty days free.
+```
+
+```
+<break time="0.3s" /> Il tuo bar. Sul telefono. <break time="0.6s" /> Ogni caffè, un timbro. <break time="1.0s" /> Manca un timbro? Glielo ricordiamo noi. <break time="0.4s" /> Il decimo è offerto. <break time="0.7s" /> Il tuo stile. Il tuo timbro. <break time="0.8s" /> E vedi chi torna. <break time="1.1s" /> Timbro. Niente app. Trenta giorni gratis.
+```
+
 **IT**
 > Il tuo bar, sul telefono ☕
 > Ogni caffè un timbro, al decimo offre il bar. Lo stile lo scegli tu, e vedi chi torna. Niente app, niente cartoncini.
