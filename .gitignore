@@ -4,3 +4,4 @@ wallet/certs/
 *.p12
 service-account*.json
 *.whl
+supabase/test/e2e-*.png
