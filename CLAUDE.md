@@ -7,4 +7,5 @@
 - Subscriptions: Stripe via Supabase Edge Functions in `supabase/functions/` (setup in `supabase/STRIPE.md`). Stripe keys live only in Supabase secrets; never in the site, the repo or chat. Products/prices are found by lookup keys `timbro_<plan>_<month|year>`.
 - The owner's SQL editor accepts about 100 lines per paste: database changes go in `supabase/updates/` files under 100 lines; `node supabase/make-parts.js` regenerates `supabase/parts/`.
 - Every update file must end with the whole permissions block from `schema.sql` (revoke all, then the grants): Postgres lets PUBLIC execute new functions, and a per-schema default privilege can't take that away. Check an upgrade with `has_function_privilege('anon', ...)`.
+- Instagram posts and reels: `marketing/instagram/` (`studio.html` draws them with the real card renderer, `make.js` renders PNG and MP4 in IT and EN; captions and posting plan in its README). Rebuild them after copy or price changes.
 - No em dashes in user-facing copy.
