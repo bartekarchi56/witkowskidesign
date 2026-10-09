@@ -49,6 +49,7 @@ details.en summary{cursor:pointer;padding:14px 0;font-weight:600;font-size:15px}
 details.en[open]{padding-bottom:4px}
 .actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:6px}
 .status{font-size:14px;color:var(--muted)}
+.design-mode{margin:0 0 20px}
 .templates{margin-bottom:22px;padding-bottom:22px;border-bottom:1.5px solid var(--line)}
 .design > form{grid-column:1}
 .preview{grid-column:2;grid-row:1 / span 2}
@@ -313,6 +314,7 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
         <div class="dhead"><h2 class="sec" data-i18n="d.dTitle"></h2>
           <label class="plan-pick"><span data-i18n="d.plan"></span><select id="sub-plan"></select></label></div>
         <p class="sec-sub" id="d-sub"></p>
+        <div class="platform design-mode" id="design-mode" role="group" hidden><button type="button" data-m="us" aria-pressed="true" data-i18n="d.mUs"></button><button type="button" data-m="self" aria-pressed="false" data-i18n="d.mSelf"></button></div>
         <div class="review" id="review" hidden></div>
         <div id="editor"></div>
         <div class="by-us" id="by-us" hidden><span class="brand-mark" aria-hidden="true"></span><p data-i18n-html="d.byUs"></p></div>
@@ -488,7 +490,9 @@ I18N.add({
     'd.logo': 'Logo (facoltativo)', 'd.logoPick': 'Carica il logo', 'd.logoRemove': 'Togli il logo', 'd.logoHint': 'PNG con sfondo trasparente, orizzontale. Prende il posto del nome in cima alla carta.',
     'd.dTitle': 'Il design', 'd.dSub': 'La grafica la disegna Witkowski Design su misura. Puoi cambiare logo, colori, sfondo e timbro: ogni modifica la controlliamo noi prima che la vedano i clienti.',
     'd.dSubSelf': 'Puoi cambiare logo, colori, sfondo e timbro. Ogni modifica la controlla Witkowski Design prima che la vedano i clienti.',
-    'd.dSubCustom': 'Con il tuo piano la carta la disegna Witkowski Design su misura per te.',
+    'd.dSubCustom': 'Con il tuo piano la carta la disegniamo noi su misura, oppure la crei tu nel configuratore.',
+    'd.dSubCustomSelf': 'La crei tu: logo, colori, sfondo e timbro. Witkowski Design la controlla prima che la vedano i clienti.',
+    'd.mUs': 'La disegniamo noi', 'd.mSelf': 'La creo io',
     'd.byUs': '<b>Disegnata da Witkowski Design.</b> Vuoi cambiare qualcosa? Scrivici qui sotto: aggiorniamo noi il design e te lo mostriamo prima di pubblicarlo.',
     'd.insp': 'Immagini e ispirazioni', 'd.inspHint': 'Foto del locale, delle tazzine, della vetrina, o carte e grafiche che ti piacciono. Fino a 8 immagini.',
     'd.inspAdd': 'Aggiungi', 'd.inspMax': 'Massimo 8 immagini.', 'd.remove': 'Togli',
@@ -573,7 +577,9 @@ I18N.add({
     'd.logo': 'Logo (optional)', 'd.logoPick': 'Upload logo', 'd.logoRemove': 'Remove logo', 'd.logoHint': 'A wide PNG with a transparent background. It replaces the name at the top of the card.',
     'd.dTitle': 'The design', 'd.dSub': 'Witkowski Design designs the artwork for you. You can change the logo, colours, background and stamp: we check every change before your customers see it.',
     'd.dSubSelf': 'You can change the logo, colours, background and stamp. Witkowski Design checks every change before your customers see it.',
-    'd.dSubCustom': 'On your plan, Witkowski Design designs the card for you.',
+    'd.dSubCustom': 'On your plan we design the card for you, or you make it yourself in the configurator.',
+    'd.dSubCustomSelf': 'You make it: logo, colours, background and stamp. Witkowski Design checks it before your customers see it.',
+    'd.mUs': 'We design it', 'd.mSelf': 'I\'ll make it',
     'd.byUs': '<b>Designed by Witkowski Design.</b> Want to change something? Tell us below: we update the design and show it to you before it goes live.',
     'd.insp': 'Images and inspiration', 'd.inspHint': 'Photos of your place, your cups, your window, or cards and graphics you like. Up to 8 images.',
     'd.inspAdd': 'Add', 'd.inspMax': 'Up to 8 images.', 'd.remove': 'Remove',
@@ -674,23 +680,39 @@ I18N.add({
   let editor = null;
   const planOf = c => CONFIG.plans.find(p => p.id === c.plan) || CONFIG.plans[0];
   const isCustom = () => planOf(current).design === 'custom';
-  // Start: the owner edits the design and sends it for approval.
-  // Plus/Pro: Witkowski Design designs it; the owner sends a request in words.
+  // Start: the owner edits the design in the configurator and sends it for approval.
+  // Plus/Pro: the owner chooses. Witkowski Design designs it (a request in words),
+  // or they use the configurator like Start. Either way we approve before it goes live.
+  let designMode = 'us';
+  const byUs = () => isCustom() && designMode === 'us';
+  const MODE_KEY = id => 'timbro:design-mode:' + id;
+  function modeOf(c) {   // a pending proposal opens in the configurator; otherwise the last choice on this device
+    if (c.review && c.review.status === 'pending') return c.review.kind === 'proposal' ? 'self' : 'us';
+    try { return localStorage.getItem(MODE_KEY(c.id)) === 'self' ? 'self' : 'us'; } catch (e) { return 'us'; }
+  }
   function setupDesign() {
-    const custom = isCustom();
+    const custom = isCustom(), us = byUs();
     if (!editor) editor = DesignEditor.mount($('editor'), { mode: 'owner', onChange: d => { draft = d; setView('draft'); } });
-    $('editor').hidden = custom;
-    $('by-us').hidden = !custom;
-    $('design-reset').hidden = custom;
+    $('design-mode').hidden = !custom;
+    $('design-mode').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === designMode)));
+    $('editor').hidden = us;
+    $('by-us').hidden = !us;
+    $('design-reset').hidden = us;
     $('sub-plan').innerHTML = CONFIG.plans.map(p => `<option value="${p.id}">${UI.esc(I18N.pick(p).name)}</option>`).join('');
     $('sub-plan').value = planOf(current).id;
     // In connected mode the plan comes from the subscription: only Witkowski Design can change it here.
     $('sub-plan').disabled = Store.remote && !isAdmin;
-    $('d-sub').textContent = I18N.t(custom ? 'd.dSubCustom' : 'd.dSubSelf');
-    $('design-submit').textContent = I18N.t(custom ? 'd.sendRequest' : 'd.send');
-    $('note-field').querySelector('span').textContent = I18N.t(custom ? 'd.noteCustom' : 'd.note');
+    $('d-sub').textContent = I18N.t(!custom ? 'd.dSubSelf' : us ? 'd.dSubCustom' : 'd.dSubCustomSelf');
+    $('design-submit').textContent = I18N.t(us ? 'd.sendRequest' : 'd.send');
+    $('note-field').querySelector('span').textContent = I18N.t(us ? 'd.noteCustom' : 'd.note');
     $('upsell').hidden = custom;
   }
+  $('design-mode').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || b.dataset.m === designMode) return;
+    designMode = b.dataset.m;
+    try { localStorage.setItem(MODE_KEY(current.id), designMode); } catch (err) {}
+    setupDesign(); setView(byUs() ? 'live' : 'draft');
+  });
   $('sub-plan').addEventListener('change', e => {
     // Prototype: the plan is chosen here. With payments it comes from the subscription.
     current = Store.setPlan(current.id, e.target.value);
@@ -710,7 +732,7 @@ I18N.add({
   }
   function setView(v) {
     view = v;
-    $('which').hidden = isCustom() || !(designDiffers() || (current.review && current.review.status === 'pending'));
+    $('which').hidden = byUs() || !(designDiffers() || (current.review && current.review.status === 'pending'));
     $('which').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === view)));
     preview();
   }
@@ -726,7 +748,7 @@ I18N.add({
 
   $('design-form').addEventListener('submit', e => {
     e.preventDefault();
-    if (isCustom()) {
+    if (byUs()) {
       const note = e.target.note.value.trim();
       if (!note && !insp.length) { UI.toast(I18N.t('d.needNote')); e.target.note.focus(); return; }
       current = Store.requestDesign(current.id, note, { images: insp, links: readLinks() });
@@ -811,6 +833,7 @@ I18N.add({
     fillSelect(); fillTexts(current);
     // Show a pending proposal in the editor so the owner can see what they sent.
     draft = current.review && current.review.status === 'pending' ? { ...Store.designOf(current), ...current.review.design } : Store.designOf(current);
+    designMode = modeOf(current);
     setupDesign();
     editor.set(draft); renderReview(); setView('draft');
     dirty = false; $('status').textContent = '';
