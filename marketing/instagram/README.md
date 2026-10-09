@@ -15,6 +15,9 @@ Milan cafés mostly read Italian: post the `it/` version with the Italian captio
 
 | File | Format | What it is |
 |---|---|---|
+| `ad-hero.png` | Feed 4:5 | The ad: the card on an iPhone, four features, price and "30 days free" |
+| `ad-hero-story.png` | Story 9:16 | The same ad for stories |
+| `reel-ad-hero.mp4` | Reel 9:16, 7.5 s | The ad, animated: the phone turns in, stamps land, price and offer appear |
 | `post-intro.png` | Feed 4:5 | The card on the phone: what Timbro is |
 | `post-paper-vs-phone.png` | Feed 4:5 | Paper card vs phone card |
 | `carousel-mistakes-1…7.png` | Carousel 4:5 | 5 loyalty card mistakes |
@@ -46,7 +49,7 @@ The reels have no sound on purpose: add a trending sound or music from Instagram
 
 | Week | Monday | Wednesday | Friday |
 |---|---|---|---|
-| 1 | `post-intro` | `reel-stamps` | `carousel-mistakes` |
+| 1 | `ad-hero` (pin it) | `reel-stamps` | `carousel-mistakes` |
 | 2 | `reel-paper-to-phone` | `post-paper-vs-phone` | `reel-how` |
 | 3 | `carousel-tricks` | `reel-styles` | `post-prices` |
 | 4 | `reel-results` | `post-not-just-coffee` | `reel-not-just-coffee` |
@@ -56,6 +59,23 @@ Post the first three on the same day before you start sharing the page, so it do
 ## Captions
 
 Instagram allows at most 5 hashtags per post.
+
+### ad-hero, ad-hero-story, reel-ad-hero
+Use it as the pinned post, for paid promotion, and as a story with a link sticker.
+
+**IT**
+> La carta fedeltà del tuo bar, sul telefono ☕
+> Niente app: il cliente inquadra un QR alla cassa. Il barista timbra con il telefono che ha già. Tu vedi chi torna. La carta la disegniamo con il logo e i colori del tuo locale.
+> 30 giorni gratis, poi da 10 € al mese. Link in bio.
+>
+> #cartafedeltà #barmilano #caffè #piccoleimprese #milano
+
+**EN**
+> Your café's loyalty card, on the phone ☕
+> No app: customers scan a QR at the till. Staff stamp with the phone they already have. You see who comes back. We design the card with your logo and colours.
+> 30 days free, then from €10 a month. Link in bio.
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #cafe #milan
 
 ### post-intro
 **IT**
