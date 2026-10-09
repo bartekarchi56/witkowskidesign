@@ -74,7 +74,7 @@ window.CONFIG = {
 
   // Card styles. A style sets the whole look; every part can still be changed.
   //   stamp: one of the standard stamps in assets/js/stamps.js
-  //          (sole, ramo, fiore, stella, onda, albero), printed in `ink`;
+  //          (punto, sole, ramo, fiore, stella, onda, albero), printed in `ink`;
   //          a card's own artwork (stampImage) replaces it
   //   font:  sans | wide | serif | mono
   //   strip: background colour behind the stamps ('' = same as the card)

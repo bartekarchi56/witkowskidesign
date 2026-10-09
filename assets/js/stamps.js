@@ -2,8 +2,10 @@
  * Timbro's standard stamps: six rubber-stamp designs, printed in one ink.
  *   STAMPS.list                   → [{ id, it, en }]
  *   STAMPS.stampOf(card)          → the stamp a card uses (its own, its style's, its type's)
- *   STAMPS.svg(id, ink, attrs)    → SVG markup; attrs go on the root (e.g. x/y/width/height)
- *   STAMPS.dataUrl(id, ink)       → data: URL for <img>
+ *   STAMPS.svg(id, ink, attrs, empty)  → SVG markup; attrs go on the root (e.g. x/y/width/height)
+ *   STAMPS.dataUrl(id, ink, empty)     → data: URL for <img>
+ *   STAMPS.hasEmpty(id)           → true when an empty box has its own drawing (the dot's
+ *                                   circle); otherwise it shows a faint print of the stamp
  * Every stamp is drawn in a 100×100 box. A filter gives it the look of a
  * real impression: wobbly edges, missing specks of ink, uneven density.
  * Used by the website and, as a copy (wallet/stamps.cjs), by the Wallet server.
@@ -40,6 +42,8 @@
 
   // Each design: (ids) → inner SVG, drawn with currentColor.
   const DESIGNS = {
+    // The classic: a full dot of ink.
+    punto: () => `<circle cx="50" cy="50" r="34" fill="currentColor"/>`,
     // A sun on the horizon, in a square frame.
     sole: () => `
       <rect x="13" y="13" width="74" height="74" rx="5" fill="none" stroke="currentColor" stroke-width="6"/>
@@ -86,7 +90,13 @@
       <circle cx="76" cy="17" r="6.5" fill="currentColor"/>`
   };
 
+  // Empty boxes that are drawn, not a faint print: the dot's empty circle.
+  const EMPTY = {
+    punto: () => `<circle cx="50" cy="50" r="32" fill="none" stroke="currentColor" stroke-width="4.5"/>`
+  };
+
   const NAMES = {
+    punto: ['Punto', 'Dot'],
     sole: ['Sole', 'Sun'], ramo: ['Ramo d\'ulivo', 'Olive branch'], fiore: ['Fiore', 'Flower'],
     stella: ['Stella', 'Star'], onda: ['Onda', 'Wave'], albero: ['Albero e luna', 'Tree and moon']
   };
@@ -102,8 +112,8 @@
   }
 
   const safeInk = ink => /^#[0-9a-f]{6}$/i.test(ink || '') ? ink : '#2B32FF';
-  function svg(id, ink, attrs = '') {
-    const draw = DESIGNS[id] || DESIGNS.sole;
+  function svg(id, ink, attrs = '', empty = false) {
+    const draw = (empty && EMPTY[id]) || DESIGNS[id] || DESIGNS.sole;
     const n = ++uid, ids = { ink: `tb-ink${n}`, dots: `tb-dots${n}`, mask: `tb-mask${n}` };
     const seed = Object.keys(DESIGNS).indexOf(id) * 7 + 3;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" color="${safeInk(ink)}" aria-hidden="true" ${attrs}>
@@ -111,10 +121,14 @@
       <g filter="url(#${ids.ink})">${draw(ids)}</g></svg>`;
   }
   const urls = {};
-  const dataUrl = (id, ink) => urls[id + ink] || (urls[id + ink] = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg(id, ink)));
+  const dataUrl = (id, ink, empty = false) => {
+    const k = id + ink + (empty ? '-' : '');
+    return urls[k] || (urls[k] = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg(id, ink, '', empty)));
+  };
+  const hasEmpty = id => !!EMPTY[id];
   const list = Object.keys(DESIGNS).map(id => ({ id, it: NAMES[id][0], en: NAMES[id][1] }));
 
-  const STAMPS = { list, stampOf, svg, dataUrl };
+  const STAMPS = { list, stampOf, svg, dataUrl, hasEmpty };
   if (typeof module === 'object' && module.exports) module.exports = STAMPS;
   else root.STAMPS = STAMPS;
 })(typeof window !== 'undefined' ? window : globalThis);

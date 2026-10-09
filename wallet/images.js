@@ -24,11 +24,11 @@ const ANGLES = [-8, 5, -3, 9, -6, 3, -10, 7, -2, 6, -7, 4, -4, 8, -9, 2, -5, 10,
 const pngData = (v, max = 200000) => /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(v || '') && v.length < max ? v : '';
 
 // The picture one stamp prints at x,y (size d): the café's own artwork, or its standard stamp.
-function stampAt(card, ink, x, y, d) {
+function stampAt(card, ink, x, y, d, empty = false) {
   const art = pngData(card.stampImage, 400000);
   return art
     ? `<image href="${art}" x="${x}" y="${y}" width="${d}" height="${d}" preserveAspectRatio="xMidYMid meet"/>`
-    : STAMPS.svg(STAMPS.stampOf(card), ink, `x="${x}" y="${y}" width="${d}" height="${d}"`);
+    : STAMPS.svg(STAMPS.stampOf(card), ink, `x="${x}" y="${y}" width="${d}" height="${d}"`, empty);
 }
 
 /**
@@ -48,12 +48,14 @@ export async function strip(card, have, { w = 375, h = 123, scale = 1 } = {}) {
   const gapY = rows > 1 ? Math.min(d * 0.3, (h - padY * 2 - rows * d) / (rows - 1)) : 0;
   const top = (h - (rows * d + (rows - 1) * gapY)) / 2;
 
+  // The dot has its own empty box (a circle); other stamps leave a faint print.
+  const drawnEmpty = !pngData(card.stampImage, 400000) && STAMPS.hasEmpty(STAMPS.stampOf(card));
   let out = '';
   for (let i = 0; i < need; i++) {
     const x = padX + (i % cols) * (d + gapX), y = top + Math.floor(i / cols) * (d + gapY);
     out += i < have
       ? `<g transform="rotate(${ANGLES[i]} ${x + d / 2} ${y + d / 2})">${stampAt(card, ink, x, y, d)}</g>`
-      : `<g opacity="0.15">${stampAt(card, ink, x, y, d)}</g>`;
+      : drawnEmpty ? `<g opacity="0.4">${stampAt(card, ink, x, y, d, true)}</g>` : `<g opacity="0.15">${stampAt(card, ink, x, y, d)}</g>`;
   }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w * scale}" height="${h * scale}" viewBox="0 0 ${w} ${h}">
     <rect width="${w}" height="${h}" fill="${stripBg}"/>${pngData(card.stripImage, 900000) ? `<image href="${card.stripImage}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid slice"/>` : ''}${out}</svg>`;

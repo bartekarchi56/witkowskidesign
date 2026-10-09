@@ -132,8 +132,10 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .wp-dot.on{background:var(--s);color:#fff;border:0;box-shadow:none}
 /* the designer's own stamp artwork */
 .wp-dot.s-art,.wp-dot.s-art.on{background:none;box-shadow:none;border:0}
-.wp-dot.s-art img.ghost{opacity:.15;transform:none}
-.wp-dot.s-art img{width:100%;height:100%;object-fit:contain;transform:rotate(var(--r))}
+.wp-dot.s-art img.st-ghost{opacity:.15;transform:none}
+.wp-dot.s-art img.st-empty{opacity:.4;transform:none}
+.wp-dot.s-art{position:relative}
+.wp-dot.s-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:rotate(var(--r))}
 .wp-strip{background-size:cover;background-position:center}
 .wp-dot.s-ring.on{background:transparent;color:var(--s);box-shadow:inset 0 0 0 2.5px var(--s)}
 /* hanko: a red seal, a frame inside a frame, pressed at a slight angle */
@@ -153,7 +155,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .wp-gmark{font:700 17px/1 "Noto Serif JP",serif;color:var(--s)}
 .wp-dot.pop{animation:stamp .38s cubic-bezier(.2,1.5,.5,1)}
 @keyframes stamp{0%{transform:scale(1.9);opacity:0}60%{opacity:1}100%{transform:scale(1)}}
-.wp-strip{display:grid;grid-template-columns:repeat(var(--cols,5),1fr);gap:12px 14px;padding:18px 26px;background:var(--sb)}
+.wp-strip{display:grid;grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));gap:12px 14px;padding:18px 26px;background:var(--sb)}
 .wp-label{display:block;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.6}
 .wp-val{display:block;font-size:16px;font-weight:500;line-height:1.2}
 .wp-code{display:grid;justify-items:center;gap:6px;color:#000}

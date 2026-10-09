@@ -30,8 +30,8 @@
     const url = opts.url || UI.publicJoinUrl(card.id);
     const need = card.stampsNeeded;
     let dots = '';
-    const art = UI.stampArt(card);
-    for (let i = 0; i < need; i++) dots += `<i class="p-art${i < 3 ? ' on' : ''}"><img src="${esc(art)}" alt=""${i < 3 ? '' : ' class="ghost"'}></i>`;
+    const art = UI.stampArt(card), off = UI.stampEmpty(card);
+    for (let i = 0; i < need; i++) dots += `<i class="p-art${i < 3 ? ' on' : ''}"><img src="${esc(i < 3 ? art : off.src)}" alt=""${i < 3 ? '' : ` class="${off.cls}"`}></i>`;
     return `
       <div class="poster" lang="${lang}" style="--s:${esc(card.ink || '#2B32FF')}"><div class="poster-in">
         <div class="poster-top">
@@ -55,7 +55,9 @@
     const L = MSG[lang] || MSG.en;
     try { await Promise.all([document.fonts.load('800 80px Archivo'), document.fonts.load('500 30px "Spline Sans Mono"')]); } catch (e) {}
     // The card's stamp: its own artwork or one of the standard stamps.
-    const art = await new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = UI.stampArt(card); });
+    const load = src => new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = src; });
+    const off = UI.stampEmpty(card);
+    const [art, empty] = await Promise.all([load(UI.stampArt(card)), load(off.src)]);
     const W = 1080, H = 1350;
     const cv = document.createElement('canvas');
     cv.width = W; cv.height = H;
@@ -96,8 +98,9 @@
       const cx = 140 + r + (i % cols) * (r * 2 + gap), cy = top + 230 + Math.floor(i / cols) * (r * 2 + 22) + (rows === 1 ? 40 : 0);
       c.save();
       // Four stamps down, each at its own angle; the rest are a faint print waiting for ink.
-      if (i < 4) { c.translate(cx, cy); c.rotate([-7, 5, -3, 8][i] * Math.PI / 180); c.translate(-cx, -cy); } else c.globalAlpha = .15;
-      if (art) c.drawImage(art, cx - r, cy - r, r * 2, r * 2);
+      if (i < 4) { c.translate(cx, cy); c.rotate([-7, 5, -3, 8][i] * Math.PI / 180); c.translate(-cx, -cy); } else c.globalAlpha = off.cls === 'st-empty' ? .4 : .15;
+      const img = i < 4 ? art : empty;
+      if (img) c.drawImage(img, cx - r, cy - r, r * 2, r * 2);
       else { c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fillStyle = ink; c.fill(); }
       c.restore();
     }

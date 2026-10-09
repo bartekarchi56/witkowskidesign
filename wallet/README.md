@@ -58,7 +58,7 @@ It is a plain Node 18+ server (no framework), so any Node host works: Render, Ra
 
 ## Card styles
 
-Each card keeps its own look: card and strip colours, the name's font with an optional tagline (e.g. ザ・コーヒー), and its stamp: one of the six standard stamps (sun, olive branch, flower, star, wave, tree and moon) printed in the card's ink, or the café's own artwork. Empty boxes show a faint print of the same stamp.
+Each card keeps its own look: card and strip colours, the name's font with an optional tagline (e.g. ザ・コーヒー), and its stamp: one of the standard stamps (a plain dot, sun, olive branch, flower, star, wave, tree and moon) printed in the card's ink, or the café's own artwork. Empty boxes show a faint print of the same stamp; with the dot, an empty circle.
 
 The server draws the stamps from `stamps.cjs`, a copy of the website's `assets/js/stamps.js` (`npm test` fails if they differ: copy the website's file over it). Wallet apps draw text in their own font, so the website turns the name into an image (`logoAuto`) and sends it with the card. The lock-screen icon is the card's stamp.
 

@@ -63,6 +63,10 @@
   }
   // The picture a stamp prints: the café's own artwork, else one of the standard stamps in its ink.
   const stampArt = (card, look = lookOf(card)) => card.stampImage || (look.stamp ? STAMPS.dataUrl(look.stamp, card.ink || '#2B32FF') : '');
+  // An empty box: the stamp's own empty drawing (the dot's circle), else a faint print of the stamp.
+  const stampEmpty = (card, look = lookOf(card)) => !card.stampImage && look.stamp && STAMPS.hasEmpty(look.stamp)
+    ? { src: STAMPS.dataUrl(look.stamp, card.ink || '#2B32FF', true), cls: 'st-empty' }
+    : { src: stampArt(card, look), cls: 'st-ghost' };
 
   // Which Wallet to draw: the phone's own, unless a page switch says otherwise.
   let platform = /android/i.test(navigator.userAgent) ? 'google' : 'apple';
@@ -84,14 +88,14 @@
     const full = have >= need;
     const cols = Math.ceil(need / Math.ceil(need / 5));
     const look = lookOf(card);
-    const art = stampArt(card, look);
+    const art = stampArt(card, look), off = art ? stampEmpty(card, look) : null;
     const markHtml = look.mark === 'icon' ? icon(card.icon) : look.mark === 'text' ? `<b>${esc(look.markText)}</b>` : '';
     let dots = '';
     for (let i = 0; i < need; i++) {
       const on = i < have;
       // Empty boxes show a faint print of the same stamp, waiting to be inked.
       dots += art
-        ? `<span class="wp-dot s-art${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}" style="--r:${ANGLES[i]}deg"><img src="${esc(art)}" alt=""${on ? '' : ' class="ghost"'}></span>`
+        ? `<span class="wp-dot s-art${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}" style="--r:${ANGLES[i]}deg"><img src="${esc(on ? art : off.src)}" alt=""${on ? '' : ` class="${off.cls}"`}></span>`
         : `<span class="wp-dot s-${look.shape} e-${look.empty}${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}" style="--r:${ANGLES[i]}deg">${on ? markHtml : ''}</span>`;
     }
     const bg = card.color || '#FFFFFF';
@@ -270,5 +274,5 @@
       .replace(/^\s*[,!]\s*/, '').replace(/\s{2,}/g, ' ').trim().replace(/^./, c => c.toUpperCase());
   }
 
-  window.UI = { messagesOf, fillMessage, walletAssets, lookOf, stampArt, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
+  window.UI = { messagesOf, fillMessage, walletAssets, lookOf, stampArt, stampEmpty, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
 })();
