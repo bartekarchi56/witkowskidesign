@@ -17,7 +17,7 @@ export function buildGoogleSaveUrl({ card, customer, lang }, origin) {
   const reward = (en && card.rewardEn) || card.reward;
   const img = (path, q) => ({ sourceUri: { uri: `${settings.publicUrl}${path}?${new URLSearchParams(q)}` } });
   // Google fetches images by URL, so the look travels as query parameters.
-  const look = { icon: card.icon, color: bg, ink, shape: card.shape, mark: card.mark, markText: card.markText, empty: card.empty, strip: card.strip };
+  const look = { color: bg, ink, stamp: card.stamp, style: card.style, type: card.type, strip: card.strip };
 
   const classId = `${issuerId}.${safe('timbro_' + card.id)}`;
   const loyaltyClass = {

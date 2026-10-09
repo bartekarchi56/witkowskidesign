@@ -25,6 +25,10 @@ const { buildApplePass } = await import('../apple.js');
 const { buildGoogleSaveUrl } = await import('../google.js');
 const { default: jwt } = await import('jsonwebtoken');
 
+// The Wallet server's copy of the standard stamps must match the website's.
+const shared = new URL('../../assets/js/stamps.js', import.meta.url);
+if (fs.existsSync(shared)) assert.equal(fs.readFileSync(new URL('../stamps.cjs', import.meta.url), 'utf8'), fs.readFileSync(shared, 'utf8'), 'wallet/stamps.cjs is out of date: copy assets/js/stamps.js over it');
+
 const req = readPassRequest({
   lang: 'it',
   card: { id: 'the-coffee', business: 'The Coffee', title: 'Carta caffè', reward: 'un caffè gratis', stampsNeeded: 10, color: '#FFFFFF', ink: '#2B32FF', icon: 'cup' },

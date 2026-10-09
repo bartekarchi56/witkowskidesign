@@ -21,7 +21,7 @@
         const db = JSON.parse(raw);
         // Browsers that saw the older example get The Coffee's new look.
         const tc = db.cards['the-coffee'];
-        if (tc && (!tc.shape || !tc.plan)) { Object.assign(tc, COFFEE_LOOK); save(db); }
+        if (tc && (!tc.stamp || !tc.plan)) { Object.assign(tc, COFFEE_LOOK); save(db); }
         // Browsers from before the Orsonero proposal get its example card too.
         if (!db.cards.orsonero || db.cards.orsonero.stampImage !== ORSONERO_BEAR) { db.cards.orsonero = { ...db.cards.orsonero, ...ORSONERO }; save(db); }
         return db;
@@ -37,9 +37,9 @@
   }
 
   // The Coffee, Viale Piave 20: Japanese minimalism (white, beige, stone,
-  // light wood) and the name in katakana. Stamps are red hanko seals with 珈.
-  const COFFEE_LOOK = { plan: 'plus', style: 'giappone', color: '#FFFFFF', ink: '#B5442E', shape: 'hanko', mark: 'text', markText: '珈',
-    empty: 'outline', font: 'wide', strip: '#EEE9E1', tagline: 'ザ・コーヒー' };
+  // light wood) and the name in katakana. Stamps are red linocut waves.
+  const COFFEE_LOOK = { plan: 'plus', style: 'giappone', color: '#FFFFFF', ink: '#B5442E', stamp: 'onda',
+    font: 'wide', strip: '#EEE9E1', tagline: 'ザ・コーヒー' };
 
   // Orsonero Coffee, Via Broggi 15 (proposal): the black bear of the name
   // (Brent's Canada), light oak and white walls, Nordic-Japanese calm.
@@ -77,7 +77,7 @@
   }
 
   // Everything about how a card looks (as opposed to its text and rules).
-  const DESIGN_KEYS = ['style', 'color', 'ink', 'shape', 'mark', 'markText', 'empty', 'font', 'strip', 'tagline', 'icon', 'logo', 'stampImage', 'stripImage'];
+  const DESIGN_KEYS = ['style', 'color', 'ink', 'stamp', 'shape', 'mark', 'markText', 'empty', 'font', 'strip', 'tagline', 'icon', 'logo', 'stampImage', 'stripImage'];
 
   // Short, unambiguous codes staff can read out or type (no 0/O, 1/I).
   function code(len) {

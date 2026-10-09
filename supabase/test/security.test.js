@@ -21,9 +21,9 @@ ok('nobody can read the tables directly');
 
 // ---- owner A creates a card ----
 await rejects(call(anon, 'owner_save_card', { p_card: { id } }), /permission denied/);
-const card = await call(users.ownerA, 'owner_save_card', { p_card: { id, business: 'Bar Test', title: 'Carta caffè', reward: 'un caffè gratis', stampsNeeded: 3, design: { color: '#FFFFFF', ink: '#2B32FF', shape: 'dot', evil: 'x' } } });
-assert.equal(card.business, 'Bar Test'); assert.equal(card.plan, 'start'); assert.equal(card.evil, undefined);
-ok('owner creates a card; unknown design keys are dropped; plan starts as Start');
+const card = await call(users.ownerA, 'owner_save_card', { p_card: { id, business: 'Bar Test', title: 'Carta caffè', reward: 'un caffè gratis', stampsNeeded: 3, design: { color: '#FFFFFF', ink: '#2B32FF', stamp: 'onda', evil: 'x' } } });
+assert.equal(card.business, 'Bar Test'); assert.equal(card.plan, 'start'); assert.equal(card.evil, undefined); assert.equal(card.stamp, 'onda');
+ok('owner creates a card; its stamp is kept, unknown design keys are dropped; plan starts as Start');
 await rejects(call(users.ownerB, 'owner_save_card', { p_card: { id, business: 'Hijack' } }), /another café/);
 ok('another owner cannot overwrite it');
 

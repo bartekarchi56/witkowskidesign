@@ -89,6 +89,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .chips input{position:absolute;opacity:0;pointer-events:none}
 .chips label{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1.5px solid var(--line);border-radius:999px;cursor:pointer;font-size:15px;font-weight:500;background:#fff}
 .chips label svg{width:18px;height:18px}
+.chips .de-st{display:grid;place-items:center;width:34px;height:34px;margin:-6px 0 -6px -8px;border-radius:9px;background:#fff}
+.de-field > .chips .de-st svg,.chips .de-st svg{width:30px;height:30px}
 .chips label:hover{border-color:var(--ink)}
 .chips input:checked + label{background:var(--ink);border-color:var(--ink);color:#fff}
 .chips input:focus-visible + label{outline:3px solid var(--pop);outline-offset:2px}
@@ -129,7 +131,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .wp-dot.s-hanko{border-radius:12%}
 .wp-dot.on{background:var(--s);color:#fff;border:0;box-shadow:none}
 /* the designer's own stamp artwork */
-.wp-dot.s-art.on{background:none}
+.wp-dot.s-art,.wp-dot.s-art.on{background:none;box-shadow:none;border:0}
+.wp-dot.s-art img.ghost{opacity:.15;transform:none}
 .wp-dot.s-art img{width:100%;height:100%;object-fit:contain;transform:rotate(var(--r))}
 .wp-strip{background-size:cover;background-position:center}
 .wp-dot.s-ring.on{background:transparent;color:var(--s);box-shadow:inset 0 0 0 2.5px var(--s)}
@@ -181,6 +184,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .google .wp-glogo{width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
 .google .wp-glogo svg{width:19px;height:19px}
 .google .wp-glogo img{width:100%;height:100%;object-fit:contain}
+.google .wp-glogo img.wp-gstamp{width:74%;height:74%}
 .google .wp-title{padding:14px 18px 0;font-size:24px;font-weight:400;line-height:1.15}
 .google .wp-fields{display:flex;gap:28px;padding:14px 18px 0}
 .google .wp-label{text-transform:none;letter-spacing:0;font-size:12px;font-weight:400;opacity:.75}

@@ -15,7 +15,8 @@
     scissors: 'M8.5 8.5 20 19M8.5 15.5 20 5M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
     leaf: 'M5 19C5 10.5 10.5 5 19.5 4.5 19.5 13.5 14 19 5 19zM5 19l7.5-7.5',
     heart: 'M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z',
-    star: 'M12 3.5l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6z'
+    star: 'M12 3.5l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6z',
+    spark: 'M12 3.5Q13.3 10.7 20.5 12Q13.3 13.3 12 20.5Q10.7 13.3 3.5 12Q10.7 10.7 12 3.5z'
   };
   const icon = (name, extra = '') => PATHS[name]
     ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${extra}><path d="${PATHS[name]}"/></svg>`
@@ -56,9 +57,12 @@
       markText: (card.markText || (card.business || '?').trim()[0] || '?').slice(0, 2),
       empty: card.empty || 'soft',
       font: card.font || 'sans',
-      strip: card.strip || ''
+      strip: card.strip || '',
+      stamp: window.STAMPS ? STAMPS.stampOf(card) : ''
     };
   }
+  // The picture a stamp prints: the café's own artwork, else one of the standard stamps in its ink.
+  const stampArt = (card, look = lookOf(card)) => card.stampImage || (look.stamp ? STAMPS.dataUrl(look.stamp, card.ink || '#2B32FF') : '');
 
   // Which Wallet to draw: the phone's own, unless a page switch says otherwise.
   let platform = /android/i.test(navigator.userAgent) ? 'google' : 'apple';
@@ -80,12 +84,14 @@
     const full = have >= need;
     const cols = Math.ceil(need / Math.ceil(need / 5));
     const look = lookOf(card);
+    const art = stampArt(card, look);
     const markHtml = look.mark === 'icon' ? icon(card.icon) : look.mark === 'text' ? `<b>${esc(look.markText)}</b>` : '';
     let dots = '';
     for (let i = 0; i < need; i++) {
       const on = i < have;
-      dots += card.stampImage
-        ? `<span class="wp-dot s-art e-${look.empty}${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}" style="--r:${ANGLES[i]}deg">${on ? `<img src="${esc(card.stampImage)}" alt="">` : ''}</span>`
+      // Empty boxes show a faint print of the same stamp, waiting to be inked.
+      dots += art
+        ? `<span class="wp-dot s-art${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}" style="--r:${ANGLES[i]}deg"><img src="${esc(art)}" alt=""${on ? '' : ' class="ghost"'}></span>`
         : `<span class="wp-dot s-${look.shape} e-${look.empty}${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}" style="--r:${ANGLES[i]}deg">${on ? markHtml : ''}</span>`;
     }
     const bg = card.color || '#FFFFFF';
@@ -103,7 +109,7 @@
     const aria = esc(t('pass.aria', { title, have, need }));
 
     if (kind === 'google') {
-      const logo = card.logo ? `<img src="${esc(card.logo)}" alt="">` : (look.mark === 'text' ? `<b class="wp-gmark">${esc(look.markText)}</b>` : icon(card.icon === 'dot' ? 'star' : card.icon));
+      const logo = card.logo ? `<img src="${esc(card.logo)}" alt="">` : art ? `<img class="wp-gstamp" src="${esc(art)}" alt="">` : icon('star');
       return `
       <div class="pass google${fontCls}" style="${style}" role="group" aria-label="${aria}">
         <div class="wp-head"><span class="wp-glogo">${logo}</span><span class="wp-name">${esc(card.business)}</span></div>
@@ -116,7 +122,7 @@
     }
     const logo = card.logo
       ? `<img src="${esc(card.logo)}" alt="${esc(card.business)}">`
-      : `${look.mark === 'icon' ? icon(card.icon) : ''}<span class="wp-word"><span class="wp-name">${esc(card.business)}</span>${card.tagline ? `<small>${esc(card.tagline)}</small>` : ''}</span>`;
+      : `<span class="wp-word"><span class="wp-name">${esc(card.business)}</span>${card.tagline ? `<small>${esc(card.tagline)}</small>` : ''}</span>`;
     return `
       <div class="pass apple${fontCls}${opts.compact ? ' compact' : ''}" style="${style}" role="group" aria-label="${aria}">
         <div class="wp-head"><div class="wp-logo">${logo}</div>${field(t('pass.stamps'), `${have}/${need}`, 'wp-hf')}</div>
@@ -187,7 +193,7 @@
 
   // The brand's rubber-stamp mark. `ring` is the text around the edge.
   let stampN = 0;
-  function inkStamp(ring = 'TIMBRO · MILANO · TIMBRO · MILANO ·', iconName = 'cup') {
+  function inkStamp(ring = 'TIMBRO · MILANO · TIMBRO · MILANO ·', iconName = 'spark') {
     const id = 'stamp' + (++stampN);
     return `<svg viewBox="0 0 100 100" aria-hidden="true">
       <defs>
@@ -264,5 +270,5 @@
       .replace(/^\s*[,!]\s*/, '').replace(/\s{2,}/g, ' ').trim().replace(/^./, c => c.toUpperCase());
   }
 
-  window.UI = { messagesOf, fillMessage, walletAssets, lookOf, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
+  window.UI = { messagesOf, fillMessage, walletAssets, lookOf, stampArt, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
 })();

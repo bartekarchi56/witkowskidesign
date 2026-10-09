@@ -58,9 +58,9 @@ It is a plain Node 18+ server (no framework), so any Node host works: Render, Ra
 
 ## Card styles
 
-Each card keeps its own look: card and strip colours, stamp shape (round, ring, square, Japanese seal), what's inside the stamp (icon, a letter or symbol such as 珈, or nothing), empty boxes (grey, outline, dashed) and the name's font with an optional tagline (e.g. ザ・コーヒー).
+Each card keeps its own look: card and strip colours, the name's font with an optional tagline (e.g. ザ・コーヒー), and its stamp: one of the six standard stamps (sun, olive branch, flower, star, wave, tree and moon) printed in the card's ink, or the café's own artwork. Empty boxes show a faint print of the same stamp.
 
-Wallet apps draw text in their own font, so the website turns the name and the stamp's letter or symbol into images (`logoAuto`, `markImage`) and sends them with the card. The server draws the stamp strip in the same style. Google fetches its images by URL, so for a letter or symbol on Android the server writes the text itself: install a CJK font on the server for Japanese characters (e.g. `apt install fonts-noto-cjk`).
+The server draws the stamps from `stamps.cjs`, a copy of the website's `assets/js/stamps.js` (`npm test` fails if they differ: copy the website's file over it). Wallet apps draw text in their own font, so the website turns the name into an image (`logoAuto`) and sends it with the card. The lock-screen icon is the card's stamp.
 
 ## What's not done yet (needs the database)
 
@@ -68,7 +68,7 @@ Wallet apps draw text in their own font, so the website turns the name and the s
   - Apple: add `webServiceURL` + `authenticationToken` to the pass, implement Apple's PassKit web service endpoints (register device, list updated passes, send latest pass) and send an APNs push with the pass certificate after each stamp.
   - Google: after each stamp, `PATCH` the loyalty object through the Google Wallet REST API.
 - **Trusting the browser.** Solved when `SUPABASE_URL` is set: the card and stamps come from the database. In demo mode the page still sends them, so keep `ALLOWED_ORIGINS` set.
-- **Uploaded logos on Google Wallet.** Google needs the logo at a public URL, so it uses the card's icon for now. Apple uses the uploaded logo.
+- **Uploaded logos on Google Wallet.** Google needs the logo at a public URL, so it uses the card's stamp for now. Apple uses the uploaded logo.
 - **Official buttons.** Apple and Google publish official "Add to Wallet" badge artwork with usage rules. Swap them in for the buttons in `app/card.html` before launch.
 
 ## Notifications to customers
