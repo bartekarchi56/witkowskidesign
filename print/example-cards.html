@@ -42,27 +42,10 @@ h1{font-size:28px;margin:0 0 6px}
   for (let i = 0; i < 26; i++) { const y = 10 + i * 17 + (i % 3) * 3, a = 4 + (i * 7) % 9; grain += `<path d="M0 ${y}C170 ${y - a} 340 ${y + a} 510 ${y}S850 ${y - a} 1020 ${y + 2}" fill="none" stroke="${i % 4 ? '#DCCBAE' : '#D2BE9B'}" stroke-width="${i % 5 ? 1.6 : 2.6}"/>`; }
   const oak = svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="#E9DCC3"/>${grain}</svg>`);
 
-  // Kofeina = caffeine: the caffeine molecule (a six- and a five-ring) as the stamp, and a hexagon grid behind.
-  function molecule(ink, sw = 5) {
-    const P = (cx, cy, r, n, a0) => Array.from({ length: n }, (_, i) => [cx + r * Math.cos(a0 + i * 2 * Math.PI / n), cy + r * Math.sin(a0 + i * 2 * Math.PI / n)]);
-    const hex = P(31, 50, 18, 6, -Math.PI / 2);                      // pointy top; vertices 1 and 2 form the right edge
-    const [A, B] = [hex[1], hex[2]], side = Math.hypot(B[0] - A[0], B[1] - A[1]);
-    const apothem = side / (2 * Math.tan(Math.PI / 5)), cx = A[0] + apothem, cy = (A[1] + B[1]) / 2;
-    const pent = P(cx, cy, side / (2 * Math.sin(Math.PI / 5)), 5, Math.PI * 4 / 5);   // shares the edge A-B
-    const poly = pts => 'M' + pts.map(p => p.map(v => v.toFixed(1)).join(' ')).join('L') + 'Z';
-    const arm = (p, dx, dy) => `M${p[0].toFixed(1)} ${p[1].toFixed(1)}l${dx} ${dy}`;
-    const end = (p, dx, dy, r = 4.2) => `<circle cx="${(p[0] + dx).toFixed(1)}" cy="${(p[1] + dy).toFixed(1)}" r="${r}"/>`;
-    const top = hex[0], left = hex[4], low = hex[3], upLeft = hex[5];
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g fill="none" stroke="${ink}" stroke-width="${sw}" stroke-linejoin="round" stroke-linecap="round">
-      <path d="${poly(hex)}"/><path d="${poly(pent)}"/>
-      <path d="${arm(top, 0, -13)}"/><path d="${arm(low, 0, 13)}"/><path d="${arm(upLeft, -11, -7)}"/><path d="${arm(pent[3], 9, 0)}"/>
-    </g><g fill="${ink}">${end(top, 0, -17)}${end(low, 0, 17)}${end(upLeft, -14, -9)}${end(pent[3], 13, 0)}<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3.2"/></g></svg>`;
-  }
-  const hexGrid = (bg, line) => { let d = ''; const r = 26, w = r * Math.sqrt(3);
-    for (let row = -1; row < 13; row++) for (let col = -1; col < 24; col++) { const x = col * w + (row % 2 ? w / 2 : 0), y = row * r * 1.5;
-      d += 'M' + Array.from({ length: 6 }, (_, i) => { const a = Math.PI / 6 + i * Math.PI / 3; return `${(x + r * Math.cos(a)).toFixed(1)} ${(y + r * Math.sin(a)).toFixed(1)}`; }).join('L') + 'Z'; }
-    return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/><path d="${d}" fill="none" stroke="${line}" stroke-width="2"/></svg>`); };
-  const KOF = { id: 'kofeina', business: 'Kofeina', title: 'Karta kawowa', reward: 'kawa gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee', lang: 'pl', city: 'Bydgoszcz', tagline: 'coffee · Bydgoszcz' };
+  // Kofeina: their black wordmark and storefront drawing; stamps are plain, flat dots (no ink texture).
+  const dot = color => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="34" fill="${color}"/></svg>`);
+  const STORE_W = await dataUrl('kit-kofeina/art/kofeina-storefront-white.png');
+  const KOF = { id: 'kofeina', business: 'Kofeina', title: 'Karta kawowa', reward: 'kawa gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee', lang: 'pl', city: 'Bydgoszcz', stamp: 'punto', font: 'wide' };
   const SOWA = { id: 'sowa', business: 'Cukiernia Sowa', title: 'Lodowy Fanklub', reward: '1 gałka lodów gratis', titleEn: 'Ice cream fan club', rewardEn: 'a free scoop', stampsNeeded: 10, lang: 'pl', tagline: '80 lat tradycji' };
   const ORSO = { id: 'orsonero', business: 'Orsonero Coffee', title: 'Carta Orsonero', reward: 'un caffè a scelta', titleEn: 'Orsonero card', rewardEn: 'any coffee, on us', stampsNeeded: 8, tagline: 'Specialty coffee' };
   const SETS = [
@@ -72,11 +55,11 @@ h1{font-size:28px;margin:0 0 6px}
       { name: 'sowa-80', label: 'Na 80 lat: kawa, tekstura, logo 80, sowa jako pieczątka', stamps: 5,
         card: { ...SOWA, title: 'Karta kawowa', reward: 'kawa gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee', stampsNeeded: 8, color: '#FBF6EE', ink: '#522D24', stamp: 'punto', font: 'serif', strip: '#FBF6EE', stripImage: scales, logo: 'kit-sowa/art/sowa-80-logo.svg', stampImage: 'kit-sowa/art/sowa-owl-stamp.png' } }
     ] },
-    { id: 'kofeina', lang: 'pl', title: 'Kofeina', note: 'Kofeina to kofeina: cząsteczka kofeiny jako znak i pieczątka.', cards: [
-      { name: 'kofeina-simple', label: 'Prosta: cząsteczka w środku, brązowe kropki', stamps: 6,
-        card: { ...KOF, stampsNeeded: 10, color: '#FFFFFF', ink: '#4A2C1D', stamp: 'punto', font: 'wide', strip: '#FFFFFF', stripImage: watermark(svgUrl(molecule('#4A2C1D', 4)), '#FFFFFF', .12, 1020, 450, 420) } },
-      { name: 'kofeina-dark', label: 'Espresso: ciemna karta, heksagony, kofeina jako pieczątka', stamps: 5,
-        card: { ...KOF, stampsNeeded: 8, color: '#2A1B14', ink: '#E9C9A0', stamp: 'punto', font: 'wide', strip: '#2F1F17', stripImage: hexGrid('#2F1F17', '#3D2A1F'), stampImage: svgUrl(molecule('#E9C9A0', 5.5)) } }
+    { id: 'kofeina', lang: 'pl', title: 'Kofeina, Bydgoszcz', note: 'Czarno-białe jak ich logo: płaskie czarne kropki.', cards: [
+      { name: 'kofeina-simple', label: 'Prosta: logo, czarne kropki', stamps: 6,
+        card: { ...KOF, stampsNeeded: 10, color: '#FFFFFF', ink: '#0B0B0C', strip: '#FFFFFF', logo: 'kit-kofeina/art/kofeina-logo-black.png', stampImage: dot('#0B0B0C') } },
+      { name: 'kofeina-dark', label: 'Czarna: ich kawiarnia w tle, białe kropki', stamps: 5,
+        card: { ...KOF, stampsNeeded: 8, color: '#0B0B0C', ink: '#FFFFFF', strip: '#0B0B0C', logo: 'kit-kofeina/art/kofeina-logo-white.png', stripImage: watermark(STORE_W, '#0B0B0C', .17, 1020, 450, 600), stampImage: dot('#FFFFFF') } }
     ] },
     { id: 'orsonero', lang: 'en', title: 'Orsonero Coffee', note: 'Two looks for the same card.', cards: [
       { name: 'orsonero-simple', label: 'Simple: bear in the middle, brown dots', stamps: 5,
