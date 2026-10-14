@@ -7,7 +7,7 @@ This explains how services like Loopy Loyalty work, what this repo already does,
 | Who | What they do | Where in this repo |
 |---|---|---|
 | **Business owner** | Designs the card (name, colour, icon, stamps needed, reward), gets a QR code to print, watches members and stats | `app/dashboard.html` |
-| **Customer** | Scans the QR code, types their first name, gets a card with their own QR code and 6-letter code | `app/card.html?card=<id>` |
+| **Customer** | Scans the QR code, gives full name, email, mobile and date of birth, gets a card with their own QR code and 6-letter code | `app/card.html?card=<id>` |
 | **Staff** | Scans the customer's QR (or types the code), taps "Add stamp", and taps "Give reward" when the card is full | `app/stamper.html` |
 
 The flow is always the same:
@@ -49,7 +49,7 @@ A working prototype, with no server:
 
 - Bilingual website (IT/EN) with a live builder: type a café's name and see its card, poster and Instagram post.
 - Dashboard: design cards, print the poster, download the QR and Instagram post, copy ready-made texts, launch checklist, customers and stats.
-- Customer card page: join with a first name, card with QR and short code, live updates, English for tourists.
+- Customer card page: join with full name, email, mobile and date of birth (optional consent to offers), card with QR and short code, live updates, English for tourists.
 - Stamper: camera QR scanning (built-in `BarcodeDetector` where available, `jsQR` otherwise) or typed code, add and remove stamps, give reward.
 - Sales material: brochure generator (personalised per café), outreach kit, print-ready PDFs, and a full example for The Coffee.
 

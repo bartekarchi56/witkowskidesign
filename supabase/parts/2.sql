@@ -1,6 +1,14 @@
 -- Timbro database, part 2 of 7. Run the parts in order.
 set search_path = timbro, extensions;
 
+create index if not exists events_customer on events(customer_id, created_at);
+
+create table if not exists admins (user_id uuid primary key);   -- Witkowski Design accounts
+
+alter table businesses enable row level security;
+
+alter table cards      enable row level security;
+
 alter table customers  enable row level security;
 
 alter table devices    enable row level security;

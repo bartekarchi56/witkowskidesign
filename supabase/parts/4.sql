@@ -1,6 +1,17 @@
 -- Timbro database, part 4 of 7. Run the parts in order.
 set search_path = timbro, extensions;
 
+create or replace function stamper_lookup(p_token text, p_code text) returns jsonb
+language plpgsql security definer set search_path = timbro
+as $$
+declare d devices := _device(p_token); r jsonb;
+begin
+  select jsonb_build_object('customer', _customer_json(m), 'card', _card_json(c)) into r
+  from customers m join cards c on c.id = m.card_id
+  where m.id = upper(trim(p_code)) and c.business_id = d.business_id;
+  return r;   -- null: no card with this code at this café
+end $$;
+
 create or replace function stamper_stamp(p_token text, p_code text, p_delta int) returns jsonb
 language plpgsql security definer set search_path = timbro
 as $$
@@ -44,7 +55,7 @@ begin
     'profile', _profile(),
     'billing', (select _billing_json(b) from businesses b where b.id = v_biz),
     'cards', coalesce((select jsonb_agg(_card_json(c, true) order by c.created_at) from cards c where c.business_id = v_biz), '[]'::jsonb),
-    'customers', coalesce((select jsonb_agg(_customer_json(m, 200)) from customers m join cards c on c.id = m.card_id where c.business_id = v_biz), '[]'::jsonb),
+    'customers', coalesce((select jsonb_agg(_customer_json(m, 200) || _customer_contact(m)) from customers m join cards c on c.id = m.card_id where c.business_id = v_biz), '[]'::jsonb),
     'devices', coalesce((select jsonb_agg(jsonb_build_object('id', d.id, 'name', d.name, 'lastUsed', (extract(epoch from d.last_used) * 1000)::bigint) order by d.created_at) from devices d where d.business_id = v_biz), '[]'::jsonb)
   );
 end $$;

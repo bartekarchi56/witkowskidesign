@@ -279,7 +279,7 @@
     const en = lang === 'en';
     const reward = (en && card.rewardEn) || card.reward || '';
     return String(text || '').replace(/\{(name|left|reward|business)\}/g, (_, k) =>
-      k === 'name' ? (name || (en ? 'there' : '')) : k === 'left' ? `${left} ${stampsWord(left, lang)}` : k === 'reward' ? reward : card.business || '')
+      k === 'name' ? (String(name).trim().split(/\s+/)[0] || (en ? 'there' : '')) : k === 'left' ? `${left} ${stampsWord(left, lang)}` : k === 'reward' ? reward : card.business || '')
       .replace(/^\s*[,!]\s*/, '').replace(/\s+([!?,.])/g, '$1').replace(/\s{2,}/g, ' ').trim().replace(/^./, c => c.toUpperCase());
   }
 

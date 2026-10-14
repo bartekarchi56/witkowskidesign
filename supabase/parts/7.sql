@@ -3,7 +3,7 @@ set search_path = timbro, extensions;
 
 revoke execute on all functions in schema timbro from public, anon, authenticated;
 
-grant execute on function get_card(text), join_card(text, text), get_my_card(text, text),
+grant execute on function get_card(text), join_card(text, text, text, text, date, boolean), get_my_card(text, text),
   device_link(text, text), stamper_lookup(text, text), stamper_stamp(text, text, int), stamper_redeem(text, text)
   to anon, authenticated;
 

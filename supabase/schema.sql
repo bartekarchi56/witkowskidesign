@@ -76,6 +76,11 @@ create table if not exists customers (
   last_visit   timestamptz
 );
 create index if not exists customers_card on customers(card_id);
+-- What a customer gives when joining (full name above): only the café that owns the card sees it.
+alter table customers add column if not exists email      text not null default '';
+alter table customers add column if not exists phone      text not null default '';
+alter table customers add column if not exists birth_date date;
+alter table customers add column if not exists marketing  boolean not null default false;   -- agreed to news and offers
 
 create table if not exists devices (                           -- cashiers' phones
   id           uuid primary key default gen_random_uuid(),
@@ -210,6 +215,13 @@ as $$
   )
 $$;
 
+-- A customer's contact details, for the café's own dashboard only (never the till or the card page).
+create or replace function _customer_contact(m customers) returns jsonb
+language sql stable
+as $$
+  select jsonb_build_object('email', m.email, 'phone', m.phone, 'birthDate', m.birth_date, 'marketing', m.marketing)
+$$;
+
 create or replace function _device(p_token text) returns devices
 language plpgsql security definer set search_path = timbro
 as $$
@@ -227,21 +239,35 @@ create or replace function get_card(p_card_id text) returns jsonb
 language sql stable security definer set search_path = timbro
 as $$ select _card_json(c) from cards c where c.id = lower(p_card_id) $$;
 
-create or replace function join_card(p_card_id text, p_name text) returns jsonb
+-- A customer joins with full name, email, mobile number and date of birth.
+drop function if exists join_card(text, text);
+create or replace function join_card(p_card_id text, p_name text, p_email text default '', p_phone text default '',
+  p_birth date default null, p_marketing boolean default false) returns jsonb
 language plpgsql security definer set search_path = timbro
 as $$
 declare
   v_code text; v_secret text := _token();
+  v_name text := left(regexp_replace(trim(coalesce(p_name, '')), '\s+', ' ', 'g'), 60);
+  v_email text := lower(left(trim(coalesce(p_email, '')), 120));
+  v_phone text := left(regexp_replace(coalesce(p_phone, ''), '[^0-9+]', '', 'g'), 20);
 begin
   if not exists (select 1 from cards where id = lower(p_card_id)) then
     raise exception 'This card no longer exists.' using errcode = 'P0002';
+  end if;
+  if v_name !~ '\S+\s+\S+' then raise exception 'Please write your full name.' using errcode = '22023'; end if;
+  if v_email !~ '^[^@\s]+@[^@\s]+\.[^@\s]+$' then raise exception 'Please check your email.' using errcode = '22023'; end if;
+  if v_phone !~ '^\+?[0-9]{7,15}$' then raise exception 'Please check your mobile number.' using errcode = '22023'; end if;
+  if p_birth is null or p_birth > current_date - interval '13 years' or p_birth < current_date - interval '110 years' then
+    raise exception 'Please check your date of birth.' using errcode = '22023';
   end if;
   loop
     v_code := _code(6);
     exit when not exists (select 1 from customers where id = v_code);
   end loop;
-  insert into customers (id, card_id, name, secret_hash)
-  values (v_code, lower(p_card_id), coalesce(nullif(left(trim(p_name), 30), ''), 'Guest'), _hash(v_secret));
+  -- Offers by email or SMS need consent, and in Poland that means 16 or older.
+  insert into customers (id, card_id, name, secret_hash, email, phone, birth_date, marketing)
+  values (v_code, lower(p_card_id), v_name, _hash(v_secret), v_email, v_phone, p_birth,
+    coalesce(p_marketing, false) and p_birth <= current_date - interval '16 years');
   insert into events (customer_id, type) values (v_code, 'joined');
   return jsonb_build_object('id', v_code, 'secret', v_secret);
 end $$;
@@ -327,7 +353,7 @@ begin
     'profile', _profile(),
     'billing', (select _billing_json(b) from businesses b where b.id = v_biz),
     'cards', coalesce((select jsonb_agg(_card_json(c, true) order by c.created_at) from cards c where c.business_id = v_biz), '[]'::jsonb),
-    'customers', coalesce((select jsonb_agg(_customer_json(m, 200)) from customers m join cards c on c.id = m.card_id where c.business_id = v_biz), '[]'::jsonb),
+    'customers', coalesce((select jsonb_agg(_customer_json(m, 200) || _customer_contact(m)) from customers m join cards c on c.id = m.card_id where c.business_id = v_biz), '[]'::jsonb),
     'devices', coalesce((select jsonb_agg(jsonb_build_object('id', d.id, 'name', d.name, 'lastUsed', (extract(epoch from d.last_used) * 1000)::bigint) order by d.created_at) from devices d where d.business_id = v_biz), '[]'::jsonb)
   );
 end $$;
@@ -555,7 +581,7 @@ grant usage on schema timbro to anon, authenticated;
 revoke all on all tables in schema timbro from anon, authenticated;
 revoke execute on all functions in schema timbro from public, anon, authenticated;
 
-grant execute on function get_card(text), join_card(text, text), get_my_card(text, text),
+grant execute on function get_card(text), join_card(text, text, text, text, date, boolean), get_my_card(text, text),
   device_link(text, text), stamper_lookup(text, text), stamper_stamp(text, text, int), stamper_redeem(text, text)
   to anon, authenticated;
 

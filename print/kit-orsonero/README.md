@@ -136,6 +136,6 @@ Questo è quello che vedono i clienti sul telefono, e quello che vedreste voi do
 - **"What if a customer doesn't use Wallet?"** The card also opens as a web page on any phone; they can save it to the home screen.
 - **"Does staff need a new device?"** No. Any phone or tablet with a camera, in the browser.
 - **"What about our paper cards?"** Keep them until they run out; the poster says the new card is on the phone.
-- **"Customer data and privacy?"** Customers only give a first name. The data belongs to the café and is not shared or sold. Privacy page: https://timbro.witkowskidesign.com/legal/#privacy
+- **"Customer data and privacy?"** Customers give their name, email, mobile and date of birth, so you can reach your regulars (offers only to those who tick the consent box). The data belongs to the café and is not shared or sold. Privacy page: https://timbro.witkowskidesign.com/legal/#privacy
 - **"Can we change the reward or the number of stamps?"** Yes, any time, from the dashboard.
 - **"Can we stop?"** Yes, cancel from the dashboard, it stops at the end of the month. No contract.

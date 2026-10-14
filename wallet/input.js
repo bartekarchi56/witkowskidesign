@@ -29,7 +29,7 @@ export function readPassRequest(raw) {
   };
   const m = {
     id: str(customer.id, 6).toUpperCase(),
-    name: str(customer.name, 30) || 'Guest',
+    name: str(customer.name, 60) || 'Guest',
     stamps: Math.max(0, parseInt(customer.stamps, 10) || 0)
   };
   if (!/^[a-z0-9-]{1,40}$/.test(c.id)) throw new Error('Invalid card id');

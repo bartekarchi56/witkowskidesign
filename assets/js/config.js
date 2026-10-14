@@ -41,7 +41,7 @@ window.CONFIG = {
     vat: '',              // VAT / NIP / partita IVA
     email: '',            // contact for privacy and legal requests
     country: '',          // country of registration, e.g. 'Polska' / 'Italia'; sets the applicable law
-    updated: '2026-10-03' // date shown as "last updated"
+    updated: '2026-10-15' // date shown as "last updated"
   },
 
   // Default notification texts; each café can change them (dashboard → Notifications).

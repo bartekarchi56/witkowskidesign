@@ -16,6 +16,9 @@ main{max-width:420px;margin:0 auto;padding:16px 16px 48px;display:grid;gap:18px;
 .box p{color:var(--ink-2);font-size:16px}
 .box form{margin-top:20px}
 .fine{font-size:14px;color:var(--muted);text-align:center;margin-top:12px}
+.box .field{margin-bottom:12px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--ink-2);margin:4px 0 16px;line-height:1.4}
+.check input{width:20px;height:20px;flex:0 0 20px;margin:1px 0 0;accent-color:var(--pop)}
 .left{text-align:center;color:var(--ink-2)}
 .left.mine{background:var(--pop-wash);color:var(--ink);border-radius:14px;padding:12px 16px;font-weight:600}
 .left b{color:var(--pop)}
@@ -55,8 +58,11 @@ I18N.add({
   it: {
     'c.broken': 'Questo link non funziona', 'c.brokenP': 'Chiedi alla cassa il QR del locale e inquadralo di nuovo.',
     'c.join': 'Unisciti a {business}', 'c.joinP': 'Un timbro a ogni visita. Dopo {n} timbri: {reward}.',
-    'c.name': 'Il tuo nome', 'c.namePh': 'Così il barista sa che sei tu', 'c.get': 'Prendi la mia carta',
-    'c.fine': 'Niente app e niente account. La carta resta salvata su questo telefono.', 'c.privacy': 'Privacy', 'c.ready': 'La tua carta è pronta',
+    'c.name': 'Nome e cognome', 'c.namePh': 'Es. Giulia Rossi', 'c.get': 'Prendi la mia carta',
+    'c.email': 'Email', 'c.phone': 'Cellulare', 'c.phonePh': '+39 333 123 4567', 'c.birth': 'Data di nascita',
+    'c.marketing': 'Voglio ricevere novità e offerte da {business} via email o SMS (facoltativo).',
+    'c.errName': 'Scrivi nome e cognome.', 'c.errEmail': 'Controlla l\'email.', 'c.errPhone': 'Controlla il numero di cellulare.', 'c.errBirth': 'Controlla la data di nascita.',
+    'c.fine': 'Niente app. I tuoi dati li vede solo {business}, per la carta fedeltà.', 'c.privacy': 'Privacy', 'c.ready': 'La tua carta è pronta',
     'c.left': 'Mostra il codice quando paghi. <b>Ancora {n}</b> per {reward}.', 'c.claim': 'Mostra la carta alla cassa per avere il premio.',
     'c.apple': 'Aggiungi a Apple Wallet', 'c.google': 'Aggiungi a Google Wallet',
     'c.walletNote': 'Il salvataggio nel Wallet arriva presto. Intanto aggiungi questa pagina alla schermata Home.',
@@ -66,8 +72,11 @@ I18N.add({
   en: {
     'c.broken': 'This link isn\'t working', 'c.brokenP': 'Ask at the till for their QR code and scan it again.',
     'c.join': 'Join {business}', 'c.joinP': 'One stamp every visit. After {n} stamps: {reward}.',
-    'c.name': 'Your first name', 'c.namePh': 'So the staff know it\'s you', 'c.get': 'Get my card',
-    'c.fine': 'No app and no account. The card stays saved on this phone.', 'c.privacy': 'Privacy', 'c.ready': 'Your card is ready',
+    'c.name': 'Full name', 'c.namePh': 'E.g. Emma Smith', 'c.get': 'Get my card',
+    'c.email': 'Email', 'c.phone': 'Mobile number', 'c.phonePh': '+44 7700 900123', 'c.birth': 'Date of birth',
+    'c.marketing': 'Send me news and offers from {business} by email or text (optional).',
+    'c.errName': 'Please write your first and last name.', 'c.errEmail': 'Please check your email.', 'c.errPhone': 'Please check your mobile number.', 'c.errBirth': 'Please check your date of birth.',
+    'c.fine': 'No app. Only {business} sees your details, for the loyalty card.', 'c.privacy': 'Privacy', 'c.ready': 'Your card is ready',
     'c.left': 'Show the code when you pay. <b>{n} more</b> for {reward}.', 'c.claim': 'Show this card at the till to get your reward.',
     'c.apple': 'Add to Apple Wallet', 'c.google': 'Add to Google Wallet',
     'c.walletNote': 'Wallet saving is coming soon. For now, add this page to your home screen.',
@@ -77,8 +86,11 @@ I18N.add({
   pl: {
     'c.broken': 'Ten link nie działa', 'c.brokenP': 'Poproś przy kasie o ich kod QR i zeskanuj go jeszcze raz.',
     'c.join': 'Dołącz do {business}', 'c.joinP': 'Pieczątka przy każdej wizycie. Po {n} pieczątkach: {reward}.',
-    'c.name': 'Twoje imię', 'c.namePh': 'Żeby obsługa wiedziała, że to Ty', 'c.get': 'Odbierz moją kartę',
-    'c.fine': 'Bez aplikacji i bez konta. Karta zostaje zapisana w tym telefonie.', 'c.privacy': 'Prywatność', 'c.ready': 'Twoja karta jest gotowa',
+    'c.name': 'Imię i nazwisko', 'c.namePh': 'Np. Anna Kowalska', 'c.get': 'Odbierz moją kartę',
+    'c.email': 'E-mail', 'c.phone': 'Numer telefonu komórkowego', 'c.phonePh': '+48 600 123 456', 'c.birth': 'Data urodzenia',
+    'c.marketing': 'Chcę dostawać nowości i oferty od {business} e-mailem lub SMS-em (opcjonalnie).',
+    'c.errName': 'Wpisz imię i nazwisko.', 'c.errEmail': 'Sprawdź adres e-mail.', 'c.errPhone': 'Sprawdź numer telefonu.', 'c.errBirth': 'Sprawdź datę urodzenia.',
+    'c.fine': 'Bez aplikacji. Twoje dane widzi tylko {business}, na potrzeby karty lojalnościowej.', 'c.privacy': 'Prywatność', 'c.ready': 'Twoja karta jest gotowa',
     'c.left': 'Pokaż kod przy płaceniu. Jeszcze <b>{n}</b> do nagrody: {reward}.', 'c.claim': 'Pokaż tę kartę przy kasie i odbierz nagrodę.',
     'c.apple': 'Dodaj do Apple Wallet', 'c.google': 'Dodaj do Google Wallet',
     'c.walletNote': 'Zapisywanie w Portfelu już wkrótce. Na razie dodaj tę stronę do ekranu głównego.',
@@ -143,21 +155,37 @@ I18N.add({
         <div class="box">
           <h1>${UI.esc(t('c.join', { business: card.business }))}</h1>
           <p>${UI.esc(t('c.joinP', { n: card.stampsNeeded, reward: w.reward }))}</p>
-          <form id="join">
+          <form id="join" novalidate>
             <label class="field"><span>${t('c.name')}</span>
-              <input type="text" name="name" maxlength="30" autocomplete="given-name" placeholder="${t('c.namePh')}">
+              <input type="text" name="name" maxlength="60" autocomplete="name" required placeholder="${t('c.namePh')}">
             </label>
+            <label class="field"><span>${t('c.birth')}</span>
+              <input type="date" name="birth" autocomplete="bday" required max="${new Date(Date.now() - 13 * 365.25 * 864e5).toISOString().slice(0, 10)}" min="1915-01-01">
+            </label>
+            <label class="field"><span>${t('c.email')}</span>
+              <input type="email" name="email" maxlength="120" autocomplete="email" inputmode="email" required>
+            </label>
+            <label class="field"><span>${t('c.phone')}</span>
+              <input type="tel" name="phone" maxlength="20" autocomplete="tel" inputmode="tel" required placeholder="${t('c.phonePh')}">
+            </label>
+            <label class="check"><input type="checkbox" name="marketing"><span>${UI.esc(t('c.marketing', { business: card.business }))}</span></label>
             <button class="btn pop block" type="submit">${t('c.get')}</button>
           </form>
-          <p class="fine">${t('c.fine')} <a href="../legal/#${{ it: 'privacy', en: 'privacy-en', pl: 'privacy-pl' }[I18N.lang]}" target="_blank">${t('c.privacy')}</a></p>
+          <p class="fine">${UI.esc(t('c.fine', { business: card.business }))} <a href="../legal/#${{ it: 'privacy', en: 'privacy-en', pl: 'privacy-pl' }[I18N.lang]}" target="_blank">${t('c.privacy')}</a></p>
         </div>
         <p class="by">${t('c.by')} <i></i><b>${UI.esc(CONFIG.brand)}</b></p>`;
       document.getElementById('join').addEventListener('submit', async e => {
         e.preventDefault();
         const btn = e.target.querySelector('button'); btn.disabled = true;
         try {
-          if (Remote.enabled) { const r = await Remote.joinCard(cardId, e.target.name.value); remember(cardId, { id: r.id, secret: r.secret }); }
-          else remember(cardId, { id: Store.join(cardId, e.target.name.value).id });
+          const f = e.target, who = { name: f.name.value.trim().replace(/\s+/g, ' '), email: f.email.value.trim(), phone: f.phone.value.trim(), birthDate: f.birth.value, marketing: f.marketing.checked };
+          // The same checks as the database, in the customer's language.
+          const age = (Date.now() - new Date(who.birthDate)) / (365.25 * 864e5);
+          const bad = !/\S+\s+\S+/.test(who.name) ? ['name', 'c.errName'] : !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(who.email) ? ['email', 'c.errEmail']
+            : !/^\+?[0-9]{7,15}$/.test(who.phone.replace(/[^0-9+]/g, '')) ? ['phone', 'c.errPhone'] : !(age >= 13 && age < 110) ? ['birth', 'c.errBirth'] : null;
+          if (bad) { UI.toast(t(bad[1])); f[bad[0]].focus(); btn.disabled = false; return; }
+          if (Remote.enabled) { const r = await Remote.joinCard(cardId, who); remember(cardId, { id: r.id, secret: r.secret }); }
+          else remember(cardId, { id: Store.join(cardId, who).id });
           await load();
           last = 0;
           render();

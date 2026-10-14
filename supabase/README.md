@@ -18,7 +18,7 @@ Use one of your **existing** Supabase projects; you don't need a new one (the fr
 
 You can run the SQL again later after an update: it keeps your data.
 
-**Already installed?** Run only the new files in [`updates/`](updates), in order (each is under 100 lines). `updates/1a` and `1b` add the sign-up details (name, café, phone, address, Instagram), which you see in the Studio. `updates/2a` and `2b` add subscriptions (see [STRIPE.md](STRIPE.md)). `updates/6a` and `6b` add Polish (each card's own language and Polish notification texts) and the Chains plan.
+**Already installed?** Run only the new files in [`updates/`](updates), in order (each is under 100 lines). `updates/1a` and `1b` add the sign-up details (name, café, phone, address, Instagram), which you see in the Studio. `updates/2a` and `2b` add subscriptions (see [STRIPE.md](STRIPE.md)). `updates/6a` and `6b` add Polish (each card's own language and Polish notification texts) and the Chains plan.  `updates/7a` and `7b`: customers join with full name, email, mobile and date of birth (only the café sees them).
 
 **Sharing a project:** logins (Supabase Auth) are shared between apps in the same project. Someone with an account in your other app could also sign in to Timbro, but they would only get an empty café of their own: they can't see any café's data or open the Studio.
 
@@ -61,7 +61,7 @@ Now `studio/` opens for you and shows every café's cards, proposals and request
 |---|---|
 | Café owner | Signs up on the site (`app/login.html`), then uses the dashboard. |
 | Cashier's phone | The owner opens **Cassa → Collega un telefono** and scans the QR with the till phone. No account needed. The owner can unlink a phone at any time. |
-| Customer | Scans the café's poster and types a first name. Their phone keeps a secret that proves the card is theirs. |
+| Customer | Scans the café's poster and gives full name, email, mobile number and date of birth (only the café sees them; offers only with the consent box ticked). Their phone keeps a secret that proves the card is theirs. |
 | You | Your account is in the `admins` table, which opens the Studio, publishing and plans. |
 
 ## Plans

@@ -41,7 +41,8 @@
 
     // ---- customers ----
     getCard: id => rpc('get_card', { p_card_id: id }),
-    joinCard: (id, name) => rpc('join_card', { p_card_id: id, p_name: name }),
+    // who = { name, email, phone, birthDate: 'YYYY-MM-DD', marketing }
+    joinCard: (id, who) => rpc('join_card', { p_card_id: id, p_name: who.name, p_email: who.email, p_phone: who.phone, p_birth: who.birthDate, p_marketing: !!who.marketing }),
     getMyCard: (code, secret) => rpc('get_my_card', { p_code: code, p_secret: secret }),
 
     // ---- the cashier's phone ----

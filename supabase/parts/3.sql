@@ -15,6 +15,12 @@ as $$
   )
 $$;
 
+create or replace function _customer_contact(m customers) returns jsonb
+language sql stable
+as $$
+  select jsonb_build_object('email', m.email, 'phone', m.phone, 'birthDate', m.birth_date, 'marketing', m.marketing)
+$$;
+
 create or replace function _device(p_token text) returns devices
 language plpgsql security definer set search_path = timbro
 as $$
@@ -30,21 +36,35 @@ create or replace function get_card(p_card_id text) returns jsonb
 language sql stable security definer set search_path = timbro
 as $$ select _card_json(c) from cards c where c.id = lower(p_card_id) $$;
 
-create or replace function join_card(p_card_id text, p_name text) returns jsonb
+drop function if exists join_card(text, text);
+
+create or replace function join_card(p_card_id text, p_name text, p_email text default '', p_phone text default '',
+  p_birth date default null, p_marketing boolean default false) returns jsonb
 language plpgsql security definer set search_path = timbro
 as $$
 declare
   v_code text; v_secret text := _token();
+  v_name text := left(regexp_replace(trim(coalesce(p_name, '')), '\s+', ' ', 'g'), 60);
+  v_email text := lower(left(trim(coalesce(p_email, '')), 120));
+  v_phone text := left(regexp_replace(coalesce(p_phone, ''), '[^0-9+]', '', 'g'), 20);
 begin
   if not exists (select 1 from cards where id = lower(p_card_id)) then
     raise exception 'This card no longer exists.' using errcode = 'P0002';
+  end if;
+  if v_name !~ '\S+\s+\S+' then raise exception 'Please write your full name.' using errcode = '22023'; end if;
+  if v_email !~ '^[^@\s]+@[^@\s]+\.[^@\s]+$' then raise exception 'Please check your email.' using errcode = '22023'; end if;
+  if v_phone !~ '^\+?[0-9]{7,15}$' then raise exception 'Please check your mobile number.' using errcode = '22023'; end if;
+  if p_birth is null or p_birth > current_date - interval '13 years' or p_birth < current_date - interval '110 years' then
+    raise exception 'Please check your date of birth.' using errcode = '22023';
   end if;
   loop
     v_code := _code(6);
     exit when not exists (select 1 from customers where id = v_code);
   end loop;
-  insert into customers (id, card_id, name, secret_hash)
-  values (v_code, lower(p_card_id), coalesce(nullif(left(trim(p_name), 30), ''), 'Guest'), _hash(v_secret));
+  -- Offers by email or SMS need consent, and in Poland that means 16 or older.
+  insert into customers (id, card_id, name, secret_hash, email, phone, birth_date, marketing)
+  values (v_code, lower(p_card_id), v_name, _hash(v_secret), v_email, v_phone, p_birth,
+    coalesce(p_marketing, false) and p_birth <= current_date - interval '16 years');
   insert into events (customer_id, type) values (v_code, 'joined');
   return jsonb_build_object('id', v_code, 'secret', v_secret);
 end $$;
@@ -69,15 +89,4 @@ begin
   insert into devices (business_id, name, token_hash) values (v_biz, coalesce(nullif(left(trim(p_name), 40), ''), 'Cassa'), _hash(v_token));
   select name into v_name from businesses where id = v_biz;
   return jsonb_build_object('token', v_token, 'business', v_name);
-end $$;
-
-create or replace function stamper_lookup(p_token text, p_code text) returns jsonb
-language plpgsql security definer set search_path = timbro
-as $$
-declare d devices := _device(p_token); r jsonb;
-begin
-  select jsonb_build_object('customer', _customer_json(m), 'card', _card_json(c)) into r
-  from customers m join cards c on c.id = m.card_id
-  where m.id = upper(trim(p_code)) and c.business_id = d.business_id;
-  return r;   -- null: no card with this code at this café
 end $$;

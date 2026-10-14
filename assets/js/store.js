@@ -130,13 +130,16 @@
     },
 
     // ---- customers (one per person per card) ----
-    join(cardId, name) {
+    // who: { name, email, phone, birthDate, marketing } (or just a name)
+    join(cardId, who) {
       const db = load();
       if (!db.cards[cardId]) throw new Error('This card no longer exists.');
+      if (typeof who === 'string') who = { name: who };
       let id;
       do { id = code(6); } while (db.customers[id]);
       db.customers[id] = {
-        id, cardId, name: (name || '').trim() || 'Guest',
+        id, cardId, name: (who.name || '').trim() || 'Guest',
+        email: who.email || '', phone: who.phone || '', birthDate: who.birthDate || null, marketing: !!who.marketing,
         stamps: 0, redeemed: 0, joinedAt: Date.now(), lastVisit: null,
         history: [{ t: Date.now(), type: 'joined' }]
       };

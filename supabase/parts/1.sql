@@ -63,6 +63,14 @@ create table if not exists customers (
 
 create index if not exists customers_card on customers(card_id);
 
+alter table customers add column if not exists email      text not null default '';
+
+alter table customers add column if not exists phone      text not null default '';
+
+alter table customers add column if not exists birth_date date;
+
+alter table customers add column if not exists marketing  boolean not null default false;   -- agreed to news and offers
+
 create table if not exists devices (                           -- cashiers' phones
   id           uuid primary key default gen_random_uuid(),
   business_id  uuid not null references businesses(id) on delete cascade,
@@ -86,11 +94,3 @@ create table if not exists events (
   n            int  not null default 1,
   created_at   timestamptz not null default now()
 );
-
-create index if not exists events_customer on events(customer_id, created_at);
-
-create table if not exists admins (user_id uuid primary key);   -- Witkowski Design accounts
-
-alter table businesses enable row level security;
-
-alter table cards      enable row level security;

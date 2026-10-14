@@ -29,12 +29,18 @@ ok('another owner cannot overwrite it');
 
 // ---- a customer joins ----
 assert.equal((await call(anon, 'get_card', { p_card_id: id })).title, 'Carta caffè');
-const joined = await call(anon, 'join_card', { p_card_id: id, p_name: 'Giulia' });
+const who = { p_card_id: id, p_name: 'Giulia  Rossi', p_email: 'Giulia@Example.com', p_phone: '+39 333 123 4567', p_birth: '1995-04-12', p_marketing: true };
+await rejects(call(anon, 'join_card', { ...who, p_name: 'Giulia' }), /full name/);
+await rejects(call(anon, 'join_card', { ...who, p_email: 'giulia@' }), /email/);
+await rejects(call(anon, 'join_card', { ...who, p_phone: '123' }), /mobile/);
+await rejects(call(anon, 'join_card', { ...who, p_birth: null }), /date of birth/);
+await rejects(call(anon, 'join_card', { ...who, p_birth: new Date(Date.now() - 10 * 365 * 864e5).toISOString().slice(0, 10) }), /date of birth/);
+const joined = await call(anon, 'join_card', who);
 assert.match(joined.id, /^[A-Z0-9]{6}$/); assert.equal(joined.secret.length, 48);
 const mine = await call(anon, 'get_my_card', { p_code: joined.id, p_secret: joined.secret });
-assert.equal(mine.customer.name, 'Giulia'); assert.equal(mine.customer.stamps, 0);
+assert.equal(mine.customer.name, 'Giulia Rossi'); assert.equal(mine.customer.stamps, 0); assert.equal(mine.customer.email, undefined);
 assert.equal(await call(anon, 'get_my_card', { p_code: joined.id, p_secret: 'wrong' }), null);
-ok('customer joins and reads their card only with their secret');
+ok('customer joins with full name, email, mobile and date of birth, and reads their card only with their secret');
 
 // ---- linking the cashier's phone ----
 await rejects(call(users.ownerB, 'owner_link_code'), /Create your card first/);
@@ -47,10 +53,11 @@ ok('link code works once, for the right café');
 
 // ---- stamping ----
 await rejects(call(anon, 'stamper_lookup', { p_token: 'nope', p_code: joined.id }), /not linked/);
-assert.equal((await call(anon, 'stamper_lookup', { p_token: dev.token, p_code: joined.id.toLowerCase() })).customer.name, 'Giulia');
+assert.equal((await call(anon, 'stamper_lookup', { p_token: dev.token, p_code: joined.id.toLowerCase() })).customer.name, 'Giulia Rossi');
 await rejects(call(anon, 'stamper_redeem', { p_token: dev.token, p_code: joined.id }), /not full yet/);
 for (let i = 0; i < 5; i++) await call(anon, 'stamper_stamp', { p_token: dev.token, p_code: joined.id, p_delta: 1 });
 let s = await call(anon, 'stamper_lookup', { p_token: dev.token, p_code: joined.id });
+assert.equal(s.customer.email, undefined); assert.equal(s.customer.phone, undefined);   // the till never sees contact details
 assert.equal(s.customer.stamps, 3, 'never goes past the goal');
 await call(anon, 'stamper_stamp', { p_token: dev.token, p_code: joined.id, p_delta: -1 });
 await call(anon, 'stamper_stamp', { p_token: dev.token, p_code: joined.id, p_delta: 1 });
@@ -131,6 +138,15 @@ assert.equal(withMsgs.messages.close.left, 3); assert.equal(withMsgs.messages.cl
 assert.equal(withMsgs.messages.remind.days, 7); assert.equal(withMsgs.messages.near.lat, 45.47); assert.equal(withMsgs.messages.evil, undefined);
 assert.equal((await call(anon, 'get_card', { p_card_id: id })).messages.close.it, 'Ancora {left}!');
 ok('owners save their own notification texts; limits and unknown keys are cleaned');
+
+// ---- customer details: only the café sees them; offers need consent and age 16+ ----
+const teen = await call(anon, 'join_card', { ...who, p_name: 'Ola Nowak', p_birth: new Date(Date.now() - 15 * 365.25 * 864e5).toISOString().slice(0, 10) });
+const seen = (await call(users.ownerA, 'owner_data')).customers;
+const g = seen.find(c => c.id === joined.id), t = seen.find(c => c.id === teen.id);
+assert.equal(g.email, 'giulia@example.com'); assert.equal(g.phone, '+393331234567'); assert.equal(g.birthDate, '1995-04-12'); assert.equal(g.marketing, true);
+assert.equal(t.marketing, false, 'no offers to under-16s');
+assert.ok(!(await call(users.ownerB, 'owner_data')).customers.some(c => c.id === joined.id));
+ok('the café sees its customers\' details (never the till or other cafés); no offers consent under 16');
 
 // ---- Polish: the card's own language and Polish messages; the Chains plan ----
 assert.equal((await call(users.ownerA, 'owner_save_card', { p_card: { id, lang: 'pl' } })).lang, 'pl');
