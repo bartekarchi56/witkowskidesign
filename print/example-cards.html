@@ -62,7 +62,7 @@ h1{font-size:28px;margin:0 0 6px}
     for (let row = -1; row < 13; row++) for (let col = -1; col < 24; col++) { const x = col * w + (row % 2 ? w / 2 : 0), y = row * r * 1.5;
       d += 'M' + Array.from({ length: 6 }, (_, i) => { const a = Math.PI / 6 + i * Math.PI / 3; return `${(x + r * Math.cos(a)).toFixed(1)} ${(y + r * Math.sin(a)).toFixed(1)}`; }).join('L') + 'Z'; }
     return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/><path d="${d}" fill="none" stroke="${line}" stroke-width="2"/></svg>`); };
-  const KOF = { id: 'kofeina', business: 'Kofeina', title: 'Karta kawowa', reward: 'kawa gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee', lang: 'pl', tagline: 'coffee' };
+  const KOF = { id: 'kofeina', business: 'Kofeina', title: 'Karta kawowa', reward: 'kawa gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee', lang: 'pl', city: 'Bydgoszcz', tagline: 'coffee · Bydgoszcz' };
   const SOWA = { id: 'sowa', business: 'Cukiernia Sowa', title: 'Lodowy Fanklub', reward: '1 gałka lodów gratis', titleEn: 'Ice cream fan club', rewardEn: 'a free scoop', stampsNeeded: 10, lang: 'pl', tagline: '80 lat tradycji' };
   const ORSO = { id: 'orsonero', business: 'Orsonero Coffee', title: 'Carta Orsonero', reward: 'un caffè a scelta', titleEn: 'Orsonero card', rewardEn: 'any coffee, on us', stampsNeeded: 8, tagline: 'Specialty coffee' };
   const SETS = [

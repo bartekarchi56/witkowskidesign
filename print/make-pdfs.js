@@ -17,6 +17,7 @@ const FILES = [
   ['sales/brochure.html?cafe=Orsonero%20Coffee&lang=it&format=a5', 'brochure-orsonero-it.pdf'],
   ['sales/brochure.html?cafe=&lang=pl&format=a5', 'brochure-ogolna-pl.pdf'],
   ['sales/brochure.html?cafe=Cukiernia%20Sowa&lang=pl&format=a5', 'brochure-sowa-pl.pdf'],
+  ['sales/brochure.html?cafe=Kofeina&lang=pl&format=a5', 'brochure-kofeina-pl.pdf'],
   ['app/poster.html?card=the-coffee&lang=it&size=A5', 'poster-the-coffee-a5.pdf'],
   ['app/poster.html?card=orsonero&lang=en&size=A5', 'poster-orsonero-a5.pdf']
 ];
