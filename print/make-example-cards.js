@@ -23,7 +23,7 @@ server.listen(0, async () => {
   await page.goto(`http://localhost:${server.address().port}/print/example-cards.html`);
   await page.waitForFunction(() => window.READY === true); await page.waitForTimeout(800);
   for (const id of await page.$$eval('.shot', s => s.map(x => x.id))) {
-    const dir = path.join(__dirname, id.startsWith('sowa') ? 'kit-sowa' : 'kit-orsonero');
+    const dir = path.join(__dirname, 'kit-' + id.split('-')[0]);
     fs.mkdirSync(dir, { recursive: true });
     await page.locator(`#${id} .pass`).screenshot({ path: path.join(dir, `card-${id}.png`), omitBackground: true });
     console.log('✓', path.relative(__dirname, path.join(dir, `card-${id}.png`)));
