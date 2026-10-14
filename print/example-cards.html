@@ -44,11 +44,11 @@ h1{font-size:28px;margin:0 0 6px}
   const SOWA = { id: 'sowa', business: 'Cukiernia Sowa', title: 'Lodowy Fanklub', reward: '1 gałka lodów gratis', titleEn: 'Ice cream fan club', rewardEn: 'a free scoop', stampsNeeded: 10, lang: 'pl', tagline: '80 lat tradycji' };
   const ORSO = { id: 'orsonero', business: 'Orsonero Coffee', title: 'Carta Orsonero', reward: 'un caffè a scelta', titleEn: 'Orsonero card', rewardEn: 'any coffee, on us', stampsNeeded: 8, tagline: 'Specialty coffee' };
   const SETS = [
-    { id: 'sowa', lang: 'pl', title: 'Cukiernia Sowa', note: 'Lodowy Fanklub, z papierowej karty do telefonu.', cards: [
+    { id: 'sowa', lang: 'pl', title: 'Cukiernia Sowa', note: 'Lodowy Fanklub z papierowej karty do telefonu, i karta kawowa na 80 lat.', cards: [
       { name: 'sowa-simple', label: 'Prosta: logo w środku, brązowe kropki', stamps: 6,
         card: { ...SOWA, color: '#FFFFFF', ink: '#522D24', stamp: 'punto', font: 'serif', strip: '#FFFFFF', stripImage: watermark(OWL, '#FFFFFF', .16, 1020, 450, 430), logo: '' } },
-      { name: 'sowa-80', label: 'Na 80 lat: tekstura, logo 80, sowa jako pieczątka', stamps: 6,
-        card: { ...SOWA, color: '#FBF6EE', ink: '#522D24', stamp: 'punto', font: 'serif', strip: '#FBF6EE', stripImage: scales, logo: 'kit-sowa/art/sowa-80-logo.svg', stampImage: 'kit-sowa/art/sowa-owl-stamp.png' } }
+      { name: 'sowa-80', label: 'Na 80 lat: kawa, tekstura, logo 80, sowa jako pieczątka', stamps: 5,
+        card: { ...SOWA, title: 'Karta kawowa', reward: 'kawa gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee', stampsNeeded: 8, color: '#FBF6EE', ink: '#522D24', stamp: 'punto', font: 'serif', strip: '#FBF6EE', stripImage: scales, logo: 'kit-sowa/art/sowa-80-logo.svg', stampImage: 'kit-sowa/art/sowa-owl-stamp.png' } }
     ] },
     { id: 'orsonero', lang: 'en', title: 'Orsonero Coffee', note: 'Two looks for the same card.', cards: [
       { name: 'orsonero-simple', label: 'Simple: bear in the middle, brown dots', stamps: 5,
