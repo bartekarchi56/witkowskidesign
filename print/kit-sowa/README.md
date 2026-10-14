@@ -7,7 +7,7 @@ so the simple example turns that card into a phone card; the 80th-anniversary on
 | File | What it is |
 |---|---|
 | `card-sowa-simple-iphone.png` / `-android.png` | Simple: their owl in the middle, brown dots as stamps |
-| `card-sowa-80-iphone.png` / `-android.png` | For the 80th anniversary: a coffee card with their fish-scale texture, the "80" logo, the owl as the stamp |
+| `card-sowa-80-iphone.png` / `-android.png` | For the 80th anniversary: a coffee card with their feather texture, the "80" logo, the owl as the stamp |
 | `example-cards-overview.png` | Both designs, plus the two Orsonero designs, on one page |
 | `../brochure-sowa-pl.pdf` | The Polish brochure with their name |
 

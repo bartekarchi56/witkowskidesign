@@ -34,8 +34,9 @@ h1{font-size:28px;margin:0 0 6px}
   const BEAR = await dataUrl('kit-orsonero/art/orsonero-bear.svg');
   // A strip with a big, faint logo in the middle: the stamps sit on top of it.
   const watermark = (img, bg, opacity, w = 1020, h = 450, size = 400) => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${bg}"/><image href="${img}" xlink:href="${img}" x="${(w - size) / 2}" y="${(h - size) / 2}" width="${size}" height="${size}" opacity="${opacity}" preserveAspectRatio="xMidYMid meet"/></svg>`);
-  // Sowa's fish-scale pattern (as on cukierniasowa.pl), in cream.
-  const scales = svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><defs><pattern id="s" width="64" height="40" patternUnits="userSpaceOnUse"><path d="M-32 40a32 32 0 0 1 64 0M32 40a32 32 0 0 1 64 0M0 20a32 32 0 0 1 64 0" fill="none" stroke="#E6D9C6" stroke-width="2.4"/></pattern></defs><rect width="1020" height="450" fill="#FBF6EE"/><rect width="1020" height="450" fill="url(#s)"/></svg>`);
+  // Sowa's feather pattern (as on cukierniasowa.pl): pointed scales in offset rows, in cream.
+  const W = 78, H = 44, feather = (x, y) => `M${x} ${y}C${x} ${y + H * .55} ${x + W * .28} ${y + H * .9} ${x + W / 2} ${y + H}C${x + W * .72} ${y + H * .9} ${x + W} ${y + H * .55} ${x + W} ${y}`;
+  const scales = svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><defs><pattern id="s" width="${W}" height="${H * 2}" patternUnits="userSpaceOnUse"><path d="${[feather(0, 0), feather(-W / 2, H), feather(W / 2, H), feather(0, H * 2), feather(-W / 2, -H), feather(W / 2, -H)].join('')}" fill="none" stroke="#E4D6C2" stroke-width="2.2" stroke-linecap="round"/></pattern></defs><rect width="1020" height="450" fill="#FBF6EE"/><rect width="1020" height="450" fill="url(#s)"/></svg>`);
   // Light oak with a soft grain, for Orsonero's counters.
   let grain = '';
   for (let i = 0; i < 26; i++) { const y = 10 + i * 17 + (i % 3) * 3, a = 4 + (i * 7) % 9; grain += `<path d="M0 ${y}C170 ${y - a} 340 ${y + a} 510 ${y}S850 ${y - a} 1020 ${y + 2}" fill="none" stroke="${i % 4 ? '#DCCBAE' : '#D2BE9B'}" stroke-width="${i % 5 ? 1.6 : 2.6}"/>`; }
