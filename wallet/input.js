@@ -13,6 +13,7 @@ export function readPassRequest(raw) {
     id: str(card.id, 40).toLowerCase(),
     business: str(card.business, 40),
     title: str(card.title, 40), titleEn: str(card.titleEn, 40),
+    lang: ['it', 'en', 'pl'].includes(card.lang) ? card.lang : 'it',
     reward: str(card.reward, 60), rewardEn: str(card.rewardEn, 60),
     stampsNeeded: Math.max(1, Math.min(20, parseInt(card.stampsNeeded, 10) || 10)),
     color: str(card.color, 7), ink: str(card.ink, 7), icon: str(card.icon, 12),
@@ -35,10 +36,11 @@ export function readPassRequest(raw) {
   if (!/^[A-Z0-9]{6}$/.test(m.id)) throw new Error('Invalid customer code');
   if (!c.business || !c.title) throw new Error('Missing card name');
   m.stamps = Math.min(m.stamps, c.stampsNeeded);
-  return { card: c, customer: m, lang: lang === 'en' ? 'en' : 'it' };
+  return { card: c, customer: m, lang: ['it', 'en', 'pl'].includes(lang) ? lang : 'it' };
 }
 
 export const LABELS = {
   it: { stamps: 'TIMBRI', reward: 'PREMIO', member: 'CLIENTE', how: 'Come funziona', howText: n => `Mostra il codice alla cassa a ogni visita: ricevi un timbro. Dopo ${n} timbri ricevi il premio.`, by: 'Carta fedeltà con', change: 'Timbri: %@', points: 'Timbri', news: 'Novità', quiet: 'Un timbro a ogni visita.' },
+  pl: { stamps: 'PIECZĄTKI', reward: 'NAGRODA', member: 'KLIENT', how: 'Jak to działa', howText: n => `Pokaż kod przy kasie przy każdej wizycie: dostaniesz pieczątkę. Po ${n} pieczątkach odbierasz nagrodę.`, by: 'Karta lojalnościowa od', change: 'Pieczątki: %@', points: 'Pieczątki', news: 'Nowości', quiet: 'Pieczątka przy każdej wizycie.' },
   en: { stamps: 'STAMPS', reward: 'REWARD', member: 'MEMBER', how: 'How it works', howText: n => `Show the code at the till every visit to get a stamp. After ${n} stamps you get the reward.`, by: 'Loyalty card by', change: 'Stamps: %@', points: 'Stamps', news: 'News', quiet: 'One stamp every visit.' }
 };

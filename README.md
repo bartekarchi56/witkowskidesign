@@ -2,7 +2,7 @@
 
 A service by **Witkowski Design**.
 
-Digital stamp cards for cafés, bakeries and shops, with help on the design and marketing. Customers scan a QR code and save the card in Apple Wallet or Google Wallet, and staff stamp it with their phone's camera. Everything is in Italian and English.
+Digital stamp cards for cafés, bakeries and shops, with help on the design and marketing. Customers scan a QR code and save the card in Apple Wallet or Google Wallet, and staff stamp it with their phone's camera. Everything is in Italian, English and Polish (`assets/js/i18n.js`; a card has its own language, `card.lang`, and speaks English to visitors browsing in English).
 
 *Timbro* is a working name (Italian for "stamp"). To rename it, change `brand` in `assets/js/config.js` and the word "Timbro" in the HTML files.
 
@@ -39,7 +39,7 @@ To make a brochure for another café, open `sales/brochure.html`, type the café
 
 1. **The site is online** at https://timbro.witkowskidesign.com/ (GitHub Pages from `claude/loopy-loyalty-pricing-redesign-yg54mp`, custom domain in `CNAME`, DNS on Cloudflare). `siteUrl` in `assets/js/config.js` and every printed QR code point there. The old address (bartekarchi56.github.io/witkowskidesign/) forwards to it.
 2. **Fill in `contact`** (phone, email) in `assets/js/config.js`, or type them into the brochure page before printing.
-3. **Check the prices and plans** in `config.js`: €10 / €20 / €30 a month, 30 days free, yearly = 10 months (€100 / €200 / €300).
+3. **Check the prices and plans** in `config.js`: Start €19, Plus €39, Pro €79 a month, 30 days free, yearly = 10 months (€190 / €390 / €790). **Chains** (11+ locations) is not sold online: "from €8 per location a month", a pilot first, a contract and invoices; the button opens WhatsApp and you set the plan to Chains in the Studio. After changing a price, press "Prepara i piani su Stripe" in the Studio again.
 4. Regenerate the PDFs after any change: `node print/make-pdfs.js` (or open the brochure page and save as PDF).
 
 ## Run it locally

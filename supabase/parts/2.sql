@@ -1,5 +1,11 @@
--- Timbro database, part 2 of 6. Run the parts in order.
+-- Timbro database, part 2 of 7. Run the parts in order.
 set search_path = timbro, extensions;
+
+alter table customers  enable row level security;
+
+alter table devices    enable row level security;
+
+alter table link_codes enable row level security;
 
 alter table events     enable row level security;
 
@@ -74,23 +80,9 @@ language sql stable
 as $$
   select c.design || jsonb_build_object(
     'id', c.id, 'business', c.business, 'city', c.city, 'type', c.type,
-    'title', c.title, 'reward', c.reward, 'titleEn', c.title_en, 'rewardEn', c.reward_en,
+    'title', c.title, 'reward', c.reward, 'titleEn', c.title_en, 'rewardEn', c.reward_en, 'lang', c.lang,
     'stampsNeeded', c.stamps_needed, 'plan', c.plan, 'messages', c.messages,
     'createdAt', (extract(epoch from c.created_at) * 1000)::bigint,
     'updatedAt', (extract(epoch from c.updated_at) * 1000)::bigint
   ) || case when with_review and c.review is not null then jsonb_build_object('review', c.review) else '{}'::jsonb end
-$$;
-
-create or replace function _customer_json(m customers, history_limit int default 5) returns jsonb
-language sql stable
-as $$
-  select jsonb_build_object(
-    'id', m.id, 'cardId', m.card_id, 'name', m.name, 'stamps', m.stamps, 'redeemed', m.redeemed,
-    'joinedAt', (extract(epoch from m.joined_at) * 1000)::bigint,
-    'lastVisit', (extract(epoch from m.last_visit) * 1000)::bigint,
-    'history', coalesce((
-      select jsonb_agg(jsonb_build_object('t', (extract(epoch from e.created_at) * 1000)::bigint, 'type', e.type, 'n', e.n) order by e.created_at)
-      from (select * from events where customer_id = m.id order by created_at desc limit history_limit) e
-    ), '[]'::jsonb)
-  )
 $$;

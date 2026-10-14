@@ -52,14 +52,17 @@ body{background:var(--wash)}
   let card = null;
   if (Remote.enabled) { try { card = await Remote.getCard(id); } catch (e) {} }
   else card = Store.getCard(id) || Store.getCard('the-coffee');
-  if (!card) { document.getElementById('sheet').textContent = I18N.lang === 'it' ? 'Carta non trovata.' : 'Card not found.'; return; }
-  const lang = q.get('lang') === 'en' ? 'en' : 'it';
-  const ui = I18N.lang === 'it';
+  const T = {
+    it: { none: 'Carta non trovata.', print: 'Stampa', tip: 'Nella finestra di stampa scegli lo stesso formato (A5 o A4), margini "Nessuno" e attiva "Grafica di sfondo".' },
+    en: { none: 'Card not found.', print: 'Print', tip: 'In the print window pick the same paper size (A5 or A4), margins "None" and turn on "Background graphics".' },
+    pl: { none: 'Nie znaleziono karty.', print: 'Drukuj', tip: 'W oknie drukowania wybierz ten sam format (A5 lub A4), marginesy "Brak" i włącz "Grafika tła".' }
+  }[I18N.lang];
+  if (!card) { document.getElementById('sheet').textContent = T.none; return; }
+  // The poster's language: ?lang=it|en|pl, else the card's own.
+  const lang = ['it', 'en', 'pl'].includes(q.get('lang')) ? q.get('lang') : UI.cardLang(card);
   document.getElementById('sheet').innerHTML = MARKETING.poster(card, { lang });
-  document.getElementById('print').textContent = ui ? 'Stampa' : 'Print';
-  document.getElementById('tip').textContent = ui
-    ? 'Nella finestra di stampa scegli lo stesso formato (A5 o A4), margini "Nessuno" e attiva "Grafica di sfondo".'
-    : 'In the print window pick the same paper size (A5 or A4), margins "None" and turn on "Background graphics".';
+  document.getElementById('print').textContent = T.print;
+  document.getElementById('tip').textContent = T.tip;
   document.title = `${card.business} · Poster`;
   const size = document.getElementById('size');
   if (q.get('size') === 'A4') size.value = 'A4';

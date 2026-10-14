@@ -18,15 +18,17 @@
   }
 
   // ---------- counter poster (A5) ----------
-  // Italian posters carry an English line under each sentence for tourists.
+  // Italian and Polish posters carry an English line under each sentence for tourists.
   const P = {
     it: { head: 'Raccogli {n} timbri:', steps: ['Inquadra il codice', 'Salva la carta sul telefono', 'Mostrala a ogni visita'], foot: 'Niente app. Niente carta da perdere.' },
-    en: { head: 'Collect {n} stamps:', steps: ['Scan the code', 'Save the card on your phone', 'Show it every visit'], foot: 'No app. Nothing to lose.' }
+    en: { head: 'Collect {n} stamps:', steps: ['Scan the code', 'Save the card on your phone', 'Show it every visit'], foot: 'No app. Nothing to lose.' },
+    pl: { head: 'Zbierz {n}:', steps: ['Zeskanuj kod', 'Zapisz kartę w telefonie', 'Pokazuj ją przy każdej wizycie'], foot: 'Bez aplikacji. Nic do zgubienia.' }
   };
+  const head = (lang, n) => P[lang].head.replace('{n}', lang === 'pl' ? `${n} ${UI.stampsWord(n, 'pl').replace(/a$/, 'ę')}` : n);
   function poster(card, opts = {}) {
-    const lang = opts.lang === 'en' ? 'en' : 'it';
+    const lang = P[opts.lang] ? opts.lang : 'it';
     const main = words(card, lang), en = words(card, 'en');
-    const sub = lang === 'it';
+    const sub = lang !== 'en';
     const url = opts.url || UI.publicJoinUrl(card.id);
     const need = card.stampsNeeded;
     let dots = '';
@@ -38,8 +40,8 @@
           <span class="poster-biz"><img src="${esc(art)}" alt="">${esc(card.business)}</span>
           <span class="poster-tag">${esc(main.title)}</span>
         </div>
-        <h2 class="poster-h">${esc(P[lang].head.replace('{n}', need))} <em>${esc(main.reward)}.</em></h2>
-        ${sub ? `<p class="poster-en" lang="en">${esc(P.en.head.replace('{n}', need))} ${esc(en.reward)}.</p>` : ''}
+        <h2 class="poster-h">${esc(head(lang, need))} <em>${esc(main.reward)}.</em></h2>
+        ${sub ? `<p class="poster-en" lang="en">${esc(head('en', need))} ${esc(en.reward)}.</p>` : ''}
         <div class="poster-dots" style="--cols:${Math.ceil(need / Math.ceil(need / 10))}">${dots}</div>
         <div class="poster-scan">
           <div class="poster-qr">${UI.qrSvg(url)}</div>
@@ -196,6 +198,41 @@ Ask at the till 👋` },
         ['Day 4', 'Send the WhatsApp message to your regulars.'],
         ['Day 5', 'Put the sticker on the window and the cards on the tables.'],
         ['Day 7', 'Check how many members you have under Customers. Goal: 30.']
+      ]
+    },
+    pl: {
+      igHeadline: 'Nasza karta lojalnościowa jest teraz w telefonie.',
+      igCta: 'Zapytaj przy kasie i zeskanuj kod QR.',
+      igSub: 'Bez aplikacji. Nic do zgubienia.',
+      copy: w => [
+        { id: 'caption', label: 'Opis posta na Instagram', text:
+`Nowość w ${w.business}: karta lojalnościowa jest teraz w telefonie ☕️
+Przy każdej wizycie pieczątka. Po ${w.n} pieczątkach: ${w.reward}.
+
+Jak? Zeskanuj kod QR przy kasie i zapisz kartę. Bez aplikacji do pobrania, bez papierowej karty do zgubienia.
+
+Do zobaczenia przy ladzie!` },
+        { id: 'story', label: 'Tekst do relacji', text:
+`Nasza karta lojalnościowa jest już cyfrowa ✨
+${w.n} ${UI.stampsWord(w.n, 'pl')} = ${w.reward}
+Zapytaj przy kasie 👋` },
+        { id: 'whatsapp', label: 'Wiadomość do stałych klientów (WhatsApp)', text:
+`Cześć! Mamy nowość w ${w.business}: karta lojalnościowa jest teraz w telefonie. Przy następnej wizycie zeskanuj kod QR przy kasie. Po ${w.n} pieczątkach ${w.reward} od nas. Do zobaczenia!` },
+        { id: 'staff', label: 'Co mówić przy kasie (dla obsługi)', text:
+`"Ma Pan/Pani już naszą kartę lojalnościową? Jest w telefonie: wystarczy zeskanować tutaj, a od razu dodam pierwszą pieczątkę. Po ${w.n}: ${w.reward}."` },
+        { id: 'reminder', label: 'Przypomnienie (gdy brakuje jednej pieczątki)', text:
+`Brakuje Ci tylko jednej pieczątki! Przy następnej wizycie w ${w.business}: ${w.reward}.` },
+        { id: 'google', label: 'Post w Google (profil firmy)', text:
+`Nowa cyfrowa karta lojalnościowa w ${w.business}: pieczątka przy każdej wizycie, a po ${w.n} pieczątkach ${w.reward}. Wystarczy zeskanować kod QR przy kasie.` }
+      ],
+      plan: [
+        ['Dzień 1', 'Powieś plakat przy kasie, na wysokości oczu.'],
+        ['Dzień 1', 'Pokaż kartę obsłudze: 2 minuty, użyj tekstu "Co mówić przy kasie".'],
+        ['Dzień 2', 'Opublikuj post i relację na Instagramie.'],
+        ['Dzień 3', 'Daj pierwszą pieczątkę gratis każdemu, kto dołączy w tym tygodniu.'],
+        ['Dzień 4', 'Wyślij wiadomość na WhatsAppie do stałych klientów.'],
+        ['Dzień 5', 'Naklej naklejkę na witrynę i postaw karteczki na stolikach.'],
+        ['Dzień 7', 'Sprawdź w zakładce Klienci, ile osób dołączyło. Cel: 30.']
       ]
     }
   };

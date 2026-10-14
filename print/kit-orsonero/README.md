@@ -56,7 +56,7 @@ How it works:
 - At the eighth stamp, the coffee of their choice is on you.
 - You see how many people come back, and the card can remind them when they are one stamp away.
 
-For Orsonero I'd suggest the Plus plan: I design the card with your real logo and colours, and send you the printed kit (till poster, window sticker, table cards). It's free for the first 30 days, then €20 a month plus VAT, and you can cancel anytime.
+For Orsonero I'd suggest the Plus plan: I design the card with your real logo and colours, and send you the printed kit (till poster, window sticker, table cards). It's free for the first 30 days, then €39 a month plus VAT, and you can cancel anytime.
 
 I've attached the proposal as a PDF. Could I drop by one morning this week to show it on a phone? Ten minutes is enough.
 
@@ -85,7 +85,7 @@ Come funziona:
 - All'ottavo timbro, il caffè che preferisce lo offrite voi.
 - Vedete quanti clienti tornano, e la carta può ricordare a chi manca un solo timbro di passare.
 
-Per Orsonero consiglio il piano Plus: disegno io la carta con il vostro logo e i vostri colori, e vi mando il kit stampato (poster per la cassa, adesivo per la vetrina, segnatavoli). I primi 30 giorni sono gratis, poi 20 € al mese più IVA, e si disdice quando volete.
+Per Orsonero consiglio il piano Plus: disegno io la carta con il vostro logo e i vostri colori, e vi mando il kit stampato (poster per la cassa, adesivo per la vetrina, segnatavoli). I primi 30 giorni sono gratis, poi 39 € al mese più IVA, e si disdice quando volete.
 
 Vi allego la proposta in PDF. Posso passare una mattina questa settimana per farvela vedere sul telefono? Bastano dieci minuti.
 
@@ -128,7 +128,7 @@ Questo è quello che vedono i clienti sul telefono, e quello che vedreste voi do
 > It's a stamp card, but on the phone. *(Show the card on your phone.)* The customer scans this poster at the till, and the card goes into their Wallet. No app.
 > Your staff scan it to add a stamp. At eight bears, the coffee is on you.
 > And you can see who comes back. *(Show Results.)* The card can also remind people when they are one stamp away. *(Show Notifications.)*
-> The first 30 days are free. If you like it, I put your real logo on it and send you the printed poster and stickers. After that it's €20 a month, cancel anytime.
+> The first 30 days are free. If you like it, I put your real logo on it and send you the printed poster and stickers. After that it's €39 a month, cancel anytime.
 > I'll leave you this brochure. Can I send you the link on WhatsApp?
 
 ## Questions they might ask

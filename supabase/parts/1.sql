@@ -1,4 +1,4 @@
--- Timbro database, part 1 of 6. Run the parts in order.
+-- Timbro database, part 1 of 7. Run the parts in order.
 create extension if not exists pgcrypto with schema extensions;
 
 create schema if not exists timbro;
@@ -36,13 +36,19 @@ create table if not exists cards (
   reward_en      text not null default '',
   stamps_needed  int  not null default 10 check (stamps_needed between 3 and 20),
   design         jsonb not null default '{}'::jsonb,  -- colours, stamp, logo… (see DESIGN_KEYS)
-  plan           text not null default 'start' check (plan in ('start','plus','pro')),
+  plan           text not null default 'start' check (plan in ('start','plus','pro','chain')),
   review         jsonb,                               -- design proposal / request / reply
   created_at     timestamptz not null default now(),
   updated_at     timestamptz not null default now()
 );
 
 alter table cards add column if not exists messages jsonb not null default '{}'::jsonb;
+
+alter table cards add column if not exists lang text not null default 'it' check (lang in ('it', 'en', 'pl'));
+
+alter table cards drop constraint if exists cards_plan_check;
+
+alter table cards add constraint cards_plan_check check (plan in ('start','plus','pro','chain'));
 
 create table if not exists customers (
   id           text primary key check (id ~ '^[A-Z0-9]{6}$'),   -- the code under the QR
@@ -88,9 +94,3 @@ create table if not exists admins (user_id uuid primary key);   -- Witkowski Des
 alter table businesses enable row level security;
 
 alter table cards      enable row level security;
-
-alter table customers  enable row level security;
-
-alter table devices    enable row level security;
-
-alter table link_codes enable row level security;

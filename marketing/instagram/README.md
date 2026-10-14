@@ -69,14 +69,14 @@ Use it as the pinned post, for paid promotion, and as a story with a link sticke
 **IT**
 > La carta fedeltà del tuo bar, sul telefono ☕
 > Niente app: il cliente inquadra un QR alla cassa. Il barista timbra con il telefono che ha già. Tu vedi chi torna. La carta la disegniamo con il logo e i colori del tuo locale.
-> 30 giorni gratis, poi da 10 € al mese. Link in bio.
+> 30 giorni gratis, poi da 19 € al mese. Link in bio.
 >
 > #cartafedeltà #barmilano #caffè #piccoleimprese #milano
 
 **EN**
 > Your café's loyalty card, on the phone ☕
 > No app: customers scan a QR at the till. Staff stamp with the phone they already have. You see who comes back. We design the card with your logo and colours.
-> 30 days free, then from €10 a month. Link in bio.
+> 30 days free, then from €19 a month. Link in bio.
 >
 > #loyaltycard #coffeeshopowner #smallbusiness #cafe #milan
 
@@ -178,14 +178,14 @@ Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9
 
 ### post-prices
 **IT**
-> Prezzi chiari: Start 10 €, Plus 20 €, Pro 30 € al mese, IVA esclusa.
+> Prezzi chiari: Start 19 €, Plus 39 €, Pro 79 € al mese, IVA esclusa.
 > Con Plus la carta la disegniamo noi e il kit stampato arriva a casa tua. I primi 30 giorni sono gratis e disdici quando vuoi. Con l'annuale paghi 10 mesi e ne hai 12.
 > Link in bio.
 >
 > #cartafedeltà #barmilano #piccoleimprese #ristorazione #milano
 
 **EN**
-> Simple prices: Start €10, Plus €20, Pro €30 a month, excluding VAT.
+> Simple prices: Start €19, Plus €39, Pro €79 a month, excluding VAT.
 > On Plus we design the card for you and send the printed kit. The first 30 days are free and you can cancel anytime. Yearly: pay for 10 months, get 12.
 > Link in bio.
 >

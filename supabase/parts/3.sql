@@ -1,5 +1,19 @@
--- Timbro database, part 3 of 6. Run the parts in order.
+-- Timbro database, part 3 of 7. Run the parts in order.
 set search_path = timbro, extensions;
+
+create or replace function _customer_json(m customers, history_limit int default 5) returns jsonb
+language sql stable
+as $$
+  select jsonb_build_object(
+    'id', m.id, 'cardId', m.card_id, 'name', m.name, 'stamps', m.stamps, 'redeemed', m.redeemed,
+    'joinedAt', (extract(epoch from m.joined_at) * 1000)::bigint,
+    'lastVisit', (extract(epoch from m.last_visit) * 1000)::bigint,
+    'history', coalesce((
+      select jsonb_agg(jsonb_build_object('t', (extract(epoch from e.created_at) * 1000)::bigint, 'type', e.type, 'n', e.n) order by e.created_at)
+      from (select * from events where customer_id = m.id order by created_at desc limit history_limit) e
+    ), '[]'::jsonb)
+  )
+$$;
 
 create or replace function _device(p_token text) returns devices
 language plpgsql security definer set search_path = timbro
@@ -66,21 +80,4 @@ begin
   from customers m join cards c on c.id = m.card_id
   where m.id = upper(trim(p_code)) and c.business_id = d.business_id;
   return r;   -- null: no card with this code at this café
-end $$;
-
-create or replace function stamper_stamp(p_token text, p_code text, p_delta int) returns jsonb
-language plpgsql security definer set search_path = timbro
-as $$
-declare d devices := _device(p_token); m customers; c cards; v_next int;
-begin
-  select m2.* into m from customers m2 join cards c2 on c2.id = m2.card_id
-  where m2.id = upper(trim(p_code)) and c2.business_id = d.business_id for update of m2;
-  if not found then raise exception 'No customer with that code.' using errcode = 'P0002'; end if;
-  select * into c from cards where id = m.card_id;
-  v_next := greatest(0, least(c.stamps_needed, m.stamps + sign(p_delta)::int));
-  if v_next <> m.stamps then
-    update customers set stamps = v_next, last_visit = now() where id = m.id returning * into m;
-    insert into events (customer_id, device_id, type, n) values (m.id, d.id, case when p_delta > 0 then 'stamp' else 'unstamp' end, 1);
-  end if;
-  return jsonb_build_object('customer', _customer_json(m), 'card', _card_json(c));
 end $$;

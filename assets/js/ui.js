@@ -260,19 +260,28 @@
     const mine = (card && card.messages) || {}, out = {};
     for (const k of Object.keys(CONFIG.messages)) {
       out[k] = { ...CONFIG.messages[k], ...(mine[k] || {}) };
-      ['it', 'en'].forEach(l => { if (!out[k][l]) out[k][l] = CONFIG.messages[k][l]; });
+      ['it', 'en', 'pl'].forEach(l => { if (!out[k][l]) out[k][l] = CONFIG.messages[k][l]; });
     }
     return out;
+  }
+  // The language a card speaks to a customer: English to visitors browsing in
+  // English, otherwise the café's own (card.lang: it, pl or en).
+  const cardLang = card => ['it', 'en', 'pl'].includes(card && card.lang) ? card.lang : 'it';
+  const msgLang = (card, viewer = window.I18N ? I18N.lang : 'it') => viewer === 'en' ? 'en' : cardLang(card);
+  // "1 timbro / 3 timbri", "1 stamp / 3 stamps", "1 pieczątka / 3 pieczątki / 5 pieczątek".
+  function stampsWord(n, lang) {
+    if (lang === 'en') return n === 1 ? 'stamp' : 'stamps';
+    if (lang === 'pl') { const d = n % 10, h = n % 100; return n === 1 ? 'pieczątka' : d >= 2 && d <= 4 && !(h >= 12 && h <= 14) ? 'pieczątki' : 'pieczątek'; }
+    return n === 1 ? 'timbro' : 'timbri';
   }
   // Fills {name} {left} {reward} {business}; {left} carries its noun ("1 timbro", "3 stamps").
   function fillMessage(text, card, { name = '', left = 1, lang = 'it' } = {}) {
     const en = lang === 'en';
-    const noun = en ? (left === 1 ? 'stamp' : 'stamps') : (left === 1 ? 'timbro' : 'timbri');
     const reward = (en && card.rewardEn) || card.reward || '';
     return String(text || '').replace(/\{(name|left|reward|business)\}/g, (_, k) =>
-      k === 'name' ? (name || (en ? 'there' : '')) : k === 'left' ? `${left} ${noun}` : k === 'reward' ? reward : card.business || '')
-      .replace(/^\s*[,!]\s*/, '').replace(/\s{2,}/g, ' ').trim().replace(/^./, c => c.toUpperCase());
+      k === 'name' ? (name || (en ? 'there' : '')) : k === 'left' ? `${left} ${stampsWord(left, lang)}` : k === 'reward' ? reward : card.business || '')
+      .replace(/^\s*[,!]\s*/, '').replace(/\s+([!?,.])/g, '$1').replace(/\s{2,}/g, ' ').trim().replace(/^./, c => c.toUpperCase());
   }
 
-  window.UI = { messagesOf, fillMessage, walletAssets, lookOf, stampArt, stampEmpty, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
+  window.UI = { messagesOf, fillMessage, cardLang, msgLang, stampsWord, walletAssets, lookOf, stampArt, stampEmpty, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
 })();

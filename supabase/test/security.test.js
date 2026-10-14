@@ -132,6 +132,16 @@ assert.equal(withMsgs.messages.remind.days, 7); assert.equal(withMsgs.messages.n
 assert.equal((await call(anon, 'get_card', { p_card_id: id })).messages.close.it, 'Ancora {left}!');
 ok('owners save their own notification texts; limits and unknown keys are cleaned');
 
+// ---- Polish: the card's own language and Polish messages; the Chains plan ----
+assert.equal((await call(users.ownerA, 'owner_save_card', { p_card: { id, lang: 'pl' } })).lang, 'pl');
+assert.equal((await call(users.ownerA, 'owner_save_card', { p_card: { id, lang: 'xx', title: 'Karta kawowa' } })).lang, 'pl');
+const plMsgs = await call(users.ownerA, 'owner_save_messages', { p_card_id: id, p_messages: { ready: { on: true, pl: 'Nagroda czeka: {reward}', xx: 'no' } } });
+assert.equal(plMsgs.messages.ready.pl, 'Nagroda czeka: {reward}'); assert.equal(plMsgs.messages.ready.xx, undefined);
+assert.equal((await call(anon, 'get_card', { p_card_id: id })).lang, 'pl');
+assert.equal((await call(users.designer, 'admin_set_plan', { p_card_id: id, p_plan: 'chain' })).plan, 'chain');
+await rejects(call(users.designer, 'admin_set_plan', { p_card_id: id, p_plan: 'gold' }), /check constraint/);
+ok('cards keep their language and Polish messages; the designer can set the Chains plan, not made-up ones');
+
 // ---- no function is open by accident (Postgres lets PUBLIC run new functions) ----
 const open = async role => (await pool.query(`select coalesce(string_agg(p.proname, ',' order by p.proname), '') as f from pg_proc p
   join pg_namespace s on s.oid = p.pronamespace where s.nspname = 'timbro' and has_function_privilege($1, p.oid, 'execute')`, [role])).rows[0].f.split(',').filter(Boolean);

@@ -8,4 +8,6 @@
 - The owner's SQL editor accepts about 100 lines per paste: database changes go in `supabase/updates/` files under 100 lines; `node supabase/make-parts.js` regenerates `supabase/parts/`.
 - Every update file must end with the whole permissions block from `schema.sql` (revoke all, then the grants): Postgres lets PUBLIC execute new functions, and a per-schema default privilege can't take that away. Check an upgrade with `has_function_privilege('anon', ...)`.
 - Instagram posts and reels: `marketing/instagram/` (`studio.html` draws them with the real card renderer, `make.js` renders PNG and MP4 in IT and EN; captions and posting plan in its README). Rebuild them after copy or price changes.
+- Languages: Italian, English and Polish (`assets/js/i18n.js`). Every `I18N.add` block and every `{ it, en }` object in `config.js` also has `pl`; a page that is not translated lists its languages with `data-langs` on its `.lang` switcher (examples and outreach: IT and EN only). Polish plurals: `I18N.plural(n, [1, 2-4, 5+])` or `UI.stampsWord`.
+- Prices: Start €19, Plus €39, Pro €79 a month; Chains (`contact: true`) is "from €8 per location", invoiced, never in Stripe.
 - No em dashes in user-facing copy.

@@ -27,7 +27,7 @@ body{background:var(--wash)}
 .pg-top .brand{font-size:12pt;color:var(--ink);letter-spacing:-.03em;text-transform:none;font-family:var(--font)}
 .pg-top .brand-mark{width:4.5mm;height:4.5mm;flex-basis:4.5mm}
 .pg-top .brand-mark::after{inset:.8mm;border-width:1px}
-.lbl{font:500 7pt/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:8mm}
+.lbl{font:500 7pt/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6mm}
 .h{font-size:21pt;font-weight:800;font-stretch:125%;letter-spacing:-.035em;line-height:1;margin-top:3mm}
 .sub{color:var(--ink-2);margin-top:3mm;font-size:10pt}
 .pg-num{position:absolute;bottom:6mm;right:12mm;font:500 7pt/1 var(--mono);color:var(--muted)}
@@ -60,21 +60,21 @@ body{background:var(--wash)}
 .do{display:grid;grid-template-columns:1fr 1fr;column-gap:6mm}
 .ex .cap{font:500 6.5pt/1.3 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2.5mm;text-align:center}
 .do{list-style:none;margin:0;padding:0;border-top:.4mm solid var(--ink)}
-.do li{padding:2.6mm 0;border-bottom:.3mm solid var(--line)}
+.do li{padding:1.6mm 0;border-bottom:.3mm solid var(--line)}
 .do b{display:block;font-size:9.5pt}
 .do span{color:var(--ink-2);font-size:8.5pt;line-height:1.35;display:block;margin-top:.5mm}
 .mini-poster{width:44mm;margin:0 auto;transform:rotate(-2.5deg)}
 .mini-poster .poster{box-shadow:0 0 0 .3mm #D5D5D3,0 3mm 6mm -3mm rgba(0,0,0,.35)}
-.start{margin:5mm 0 6mm;display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;counter-reset:st}
+.start{margin:3.5mm 0 4mm;display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;counter-reset:st}
 .start div{counter-increment:st;border-top:.4mm solid var(--ink);padding-top:2.5mm;font-size:8.5pt;line-height:1.35}
 .start div::before{content:counter(st);display:block;font:500 7pt/1 var(--mono);color:var(--pop);margin-bottom:1.5mm}
-.kitline{margin-top:auto;display:flex;gap:4mm;align-items:center;border:.4mm solid var(--ink);border-radius:3mm;padding:4mm}
-.kitline i{flex:0 0 9mm;height:9mm;border-radius:50%;background:var(--pop)}
+.kitline{margin-top:auto;display:flex;gap:4mm;align-items:center;border:.4mm solid var(--ink);border-radius:3mm;padding:3mm 4mm}
+.kitline i{flex:0 0 7mm;height:7mm;border-radius:50%;background:var(--pop)}
 .kitline b{font-size:10pt}
 
 /* pricing + contact */
-.plans{margin-top:5mm;border-top:.4mm solid var(--ink)}
-.plan{display:grid;grid-template-columns:1fr auto;gap:1mm 4mm;padding:2.8mm 0;border-bottom:.3mm solid var(--line)}
+.plans{margin-top:3.5mm;border-top:.4mm solid var(--ink)}
+.plan{display:grid;grid-template-columns:1fr auto;gap:1mm 4mm;padding:1.8mm 0;border-bottom:.3mm solid var(--line)}
 .plan b{font-size:12pt;font-weight:800;font-stretch:112%}
 .plan .pp{text-align:right;font-size:15pt;font-weight:800;font-stretch:110%;letter-spacing:-.02em}
 .plan .pp small{font-size:7.5pt;font-weight:500;color:var(--muted);font-stretch:100%;letter-spacing:0}
@@ -82,7 +82,7 @@ body{background:var(--wash)}
 .plan.pop-plan b{color:var(--pop)}
 .plan .tag{display:inline-block;margin-left:2mm;font:500 6.5pt/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--pop);color:#fff;border-radius:99px;padding:1mm 2mm;vertical-align:2px}
 .note{font-size:8pt;color:var(--muted);margin-top:2.5mm}
-.contact{margin-top:auto;background:var(--ink);color:#fff;border-radius:3mm;padding:5mm;display:grid;grid-template-columns:30mm 1fr;gap:5mm;align-items:center}
+.contact{margin-top:auto;background:var(--ink);color:#fff;border-radius:3mm;padding:4mm;display:grid;grid-template-columns:25mm 1fr;gap:5mm;align-items:center}
 .contact .qr{background:#fff;border-radius:2mm;padding:2mm}
 .contact .qr svg{width:100%;height:auto}
 .contact .scan{font-size:8.5pt;color:#C9C9CD;margin-bottom:3mm}
@@ -109,7 +109,7 @@ body{background:var(--wash)}
 <div class="controls">
   <form id="opts" autocomplete="off">
     <label class="field"><span data-i18n="br.cafe"></span><input type="text" name="cafe" maxlength="28"></label>
-    <label class="field"><span data-i18n="br.lang"></span><select name="lang"><option value="it">Italiano</option><option value="en">English</option></select></label>
+    <label class="field"><span data-i18n="br.lang"></span><select name="lang"><option value="it">Italiano</option><option value="en">English</option><option value="pl">Polski</option></select></label>
     <label class="field"><span data-i18n="br.name"></span><input type="text" name="name" maxlength="40"></label>
     <label class="field"><span data-i18n="br.phone"></span><input type="tel" name="phone" maxlength="24"></label>
     <label class="field"><span data-i18n="br.email"></span><input type="email" name="email" maxlength="60"></label>
@@ -136,7 +136,11 @@ I18N.add({
   en: { 'br.cafe': 'For which café?', 'br.lang': 'Language', 'br.name': 'Your name', 'br.phone': 'Phone', 'br.email': 'Email',
         'br.format': 'Format', 'br.fA5': 'A5, 4 pages (print shop)', 'br.fFold': 'A4 to fold (home printer)', 'br.print': 'Print / Save PDF',
         'br.hA5': 'For a print shop: 4 A5 pages in order. Ask for an "A4 folded to A5 leaflet, 170 gsm matt paper".',
-        'br.hFold': 'Home printing: A4 landscape, double-sided, "flip on short edge". Then fold in half. Margins: none.' }
+        'br.hFold': 'Home printing: A4 landscape, double-sided, "flip on short edge". Then fold in half. Margins: none.' },
+  pl: { 'br.cafe': 'Dla jakiego lokalu?', 'br.lang': 'Język', 'br.name': 'Twoje imię', 'br.phone': 'Telefon', 'br.email': 'E-mail',
+        'br.format': 'Format', 'br.fA5': 'A5, 4 strony (drukarnia)', 'br.fFold': 'A4 do złożenia (drukarka domowa)', 'br.print': 'Drukuj / Zapisz PDF',
+        'br.hA5': 'Dla drukarni: 4 strony A5 po kolei. Poproś o "ulotkę A4 składaną do A5, papier matowy 170 g".',
+        'br.hFold': 'Druk w domu: A4 poziomo, dwustronnie, "odwracanie wzdłuż krótszej krawędzi". Potem złóż na pół. Marginesy: brak.' }
 });
 
 // Brochure copy. {cafe} is the café's name.
@@ -160,6 +164,8 @@ const COPY = {
     startLbl: 'Per iniziare', start: ['Ci sentiamo 10 minuti, anche al bancone.', 'Prepariamo la carta e il kit stampato.', 'Appendi il poster. Il primo timbro è oggi.'],
     priceLbl: 'Prezzi', priceH: 'Un abbonamento. Tutto incluso.',
     month: '/ mese', loc: 'sedi', loc1: 'sede', cards: 'carte', cards1: 'carta', staff: 'baristi', popular: 'Il più scelto',
+    from: 'da', perLoc: '/ sede al mese', chainLim: '11+ sedi · prezzo per sede, prima una prova',
+    stampText: 'TIMBRO · MILANO · TIMBRO · MILANO · ',
     note: 'I primi {d} giorni sono gratis. Annuale: 2 mesi in regalo. Prezzi IVA esclusa.',
     scan: 'Inquadra e guarda la carta del tuo locale.'
   },
@@ -182,8 +188,34 @@ const COPY = {
     startLbl: 'To get started', start: ['We talk for 10 minutes, even at your counter.', 'We make your card and the printed kit.', 'Put up the poster. The first stamp is today.'],
     priceLbl: 'Pricing', priceH: 'One subscription. Everything included.',
     month: '/ month', loc: 'locations', loc1: 'location', cards: 'cards', cards1: 'card', staff: 'staff', popular: 'Most popular',
+    from: 'from', perLoc: '/ location a month', chainLim: '11+ locations · price per location, pilot first',
+    stampText: 'TIMBRO · MILAN · TIMBRO · MILAN · ',
     note: 'The first {d} days are free. Yearly: 2 months free. Prices exclude VAT.',
     scan: 'Scan to see the card for your place.'
+  },
+  pl: {
+    city: 'Witkowski Design', cover: 'Karta lojalnościowa, której nikt nie gubi.',
+    coverSub: 'Cyfrowe karty lojalnościowe dla kawiarni, cukierni i sklepów. W telefonach klientów, bez aplikacji.',
+    forLbl: 'Propozycja dla',
+    howLbl: 'Jak to działa', howH: 'Trzy kroki. Dziesięć minut.',
+    howSub: 'Klient niczego nie pobiera. Ty niczego nie kupujesz: wystarczy telefon, który już masz.',
+    steps: [['Tworzymy kartę', 'Nazwa, nagroda, liczba pieczątek. Przygotowujemy ją razem, w Twoich kolorach.', 'Tylko raz'],
+             ['Klient skanuje kod QR', 'Plakat przy kasie robi swoje. W 10 sekund karta jest w jego telefonie.', 'Klient, 10 sekund'],
+             ['Obsługa przybija pieczątkę', 'Skanuje kartę klienta telefonem i dotyka raz. Pełna karta? Wydaje nagrodę.', 'Przy każdej wizycie']],
+    whyH: 'Dlaczego to się opłaca',
+    why: ['Papierowa karta się gubi. Telefon nie.', 'Klient widzi, ilu pieczątek brakuje, i wraca, żeby skończyć.', 'Wiesz, kim są stali klienci i jak często wracają.', 'Bez dodruku kart i bez kupowania pieczątek.'],
+    exLbl: 'Wasza karta', exH: 'Oto karta dla {cafe}.', exHGeneric: 'Przykład: The Coffee, Mediolan.',
+    exCap: 'W Portfelu klienta',
+    doLbl: 'Co robimy dla Was',
+    do: [['Projektujemy ją z Wami', 'Logo, kolory, nagroda.'], ['Wydrukowany zestaw', 'Plakat przy kasie, naklejka na witrynę, karteczki.'], ['Gotowe posty i wiadomości', 'Instagram, WhatsApp, Google.'], ['7-dniowy plan startu', 'Co robić każdego dnia.'], ['Po polsku i po angielsku', 'Dla stałych klientów i turystów.']],
+    kit: 'Wydrukowany zestaw przychodzi gotowy do powieszenia.', posterCap: 'Plakat A5 przy kasie',
+    startLbl: 'Na początek', start: ['Rozmawiamy 10 minut, na wideo albo na miejscu.', 'Przygotowujemy kartę i wydrukowany zestaw.', 'Wieszasz plakat. Pierwsza pieczątka jeszcze dziś.'],
+    priceLbl: 'Cennik', priceH: 'Jedna subskrypcja. Wszystko w cenie.',
+    month: '/ miesiąc', loc: 'lokale', loc1: 'lokal', cards: 'karty', cards1: 'karta', staff: 'osób z obsługi', popular: 'Najczęściej wybierany',
+    from: 'od', perLoc: '/ lokal miesięcznie', chainLim: '11+ lokali · cena za lokal, najpierw pilotaż',
+    stampText: 'TIMBRO · KARTA LOJALNOŚCIOWA · ',
+    note: 'Pierwsze {d} dni za darmo. Rocznie: 2 miesiące gratis. Ceny netto (bez VAT).',
+    scan: 'Zeskanuj i zobacz kartę swojego lokalu.'
   }
 };
 
@@ -204,15 +236,14 @@ const COPY = {
   function cardFor(cafe, lang) {
     if (!cafe || cafe.toLowerCase() === 'the coffee') return Store.getCard('the-coffee');
     const tp = CONFIG.templates[0], m = tp[lang];
-    return { business: cafe, title: m.title, reward: m.reward, stampsNeeded: tp.stamps, color: '#FFFFFF', ink: '#2B32FF', icon: tp.icon };
+    return { business: cafe, title: m.title, reward: m.reward, titleEn: tp.en.title, rewardEn: tp.en.reward, lang, stampsNeeded: tp.stamps, color: '#FFFFFF', ink: '#2B32FF', icon: tp.icon, stamp: 'sole' };
   }
 
   function render() {
     const o = Object.fromEntries(new FormData(form));
     try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {}
-    const L = COPY[o.lang], cafe = o.cafe.trim();
-    const lang = o.lang;
-    const fmt = n => new Intl.NumberFormat(lang === 'it' ? 'it-IT' : 'en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+    const lang = COPY[o.lang] ? o.lang : 'it', L = COPY[lang], cafe = o.cafe.trim();
+    const fmt = n => new Intl.NumberFormat(lang === 'en' ? 'en-IE' : I18N.locale(lang), { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
     const card = cardFor(cafe, lang);
     const prevLang = I18N.lang; I18N.lang = lang;            // render the card in the brochure's language
     const pass = UI.renderPass(card, null, { stamps: 4 });
@@ -223,7 +254,7 @@ const COPY = {
     const p1 = `<section class="page cover">
       ${top(L.city)}
       <h1>${esc(L.cover)}</h1>
-      <div class="stamp">${UI.inkStamp(lang === 'it' ? 'TIMBRO · MILANO · TIMBRO · MILANO · ' : 'TIMBRO · MILAN · TIMBRO · MILAN · ')}</div>
+      <div class="stamp">${UI.inkStamp(L.stampText)}</div>
       <p class="sub">${esc(L.coverSub)}</p>
       <div class="for" ${cafe ? '' : 'hidden'}><span>${esc(L.forLbl)}</span><b>${esc(cafe)}</b></div>
     </section>`;
@@ -256,7 +287,12 @@ const COPY = {
       ${top(L.priceLbl)}
       <p class="lbl">${esc(L.priceLbl)}</p>
       <h2 class="h">${esc(L.priceH)}</h2>
-      <div class="plans">${CONFIG.plans.map(p => { const tx = p[lang]; return `
+      <div class="plans">${CONFIG.plans.map(p => { const tx = p[lang]; return p.contact ? `
+        <div class="plan">
+          <div><b>${esc(tx.name)}</b><div style="color:var(--ink-2)">${esc(tx.for)}</div></div>
+          <div class="pp"><small>${esc(L.from)}</small> ${fmt(p.month)} <small>${esc(L.perLoc)}</small></div>
+          <div class="lim">${esc(L.chainLim)}</div>
+        </div>` : `
         <div class="plan${p.popular ? ' pop-plan' : ''}">
           <div><b>${esc(tx.name)}</b>${p.popular ? `<span class="tag">${esc(L.popular)}</span>` : ''}<div style="color:var(--ink-2)">${esc(tx.for)}</div></div>
           <div class="pp">${fmt(p.month)} <small>${esc(L.month)}</small></div>

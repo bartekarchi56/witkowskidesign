@@ -1,6 +1,6 @@
 /*
  * Timbro's standard stamps: six rubber-stamp designs, printed in one ink.
- *   STAMPS.list                   → [{ id, it, en }]
+ *   STAMPS.list                   → [{ id, it, en, pl }]
  *   STAMPS.stampOf(card)          → the stamp a card uses (its own, its style's, its type's)
  *   STAMPS.svg(id, ink, attrs, empty)  → SVG markup; attrs go on the root (e.g. x/y/width/height)
  *   STAMPS.dataUrl(id, ink, empty)     → data: URL for <img>
@@ -96,9 +96,9 @@
   };
 
   const NAMES = {
-    punto: ['Punto', 'Dot'],
-    sole: ['Sole', 'Sun'], ramo: ['Ramo d\'ulivo', 'Olive branch'], fiore: ['Fiore', 'Flower'],
-    stella: ['Stella', 'Star'], onda: ['Onda', 'Wave'], albero: ['Albero e luna', 'Tree and moon']
+    punto: ['Punto', 'Dot', 'Kropka'],
+    sole: ['Sole', 'Sun', 'Słońce'], ramo: ['Ramo d\'ulivo', 'Olive branch', 'Gałązka oliwna'], fiore: ['Fiore', 'Flower', 'Kwiat'],
+    stella: ['Stella', 'Star', 'Gwiazda'], onda: ['Onda', 'Wave', 'Fala'], albero: ['Albero e luna', 'Tree and moon', 'Drzewo i księżyc']
   };
 
   // Defaults for cards that never picked a stamp: their style's, else their kind of business's.
@@ -126,7 +126,7 @@
     return urls[k] || (urls[k] = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg(id, ink, '', empty)));
   };
   const hasEmpty = id => !!EMPTY[id];
-  const list = Object.keys(DESIGNS).map(id => ({ id, it: NAMES[id][0], en: NAMES[id][1] }));
+  const list = Object.keys(DESIGNS).map(id => ({ id, it: NAMES[id][0], en: NAMES[id][1], pl: NAMES[id][2] }));
 
   const STAMPS = { list, stampOf, svg, dataUrl, hasEmpty };
   if (typeof module === 'object' && module.exports) module.exports = STAMPS;

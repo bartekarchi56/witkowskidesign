@@ -109,14 +109,17 @@ section{padding:104px 0}
 .bill button[aria-pressed="true"]{background:var(--ink);color:#fff}
 .bill em{font-style:normal;font:500 12px/1 var(--mono);margin-left:6px;color:var(--pop)}
 .bill button[aria-pressed="true"] em{color:#fff;opacity:.8}
-.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.plan{background:#fff;border:1.5px solid var(--ink);border-radius:20px;padding:30px;display:flex;flex-direction:column;position:relative}
+.plans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:1180px){.plans{grid-template-columns:repeat(2,minmax(0,1fr));max-width:820px;margin:0 auto}}
+.plan{background:#fff;border:1.5px solid var(--ink);border-radius:20px;padding:26px 22px;display:flex;flex-direction:column;position:relative;min-width:0}
+.plan .price small{color:var(--muted);font-size:15px}
+.plan.chain{background:transparent;border-style:dashed}
 .plan.popular{box-shadow:0 0 0 2px var(--pop);border-color:var(--pop)}
 .plan .badge{position:absolute;top:-13px;left:26px;background:var(--pop);color:#fff;font:600 13px/1 var(--font);padding:7px 12px;border-radius:999px}
 .plan h3{font-size:26px;font-stretch:118%;font-weight:800}
 .plan .for{color:var(--ink-2);margin-top:6px}
-.plan .price{display:flex;align-items:baseline;gap:8px;margin-top:26px}
-.plan .price b{font-size:52px;font-weight:800;font-stretch:112%;letter-spacing:-.04em;line-height:1}
+.plan .price{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin-top:26px}
+.plan .price b{font-size:46px;font-weight:800;font-stretch:112%;letter-spacing:-.04em;line-height:1}
 .plan .price span{color:var(--muted)}
 .plan .billed{font-size:14px;color:var(--muted);min-height:1.5em;margin:8px 0 22px}
 .limits{display:grid;grid-template-columns:repeat(3,1fr);border:1.5px solid var(--line);border-radius:12px;margin-bottom:22px}
@@ -515,7 +518,7 @@ I18N.add({
     'h.3': 'Post e messaggi già scritti', 'h.3p': 'Instagram, storie, WhatsApp e Google. Copi, incolli, pubblichi.',
     'h.4': 'Un piano di lancio di 7 giorni', 'h.4p': 'Cosa fare ogni giorno della prima settimana. L\'obiettivo: 30 iscritti.',
     'h.5': 'La carta parla inglese ai turisti', 'h.5p': 'Chi ha il telefono in inglese vede la carta in inglese. Utile a Milano.',
-    'h.6': 'Una persona vera su WhatsApp', 'h.6p': 'Rispondiamo in italiano. A Milano passiamo anche di persona.',
+    'h.6': 'Una persona vera su WhatsApp', 'h.6p': 'Rispondiamo in italiano, inglese e polacco. A Milano passiamo anche di persona.',
     'h.sticker': 'Qui la carta fedeltà è digitale', 'h.stickerSub': 'Adesivo vetrina',
     'h.kitCap': 'Il kit stampato per The Coffee, Milano: poster A5 per la cassa e adesivo per la vetrina.',
     'n.label': 'I numeri', 'n.title': 'Quanto può valere per il tuo locale.', 'n.lede': 'Muovi i cursori con i tuoi numeri: vedi quanto rende una carta che fa tornare i clienti.',
@@ -528,14 +531,16 @@ I18N.add({
     'p.month': '/ mese', 'p.year': '/ anno', 'p.billedM': 'Pagamento mensile', 'p.billedY': 'Pari a {x} al mese',
     'p.loc': 'sedi', 'p.loc1': 'sede', 'p.cards': 'carte', 'p.cards1': 'carta', 'p.staff': 'baristi',
     'p.popular': 'Il più scelto', 'p.cta': 'Prova 30 giorni gratis',
-    'p.all': 'Tutti i piani: clienti illimitati, timbri illimitati, carta in italiano e inglese. Prezzi IVA esclusa.',
+    'p.from': 'da', 'p.perLoc': '/ sede al mese', 'p.chainBilled': 'Prima una prova in alcune sedi', 'p.contact': 'Parliamone',
+    'p.waText': 'Ciao! Vorrei sapere di più sul piano Catene di Timbro.',
+    'p.all': 'Tutti i piani: clienti illimitati, timbri illimitati, carta in italiano, inglese e polacco. Prezzi IVA esclusa.',
     'f.title': 'Le domande che ci fanno al bancone',
     'f.q1': 'I miei clienti devono scaricare un\'app?', 'f.a1': 'No. Inquadrano il QR e la carta si apre sul telefono. Con un tocco la aggiungono alla schermata Home.',
     'f.q2': 'Devo comprare qualcosa per la cassa?', 'f.a2': 'No. Basta il telefono o il tablet che hai già. Il barista apre il timbratore e inquadra la carta del cliente.',
     'f.q3': 'E chi non ha lo smartphone?', 'f.a3': 'Puoi continuare a usare i cartoncini per chi li preferisce. Timbro non ti obbliga a scegliere.',
     'f.q4': 'Cosa succede quando la carta è piena?', 'f.a4': 'La carta mostra "Premio pronto". Il barista tocca "Dai il premio" e la carta riparte da zero.',
     'f.q5': 'Posso smettere quando voglio?', 'f.a5': 'Sì. L\'abbonamento è mensile: se smetti, non paghi il mese dopo.',
-    'f.q6': 'Funziona anche fuori Milano?', 'f.a6': 'Sì, ovunque. La carta funziona in italiano e in inglese. A Milano possiamo anche passare di persona.',
+    'f.q6': 'Funziona anche fuori Milano?', 'f.a6': 'Sì, ovunque. La carta funziona in italiano, inglese e polacco. A Milano possiamo anche passare di persona.',
     'v.title': 'Sei a Milano? Passiamo noi.', 'v.lede': 'Ti mostriamo Timbro al bancone in 10 minuti, con la carta del tuo locale già pronta.',
     'v.wa': 'Scrivici su WhatsApp', 'v.mail': 'Scrivici una email', 'v.start': 'Crea la tua carta',
     'ft.dash': 'Area locale', 'ft.stamper': 'Timbratore per baristi', 'ft.example': 'Esempio: The Coffee', 'ft.terms': 'Termini e disdetta', 'ft.privacy': 'Privacy', 'ft.by': 'Un progetto Witkowski Design'
@@ -574,7 +579,7 @@ I18N.add({
     'h.3': 'Posts and messages, already written', 'h.3p': 'Instagram, stories, WhatsApp and Google. Copy, paste, publish.',
     'h.4': 'A 7-day launch plan', 'h.4p': 'What to do each day of the first week. The goal: 30 members.',
     'h.5': 'The card speaks Italian and English', 'h.5p': 'Customers with an English phone see the card in English. Handy for tourists.',
-    'h.6': 'A real person on WhatsApp', 'h.6p': 'We answer in Italian and English. In Milan we also come by in person.',
+    'h.6': 'A real person on WhatsApp', 'h.6p': 'We answer in English, Italian and Polish. In Milan we also come by in person.',
     'h.sticker': 'Our loyalty card is digital', 'h.stickerSub': 'Window sticker',
     'h.kitCap': 'The printed kit for The Coffee, Milan: A5 poster for the till and a window sticker.',
     'n.label': 'The numbers', 'n.title': 'What it can be worth for your café.', 'n.lede': 'Move the sliders with your own numbers: see what a card that brings customers back adds up to.',
@@ -587,23 +592,89 @@ I18N.add({
     'p.month': '/ month', 'p.year': '/ year', 'p.billedM': 'Billed monthly', 'p.billedY': 'Works out at {x} a month',
     'p.loc': 'locations', 'p.loc1': 'location', 'p.cards': 'cards', 'p.cards1': 'card', 'p.staff': 'staff',
     'p.popular': 'Most popular', 'p.cta': 'Try 30 days free',
-    'p.all': 'All plans: unlimited customers, unlimited stamps, card in Italian and English. Prices exclude VAT.',
+    'p.from': 'from', 'p.perLoc': '/ location a month', 'p.chainBilled': 'A pilot in a few locations first', 'p.contact': 'Let\'s talk',
+    'p.waText': 'Hi! I\'d like to know more about the Timbro Chains plan.',
+    'p.all': 'All plans: unlimited customers, unlimited stamps, card in English, Italian and Polish. Prices exclude VAT.',
     'f.title': 'Questions we get asked at the counter',
     'f.q1': 'Do my customers need to download an app?', 'f.a1': 'No. They scan the QR code and the card opens on their phone. One tap adds it to their home screen.',
     'f.q2': 'Do I need to buy anything for the till?', 'f.a2': 'No. The phone or tablet you already have is enough. Staff open the stamper and scan the customer\'s card.',
     'f.q3': 'What about customers without a smartphone?', 'f.a3': 'Keep paper cards for the people who prefer them. Timbro doesn\'t make you choose.',
     'f.q4': 'What happens when a card is full?', 'f.a4': 'The card shows "Reward ready". Staff tap "Give the reward" and the card starts again from zero.',
     'f.q5': 'Can I stop whenever I want?', 'f.a5': 'Yes. The subscription is monthly: stop, and you don\'t pay the next month.',
-    'f.q6': 'Does it work outside Milan?', 'f.a6': 'Yes, anywhere. The card works in Italian and English. In Milan we can also come by in person.',
+    'f.q6': 'Does it work outside Milan?', 'f.a6': 'Yes, anywhere. The card works in English, Italian and Polish. In Milan we can also come by in person.',
     'v.title': 'In Milan? We\'ll come to you.', 'v.lede': 'We\'ll show you Timbro at your counter in 10 minutes, with your own card already made.',
     'v.wa': 'Message us on WhatsApp', 'v.mail': 'Send us an email', 'v.start': 'Create your card',
     'ft.dash': 'Business login', 'ft.stamper': 'Stamper for staff', 'ft.example': 'Example: The Coffee', 'ft.terms': 'Terms and cancellation', 'ft.privacy': 'Privacy', 'ft.by': 'A Witkowski Design project'
+  },
+  pl: {
+    'nav.how': 'Jak to działa', 'nav.try': 'Wypróbuj', 'nav.help': 'Projekt na miarę', 'nav.numbers': 'Liczby', 'nav.pricing': 'Cennik',
+    'nav.login': 'Zaloguj się', 'nav.start': 'Wypróbuj za darmo',
+    'hero.a': 'Karta lojalnościowa, której nikt', 'hero.b': 'nie gubi.',
+    'hero.lede': 'Karta z pieczątkami w Portfelu Twoich klientów, na iPhonie i Androidzie. Bez aplikacji i bez papierowych kart. I nie zostajesz z tym sam: projektujemy ją z Tobą, drukujemy i dajemy Ci gotowe posty, żeby ją wypromować.',
+    'hero.cta1': 'Stwórz swoją kartę', 'hero.cta2': 'Jak to działa',
+    'hero.f1': 'Gotowa w 10 minut', 'hero.f2': 'Klient nie pobiera aplikacji', 'hero.f3': '30 dni za darmo',
+    'hero.stamp': 'Dodaj pieczątkę', 'hero.redeem': 'Wydaj nagrodę', 'hero.reset': 'Od nowa',
+    'hero.h0': 'To karta klienta. Spróbuj przybić pieczątkę.',
+    'hero.hLeft': ({ n }) => `Do nagrody brakuje jeszcze ${n} ${I18N.plural(+n, ['pieczątki', 'pieczątek', 'pieczątek'])}.`,
+    'hero.hFull': 'Pełna karta: klient widzi "Nagroda gotowa".',
+    'hero.hDone': 'Nagroda wydana. Karta zaczyna się od nowa, a klient wraca.',
+    'how.label': 'Jak to działa', 'how.title': 'Trzy kroki i gotowe.',
+    'how.s1': 'Projektujemy Twoją kartę', 'how.s1p': 'Opowiadasz nam o lokalu i nagrodzie. My projektujemy kartę, pieczątkę i plakat na miarę.', 'how.s1w': 'Ty, raz',
+    'how.s2': 'Klient skanuje kod QR', 'how.s2p': 'Plakat przy kasie robi swoje. W 10 sekund karta jest w jego telefonie.', 'how.s2w': 'Twój klient, 10 sekund',
+    'how.s3': 'Pieczątki z telefonu', 'how.s3p': 'Obsługa skanuje kartę klienta i dotyka raz. Pełna karta? Wydajesz nagrodę.', 'how.s3w': 'Twoja obsługa, przy każdej wizycie',
+    'b.label': 'Wypróbuj ze swoim lokalem', 'b.title': 'Wpisz nazwę. Oto Twoja karta.',
+    'b.lede': 'Tak zobaczą ją Twoi klienci: w telefonie, przy kasie i na Instagramie. Zmień, co chcesz, podgląd zmienia się od razu.',
+    'b.name': 'Nazwa lokalu', 'b.namePh': 'Np. Kawiarnia Rynek', 'b.type': 'Jaki to lokal?', 'b.style': 'Jaki styl?', 'b.reward': 'Nagroda', 'b.stamps': 'Pieczątki do nagrody',
+    'b.go': 'Stwórz tę kartę', 'b.note': 'To podgląd. Ostateczną kartę projektujemy dla Twojego lokalu.',
+    'b.tPhone': 'W telefonie', 'b.tPoster': 'Plakat przy kasie', 'b.tInsta': 'Post na Instagram',
+    'b.cPhone': 'W Portfelu klienta, obok biletów i kart pokładowych.', 'b.cPoster': 'Format A5. Wysyłamy go wydrukowanego albo drukujesz go sam.', 'b.cInsta': 'Gotowy do publikacji. Pobierasz go jednym dotknięciem.',
+    'ds.label': 'Projekt na miarę', 'ds.title': 'Każdą kartę projektujemy my.',
+    'ds.lede': 'W planie Start sam ustawiasz logo, kolory, tło i pieczątkę, a my sprawdzamy każdą zmianę, zanim zobaczą ją klienci. W planach Plus i Pro kartę projektujemy my, dla Twojego lokalu.',
+    'ds.s1': 'Opowiedz nam o lokalu', 'ds.s1p': 'Logo, kolory, kilka zdjęć i nagroda. Wystarczy dziesięć minut, nawet przy ladzie.',
+    'ds.s2': 'Wysyłamy Ci projekt', 'ds.s2p': 'Projektujemy kartę i pieczątkę na miarę. Widzisz ją w telefonie, zanim ruszy.',
+    'ds.s3': 'Chcesz coś zmienić? Napisz', 'ds.s3p': 'Piszesz do nas ze swojego konta, a my zmieniamy projekt. W planie Start możesz też zrobić to sam: zatwierdzamy każdą zmianę.',
+    'ds.g1': 'The Coffee, Mediolan: japońskie pieczęcie', 'ds.g2': 'Przykład: osiedlowa piekarnia', 'ds.g3': 'Przykład: bar koktajlowy',
+    'h.label': 'Co robimy dla Ciebie', 'h.title': 'Nie musisz być grafikiem. Ani marketingowcem.',
+    'h.lede': 'Inni dają Ci narzędzie i zostawiają samego. Z Timbro masz kogoś, kto pomaga, od pomysłu do pierwszego klienta.',
+    'h.1': 'Projektujemy kartę z Tobą', 'h.1p': 'Z Twoim logo i kolorami, dla Apple Wallet i Google Wallet. Ty wybierasz nagrodę, resztą zajmujemy się my.',
+    'h.2': 'Wydrukowany zestaw, na prawdziwym papierze', 'h.2p': 'Plakat przy kasie, naklejka na witrynę i karteczki na stoliki. Przychodzą gotowe do powieszenia.',
+    'h.3': 'Posty i wiadomości już napisane', 'h.3p': 'Instagram, relacje, WhatsApp i Google. Kopiujesz, wklejasz, publikujesz.',
+    'h.4': '7-dniowy plan startu', 'h.4p': 'Co robić każdego dnia pierwszego tygodnia. Cel: 30 osób z kartą.',
+    'h.5': 'Karta mówi po angielsku do turystów', 'h.5p': 'Kto ma telefon po angielsku, widzi kartę po angielsku.',
+    'h.6': 'Prawdziwy człowiek na WhatsAppie', 'h.6p': 'Odpowiadamy po polsku, włosku i angielsku.',
+    'h.sticker': 'Nasza karta lojalnościowa jest cyfrowa', 'h.stickerSub': 'Naklejka na witrynę',
+    'h.kitCap': 'Wydrukowany zestaw dla The Coffee w Mediolanie: plakat A5 przy kasie i naklejka na witrynę.',
+    'n.label': 'Liczby', 'n.title': 'Ile może to być warte dla Twojego lokalu.', 'n.lede': 'Ustaw suwaki na swoje liczby: zobacz, ile daje karta, dzięki której klienci wracają.',
+    'n.regulars': 'Stali klienci', 'n.join': 'Ilu bierze kartę', 'n.extra': 'Dodatkowe wizyty w miesiącu na osobę z kartą', 'n.ticket': 'Średni paragon',
+    'n.perMonth': 'więcej utargu miesięcznie', 'n.members': 'klientów z kartą', 'n.visits': 'dodatkowych wizyt miesięcznie', 'n.perYear': 'więcej w pierwszym roku', 'n.payback': 'paragonów miesięcznie pokrywa plan Plus',
+    'n.chart': 'Dodatkowy utarg zsumowany w pierwszym roku', 'n.month': 'miesiąc {n}', 'n.total': '{v} łącznie',
+    'n.fine': 'Szacunki na podstawie wybranych liczb, a nie gwarantowane wyniki. Założenia: klienci dołączają przez pierwsze 3 miesiące; koszt nagród (mniej więcej jeden napój na 8 do 10 wizyt) nie jest odjęty. Po starcie prawdziwe liczby zobaczysz na stronie Wyniki.', 'n.see': 'Zobacz przykładową stronę Wyniki',
+    'p.label': 'Cennik', 'p.title': 'Jedna subskrypcja. Wszystko w cenie.', 'p.lede': 'Plany różnią się tylko liczbą lokali i tym, ile pomocy od nas chcesz.',
+    'p.billing': 'Okres rozliczenia', 'p.monthly': 'Miesięcznie', 'p.yearly': 'Rocznie', 'p.save': '2 miesiące gratis',
+    'p.month': '/ miesiąc', 'p.year': '/ rok', 'p.billedM': 'Płatność co miesiąc', 'p.billedY': 'Wychodzi {x} miesięcznie',
+    'p.loc': ({ n }) => I18N.plural(+n || 5, ['lokal', 'lokale', 'lokali']), 'p.loc1': 'lokal',
+    'p.cards': ({ n }) => I18N.plural(+n || 5, ['karta', 'karty', 'kart']), 'p.cards1': 'karta',
+    'p.staff': ({ n }) => I18N.plural(+n || 5, ['osoba z obsługi', 'osoby z obsługi', 'osób z obsługi']),
+    'p.popular': 'Najczęściej wybierany', 'p.cta': 'Wypróbuj 30 dni za darmo',
+    'p.from': 'od', 'p.perLoc': '/ lokal miesięcznie', 'p.chainBilled': 'Najpierw pilotaż w kilku lokalach', 'p.contact': 'Porozmawiajmy',
+    'p.waText': 'Cześć! Chcę dowiedzieć się więcej o planie Sieci w Timbro.',
+    'p.all': 'Wszystkie plany: bez limitu klientów i pieczątek, karta po polsku, włosku i angielsku. Ceny netto (bez VAT).',
+    'f.title': 'Pytania, które słyszymy przy ladzie',
+    'f.q1': 'Czy moi klienci muszą pobrać aplikację?', 'f.a1': 'Nie. Skanują kod QR i karta otwiera się w telefonie. Jednym dotknięciem dodają ją do ekranu głównego.',
+    'f.q2': 'Czy muszę kupić coś do kasy?', 'f.a2': 'Nie. Wystarczy telefon albo tablet, który już masz. Obsługa otwiera skaner pieczątek i skanuje kartę klienta.',
+    'f.q3': 'A co z klientami bez smartfona?', 'f.a3': 'Zostaw papierowe karty dla tych, którzy je wolą. Timbro nie zmusza Cię do wyboru.',
+    'f.q4': 'Co się dzieje, gdy karta jest pełna?', 'f.a4': 'Karta pokazuje "Nagroda gotowa". Obsługa dotyka "Wydaj nagrodę" i karta zaczyna się od zera.',
+    'f.q5': 'Czy mogę zrezygnować, kiedy chcę?', 'f.a5': 'Tak. Subskrypcja jest miesięczna: rezygnujesz i nie płacisz za kolejny miesiąc.',
+    'f.q6': 'Czy to działa w Polsce?', 'f.a6': 'Tak, wszędzie. Karta działa po polsku, włosku i angielsku. W Mediolanie możemy też wpaść osobiście.',
+    'v.title': 'Porozmawiajmy.', 'v.lede': 'Pokażemy Ci Timbro w 10 minut, na wideo albo na miejscu, z kartą Twojego lokalu już gotową.',
+    'v.wa': 'Napisz do nas na WhatsAppie', 'v.mail': 'Napisz do nas maila', 'v.start': 'Stwórz swoją kartę',
+    'ft.dash': 'Panel lokalu', 'ft.stamper': 'Skaner pieczątek dla obsługi', 'ft.example': 'Przykład: The Coffee', 'ft.terms': 'Regulamin i rezygnacja', 'ft.privacy': 'Prywatność', 'ft.by': 'Projekt Witkowski Design'
   }
 });
 
 (() => {
   const L = () => I18N.lang;
-  const fmt = (n, dec = 0) => new Intl.NumberFormat(L() === 'it' ? 'it-IT' : 'en-IE', { style: 'currency', currency: 'EUR', minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
+  const fmt = (n, dec = 0) => new Intl.NumberFormat(L() === 'en' ? 'en-IE' : I18N.locale(), { style: 'currency', currency: 'EUR', minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
 
   // ---------- hero: a card you can stamp ----------
   const heroCard = () => Store.getCard('the-coffee');
@@ -642,19 +713,20 @@ I18N.add({
     const tp = tpl(), main = I18N.pick(tp);
     const reward = form.reward.value.trim() || main.reward;
     const card = {
-      id: 'preview', business: form.name.value.trim() || I18N.t('b.namePh').replace(/^(Es\.|E\.g\.)\s*/, ''),
+      id: 'preview',
+      business: form.name.value.trim() || I18N.t('b.namePh').replace(/^(Es\.|E\.g\.|Np\.)\s*/, ''),
       title: main.title, reward, stampsNeeded: stamps, icon: tp.icon,
       ...CONFIG.styles.find(st => st.id === styleId).look, style: styleId
     };
     if (styleId === 'giappone' && /coffee/i.test(card.business)) card.tagline = 'ザ・コーヒー';
-    if (L() === 'it') { card.titleEn = tp.en.title; if (reward === tp.it.reward) card.rewardEn = tp.en.reward; }
+    if (L() !== 'en') { card.titleEn = tp.en.title; if (reward === main.reward) card.rewardEn = tp.en.reward; card.lang = L(); }
     return card;
   }
   let instaTimer;
   function builder() {
     const card = builderCard();
     document.getElementById('b-pass').innerHTML = UI.renderPass(card, null, { stamps: Math.min(3, stamps) });
-    document.getElementById('b-poster').innerHTML = MARKETING.poster(card, { url: UI.publicUrl('') });
+    document.getElementById('b-poster').innerHTML = MARKETING.poster(card, { url: UI.publicUrl(''), lang: L() });
     document.getElementById('stamps').textContent = stamps;
     const q = new URLSearchParams({ new: 1, name: card.business, type: typeId, style: styleId, reward: card.reward, stamps, lang: L() });
     document.getElementById('b-go').href = 'app/dashboard.html?' + q;
@@ -699,17 +771,27 @@ I18N.add({
   });
 
   // ---------- kit ----------
-  function kit() { document.getElementById('kit-poster').innerHTML = MARKETING.poster(heroCard()); }
+  function kit() { document.getElementById('kit-poster').innerHTML = MARKETING.poster(heroCard(), { lang: L() === 'en' ? 'en' : 'it' }); }
 
   // ---------- pricing ----------
   let bill = 'month';
   function plans() {
+    const wa = (CONFIG.contact.phone || '').replace(/\D/g, '');
     document.getElementById('plans').innerHTML = CONFIG.plans.map(p => {
       const tx = I18N.pick(p);
+      // Chains: a price per location, agreed in a conversation.
+      if (p.contact) return `<article class="plan chain">
+        <h3>${tx.name}</h3><p class="for">${tx.for}</p>
+        <div class="price"><small>${I18N.t('p.from')}</small> <b>${fmt(p.month)}</b><span>${I18N.t('p.perLoc')}</span></div>
+        <p class="billed">${I18N.t('p.chainBilled')}</p>
+        <div class="limits"><div><b>11+</b><span>${I18N.t('p.loc', { n: 11 })}</span></div><div><b>∞</b><span>${I18N.t('p.cards', { n: 5 })}</span></div><div><b>∞</b><span>${I18N.t('p.staff', { n: 5 })}</span></div></div>
+        <ul>${tx.extras.map(x => `<li>${x}</li>`).join('')}</ul>
+        <a class="btn line block" href="${wa ? `https://wa.me/${wa}?text=${encodeURIComponent(I18N.t('p.waText'))}` : '#contact'}">${I18N.t('p.contact')}</a>
+      </article>`;
       const yearly = p.month * CONFIG.yearlyMonths;
       const price = bill === 'year' ? fmt(yearly) : fmt(p.month);
       const billed = bill === 'year' ? I18N.t('p.billedY', { x: fmt(yearly / 12, 2) }) : I18N.t('p.billedM');
-      const lim = (v, one, many) => `<div><b>${v}</b><span>${I18N.t(v === 1 ? one : many)}</span></div>`;
+      const lim = (v, one, many) => `<div><b>${v}</b><span>${I18N.t(v === 1 ? one : many, { n: v })}</span></div>`;
       return `<article class="plan${p.popular ? ' popular' : ''}">
         ${p.popular ? `<span class="badge">${I18N.t('p.popular')}</span>` : ''}
         <h3>${tx.name}</h3><p class="for">${tx.for}</p>
@@ -749,12 +831,12 @@ I18N.add({
   // ---------- the numbers: a calculator with the café's own estimates ----------
   const calc = document.getElementById('calc');
   function numbers() {
-    const it = L() === 'it', loc = it ? 'it-IT' : 'en-IE';
+    const loc = L() === 'en' ? 'en-IE' : I18N.locale();
     const eur = (n, d = 0) => new Intl.NumberFormat(loc, { style: 'currency', currency: 'EUR', maximumFractionDigits: d, minimumFractionDigits: d }).format(n);
     const v = Object.fromEntries([...new FormData(calc)].map(([k, x]) => [k, Number(x)]));
     document.getElementById('o-regulars').textContent = v.regulars.toLocaleString(loc);
     document.getElementById('o-join').textContent = v.join + '%';
-    document.getElementById('o-extra').textContent = String(v.extra).replace('.', it ? ',' : '.');
+    document.getElementById('o-extra').textContent = v.extra.toLocaleString(loc);
     document.getElementById('o-ticket').textContent = eur(v.ticket, 2);
     const members = Math.round(v.regulars * v.join / 100), visits = members * v.extra, month = visits * v.ticket;
     // Customers join over the first three months, then the card runs at full speed.
@@ -776,7 +858,7 @@ I18N.add({
     hero(); drawTypes(); drawStyles();
     if (!rewardTouched) form.reward.value = I18N.pick(tpl()).reward;
     builder(); kit(); plans(); contact(); gallery(); numbers();
-    document.title = L() === 'it' ? 'Timbro · La carta fedeltà digitale per il tuo bar' : 'Timbro · The digital loyalty card for your café';
+    document.title = { it: 'Timbro · La carta fedeltà digitale per il tuo bar', en: 'Timbro · The digital loyalty card for your café', pl: 'Timbro · Cyfrowa karta lojalnościowa dla Twojej kawiarni' }[L()];
   }
   // ?bar=Name (used by the brochure QR) opens the builder with that name.
   const bar = new URLSearchParams(location.search).get('bar');

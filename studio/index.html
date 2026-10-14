@@ -120,6 +120,16 @@ I18N.add({
     's.ends': 'cancelled, ends {date}', 's.stripeSetup': 'Set up plans in Stripe', 's.stripeDone': 'Stripe ready. Changed: {list}', 's.stripeSame': 'Stripe is already up to date.',
     's.bill': { trialing: 'On trial', active: 'Paying', past_due: 'Payment failed', unpaid: 'Unpaid', canceled: 'Cancelled', paused: 'Paused', '': 'Not subscribed' },
     's.pending': 'To review', 's.changes': 'Change asked', 's.export': 'Export design', 's.import': 'Import a design', 's.imported': 'Design imported. Check it and publish.'
+  },
+  pl: {
+    's.plan': 'Plan', 's.planSet': 'Plan zmieniony.', 's.toReview': 'Do zatwierdzenia', 's.all': 'Wszystkie karty', 's.none': 'Nic do zatwierdzenia.',
+    's.sub': 'Tutaj projektujesz kartę od zera albo sprawdzasz i poprawiasz zmiany zaproponowane przez lokal. Klienci widzą nowy wygląd dopiero po "Zatwierdź i opublikuj".',
+    's.from': 'Wiadomość od lokalu', 's.pics': 'Zdjęcia i inspiracje (kliknij, aby pobrać)', 's.links': 'Linki do inspiracji', 's.download': 'Pobierz', 's.live': 'Teraz u klientów', 's.new': 'Nowy wygląd',
+    's.approve': 'Zatwierdź i opublikuj', 's.ask': 'Poproś o zmianę', 's.reply': 'Odpowiedź dla lokalu', 's.replyPh': 'Np. Logo jest za małe, prześlij je w wysokiej rozdzielczości.',
+    's.published': 'Opublikowano. Klienci widzą nowy wygląd.', 's.asked': 'Prośba wysłana do lokalu.', 's.needReply': 'Napisz, co zmienić, i wyślij.',
+    's.ends': 'anulowany, kończy się {date}', 's.stripeSetup': 'Przygotuj plany w Stripe', 's.stripeDone': 'Stripe gotowy. Zmienione: {list}', 's.stripeSame': 'Stripe jest już aktualny.',
+    's.bill': { trialing: 'Okres próbny', active: 'Płaci', past_due: 'Płatność nieudana', unpaid: 'Nieopłacony', canceled: 'Anulowany', paused: 'Wstrzymany', '': 'Bez subskrypcji' },
+    's.pending': 'Do zatwierdzenia', 's.changes': 'Poproszono o zmianę', 's.export': 'Eksportuj wygląd', 's.import': 'Importuj wygląd', 's.imported': 'Wygląd zaimportowany. Sprawdź i opublikuj.'
   }
 });
 
@@ -209,19 +219,19 @@ I18N.add({
   const billLabel = b => {
     const names = I18N.t('s.bill'), plan = CONFIG.plans.find(p => p.id === b.plan);
     return (names[b.status] ?? b.status) + (plan && b.status !== 'canceled' && b.status ? ' · ' + I18N.pick(plan).name + (b.interval === 'year' ? ' / yr' : '') : '')
-      + (b.canceling && b.periodEnd ? ' · ' + I18N.t('s.ends', { date: new Date(b.periodEnd).toLocaleDateString(I18N.lang === 'it' ? 'it-IT' : 'en-GB') }) : '');
+      + (b.canceling && b.periodEnd ? ' · ' + I18N.t('s.ends', { date: new Date(b.periodEnd).toLocaleDateString(I18N.locale()) }) : '');
   };
   async function start() {
     if (Remote.enabled) {
       if (!await Remote.requireLogin()) return;
       try { Store.attachRemote({ cards: withContacts(await Remote.adminCards()), customers: [] }); }
       catch (err) { document.querySelector('main').innerHTML = `<p class="help" style="grid-column:1/-1">${UI.esc(err.message)}</p>`; return; }
-      // Creates the Stripe products and prices from the plans in config.js.
+      // Creates the Stripe products and prices from the plans in config.js (Chains is invoiced, not in Stripe).
       $('stripe-setup').hidden = false;
       $('stripe-setup').addEventListener('click', async e => {
         const btn = e.currentTarget; btn.disabled = true;
         try {
-          const r = await Remote.stripeSetup(CONFIG.plans.map(p => ({ id: p.id, name: p.en.name, month: p.month, yearMonths: CONFIG.yearlyMonths })));
+          const r = await Remote.stripeSetup(CONFIG.plans.filter(p => !p.contact).map(p => ({ id: p.id, name: p.en.name, month: p.month, yearMonths: CONFIG.yearlyMonths })));
           UI.toast(r.changed.length ? I18N.t('s.stripeDone', { list: r.changed.join(', ') }) : I18N.t('s.stripeSame'));
         } catch (err) { UI.toast(err.message); }
         btn.disabled = false;

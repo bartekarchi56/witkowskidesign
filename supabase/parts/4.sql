@@ -1,5 +1,22 @@
--- Timbro database, part 4 of 6. Run the parts in order.
+-- Timbro database, part 4 of 7. Run the parts in order.
 set search_path = timbro, extensions;
+
+create or replace function stamper_stamp(p_token text, p_code text, p_delta int) returns jsonb
+language plpgsql security definer set search_path = timbro
+as $$
+declare d devices := _device(p_token); m customers; c cards; v_next int;
+begin
+  select m2.* into m from customers m2 join cards c2 on c2.id = m2.card_id
+  where m2.id = upper(trim(p_code)) and c2.business_id = d.business_id for update of m2;
+  if not found then raise exception 'No customer with that code.' using errcode = 'P0002'; end if;
+  select * into c from cards where id = m.card_id;
+  v_next := greatest(0, least(c.stamps_needed, m.stamps + sign(p_delta)::int));
+  if v_next <> m.stamps then
+    update customers set stamps = v_next, last_visit = now() where id = m.id returning * into m;
+    insert into events (customer_id, device_id, type, n) values (m.id, d.id, case when p_delta > 0 then 'stamp' else 'unstamp' end, 1);
+  end if;
+  return jsonb_build_object('customer', _customer_json(m), 'card', _card_json(c));
+end $$;
 
 create or replace function stamper_redeem(p_token text, p_code text) returns jsonb
 language plpgsql security definer set search_path = timbro
@@ -55,42 +72,10 @@ begin
     reward = left(coalesce(p_card->>'reward', reward), 60),
     title_en = left(coalesce(p_card->>'titleEn', title_en), 40),
     reward_en = left(coalesce(p_card->>'rewardEn', reward_en), 60),
+    lang = case when p_card->>'lang' in ('it', 'en', 'pl') then p_card->>'lang' else lang end,
     stamps_needed = greatest(3, least(20, coalesce((p_card->>'stampsNeeded')::int, stamps_needed))),
     updated_at = now()
   where id = v_id returning * into c;
   update businesses set name = c.business where id = v_biz;   -- the name the till phones show
   return _card_json(c, true);
-end $$;
-
-create or replace function owner_send_design(p_card_id text, p_kind text, p_design jsonb, p_note text, p_images jsonb, p_links jsonb) returns jsonb
-language plpgsql security definer set search_path = timbro
-as $$
-declare c cards;
-begin
-  select * into c from cards where id = lower(p_card_id) and business_id = _my_business();
-  if not found then raise exception 'Card not found.' using errcode = 'P0002'; end if;
-  if jsonb_array_length(coalesce(p_images, '[]')) > 8 then raise exception 'Up to 8 images.'; end if;
-  update cards set review = jsonb_build_object(
-    'status', 'pending',
-    'kind', case when p_kind = 'request' then 'request' else 'proposal' end,
-    'design', case when p_kind = 'request' then '{}'::jsonb else _clean_design(p_design) end,
-    'note', left(coalesce(p_note, ''), 2000),
-    'images', coalesce(p_images, '[]'::jsonb),
-    'links', coalesce(p_links, '[]'::jsonb),
-    'sentAt', (extract(epoch from now()) * 1000)::bigint,
-    'reply', '')
-  where id = c.id returning * into c;
-  return _card_json(c, true);
-end $$;
-
-create or replace function owner_link_code() returns jsonb
-language plpgsql security definer set search_path = timbro
-as $$
-declare v_biz uuid := _my_business(); v_code text;
-begin
-  if v_biz is null then raise exception 'Create your card first.' using errcode = 'P0002'; end if;
-  delete from link_codes where business_id = v_biz or expires_at < now();
-  v_code := _code(8);
-  insert into link_codes (code, business_id, expires_at) values (v_code, v_biz, now() + interval '15 minutes');
-  return jsonb_build_object('code', v_code, 'expiresAt', (extract(epoch from now() + interval '15 minutes') * 1000)::bigint);
 end $$;

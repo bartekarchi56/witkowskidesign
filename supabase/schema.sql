@@ -51,7 +51,7 @@ create table if not exists cards (
   reward_en      text not null default '',
   stamps_needed  int  not null default 10 check (stamps_needed between 3 and 20),
   design         jsonb not null default '{}'::jsonb,  -- colours, stamp, logo… (see DESIGN_KEYS)
-  plan           text not null default 'start' check (plan in ('start','plus','pro')),
+  plan           text not null default 'start' check (plan in ('start','plus','pro','chain')),
   review         jsonb,                               -- design proposal / request / reply
   created_at     timestamptz not null default now(),
   updated_at     timestamptz not null default now()
@@ -59,6 +59,11 @@ create table if not exists cards (
 
 -- Notification texts chosen by the café (see "messages" below).
 alter table cards add column if not exists messages jsonb not null default '{}'::jsonb;
+-- The card's own language (title, reward, messages); titleEn/rewardEn are for English visitors.
+alter table cards add column if not exists lang text not null default 'it' check (lang in ('it', 'en', 'pl'));
+-- Plans: start, plus, pro (Stripe) and chain (set by Witkowski Design, invoiced).
+alter table cards drop constraint if exists cards_plan_check;
+alter table cards add constraint cards_plan_check check (plan in ('start','plus','pro','chain'));
 
 create table if not exists customers (
   id           text primary key check (id ~ '^[A-Z0-9]{6}$'),   -- the code under the QR
@@ -184,7 +189,7 @@ language sql stable
 as $$
   select c.design || jsonb_build_object(
     'id', c.id, 'business', c.business, 'city', c.city, 'type', c.type,
-    'title', c.title, 'reward', c.reward, 'titleEn', c.title_en, 'rewardEn', c.reward_en,
+    'title', c.title, 'reward', c.reward, 'titleEn', c.title_en, 'rewardEn', c.reward_en, 'lang', c.lang,
     'stampsNeeded', c.stamps_needed, 'plan', c.plan, 'messages', c.messages,
     'createdAt', (extract(epoch from c.created_at) * 1000)::bigint,
     'updatedAt', (extract(epoch from c.updated_at) * 1000)::bigint
@@ -351,6 +356,7 @@ begin
     reward = left(coalesce(p_card->>'reward', reward), 60),
     title_en = left(coalesce(p_card->>'titleEn', title_en), 40),
     reward_en = left(coalesce(p_card->>'rewardEn', reward_en), 60),
+    lang = case when p_card->>'lang' in ('it', 'en', 'pl') then p_card->>'lang' else lang end,
     stamps_needed = greatest(3, least(20, coalesce((p_card->>'stampsNeeded')::int, stamps_needed))),
     updated_at = now()
   where id = v_id returning * into c;
@@ -451,7 +457,7 @@ end $$;
 -- -------------------------------------------------------------- messages --
 -- The café's own notification texts (Wallet passes and the web card):
 -- close (1-3 stamps to go), ready (reward ready), remind (no visit for N
--- days) and near (lock screen near the café). Each has on, it, en.
+-- days) and near (lock screen near the café). Each has on, it, en, pl.
 -- (The column itself is added with the tables, above.)
 create or replace function _clean_messages(m jsonb) returns jsonb
 language sql immutable
@@ -460,6 +466,7 @@ as $$
     'on', coalesce(m->k->>'on', '') = 'true',
     'it', left(m->k->>'it', 140),
     'en', left(m->k->>'en', 140),
+    'pl', left(m->k->>'pl', 140),
     'left', case when k = 'close' then greatest(1, least(3, coalesce(nullif(regexp_replace(m->k->>'left', '[^0-9]', '', 'g'), '')::int, 1))) end,
     'days', case when k = 'remind' then greatest(7, least(90, coalesce(nullif(regexp_replace(m->k->>'days', '[^0-9]', '', 'g'), '')::int, 21))) end,
     'lat', case when k = 'near' and m->k->>'lat' ~ '^-?[0-9]{1,2}(\.[0-9]{1,7})?$' and abs((m->k->>'lat')::numeric) <= 90 then (m->k->>'lat')::numeric end,

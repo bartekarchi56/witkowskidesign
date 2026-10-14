@@ -30,6 +30,14 @@
       'de.color': 'Card colour', 'de.strip': 'Behind the stamps', 'de.stripImg': 'or a background image', 'de.stripHint': 'A photo or texture, wide and short (about 3:1).',
       'de.stamp': 'The stamp', 'de.art': 'or your own stamp artwork', 'de.artHint': 'A square PNG with a transparent background. It takes the place of the stamp above.',
       'de.ink': 'Ink colour', 'de.same': 'Same as the card'
+    },
+    pl: {
+      'de.style': 'Styl na start', 'de.logo': 'Logo', 'de.logoHint': 'Poziomy PNG z przezroczystym tłem. Zastępuje nazwę.',
+      'de.upload': 'Wgraj', 'de.remove': 'Usuń', 'de.tagline': 'Podpis pod nazwą', 'de.font': 'Krój nazwy',
+      'de.fSans': 'Nowoczesny', 'de.fWide': 'Szeroki', 'de.fSerif': 'Klasyczny', 'de.fMono': 'Maszynowy',
+      'de.color': 'Kolor karty', 'de.strip': 'Tło pod pieczątkami', 'de.stripImg': 'albo obraz w tle', 'de.stripHint': 'Zdjęcie lub tekstura, szeroka i niska (około 3:1).',
+      'de.stamp': 'Pieczątka', 'de.art': 'albo Twój własny wzór pieczątki', 'de.artHint': 'Kwadratowy PNG z przezroczystym tłem. Zastępuje wybraną pieczątkę.',
+      'de.ink': 'Kolor tuszu', 'de.same': 'Taki jak karta'
     }
   });
 
