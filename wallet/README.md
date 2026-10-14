@@ -10,14 +10,22 @@ The customer's card page (`app/card.html`) shows an "Add to Apple Wallet" or "Ad
 ## What you need (once)
 
 ### Apple Wallet
-1. An **Apple Developer Program** membership (99 USD/year), as a company or individual.
+1. An **Apple Developer Program** membership (99 USD/year), as a company or individual. You can enrol on the website or in the Apple Developer app on an iPhone; no Mac or Xcode is needed for Wallet passes.
 2. In *Certificates, Identifiers & Profiles* → *Identifiers*, create a **Pass Type ID**, e.g. `pass.it.timbro.loyalty`.
-3. Create a **Pass Type ID certificate** for it, download it, open it in Keychain Access and export it as `.p12`.
-4. Convert it to PEM files:
+3. Create a **Pass Type ID certificate** for it. No Mac needed: make the key and the request with OpenSSL
+   (on Windows it comes with Git for Windows: open "Git Bash"):
    ```
-   openssl pkcs12 -in pass.p12 -clcerts -nokeys -out signer.pem -legacy
-   openssl pkcs12 -in pass.p12 -nocerts -out signer.key -legacy
+   openssl req -new -newkey rsa:2048 -nodes -keyout signer.key -out pass.csr -subj "/CN=Witkowski Design/C=PL"
    ```
+   Upload `pass.csr` when Apple asks for a Certificate Signing Request, download `pass_type.cer`.
+   Keep `signer.key` secret: it never goes in the repo, in chat or by email.
+4. Convert the certificate to PEM:
+   ```
+   openssl x509 -inform der -in pass_type.cer -out signer.pem
+   ```
+   (With a Mac you can instead export a `.p12` from Keychain Access and run
+   `openssl pkcs12 -in pass.p12 -clcerts -nokeys -out signer.pem -legacy` and
+   `openssl pkcs12 -in pass.p12 -nocerts -nodes -out signer.key -legacy`.)
 5. Download Apple's **WWDR certificate (G4)** from apple.com/certificateauthority and convert it:
    `openssl x509 -inform der -in AppleWWDRCAG4.cer -out wwdr.pem`
 6. Note your **Team ID** (top right of the developer site).
