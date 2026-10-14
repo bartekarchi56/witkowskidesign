@@ -76,14 +76,15 @@
     c.fillText(w.business.toUpperCase(), 90, 130);
     c.letterSpacing = '0px';
 
-    // headline, wrapped
-    font(800, 96, 'expanded');
-    const lines = wrap(c, L.igHeadline, W - 180);
-    lines.forEach((ln, i) => c.fillText(ln, 90, 290 + i * 104));
+    // headline, wrapped; longer languages (Polish) get a smaller size so the card and footer still fit
+    const cardH = 430, room = (H - 220) - cardH - 240;   // the card must end above the footer text
+    let size = 96, lines;
+    for (; size >= 60; size -= 6) { font(800, size, 'expanded'); lines = wrap(c, L.igHeadline, W - 180); if (lines.length * size * 1.08 <= room) break; }
+    const lh = Math.round(size * 1.08);
+    lines.forEach((ln, i) => c.fillText(ln, 90, 200 + size * .94 + i * lh));
 
     // card
-    const top = 290 + lines.length * 104 + 40;
-    const cardH = 430;
+    const top = 200 + lines.length * lh + 40;
     roundRect(c, 90, top, W - 180, cardH, 36);
     c.fillStyle = '#FFFFFF'; c.fill();
     c.lineWidth = 4; c.strokeStyle = '#0B0B0C'; c.stroke();
