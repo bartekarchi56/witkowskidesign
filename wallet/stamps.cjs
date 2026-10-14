@@ -42,7 +42,7 @@
 
   // Each design: (ids) → inner SVG, drawn with currentColor.
   const DESIGNS = {
-    // The classic: a full dot of ink.
+    // The classic: a full, flat dot (no ink texture).
     punto: () => `<circle cx="50" cy="50" r="34" fill="currentColor"/>`,
     // A sun on the horizon, in a square frame.
     sole: () => `
@@ -95,6 +95,9 @@
       <ellipse cx="50" cy="50" rx="34" ry="45" fill="currentColor" mask="url(#${mask})"/>`
   };
 
+  // Stamps printed clean, without the ink texture: the dot is a plain, flat dot.
+  const PLAIN = { punto: true };
+
   // Empty boxes that are drawn, not a faint print: the dot's empty circle.
   const EMPTY = {
     punto: () => `<circle cx="50" cy="50" r="32" fill="none" stroke="currentColor" stroke-width="4.5"/>`
@@ -124,7 +127,7 @@
     const seed = Object.keys(DESIGNS).indexOf(id) * 7 + 3;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" color="${safeInk(ink)}" aria-hidden="true" ${attrs}>
       <defs>${inkFilter(ids.ink, seed)}${dotsFilter(ids.dots, seed + 2)}</defs>
-      <g filter="url(#${ids.ink})">${draw(ids)}</g></svg>`;
+      ${PLAIN[id] ? draw(ids) : `<g filter="url(#${ids.ink})">${draw(ids)}</g>`}</svg>`;
   }
   const urls = {};
   const dataUrl = (id, ink, empty = false) => {
