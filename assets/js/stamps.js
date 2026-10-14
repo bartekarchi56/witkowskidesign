@@ -1,5 +1,5 @@
 /*
- * Timbro's standard stamps: six rubber-stamp designs, printed in one ink.
+ * Timbro's standard stamps: rubber-stamp designs printed in one ink (the dot, six pictures and a coffee bean).
  *   STAMPS.list                   → [{ id, it, en, pl }]
  *   STAMPS.stampOf(card)          → the stamp a card uses (its own, its style's, its type's)
  *   STAMPS.svg(id, ink, attrs, empty)  → SVG markup; attrs go on the root (e.g. x/y/width/height)
@@ -87,7 +87,12 @@
         <path d="M54 94C54 72 53 50 54.5 22" stroke-width="4.2"/>
         <path d="M54 68Q44 61 35 52M54 57Q64 51 73 42M54 45Q47 40 42 32M54.3 35Q59 31 63 24" stroke-width="2.9"/>
         <path d="M42 58Q39 53 40 47M66 47Q71 44 76 46M46 39Q43 36 37 36M60 29Q63 26 68 27" stroke-width="2.2"/></g>
-      <circle cx="76" cy="17" r="6.5" fill="currentColor"/>`
+      <circle cx="76" cy="17" r="6.5" fill="currentColor"/>`,
+    // A coffee bean with its S-shaped crease. Added for cafés that ask for it; no card uses it by default.
+    ziarno: ({ mask }) => `
+      <mask id="${mask}"><rect width="100" height="100" fill="#fff"/>
+        <path d="M56 3C42 20 38 36 47 50S58 78 44 97" fill="none" stroke="#000" stroke-width="9" stroke-linecap="round"/></mask>
+      <ellipse cx="50" cy="50" rx="34" ry="45" fill="currentColor" mask="url(#${mask})"/>`
   };
 
   // Empty boxes that are drawn, not a faint print: the dot's empty circle.
@@ -98,7 +103,8 @@
   const NAMES = {
     punto: ['Punto', 'Dot', 'Kropka'],
     sole: ['Sole', 'Sun', 'Słońce'], ramo: ['Ramo d\'ulivo', 'Olive branch', 'Gałązka oliwna'], fiore: ['Fiore', 'Flower', 'Kwiat'],
-    stella: ['Stella', 'Star', 'Gwiazda'], onda: ['Onda', 'Wave', 'Fala'], albero: ['Albero e luna', 'Tree and moon', 'Drzewo i księżyc']
+    stella: ['Stella', 'Star', 'Gwiazda'], onda: ['Onda', 'Wave', 'Fala'], albero: ['Albero e luna', 'Tree and moon', 'Drzewo i księżyc'],
+    ziarno: ['Chicco di caffè', 'Coffee bean', 'Ziarno kawy']
   };
 
   // Defaults for cards that never picked a stamp: their style's, else their kind of business's.
