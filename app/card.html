@@ -27,6 +27,8 @@ main{max-width:420px;margin:0 auto;padding:16px 16px 48px;display:grid;gap:18px;
 .wbtn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#000;color:#fff;border:0;border-radius:12px;padding:14px 18px;font:600 16px/1 -apple-system,var(--font);cursor:pointer}
 .wbtn[disabled]{opacity:.35;cursor:not-allowed}
 .wbtn svg{width:22px;height:22px}
+.wbadge{display:block;margin:0 auto;padding:0;border:0;background:none;cursor:pointer;line-height:0}
+.wbadge img{height:48px;width:auto}
 .other{font-size:14px}
 .note{font-size:13px;color:var(--muted);text-align:center}
 .history{list-style:none;margin:0;padding:0;font-size:15px}
@@ -136,8 +138,14 @@ I18N.add({
       const label = t(kind === 'apple' ? 'c.apple' : 'c.google');
       const on = CONFIG.walletApi && (CONFIG.walletPlatforms || ['apple', 'google']).includes(kind);
       if (!on) return main ? `<button class="wbtn" type="button" disabled>${WALLET_ICON}${label}</button>` : '';
+      // Apple's official badge (assets/wallet/apple-wallet-<lang>.svg, from Apple's guidelines page);
+      // until those files are there, the plain black button.
+      const plain = `<button class="wbtn" type="submit">${WALLET_ICON}${label}</button>`;
+      const badge = kind === 'apple'
+        ? `<button class="wbadge" type="submit" data-plain="${UI.esc(plain)}"><img src="../assets/wallet/apple-wallet-${I18N.lang}.svg" alt="${UI.esc(label)}" onerror="this.parentNode.outerHTML=this.parentNode.dataset.plain"></button>`
+        : plain;
       return main
-        ? `<form method="post" action="${UI.esc(CONFIG.walletApi.replace(/\/$/, ''))}/${kind}"><input type="hidden" name="data" value="${data}"><button class="wbtn" type="submit">${WALLET_ICON}${label}</button></form>`
+        ? `<form method="post" action="${UI.esc(CONFIG.walletApi.replace(/\/$/, ''))}/${kind}"><input type="hidden" name="data" value="${data}">${badge}</form>`
         : `<form method="post" action="${UI.esc(CONFIG.walletApi.replace(/\/$/, ''))}/${kind}"><input type="hidden" name="data" value="${data}"><button class="link other" type="submit">${label}</button></form>`;
     };
     return one(mineFirst[0], true) + one(mineFirst[1], false);
