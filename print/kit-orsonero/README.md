@@ -6,6 +6,14 @@ Open Tuesday to Friday 8-17, Saturday 9-17, Sunday 9-13, closed Monday.
 
 Rebuild the files after changes: `node print/make-pdfs.js`, then `node print/make-kit-orsonero.js`.
 
+## In short: what to send
+
+1. **Email to Brent (English)** below, with `proposal-orsonero-en.pdf` and `orsonero-card-iphone.png`.
+2. **Email to Giulia (italiano)** below, with `brochure-orsonero-it.pdf` and `orsonero-card-iphone.png`.
+3. **Visit** with your phone, the printed `poster-orsonero-a5.pdf` and one printed brochure.
+4. **After 4-5 days without an answer:** the WhatsApp or Instagram message, with `orsonero-notifications.png` and `orsonero-results.png`.
+5. **If they like the look:** show them the two finished designs, `card-orsonero-simple-*.png` (logo and black dots) and `card-orsonero-oak-*.png` (oak texture and the bear stamp).
+
 ## The files
 
 | File | What it is | Use it for |
@@ -18,6 +26,8 @@ Rebuild the files after changes: `node print/make-pdfs.js`, then `node print/mak
 | `orsonero-results.png` | The Results page after a few weeks (**example numbers**) | Follow-up email |
 | `brochure-orsonero-en.pdf` / `-it.pdf` | A5 brochure with their name | Print one and leave it at the café |
 | `poster-orsonero-a5.pdf` | The A5 till poster with the QR code | Print it and bring it to the visit |
+| `card-orsonero-simple-iphone.png` / `-android.png` | Finished design 1: their logo in the middle, black dots | Second message, to choose a design |
+| `card-orsonero-oak-iphone.png` / `-android.png` | Finished design 2: oak texture, logo and the bear stamp | Second message, to choose a design |
 
 ## Links
 
@@ -37,8 +47,11 @@ Rebuild the files after changes: `node print/make-pdfs.js`, then `node print/mak
 
 ## Before Orsonero starts
 
-- **Wallet is not switched on yet.** Saving to Apple or Google Wallet and the lock-screen reminders need the Apple Developer account, the Google Wallet issuer account and hosting for the wallet server (`wallet/README.md`). Until then the card is a web page customers add to their home screen, and the "one stamp to go" message shows on the card itself. If they say yes, set Wallet up before their launch week, or tell them Wallet arrives in a few weeks.
+- **Wallet works.** Apple Wallet is live: the card updates by itself after every stamp. Google Wallet works too, for everyone once Google approves the publishing request (a few days after 15 October 2026). At the visit you can add their example card to your own iPhone: open the card link, join, tap "Add to Apple Wallet".
+- **The example card lives on your phone only.** `card.html?card=orsonero` is a demo: stamps you give on one phone don't show on another. For a live demo with the till and Wallet updates, use the Sowa card (`card.html?card=sowa`) with your linked till phone, or make their real card in your dashboard once they say yes.
+- **Reminders** ("we miss you" after 21 days, editable) are sent once a day by the cron job on cron-job.org (see `wallet/README.md`). Check it runs before their launch.
 - **Stripe is still in test mode.** Don't send them to the Plan tab yet. Witkowski Design starts on 1 November 2026: switch Stripe to live then (`supabase/STRIPE.md`), and their 30 free days start when they pick the plan.
+- **Render:** switch the wallet server to the Starter plan before their launch week.
 
 ## Email to Brent (English)
 
@@ -54,7 +67,8 @@ How it works:
 - Customers scan a QR code at the till and the card goes into Apple or Google Wallet. No app to download.
 - Your staff add a stamp by scanning the card with the café phone. It takes two seconds.
 - At the eighth stamp, the coffee of their choice is on you.
-- You see how many people come back, and the card can remind them when they are one stamp away.
+- The card in Wallet updates by itself after every stamp, and reminds customers when they are one stamp away or haven't been in for a while.
+- You see how many people join, who comes back and when.
 
 For Orsonero I'd suggest the Plus plan: I design the card with your real logo and colours, and send you the printed kit (till poster, window sticker, table cards). It's free for the first 30 days, then €39 a month plus VAT, and you can cancel anytime.
 
@@ -83,7 +97,8 @@ Come funziona:
 - Il cliente inquadra il QR alla cassa e la carta va nel Wallet del telefono (Apple o Google). Nessuna app da scaricare.
 - Lo staff aggiunge il timbro inquadrando la carta con il telefono del bar. Due secondi.
 - All'ottavo timbro, il caffè che preferisce lo offrite voi.
-- Vedete quanti clienti tornano, e la carta può ricordare a chi manca un solo timbro di passare.
+- La carta nel Wallet si aggiorna da sola a ogni timbro, e ricorda ai clienti quando manca un solo timbro o quando non passano da un po'.
+- Vedete quanti clienti si iscrivono, chi torna e quando.
 
 Per Orsonero consiglio il piano Plus: disegno io la carta con il vostro logo e i vostri colori, e vi mando il kit stampato (poster per la cassa, adesivo per la vetrina, segnatavoli). I primi 30 giorni sono gratis, poi 39 € al mese più IVA, e si disdice quando volete.
 
@@ -125,9 +140,9 @@ Questo è quello che vedono i clienti sul telefono, e quello che vedreste voi do
 ## At the café: what to say (about one minute)
 
 > Hi, I'm Bartek, I'm a designer here in Milan. I made something for Orsonero and wanted to show you in person.
-> It's a stamp card, but on the phone. *(Show the card on your phone.)* The customer scans this poster at the till, and the card goes into their Wallet. No app.
+> It's a stamp card, but on the phone. *(Show the card in your iPhone Wallet.)* The customer scans this poster at the till, and the card goes into their Wallet. No app.
 > Your staff scan it to add a stamp. At eight bears, the coffee is on you.
-> And you can see who comes back. *(Show Results.)* The card can also remind people when they are one stamp away. *(Show Notifications.)*
+> And you can see who comes back. *(Show Results.)* The card updates itself after every stamp, and reminds people when they are one stamp away or haven't been in for three weeks. *(Show Notifications.)*
 > The first 30 days are free. If you like it, I put your real logo on it and send you the printed poster and stickers. After that it's €39 a month, cancel anytime.
 > I'll leave you this brochure. Can I send you the link on WhatsApp?
 
