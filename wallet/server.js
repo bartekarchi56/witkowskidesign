@@ -6,7 +6,7 @@
 //   POST /notify  {token, code}  (the till, after a stamp)               → updates the customer's Wallet cards
 //   GET  /health
 import http from 'node:http';
-import { settings, appleReady, googleReady } from './settings.js';
+import { settings, appleReady, googleReady, googleProblem } from './settings.js';
 import { readPassRequest } from './input.js';
 import { buildApplePass } from './apple.js';
 import { buildGoogleSaveUrl, updateGoogleObject } from './google.js';
@@ -150,7 +150,7 @@ export const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, settings.publicUrl);
   try {
     if (req.method === 'GET' && url.pathname === '/health') {
-      return send(res, 200, JSON.stringify({ ok: true, apple: appleReady(), google: googleReady() }), { 'content-type': 'application/json' });
+      return send(res, 200, JSON.stringify({ ok: true, apple: appleReady(), google: googleReady(), ...(googleReady() ? {} : { googleMissing: googleProblem() }) }), { 'content-type': 'application/json' });
     }
 
     if (req.method === 'GET' && url.pathname.startsWith('/img/')) {

@@ -36,4 +36,14 @@ export const settings = {
 };
 
 export const appleReady = () => Object.values({ ...settings.apple, signerKeyPassphrase: 'x' }).every(Boolean);
+// What is missing for Google, for /health (never the values themselves).
+export function googleProblem() {
+  const v = process.env.GOOGLE_SERVICE_ACCOUNT || '';
+  if (!settings.google.issuerId) return 'GOOGLE_ISSUER_ID is not set';
+  if (!v) return 'GOOGLE_SERVICE_ACCOUNT is not set';
+  if (!v.trim().startsWith('{') && !fs.existsSync(v)) return `no file at ${v} (add the Secret File with exactly that name)`;
+  if (!settings.google.serviceAccount) return 'the key file is not valid JSON (paste the whole file, from { to })';
+  if (!settings.google.serviceAccount.private_key || !settings.google.serviceAccount.client_email) return 'the JSON is not a service account key';
+  return '';
+}
 export const googleReady = () => Boolean(settings.google.issuerId && settings.google.serviceAccount?.private_key);
