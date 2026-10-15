@@ -31,10 +31,11 @@ The customer's card page (`app/card.html`) shows an "Add to Apple Wallet" or "Ad
 6. Note your **Team ID** (top right of the developer site).
 
 ### Google Wallet
-1. Sign up at **pay.google.com/business/console** and request access to the Google Wallet API. You get an **Issuer ID**.
-2. In Google Cloud, enable the **Google Wallet API**, create a **service account** and download its JSON key.
-3. In the Wallet console, add the service account's email under *Users*.
-4. Passes work right away for test accounts. Ask Google to approve your issuer before real customers use it.
+1. Sign up at **pay.google.com/business/console** (Google Pay & Wallet Console) with the company's Google account and open **Google Wallet API**. Note the **Issuer ID** (a long number).
+2. At **console.cloud.google.com**: create a project (e.g. `timbro`), enable the **Google Wallet API**, then *IAM & Admin > Service accounts > Create* (e.g. `timbro-wallet`, no roles needed). In the account, *Keys > Add key > JSON* downloads the key file. Keep it secret like `signer.key`.
+3. Back in the Wallet console, *Users > Invite a user*: the service account's email (`…@….iam.gserviceaccount.com`), access level *Developer*.
+4. On Render: *Environment > Secret Files* add `service-account.json` (paste the key file's text), and set `GOOGLE_ISSUER_ID`. `/health` then says `"google":true`.
+5. Until Google approves the issuer, only accounts added as test users in the Wallet console can save cards. When it works, ask for publishing access in the console (*Google Wallet API > Request publishing access*).
 
 ## Settings (environment variables)
 
@@ -84,13 +85,14 @@ Each card keeps its own look: card and strip colours, the name's font with an op
 
 The server draws the stamps from `stamps.cjs`, a copy of the website's `assets/js/stamps.js` (`npm test` fails if they differ: copy the website's file over it). Wallet apps draw text in their own font, so the website turns the name into an image (`logoAuto`) and sends it with the card. The lock-screen icon is the card's stamp.
 
-## Live updates (Apple Wallet)
+## Live updates
 
 A pass added from a database card updates by itself after every stamp or reward:
 
 - The pass carries `webServiceURL` (`PUBLIC_URL` + `/passkit`) and an `authenticationToken`, which is the customer's own card secret. Demo cards (`DEMO_CARDS`, only on one phone) have neither and stay as they were saved.
 - This server implements Apple's PassKit web service under `/passkit/v1/...` (register, unregister, list updated passes, latest pass, log). Registrations live in the database table `timbro.wallet_devices` (`supabase/updates/8-wallet-updates.sql`).
 - After a stamp the till page calls `POST /notify` with its device token; the server asks the database which phones hold that customer's pass (`wallet_targets`, same café only) and sends each an empty APNs push with the Pass Type ID certificate. Wallet then downloads the new pass.
+- **Google Wallet:** the same `/notify` call reads the customer's card through `stamper_lookup` and `PATCH`es the saved loyalty object (stamps, stamp picture, café message) with the Google Wallet API. Google fetches the pictures from `/img/strip?card=…` and `/img/icon?card=…`, drawn from the database card with its own artwork. A new café message arrives as a notification (Google allows a few a day).
 - Passes saved before this existed have no update address: remove them from Wallet and add them again.
 - On Render's free plan the server sleeps after 15 minutes, so the first update after a pause can take up to a minute. Use the Starter plan for real cafés.
 
@@ -98,10 +100,9 @@ Tested by `supabase/test/wallet.test.js` (needs the local Postgres from `supabas
 
 ## What's not done yet
 
-- **Google Wallet live updates.** After each stamp, `PATCH` the loyalty object through the Google Wallet REST API.
 - **Trusting the browser.** Solved when `SUPABASE_URL` is set: the card and stamps come from the database. In demo mode the page still sends them, so keep `ALLOWED_ORIGINS` set.
 - **Uploaded logos on Google Wallet.** Google needs the logo at a public URL, so it uses the card's stamp for now. Apple uses the uploaded logo.
-- **Official buttons.** Apple and Google publish official "Add to Wallet" badge artwork with usage rules. Swap them in for the buttons in `app/card.html` before launch.
+- **Official Google button.** The Apple badge is in place (`assets/wallet/`). Google publishes an official "Add to Google Wallet" button with its own rules; add it the same way when Google is switched on.
 
 ## Notifications to customers
 
@@ -115,6 +116,6 @@ Each café writes its own messages in the dashboard (**Notifiche / Notifications
 Today a pass shows the message it was saved with. To update passes already in Wallet:
 
 1. **Apple:** done (see *Live updates* above): after each stamp the phone downloads the new pass and shows the message.
-2. **Google:** after each stamp, PATCH the loyalty object; to notify, add a message with `messageType: TEXT_AND_NOTIFY` (Google allows a few per day per pass).
+2. **Google:** done (see *Live updates*).
 3. **Reminders:** a daily job (Supabase `pg_cron` or a scheduled function) finds customers whose last visit is older than the café's `remind.days` and who haven't been reminded since that visit, builds their pass with `notice` set to the reminder text (`buildApplePass({ ..., notice })`) and pushes it.
 

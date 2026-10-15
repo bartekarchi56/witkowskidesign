@@ -25,7 +25,8 @@ export function readPassRequest(raw) {
     markImage: typeof card.markImage === 'string' && card.markImage.length < 200000 ? card.markImage : '',
     shape: str(card.shape, 10), mark: str(card.mark, 10), markText: str(card.markText, 2),
     empty: str(card.empty, 10), strip: str(card.strip, 7), tagline: str(card.tagline, 30),
-    messages: readMessages(card.messages)
+    messages: readMessages(card.messages),
+    updatedAt: Math.max(0, parseInt(card.updatedAt, 10) || 0)
   };
   const m = {
     id: str(customer.id, 6).toUpperCase(),

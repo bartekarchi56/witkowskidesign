@@ -31,3 +31,7 @@ services:
         value: sb_publishable_7zczBoBp11UwHVLlIz8XuA_XnrAigOn
       - key: PUBLIC_URL
         sync: false       # the service's own address, e.g. https://timbro-wallet.onrender.com
+      - key: GOOGLE_SERVICE_ACCOUNT
+        value: /etc/secrets/service-account.json   # Secret File with the service account's JSON key
+      - key: GOOGLE_ISSUER_ID
+        sync: false       # from pay.google.com/business/console, e.g. 3388000000012345678

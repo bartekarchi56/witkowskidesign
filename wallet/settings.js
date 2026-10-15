@@ -29,6 +29,8 @@ export const settings = {
   },
   google: {
     issuerId: process.env.GOOGLE_ISSUER_ID || '',
+    api: (process.env.GOOGLE_API || 'https://walletobjects.googleapis.com').replace(/\/$/, ''),
+    tokenUrl: process.env.GOOGLE_TOKEN_URL || 'https://oauth2.googleapis.com/token',
     serviceAccount: (() => { try { return JSON.parse(fileOrText(process.env.GOOGLE_SERVICE_ACCOUNT)); } catch (e) { return null; } })()
   }
 };

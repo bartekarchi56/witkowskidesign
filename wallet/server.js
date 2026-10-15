@@ -1,14 +1,15 @@
 // Timbro wallet server.
 //   POST /apple   (form field "data" = JSON {card, customer, lang}) → .pkpass file
 //   POST /google  (same)                                            → redirect to Google Wallet
-//   GET  /img/strip?icon=&color=&ink=&need=&have=                   → stamp strip PNG (Google hero image)
-//   GET  /img/icon?icon=&color=                                     → square logo PNG (Google program logo)
+//   GET  /img/strip?card=&need=&have=  (or the look: color=&ink=&stamp=…) → stamp strip PNG (Google hero image)
+//   GET  /img/icon?card=  (or the look)                                  → square stamp PNG (Google program logo)
+//   POST /notify  {token, code}  (the till, after a stamp)               → updates the customer's Wallet cards
 //   GET  /health
 import http from 'node:http';
 import { settings, appleReady, googleReady } from './settings.js';
 import { readPassRequest } from './input.js';
 import { buildApplePass } from './apple.js';
-import { buildGoogleSaveUrl } from './google.js';
+import { buildGoogleSaveUrl, updateGoogleObject } from './google.js';
 import { pushPassUpdate } from './apns.js';
 import { strip, icon } from './images.js';
 
@@ -63,6 +64,17 @@ async function resolveArt(card) {
 // The name drawn as an image by the website (logoAuto) is only sent when a pass
 // is first added; keep the latest per card so updated passes look the same.
 const art = new Map();
+
+// A database card with its artwork, for Google's image requests (kept a minute).
+const looks = new Map();
+async function cardById(id) {
+  const hit = looks.get(id);
+  if (hit && hit.until > Date.now()) return hit.card;
+  const live = await rpc('get_card', { p_card_id: id });
+  const card = live ? await resolveArt({ ...live, ...(art.get(id) || {}) }) : null;
+  looks.set(id, { card, until: Date.now() + 60000 });
+  return card;
+}
 
 // With the database connected, take the card and stamps from Supabase, using
 // the customer's own secret; only the images drawn by the website are kept.
@@ -143,7 +155,8 @@ export const server = http.createServer(async (req, res) => {
 
     if (req.method === 'GET' && url.pathname.startsWith('/img/')) {
       const q = Object.fromEntries(url.searchParams);
-      const card = { color: q.color, ink: q.ink, stampsNeeded: q.need, stamp: q.stamp, style: q.style, type: q.type, strip: q.strip };
+      const stored = q.card && /^[a-z0-9-]{1,40}$/.test(q.card) && settings.supabase.url ? await cardById(q.card) : null;
+      const card = stored || { color: q.color, ink: q.ink, stampsNeeded: q.need, stamp: q.stamp, style: q.style, type: q.type, strip: q.strip };
       const png = url.pathname === '/img/strip'
         ? await strip(card, Math.max(0, parseInt(q.have, 10) || 0), { w: 1032, h: 336 })
         : await icon(card, 660);
@@ -157,11 +170,24 @@ export const server = http.createServer(async (req, res) => {
     if (url.pathname === '/notify') {
       const cors = { 'access-control-allow-origin': req.headers.origin && originAllowed(req) ? req.headers.origin : 'null', 'access-control-allow-headers': 'content-type', 'access-control-allow-methods': 'POST' };
       if (req.method === 'OPTIONS') return send(res, 204, '', cors);
-      if (req.method !== 'POST' || !originAllowed(req) || !settings.supabase.url || !appleReady()) return send(res, 403, 'No', cors);
+      if (req.method !== 'POST' || !originAllowed(req) || !settings.supabase.url || !(appleReady() || googleReady())) return send(res, 403, 'No', cors);
       const { token, code } = JSON.parse(await readBody(req) || '{}');
-      const targets = await rpc('wallet_targets', { p_token: String(token || ''), p_code: String(code || '') });
-      const results = await pushPassUpdate(targets);
-      return send(res, 200, JSON.stringify({ phones: targets.length, results }), { ...cors, 'content-type': 'application/json' });
+      const out = {};
+      if (appleReady()) {
+        // iPhones: an empty push; Wallet then asks /passkit for the new pass.
+        const targets = await rpc('wallet_targets', { p_token: String(token || ''), p_code: String(code || '') });
+        Object.assign(out, { phones: targets.length, results: await pushPassUpdate(targets) });
+      }
+      if (googleReady()) {
+        // Android: we change the saved card ourselves (the till may only read its own café's cards).
+        const live = await rpc('stamper_lookup', { p_token: String(token || ''), p_code: String(code || '') });
+        if (live) {
+          looks.delete(live.card.id);
+          const lang = ['it', 'en', 'pl'].includes(live.card.lang) ? live.card.lang : 'it';
+          out.google = await updateGoogleObject(readPassRequest({ lang, card: live.card, customer: live.customer })).catch(e => e.message);
+        }
+      }
+      return send(res, 200, JSON.stringify(out), { ...cors, 'content-type': 'application/json' });
     }
 
     if (req.method === 'POST' && (url.pathname === '/apple' || url.pathname === '/google')) {
@@ -179,7 +205,10 @@ export const server = http.createServer(async (req, res) => {
         });
       }
       if (!googleReady()) return send(res, 503, 'Google Wallet is not set up yet. See wallet/README.md.');
-      return send(res, 303, '', { location: buildGoogleSaveUrl(data, req.headers.origin) });
+      const live = Boolean(data.customer.secret);
+      // Saved before? Google keeps the old object, so bring it up to date too.
+      if (live) await updateGoogleObject(data).catch(() => {});
+      return send(res, 303, '', { location: buildGoogleSaveUrl(data, req.headers.origin, live) });
     }
 
     send(res, 404, 'Not found');

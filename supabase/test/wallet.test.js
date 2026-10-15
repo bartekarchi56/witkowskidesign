@@ -1,11 +1,12 @@
-// Live Apple Wallet updates, end to end: the wallet server (wallet/) with
+// Live Apple and Google Wallet updates, end to end: the wallet server (wallet/) with
 // throwaway certificates, talking to the real database functions through
 // fake-supabase.js. Needs the local Postgres (see README); APNs itself is not
-// reached (the push goes to a closed port), only everything around it.
+// reached (the push goes to a closed port), only everything around it; Google's
+// API is a small fake server below that records what it is sent.
 //   node wallet.test.js
 import assert from 'node:assert/strict';
 import { spawn, execSync } from 'node:child_process';
-import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path';
+import fs from 'node:fs'; import http from 'node:http'; import os from 'node:os'; import path from 'node:path';
 import { pool, call } from './db.js';
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'timbro-live-'));
@@ -13,6 +14,23 @@ const run = cmd => execSync(cmd, { cwd: dir, stdio: 'pipe' });
 run('openssl req -x509 -newkey rsa:2048 -nodes -keyout wwdr.key -out wwdr.pem -days 2 -subj "/CN=Test WWDR"');
 run('openssl req -newkey rsa:2048 -nodes -keyout signer.key -out signer.csr -subj "/CN=Pass Type ID: pass.test.timbro"');
 run('openssl x509 -req -in signer.csr -CA wwdr.pem -CAkey wwdr.key -CAcreateserial -out signer.pem -days 2');
+run('openssl genrsa -out google.key 2048');
+fs.writeFileSync(path.join(dir, 'service-account.json'), JSON.stringify({ client_email: 'timbro@test.iam.gserviceaccount.com', private_key: fs.readFileSync(path.join(dir, 'google.key'), 'utf8') }));
+
+// Fake Google: hands out a token and accepts PATCHes to loyalty objects it knows.
+const GOO = 8798, patches = [], saved = new Set();
+const google = http.createServer((req, res) => {
+  let body = ''; req.on('data', c => body += c); req.on('end', () => {
+    if (req.url === '/token') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ access_token: 'tok', expires_in: 3600 })); }
+    const m = /^\/walletobjects\/v1\/loyaltyObject\/(.+)$/.exec(req.url);
+    if (req.method === 'PATCH' && m && req.headers.authorization === 'Bearer tok') {
+      const id = decodeURIComponent(m[1]);
+      if (!saved.has(id)) { res.writeHead(404); return res.end(); }
+      patches.push({ id, body: JSON.parse(body) }); res.writeHead(200); return res.end('{}');
+    }
+    res.writeHead(400); res.end();
+  });
+}).listen(GOO);
 
 const SB = 54399, WAL = 8799, ORIGIN = 'http://site.test', PT = 'pass.test.timbro';
 const kids = [];
@@ -21,7 +39,9 @@ start('fake-supabase.js', { PORT: SB }, path.dirname(new URL(import.meta.url).pa
 start('server.js', {
   PORT: WAL, PUBLIC_URL: 'https://wallet.test', ALLOWED_ORIGINS: ORIGIN, APPLE_PASS_TYPE_ID: PT, APPLE_TEAM_ID: 'TEAM123456',
   APPLE_SIGNER_CERT: path.join(dir, 'signer.pem'), APPLE_SIGNER_KEY: path.join(dir, 'signer.key'), APPLE_WWDR_CERT: path.join(dir, 'wwdr.pem'),
-  SUPABASE_URL: `http://localhost:${SB}`, SUPABASE_ANON_KEY: 'anon', APNS_HOST: 'https://127.0.0.1:9'
+  SUPABASE_URL: `http://localhost:${SB}`, SUPABASE_ANON_KEY: 'anon', APNS_HOST: 'https://127.0.0.1:9',
+  GOOGLE_ISSUER_ID: '3388000000000000001', GOOGLE_SERVICE_ACCOUNT: path.join(dir, 'service-account.json'),
+  GOOGLE_API: `http://localhost:${GOO}`, GOOGLE_TOKEN_URL: `http://localhost:${GOO}/token`
 }, path.join(path.dirname(new URL(import.meta.url).pathname), '../../wallet'));
 const W = (p, opts = {}) => fetch(`http://localhost:${WAL}${p}`, opts);
 for (let i = 0; i < 50; i++) { try { if ((await W('/health')).ok) break; } catch (e) {} await new Promise(r => setTimeout(r, 200)); }
@@ -68,11 +88,30 @@ try {
   assert.equal((await W('/notify', { method: 'POST', headers: { origin: 'http://evil.test' }, body: '{}' })).status, 403);
   ok('after a stamp the till wakes the phone and Wallet downloads the pass with the new stamp');
 
+  // Google Wallet: the save link points at the card's own pictures; after a stamp the saved card is updated.
+  const g = await W('/google', { method: 'POST', redirect: 'manual', headers: { origin: ORIGIN, 'content-type': 'application/json' }, body: JSON.stringify({ lang: 'it', card: { id }, customer: { id: me.id, secret: me.secret } }) });
+  assert.equal(g.status, 303, await g.clone().text());
+  const jwtPayload = JSON.parse(Buffer.from(g.headers.get('location').split('/').pop().split('.')[1], 'base64url'));
+  const obj = jwtPayload.payload.loyaltyObjects[0];
+  assert.equal(obj.loyaltyPoints.balance.string, '1/5');
+  const hero = new URL(obj.heroImage.sourceUri.uri);
+  assert.equal(hero.searchParams.get('card'), id);
+  const png = await W(hero.pathname + hero.search);
+  assert.equal(png.status, 200); assert.equal(png.headers.get('content-type'), 'image/png');
+  saved.add(obj.id);   // the customer taps "Save" on Google's page
+  await call({ role: 'anon' }, 'stamper_stamp', { p_token: dev.token, p_code: me.id, p_delta: 1 });
+  const gn = await (await W('/notify', { method: 'POST', headers: { origin: ORIGIN, 'content-type': 'text/plain' }, body: JSON.stringify({ token: dev.token, code: me.id }) })).json();
+  assert.equal(gn.google, 200);
+  const last = patches.at(-1);
+  assert.equal(last.id, obj.id); assert.equal(last.body.loyaltyPoints.balance.string, '2/5');
+  assert.equal(new URL(last.body.heroImage.sourceUri.uri).searchParams.get('have'), '2');
+  ok('Google Wallet: the saved card shows the café\'s pictures and gets the new stamp after the till\'s stamp');
+
   // Removing the pass.
   assert.equal((await W(`/passkit/v1/devices/dev1/registrations/${PT}/${serial}`, { method: 'DELETE', headers: auth })).status, 200);
   assert.equal(((await (await W('/notify', { method: 'POST', headers: { origin: ORIGIN }, body: JSON.stringify({ token: dev.token, code: me.id }) })).json()).phones), 0);
   ok('removing the pass from Wallet stops the updates');
   console.log(`\nAll ${n} checks passed.`);
 } finally {
-  kids.forEach(k => k.kill()); await pool.end();
+  kids.forEach(k => k.kill()); google.close(); await pool.end();
 }
