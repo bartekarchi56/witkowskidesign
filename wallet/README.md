@@ -11,7 +11,7 @@ The customer's card page (`app/card.html`) shows an "Add to Apple Wallet" or "Ad
 
 ### Apple Wallet
 1. An **Apple Developer Program** membership (99 USD/year), as a company or individual. You can enrol on the website or in the Apple Developer app on an iPhone; no Mac or Xcode is needed for Wallet passes.
-2. In *Certificates, Identifiers & Profiles* → *Identifiers*, create a **Pass Type ID**, e.g. `pass.it.timbro.loyalty`.
+2. In *Certificates, Identifiers & Profiles* → *Identifiers*, create a **Pass Type ID**: Timbro's is `pass.com.witkowskidesign.timbro` (Team ID `D62ABP2359`).
 3. Create a **Pass Type ID certificate** for it. No Mac needed: make the key and the request with OpenSSL
    (on Windows it comes with Git for Windows: open "Git Bash"):
    ```
@@ -42,8 +42,8 @@ The customer's card page (`app/card.html`) shows an "Add to Apple Wallet" or "Ad
 |---|---|
 | `PUBLIC_URL` | `https://wallet.timbro.it` (this server's own address) |
 | `ALLOWED_ORIGINS` | `https://timbro.it` (the website; other sites are refused) |
-| `APPLE_PASS_TYPE_ID` | `pass.it.timbro.loyalty` |
-| `APPLE_TEAM_ID` | `AB12CD34EF` |
+| `APPLE_PASS_TYPE_ID` | `pass.com.witkowskidesign.timbro` |
+| `APPLE_TEAM_ID` | `D62ABP2359` |
 | `APPLE_SIGNER_CERT` / `APPLE_SIGNER_KEY` | paths to `signer.pem` / `signer.key`, or the PEM text |
 | `APPLE_SIGNER_KEY_PASSPHRASE` | if the key has one |
 | `APPLE_WWDR_CERT` | path to `wwdr.pem`, or the PEM text |
@@ -63,6 +63,20 @@ npm start         # http://localhost:8787, check /health
 ```
 
 It is a plain Node 18+ server (no framework), so any Node host works: Render, Railway, Fly.io or a small VPS. When it's online, set `walletApi` in `assets/js/config.js` to its address. The buttons on the card page switch on by themselves.
+
+### Deploy on Render (no command line)
+
+1. At render.com sign up with GitHub and allow access to this repository.
+2. **New > Blueprint**, pick the repository: Render reads `render.yaml` (service `timbro-wallet`, Frankfurt, free plan).
+3. In the service, **Environment > Secret Files**, add three files with exactly these names, pasting each file's text:
+   `signer.pem`, `signer.key`, `wwdr.pem`. They appear at `/etc/secrets/…`, where `render.yaml` points.
+   They are never in the repository.
+4. Set `PUBLIC_URL` to the service address Render shows (e.g. `https://timbro-wallet.onrender.com`) and deploy.
+5. Open `PUBLIC_URL/health`: it should say Apple is ready.
+6. Tell Claude the address: it goes in `walletApi` in `assets/js/config.js`.
+
+The free plan sleeps after 15 minutes without visits, so the first card of the day takes about a minute. Switch the
+plan to Starter (about 7 USD a month) before a café uses it.
 
 ## Card styles
 

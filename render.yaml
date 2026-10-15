@@ -1,0 +1,33 @@
+# Render blueprint for the Wallet server (wallet/). In Render: New > Blueprint,
+# pick this repository. Secrets are not here: add them in the Render dashboard
+# (see wallet/README.md, "Deploy on Render").
+services:
+  - type: web
+    name: timbro-wallet
+    runtime: node
+    rootDir: wallet
+    branch: claude/loopy-loyalty-pricing-redesign-yg54mp
+    plan: free            # free sleeps when idle (first pass takes ~1 min); switch to starter for cafés
+    region: frankfurt
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: ALLOWED_ORIGINS
+        value: https://timbro.witkowskidesign.com
+      - key: APPLE_PASS_TYPE_ID
+        value: pass.com.witkowskidesign.timbro
+      - key: APPLE_TEAM_ID
+        value: D62ABP2359
+      - key: APPLE_SIGNER_CERT
+        value: /etc/secrets/signer.pem
+      - key: APPLE_SIGNER_KEY
+        value: /etc/secrets/signer.key
+      - key: APPLE_WWDR_CERT
+        value: /etc/secrets/wwdr.pem
+      - key: SUPABASE_URL
+        value: https://xchpnvadjxonhnknywis.supabase.co
+      - key: SUPABASE_ANON_KEY
+        value: sb_publishable_7zczBoBp11UwHVLlIz8XuA_XnrAigOn
+      - key: PUBLIC_URL
+        sync: false       # the service's own address, e.g. https://timbro-wallet.onrender.com
