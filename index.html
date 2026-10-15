@@ -25,6 +25,8 @@ section{padding:104px 0}
 .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:56px;align-items:center;padding-block:72px 96px}
 .hero h1{font-size:clamp(42px,6.4vw,88px);line-height:.96}
 .hero h1 .last{white-space:nowrap;position:relative}
+.hero > *,.bgrid > *{min-width:0}
+body{overflow-x:clip}
 .ink-stamp{display:inline-block;width:.95em;height:.95em;vertical-align:-.12em;margin-left:.12em;color:var(--pop);transform:rotate(-14deg)}
 .ink-stamp.go{animation:inkin .5s cubic-bezier(.2,1.4,.5,1) .25s both,spin 40s linear .75s infinite}
 @keyframes spin{from{transform:rotate(-14deg)}to{transform:rotate(346deg)}}
@@ -204,8 +206,23 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
   .nav .wrap{height:60px;gap:10px}
   .nav .btn.small{padding:9px 13px}
   .pview{padding:16px;min-height:0}
-  .sticker{width:140px;height:140px;font-size:13px;padding:26px}
+  .sticker{width:140px;height:140px;font-size:13px;padding:26px;right:8px}
+  .help-grid > *,.bgrid > * > *{min-width:0}
+  h2.display{overflow-wrap:break-word;hyphens:auto}
   .plan{padding:24px}
+}
+@media (max-width:420px){
+  .nav .wrap{gap:8px}
+  .nav .right{gap:6px;min-width:0}
+  .nav .btn.small{padding:8px 10px;font-size:13px;white-space:nowrap}
+  .nav .brand{flex-shrink:0}
+  .nav .btn .long{display:none}
+}
+@media (min-width:421px){ .nav .btn .short{display:none} }
+@media (max-width:380px){
+  .hero h1{font-size:clamp(32px,11vw,42px)}
+  .nav .brand{font-size:18px;gap:7px}
+  .nav .lang button{padding:6px 7px;font-size:12px}
 }
 </style>
 <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
@@ -227,7 +244,7 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
     <div class="right">
       <div class="lang"></div>
       <a class="btn line small login" href="app/dashboard.html" data-i18n="nav.login"></a>
-      <a class="btn pop small" href="#prova" data-i18n="nav.start"></a>
+      <a class="btn pop small" href="#prova"><span class="long" data-i18n="nav.start"></span><span class="short" data-i18n="nav.startShort"></span></a>
     </div>
   </div>
 </header>
@@ -489,7 +506,7 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
 I18N.add({
   it: {
     'nav.how': 'Come funziona', 'nav.try': 'Prova', 'nav.help': 'Design su misura', 'nav.numbers': 'Numeri', 'nav.pricing': 'Prezzi',
-    'nav.login': 'Accedi', 'nav.start': 'Prova gratis',
+    'nav.login': 'Accedi', 'nav.start': 'Prova gratis', 'nav.startShort': 'Prova',
     'hero.a': 'La carta fedeltà che nessuno', 'hero.b': 'perde.',
     'hero.lede': 'Una carta a timbri nel Wallet dei tuoi clienti, su iPhone e Android. Senza app e senza cartoncini. E non sei da solo: la disegniamo con te, la stampiamo e ti diamo i post per farla conoscere.',
     'hero.cta1': 'Crea la tua carta', 'hero.cta2': 'Come funziona',
@@ -550,7 +567,7 @@ I18N.add({
   },
   en: {
     'nav.how': 'How it works', 'nav.try': 'Try it', 'nav.help': 'Custom design', 'nav.numbers': 'Numbers', 'nav.pricing': 'Pricing',
-    'nav.login': 'Log in', 'nav.start': 'Try it free',
+    'nav.login': 'Log in', 'nav.start': 'Try it free', 'nav.startShort': 'Try free',
     'hero.a': 'The loyalty card nobody', 'hero.b': 'loses.',
     'hero.lede': 'A stamp card in your customers\' Wallet, on iPhone and Android. No app, no paper cards. And you\'re not on your own: we design it with you, print it and hand you the posts to promote it.',
     'hero.cta1': 'Create your card', 'hero.cta2': 'How it works',
@@ -611,7 +628,7 @@ I18N.add({
   },
   pl: {
     'nav.how': 'Jak to działa', 'nav.try': 'Wypróbuj', 'nav.help': 'Projekt na miarę', 'nav.numbers': 'Liczby', 'nav.pricing': 'Cennik',
-    'nav.login': 'Zaloguj się', 'nav.start': 'Wypróbuj za darmo',
+    'nav.login': 'Zaloguj się', 'nav.start': 'Wypróbuj za darmo', 'nav.startShort': 'Wypróbuj',
     'hero.a': 'Karta lojalnościowa, której nikt', 'hero.b': 'nie gubi.',
     'hero.lede': 'Karta z pieczątkami w Portfelu Twoich klientów, na iPhonie i Androidzie. Bez aplikacji i bez papierowych kart. I nie zostajesz z tym sam: projektujemy ją z Tobą, drukujemy i dajemy Ci gotowe posty, żeby ją wypromować.',
     'hero.cta1': 'Stwórz swoją kartę', 'hero.cta2': 'Jak to działa',

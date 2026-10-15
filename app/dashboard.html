@@ -236,10 +236,17 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
   main{padding:16px 16px 56px}
   .appbar{padding:10px 16px}
   .appbar .hide-sm{display:none}
+  .appbar{gap:8px}
+  .appbar .right{gap:6px}
+  .appbar .btn.small{padding:8px 11px}
+  .appbar .lang button{padding:6px 8px}
   .row{grid-template-columns:1fr}
   .card-pick{width:100%}
   .card-pick select{flex:1;min-width:0}
   .preview .phone{width:290px}
+}
+@media (max-width:380px){
+  .appbar .brand{font-size:18px;gap:7px}
 }
 </style>
 <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
