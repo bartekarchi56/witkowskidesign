@@ -12,7 +12,7 @@ Rebuild the files after changes: `node print/make-pdfs.js`, then `node print/mak
 2. **Email to Giulia (italiano)** below, with `brochure-orsonero-it.pdf` and `orsonero-card-iphone.png`.
 3. **Visit** with your phone, the printed `poster-orsonero-a5.pdf` and one printed brochure.
 4. **After 4-5 days without an answer:** the WhatsApp or Instagram message, with `orsonero-notifications.png` and `orsonero-results.png`.
-5. **If they like the look:** show them the finished design, `card-orsonero-stripes-*.png`: their logo alone at the top, the grey and white awning stripes behind the stamps, and every stamp is their bear in a circle.
+5. **If they like the look:** show them the finished design, `card-orsonero-stripes-*.png`: their logo at the top left, the grey and white awning stripes behind the stamps, and every stamp is their bear in a circle.
 
 ## The files
 
@@ -26,7 +26,7 @@ Rebuild the files after changes: `node print/make-pdfs.js`, then `node print/mak
 | `orsonero-results.png` | The Results page after a few weeks (**example numbers**) | Follow-up email |
 | `brochure-orsonero-en.pdf` / `-it.pdf` | A5 brochure with their name | Print one and leave it at the café |
 | `poster-orsonero-a5.pdf` | The A5 till poster with the QR code | Print it and bring it to the visit |
-| `card-orsonero-stripes-iphone.png` / `-android.png` | The finished design: their logo on top, awning stripes, bear-in-a-circle stamps | Second message, or when they say yes |
+| `card-orsonero-stripes-iphone.png` / `-android.png` | The finished design: their logo top left, awning stripes, bear-in-a-circle stamps | Second message, or when they say yes |
 | `art/orsonero-logo.svg`, `art/orsonero-stamp.svg` | Their logo redrawn as clean vector lines, and the stamp (`node print/kit-orsonero/art/make-art.js`) | The real card, print |
 
 ## Links

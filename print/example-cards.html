@@ -69,9 +69,9 @@ h1{font-size:28px;margin:0 0 6px}
       { name: 'kofeina-dark', label: 'Czarna: ich kawiarnia w tle, białe kropki', stamps: 5,
         card: { ...KOF, stampsNeeded: 8, color: '#0B0B0C', ink: '#FFFFFF', strip: '#0B0B0C', logo: 'kit-kofeina/art/kofeina-logo-white.png', stripImage: watermark(STORE_W, '#0B0B0C', .17, 1020, 450, 600), stampImage: dot('#FFFFFF') } }
     ] },
-    { id: 'orsonero', lang: 'en', title: 'Orsonero Coffee', note: 'Their logo alone at the top, the grey and white awning behind the stamps; every stamp is the bear in a circle.', cards: [
-      { name: 'orsonero-stripes', label: 'Their logo on top, awning stripes, bear stamps', stamps: 5,
-        card: { ...ORSO, color: '#FFFFFF', ink: '#141414', font: 'wide', strip: '#F5F5F3', logo: ORSO_LOGO, logoCenter: true, stripImage: awning, stampImage: ORSO_STAMP } }
+    { id: 'orsonero', lang: 'en', title: 'Orsonero Coffee', note: 'Their logo at the top left, the grey and white awning behind the stamps; every stamp is the bear in a circle.', cards: [
+      { name: 'orsonero-stripes', label: 'Their logo top left, awning stripes, bear stamps', stamps: 5,
+        card: { ...ORSO, color: '#FFFFFF', ink: '#141414', font: 'wide', strip: '#F5F5F3', logo: ORSO_LOGO, stripImage: awning, stampImage: ORSO_STAMP } }
     ] }
   ];
   const only = new URLSearchParams(location.search).get('set');
