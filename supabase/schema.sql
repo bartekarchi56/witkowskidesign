@@ -91,6 +91,8 @@ create table if not exists devices (                           -- cashiers' phon
   created_at   timestamptz not null default now(),
   last_used    timestamptz
 );
+-- Where a till phone is (chains: one café, several shops); stats can be split by it.
+alter table devices add column if not exists location text not null default '';
 
 create table if not exists link_codes (                        -- one-time codes to link a phone
   code         text primary key,
@@ -211,8 +213,10 @@ as $$
     'lastVisit', (extract(epoch from m.last_visit) * 1000)::bigint,
     'remindedAt', (extract(epoch from m.reminded_at) * 1000)::bigint,
     'history', coalesce((
-      select jsonb_agg(jsonb_build_object('t', (extract(epoch from e.created_at) * 1000)::bigint, 'type', e.type, 'n', e.n) order by e.created_at)
+      select jsonb_agg(jsonb_build_object('t', (extract(epoch from e.created_at) * 1000)::bigint, 'type', e.type, 'n', e.n)
+        || case when dv.location <> '' then jsonb_build_object('at', dv.location) else '{}'::jsonb end order by e.created_at)
       from (select * from events where customer_id = m.id order by created_at desc limit history_limit) e
+      left join devices dv on dv.id = e.device_id
     ), '[]'::jsonb)
   )
 $$;
@@ -356,7 +360,7 @@ begin
     'billing', (select _billing_json(b) from businesses b where b.id = v_biz),
     'cards', coalesce((select jsonb_agg(_card_json(c, true) order by c.created_at) from cards c where c.business_id = v_biz), '[]'::jsonb),
     'customers', coalesce((select jsonb_agg(_customer_json(m, 200) || _customer_contact(m)) from customers m join cards c on c.id = m.card_id where c.business_id = v_biz), '[]'::jsonb),
-    'devices', coalesce((select jsonb_agg(jsonb_build_object('id', d.id, 'name', d.name, 'lastUsed', (extract(epoch from d.last_used) * 1000)::bigint) order by d.created_at) from devices d where d.business_id = v_biz), '[]'::jsonb)
+    'devices', coalesce((select jsonb_agg(jsonb_build_object('id', d.id, 'name', d.name, 'location', d.location, 'lastUsed', (extract(epoch from d.last_used) * 1000)::bigint) order by d.created_at) from devices d where d.business_id = v_biz), '[]'::jsonb)
   );
 end $$;
 
@@ -430,6 +434,12 @@ end $$;
 create or replace function owner_remove_device(p_device_id uuid) returns void
 language sql security definer set search_path = timbro
 as $$ delete from devices where id = p_device_id and business_id = _my_business() $$;
+
+-- Which shop a till phone is in (e.g. "Gdańsk, Długa 12"), for stats by location.
+create or replace function owner_set_device_location(p_device_id uuid, p_location text) returns void
+language sql security definer set search_path = timbro
+as $$ update devices set location = left(trim(regexp_replace(coalesce(p_location, ''), '[[:cntrl:]]', ' ', 'g')), 60)
+      where id = p_device_id and business_id = _my_business() $$;
 
 -- ------------------------------------------- Witkowski Design (admins) --
 
@@ -689,7 +699,7 @@ grant execute on function get_card(text), join_card(text, text, text, text, date
   to anon, authenticated;
 
 grant execute on function owner_data(), owner_save_card(jsonb), owner_save_messages(text, jsonb), owner_send_design(text, text, jsonb, text, jsonb, jsonb),
-  owner_link_code(), owner_remove_device(uuid),
+  owner_link_code(), owner_remove_device(uuid), owner_set_device_location(uuid, text),
   admin_cards(), admin_publish(text, jsonb), admin_ask_changes(text, text), admin_set_plan(text, text)
   to authenticated;
 

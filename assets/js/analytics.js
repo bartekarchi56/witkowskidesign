@@ -4,8 +4,10 @@
  * Charts are plain inline SVG: one series each, in the site's accent colour,
  * with a hover/focus tooltip and a table of the same numbers.
  *
- *   ANALYTICS.compute(card, customers, { days })  → numbers and series
- *   ANALYTICS.sample(card)                         → example customers for demos
+ *   ANALYTICS.compute(card, customers, { days, location })  → numbers and series (one shop, or all)
+ *   ANALYTICS.locations(customers)                 → the shops visits were stamped in (chains)
+ *   ANALYTICS.byLocation(card, customers, { days }) → visits, customers and rewards per shop
+ *   ANALYTICS.sample(card, now, places)            → example customers for demos (spread over places)
  *   ANALYTICS.line(el, points, opts) / .columns(el, bars, opts) / .countUp(el, n, fmt)
  */
 (function () {
@@ -13,8 +15,33 @@
   const startOfDay = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
   const dayIndex = (t, from) => Math.round((startOfDay(t) - from) / DAY);
 
+  // Shops with at least one stamp, busiest first ("at" on history events: the till phone's location).
+  function locations(customers) {
+    const n = {};
+    for (const c of customers) for (const h of c.history || []) if (h.at && h.type === 'stamp') n[h.at] = (n[h.at] || 0) + 1;
+    return Object.keys(n).sort((a, b) => n[b] - n[a]);
+  }
+  // One shop's view: its stamps and rewards only; a customer counts from their first visit there.
+  function atLocation(customers, place) {
+    const out = [];
+    for (const c of customers) {
+      const history = (c.history || []).filter(h => h.at === place && (h.type === 'stamp' || h.type === 'redeem'));
+      const visits = history.filter(h => h.type === 'stamp');
+      if (!visits.length) continue;
+      out.push({ ...c, history, joinedAt: visits[0].t, lastVisit: visits[visits.length - 1].t });
+    }
+    return out;
+  }
+  function byLocation(card, customers, opts = {}) {
+    return locations(customers).map(place => {
+      const r = compute(card, atLocation(customers, place), opts);
+      return { place, visits: r.visits, visitors: r.visitors, rewards: r.rewards, newMembers: r.newMembers };
+    }).sort((a, b) => b.visits - a.visits);
+  }
+
   // A visit is one stamp event (two stamps given at once are still one visit).
   function compute(card, customers, opts = {}) {
+    if (opts.location) return compute(card, atLocation(customers, opts.location), { ...opts, location: '' });
     const now = opts.now || Date.now();
     const today = startOfDay(now), end = today + DAY;
     const first = customers.reduce((m, c) => Math.min(m, c.joinedAt || now), now);
@@ -75,13 +102,16 @@
   const NAMES = ['Giulia', 'Marco', 'Sara', 'Luca', 'Chiara', 'Matteo', 'Francesca', 'Andrea', 'Elena', 'Davide', 'Anna', 'Paolo', 'Marta', 'Simone', 'Laura', 'Tom', 'Emma', 'Lucas', 'Sofia', 'Leo'];
   const WEEKDAY = [0.8, 0.9, 0.95, 1, 1.1, 1.5, 1.2];   // Monday … Sunday
   const HOURS = [[7, 2.2], [8, 3], [9, 2.6], [10, 1.6], [11, 1.1], [12, 1.4], [13, 1.8], [14, 1.2], [15, 0.9], [16, 1.2], [17, 1.3], [18, 0.8]];
-  function sample(card, now = Date.now()) {
+  function sample(card, now = Date.now(), places = []) {
     const rand = rng(7), need = card.stampsNeeded || 10, days = 120, out = [];
+    // Chains: each customer has a usual shop and now and then visits another.
+    const placeOf = home => !places.length ? null : rand() < 0.85 ? places[home] : places[Math.floor(rand() * places.length)];
     const pickHour = () => { const total = HOURS.reduce((a, h) => a + h[1], 0); let x = rand() * total; for (const [h, w] of HOURS) { if ((x -= w) <= 0) return h; } return 9; };
     for (let i = 0; i < 190; i++) {
       // More people join as word spreads: join dates lean towards recent weeks.
       const joined = now - Math.pow(rand(), 0.75) * days * DAY;
       const perWeek = 0.25 + Math.pow(rand(), 2) * 3;   // most come now and then, a few every day
+      const home = places.length ? Math.min(places.length - 1, Math.floor(Math.pow(rand(), 1.4) * places.length)) : 0;
       const history = [{ t: joined, type: 'joined' }];
       let t = joined, stamps = 0, redeemed = 0;
       while (true) {
@@ -92,8 +122,9 @@
         d.setHours(pickHour(), Math.floor(rand() * 60));
         if (d.getTime() < joined) d.setTime(joined);
         if (d.getTime() > now) break;
-        history.push({ t: d.getTime(), type: 'stamp', n: 1 });
-        if (++stamps >= need) { history.push({ t: d.getTime() + 60000, type: 'redeem' }); stamps = 0; redeemed++; }
+        const at = placeOf(home), where = at ? { at } : {};
+        history.push({ t: d.getTime(), type: 'stamp', n: 1, ...where });
+        if (++stamps >= need) { history.push({ t: d.getTime() + 60000, type: 'redeem', ...where }); stamps = 0; redeemed++; }
       }
       const visits = history.filter(h => h.type === 'stamp');
       out.push({ id: 'EX' + i, cardId: card.id, name: NAMES[i % NAMES.length] + (i >= NAMES.length ? ' ' + String.fromCharCode(65 + (i % 26)) + '.' : ''),
@@ -202,5 +233,5 @@
     io.observe(node);
   }
 
-  window.ANALYTICS = { compute, sample, line, columns, countUp, DAY };
+  window.ANALYTICS = { compute, locations, byLocation, sample, line, columns, countUp, DAY };
 })();

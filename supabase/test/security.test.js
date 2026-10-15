@@ -102,6 +102,14 @@ const dataB = await call(users.ownerB, 'owner_data');
 assert.ok(!dataB.cards.some(c => c.id === id) && !dataB.customers.some(c => c.id === joined.id));
 ok('each owner sees only their own cards, customers and phones');
 
+// ---- locations (chains): only the café's own phones ----
+await call(users.ownerB, 'owner_set_device_location', { p_device_id: dataA.devices[0].id, p_location: 'Hacked' });
+await call(users.ownerA, 'owner_set_device_location', { p_device_id: dataA.devices[0].id, p_location: '  Gdańsk, Długa 12 ' });
+const located = await call(users.ownerA, 'owner_data');
+assert.equal(located.devices[0].location, 'Gdańsk, Długa 12');
+assert.ok(located.customers[0].history.filter(h => h.type === 'stamp').every(h => h.at === 'Gdańsk, Długa 12'));
+ok('an owner names where their own till phones are; visits then carry that location');
+
 // ---- design approval ----
 const sent = await call(users.ownerA, 'owner_send_design', { p_card_id: id, p_kind: 'proposal', p_design: { color: '#0B0B0C' }, p_note: 'nera', p_images: ['data:image/jpeg;base64,AA=='], p_links: ['https://example.com'] });
 assert.equal(sent.review.status, 'pending'); assert.equal(sent.color, '#FFFFFF', 'live design unchanged');
@@ -185,7 +193,7 @@ const open = async role => (await pool.query(`select coalesce(string_agg(p.prona
 const PUBLIC_FNS = ['device_link', 'get_card', 'get_my_card', 'join_card', 'reminders_due', 'stamper_lookup', 'stamper_redeem', 'stamper_stamp', 'wallet_register', 'wallet_targets', 'wallet_unregister', 'wallet_updated'];
 assert.deepEqual(await open('anon'), PUBLIC_FNS);
 assert.deepEqual(await open('authenticated'), [...PUBLIC_FNS, 'admin_ask_changes', 'admin_cards', 'admin_publish', 'admin_set_plan',
-  'owner_data', 'owner_link_code', 'owner_remove_device', 'owner_save_card', 'owner_save_messages', 'owner_send_design'].sort());
+  'owner_data', 'owner_link_code', 'owner_remove_device', 'owner_save_card', 'owner_set_device_location', 'owner_save_messages', 'owner_send_design'].sort());
 ok('only the intended functions can be called by visitors and logged-in users');
 
 console.log(`\nAll ${n} checks passed.`);

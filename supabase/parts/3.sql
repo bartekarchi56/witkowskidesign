@@ -22,8 +22,10 @@ as $$
     'lastVisit', (extract(epoch from m.last_visit) * 1000)::bigint,
     'remindedAt', (extract(epoch from m.reminded_at) * 1000)::bigint,
     'history', coalesce((
-      select jsonb_agg(jsonb_build_object('t', (extract(epoch from e.created_at) * 1000)::bigint, 'type', e.type, 'n', e.n) order by e.created_at)
+      select jsonb_agg(jsonb_build_object('t', (extract(epoch from e.created_at) * 1000)::bigint, 'type', e.type, 'n', e.n)
+        || case when dv.location <> '' then jsonb_build_object('at', dv.location) else '{}'::jsonb end order by e.created_at)
       from (select * from events where customer_id = m.id order by created_at desc limit history_limit) e
+      left join devices dv on dv.id = e.device_id
     ), '[]'::jsonb)
   )
 $$;

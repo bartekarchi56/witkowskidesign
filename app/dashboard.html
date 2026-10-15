@@ -105,6 +105,20 @@ details.en[open]{padding-bottom:4px}
 @media (max-width:900px){.nt{grid-template-columns:1fr}.nt-preview{position:static;order:-1}.lock{min-height:0;width:100%;max-width:320px}}
 .res-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
 .res-head .sec-sub{margin-bottom:0}
+.res-ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.res-loc{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.res-loc select{width:auto;max-width:220px;padding:8px 32px 8px 12px;min-height:0}
+.locs{list-style:none;margin:6px 0 0;padding:0}
+.locs li button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:10px 0;border-bottom:1.5px solid var(--line);cursor:pointer}
+.locs li button:hover .lbar i,.locs li button:focus-visible .lbar i{background:var(--ink)}
+.locs li button:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
+.locs .name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.locs .num{font-weight:700;font-variant-numeric:tabular-nums}
+.locs .lbar{grid-column:1/-1;height:8px;border-radius:4px;background:var(--wash)}
+.locs .lbar i{display:block;height:100%;border-radius:4px;background:var(--pop)}
+.locs small{grid-column:1/-1;color:var(--muted);font-size:13px}
+.devices .loc-in{width:100%;max-width:280px;margin-top:6px;padding:8px 10px;font-size:14px;min-height:0}
+.dev-hint{color:var(--muted);font-size:14px;margin:10px 0 0}
 .res-sample{background:var(--pop-wash);border-radius:12px;padding:12px 16px;margin:0 0 18px;font-size:15px}
 .res-top{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:12px;margin-bottom:12px}
 .kpi{border:1.5px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:4px;min-width:0}
@@ -446,10 +460,13 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
   <section role="tabpanel" id="tab-results" aria-labelledby="t-results" hidden>
     <div class="res-head">
       <div><h2 class="sec" data-i18n="d.resT"></h2><p class="sec-sub" data-i18n="d.resP"></p></div>
+      <div class="res-ctrl">
+      <label class="res-loc" id="res-loc-wrap" hidden><span data-i18n="d.locLabel"></span><select id="res-loc"></select></label>
       <div class="seg" id="res-range" role="group">
         <button type="button" data-d="30" aria-pressed="true" data-i18n="d.r30"></button>
         <button type="button" data-d="90" aria-pressed="false" data-i18n="d.r90"></button>
         <button type="button" data-d="0" aria-pressed="false" data-i18n="d.rAll"></button>
+      </div>
       </div>
     </div>
     <p class="res-sample" id="res-sample" hidden><span id="res-sample-t"></span> <button class="link" type="button" id="res-sample-b"></button></p>
@@ -531,6 +548,9 @@ I18N.add({
     'd.nSave': 'Salva le notifiche', 'd.nSavedOk': 'Notifiche salvate.', 'd.nNow': 'ora', 'd.nNone': 'Accendi una notifica per vedere l\'anteprima.', 'd.nExample': 'Giulia',
     'd.tResults': 'Risultati', 'd.resT': 'Cosa fa la carta per il tuo locale', 'd.resP': 'I numeri delle visite timbrate: chi si iscrive, chi torna, quando e quanto spende.',
     'd.r30': '30 giorni', 'd.r90': '90 giorni', 'd.rAll': 'Sempre',
+    'd.locLabel': 'Sede', 'd.locAll': 'Tutte le sedi', 'd.locT': 'Sedi a confronto', 'd.locN': 'Visite timbrate in ogni sede nel periodo. Tocca una sede per vedere solo i suoi numeri.',
+    'd.locWVisits': ['visita', 'visite', 'visite'], 'd.locVisitors': ['cliente', 'clienti', 'clienti'], 'd.locRewards': ['premio', 'premi', 'premi'], 'd.locSample': ['Centro', 'Stazione', 'Porta Nuova'],
+    'd.locPh': 'Sede, es. Via Roma 12', 'd.locSaved': 'Sede salvata', 'd.locHint': 'Più sedi? Scrivi dove si trova ogni telefono: nei Risultati vedi i numeri di ogni sede.',
     'd.resDemo': 'Dati di esempio: così appare questa pagina dopo qualche settimana di carta.', 'd.resEmpty': 'Ancora pochi dati: i grafici si riempiono con le prime visite.', 'd.resShowEx': 'Vedi un esempio', 'd.resShowMine': 'Torna ai tuoi dati', 'd.resExample': 'Stai guardando un esempio.',
     'd.kMembers': 'Clienti con la carta', 'd.kNew': '{n} nuovi', 'd.kVisits': 'Visite timbrate', 'd.kReturning': 'Clienti che tornano', 'd.kReturningN': '2 o più visite', 'd.kPer': 'Visite per cliente', 'd.kPerN': 'in media, nel periodo', 'd.kRewards': 'Premi dati',
     'd.vsPrev': 'rispetto al periodo prima', 'd.vsNone': 'nessun dato prima',
@@ -558,7 +578,7 @@ I18N.add({
     'd.tillT': 'I telefoni della cassa', 'd.tillP': 'Ogni telefono o tablet che timbra va collegato una volta. Il barista non ha bisogno di un account.',
     'd.till1': 'Tocca "Collega un telefono" qui sotto.', 'd.till2': 'Sul telefono della cassa inquadra il QR con la fotocamera (oppure apri il timbratore e scrivi il codice).', 'd.till3': 'Dai un nome al telefono, per esempio "Cassa 1". Fatto.',
     'd.linkNew': 'Collega un telefono', 'd.linkCode': 'Codice di collegamento', 'd.linkValid': 'Valido 15 minuti, una sola volta.',
-    'd.devices': 'Telefoni collegati', 'd.noDevices': 'Ancora nessun telefono collegato.', 'd.lastUsed': 'Usato {ago}', 'd.remove': 'Scollega', 'd.removeQ': 'Scollegare "{name}"? Non potrà più timbrare.',
+    'd.devices': 'Telefoni collegati', 'd.noDevices': 'Ancora nessun telefono collegato.', 'd.lastUsed': 'Usato {ago}', 'd.notUsed': 'Non ancora usato', 'd.remove': 'Scollega', 'd.removeQ': 'Scollegare "{name}"? Non potrà più timbrare.',
     'd.tillDemo': '<span><b>Versione demo.</b> Il timbratore funziona su questo dispositivo, senza collegamento. Con il database ogni telefono della cassa si collega con un codice.</span>',
     'd.icon': 'Icona', 'd.color': 'Colore della carta', 'd.ink': 'Colore del timbro',
     'd.lang': 'Lingua della carta', 'd.langHint': 'Nome, premio e notifiche sono in questa lingua.',
@@ -624,6 +644,9 @@ I18N.add({
     'd.nSave': 'Save notifications', 'd.nSavedOk': 'Notifications saved.', 'd.nNow': 'now', 'd.nNone': 'Switch a notification on to see the preview.', 'd.nExample': 'Emma',
     'd.tResults': 'Results', 'd.resT': 'What the card does for your café', 'd.resP': 'The numbers behind the stamped visits: who joins, who comes back, when, and what they spend.',
     'd.r30': '30 days', 'd.r90': '90 days', 'd.rAll': 'All time',
+    'd.locLabel': 'Location', 'd.locAll': 'All locations', 'd.locT': 'Locations compared', 'd.locN': 'Stamped visits at each location in this period. Tap one to see only its numbers.',
+    'd.locWVisits': ['visit', 'visits', 'visits'], 'd.locVisitors': ['customer', 'customers', 'customers'], 'd.locRewards': ['reward', 'rewards', 'rewards'], 'd.locSample': ['Centre', 'Station', 'Old Town'],
+    'd.locPh': 'Location, e.g. Main Street 12', 'd.locSaved': 'Location saved', 'd.locHint': 'More than one shop? Write where each phone is: Results then shows the numbers for each location.',
     'd.resDemo': 'Example data: this is how this page looks after a few weeks with the card.', 'd.resEmpty': 'Not much data yet: the charts fill up with the first visits.', 'd.resShowEx': 'See an example', 'd.resShowMine': 'Back to your data', 'd.resExample': 'You are looking at an example.',
     'd.kMembers': 'Customers with the card', 'd.kNew': '{n} new', 'd.kVisits': 'Stamped visits', 'd.kReturning': 'Customers who come back', 'd.kReturningN': '2 or more visits', 'd.kPer': 'Visits per customer', 'd.kPerN': 'on average, in the period', 'd.kRewards': 'Rewards given',
     'd.vsPrev': 'vs the period before', 'd.vsNone': 'no earlier data',
@@ -651,7 +674,7 @@ I18N.add({
     'd.tillT': 'The till phones', 'd.tillP': 'Each phone or tablet that stamps is linked once. Baristas don\'t need an account.',
     'd.till1': 'Tap "Link a phone" below.', 'd.till2': 'On the till phone, scan the QR code with the camera (or open the stamper and type the code).', 'd.till3': 'Give the phone a name, like "Till 1". Done.',
     'd.linkNew': 'Link a phone', 'd.linkCode': 'Link code', 'd.linkValid': 'Valid for 15 minutes, once.',
-    'd.devices': 'Linked phones', 'd.noDevices': 'No phones linked yet.', 'd.lastUsed': 'Used {ago}', 'd.remove': 'Unlink', 'd.removeQ': 'Unlink "{name}"? It won\'t be able to stamp any more.',
+    'd.devices': 'Linked phones', 'd.noDevices': 'No phones linked yet.', 'd.lastUsed': 'Used {ago}', 'd.notUsed': 'Not used yet', 'd.remove': 'Unlink', 'd.removeQ': 'Unlink "{name}"? It won\'t be able to stamp any more.',
     'd.tillDemo': '<span><b>Demo version.</b> The stamper works on this device without linking. With the database, each till phone links with a code.</span>',
     'd.icon': 'Icon', 'd.color': 'Card colour', 'd.ink': 'Stamp colour',
     'd.lang': 'Card language', 'd.langHint': 'The name, reward and notifications are in this language.',
@@ -718,6 +741,9 @@ I18N.add({
     'd.nSave': 'Zapisz powiadomienia', 'd.nSavedOk': 'Powiadomienia zapisane.', 'd.nNow': 'teraz', 'd.nNone': 'Włącz powiadomienie, aby zobaczyć podgląd.', 'd.nExample': 'Ania',
     'd.tResults': 'Wyniki', 'd.resT': 'Co karta daje Twojemu lokalowi', 'd.resP': 'Liczby z wizyt z pieczątką: kto dołącza, kto wraca, kiedy i ile wydaje.',
     'd.r30': '30 dni', 'd.r90': '90 dni', 'd.rAll': 'Od początku',
+    'd.locLabel': 'Lokal', 'd.locAll': 'Wszystkie lokale', 'd.locT': 'Porównanie lokali', 'd.locN': 'Wizyty z pieczątką w każdym lokalu w tym okresie. Dotknij lokalu, aby zobaczyć tylko jego liczby.',
+    'd.locWVisits': ['wizyta', 'wizyty', 'wizyt'], 'd.locVisitors': ['klient', 'klientów', 'klientów'], 'd.locRewards': ['nagroda', 'nagrody', 'nagród'], 'd.locSample': ['Centrum', 'Dworzec', 'Stare Miasto'],
+    'd.locPh': 'Lokal, np. Długa 12', 'd.locSaved': 'Lokal zapisany', 'd.locHint': 'Masz kilka lokali? Wpisz, gdzie jest każdy telefon: w Wynikach zobaczysz liczby każdego lokalu.',
     'd.resDemo': 'Przykładowe dane: tak wygląda ta strona po kilku tygodniach z kartą.', 'd.resEmpty': 'Na razie mało danych: wykresy wypełnią się po pierwszych wizytach.', 'd.resShowEx': 'Zobacz przykład', 'd.resShowMine': 'Wróć do swoich danych', 'd.resExample': 'Oglądasz przykład.',
     'd.kMembers': 'Klienci z kartą', 'd.kNew': ({ n }) => `${n} ${I18N.plural(+n, ['nowy', 'nowi', 'nowych'])}`, 'd.kVisits': 'Wizyty z pieczątką', 'd.kReturning': 'Klienci, którzy wracają', 'd.kReturningN': '2 lub więcej wizyt', 'd.kPer': 'Wizyty na klienta', 'd.kPerN': 'średnio, w tym okresie', 'd.kRewards': 'Wydane nagrody',
     'd.vsPrev': 'w porównaniu z poprzednim okresem', 'd.vsNone': 'brak wcześniejszych danych',
@@ -745,7 +771,7 @@ I18N.add({
     'd.tillT': 'Telefony przy kasie', 'd.tillP': 'Każdy telefon lub tablet, który przybija pieczątki, łączysz raz. Obsługa nie potrzebuje konta.',
     'd.till1': 'Dotknij "Połącz telefon" poniżej.', 'd.till2': 'Na telefonie przy kasie zeskanuj kod QR aparatem (albo otwórz skaner pieczątek i wpisz kod).', 'd.till3': 'Nazwij telefon, np. "Kasa 1". Gotowe.',
     'd.linkNew': 'Połącz telefon', 'd.linkCode': 'Kod połączenia', 'd.linkValid': 'Ważny 15 minut, jeden raz.',
-    'd.devices': 'Połączone telefony', 'd.noDevices': 'Nie ma jeszcze połączonych telefonów.', 'd.lastUsed': 'Używany {ago}', 'd.removeQ': 'Odłączyć "{name}"? Nie będzie mógł już przybijać pieczątek.',
+    'd.devices': 'Połączone telefony', 'd.noDevices': 'Nie ma jeszcze połączonych telefonów.', 'd.lastUsed': 'Używany {ago}', 'd.notUsed': 'Jeszcze nieużywany', 'd.removeQ': 'Odłączyć "{name}"? Nie będzie mógł już przybijać pieczątek.',
     'd.tillDemo': '<span><b>Wersja demo.</b> Skaner pieczątek działa na tym urządzeniu bez łączenia. Z bazą danych każdy telefon przy kasie łączy się kodem.</span>',
     'd.icon': 'Ikona', 'd.color': 'Kolor karty', 'd.ink': 'Kolor pieczątki',
     'd.lang': 'Język karty', 'd.langHint': 'W tym języku są nazwa, nagroda i powiadomienia.',
@@ -1088,7 +1114,7 @@ I18N.add({
   function renderDevices() {
     $('till-demo').hidden = Store.remote; $('link-new').hidden = !Store.remote;
     $('devices').innerHTML = !Store.remote ? `<li class="empty-dev"><a class="link" href="stamper.html${Remote.demo ? '?demo' : ''}">${I18N.t('d.openStamper')}</a></li>`
-      : devices.length ? devices.map(d => `<li><span>${UI.esc(d.name)}<small>${I18N.t('d.lastUsed', { ago: UI.timeAgo(d.lastUsed) })}</small></span><button class="btn line small" type="button" data-dev="${d.id}">${I18N.t('d.remove')}</button></li>`).join('')
+      : devices.length ? devices.map(d => `<li><span>${UI.esc(d.name)}<small>${d.lastUsed ? I18N.t('d.lastUsed', { ago: UI.timeAgo(d.lastUsed) }) : I18N.t('d.notUsed')}</small><input class="loc-in" type="text" maxlength="60" data-loc-dev="${d.id}" value="${UI.esc(d.location || '')}" placeholder="${UI.esc(I18N.t('d.locPh'))}" aria-label="${UI.esc(I18N.t('d.locLabel'))}"></span><button class="btn line small" type="button" data-dev="${d.id}">${I18N.t('d.remove')}</button></li>`).join('') + `<li class="empty-dev"><p class="dev-hint">${I18N.t('d.locHint')}</p></li>`
       : `<li class="empty-dev">${I18N.t('d.noDevices')}</li>`;
   }
   $('link-new').addEventListener('click', async () => {
@@ -1100,6 +1126,12 @@ I18N.add({
       clearTimeout(linkTimer);
       linkTimer = setTimeout(() => { $('link-box').hidden = true; }, r.expiresAt - Date.now());
     } catch (err) { UI.toast(err.message); }
+  });
+  // Where each till phone is (chains): saved when the field is left.
+  $('devices').addEventListener('change', async e => {
+    const inp = e.target.closest('[data-loc-dev]'); if (!inp) return;
+    const d = devices.find(x => x.id === inp.dataset.locDev); if (!d) return;
+    try { await Remote.setDeviceLocation(d.id, inp.value); d.location = inp.value.trim(); UI.toast(I18N.t('d.locSaved')); } catch (err) { UI.toast(err.message); }
   });
   $('devices').addEventListener('click', async e => {
     const b = e.target.closest('[data-dev]'); if (!b) return;
@@ -1212,7 +1244,7 @@ I18N.add({
   document.addEventListener('langchange', () => { if (!$('tab-notify').hidden) renderNotify(true); });
 
   // ---------- results: numbers and charts from the café's own visits (assets/js/analytics.js) ----------
-  let resDays = 30, resExample = false;
+  let resDays = 30, resExample = false, resLoc = '';
   const resPrefs = () => { try { return JSON.parse(localStorage.getItem('timbro:results:' + current.id)) || {}; } catch (e) { return {}; } };
   const saveResPrefs = p => { try { localStorage.setItem('timbro:results:' + current.id, JSON.stringify(p)); } catch (e) { /* not saved */ } };
   const euro = (n, d = 0) => new Intl.NumberFormat(I18N.lang === 'en' ? 'en-IE' : I18N.locale(), { style: 'currency', currency: 'EUR', maximumFractionDigits: d, minimumFractionDigits: d }).format(n);
@@ -1233,8 +1265,18 @@ I18N.add({
     $('res-sample-b').hidden = demo;
     $('res-sample-b').textContent = I18N.t(resExample ? 'd.resShowMine' : 'd.resShowEx');
     $('res-range').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.d) === resDays)));
-    const customers = useExample ? ANALYTICS.sample(current) : real;
-    const r = ANALYTICS.compute(current, customers, { days: resDays });
+    // Example data for a chain is spread over a few made-up shops.
+    const customers = useExample ? ANALYTICS.sample(current, undefined, current.plan === 'chain' ? I18N.t('d.locSample') : []) : real;
+    // Chains: the shops (till phone locations) visits were stamped in; one can be picked.
+    const locs = ANALYTICS.locations(customers);
+    if (!locs.includes(resLoc)) resLoc = '';
+    $('res-loc-wrap').hidden = locs.length < 2;
+    $('res-loc').innerHTML = [`<option value="">${I18N.t('d.locAll')}</option>`, ...locs.map(l => `<option${l === resLoc ? ' selected' : ''}>${UI.esc(l)}</option>`)].join('');
+    const r = ANALYTICS.compute(current, customers, { days: resDays, location: resLoc });
+    const byLoc = locs.length >= 2 && !resLoc ? ANALYTICS.byLocation(current, customers, { days: resDays }) : [];
+    const topLoc = Math.max(1, ...byLoc.map(x => x.visits));
+    const locBox = byLoc.length ? `<div class="card-box wide"><h3>${I18N.t('d.locT')}</h3><p class="note">${I18N.t('d.locN')}</p><ul class="locs">${byLoc.map(x =>
+      `<li><button type="button" data-loc="${UI.esc(x.place)}"><span class="name">${UI.esc(x.place)}</span><span class="num">${num(x.visits)} ${I18N.plural(x.visits, I18N.t('d.locWVisits'))}</span><span class="lbar"><i style="width:${Math.round(x.visits / topLoc * 100)}%"></i></span><small>${num(x.visitors)} ${I18N.plural(x.visitors, I18N.t('d.locVisitors'))} · ${num(x.rewards)} ${I18N.plural(x.rewards, I18N.t('d.locRewards'))}</small></button></li>`).join('')}</ul></div>` : '';
     const hasBefore = resDays > 0 && customers.some(c => (c.joinedAt || 0) < r.from);
     const prefs = resPrefs(), ticket = prefs.ticket ?? 3.5, rewardCost = prefs.rewardCost ?? 1.2;
     const people = list => list.length ? `<ul class="people">${list.slice(0, 5).map(c => `<li><span>${UI.esc(c.name)}</span><span>${c.stamps}/${current.stampsNeeded} · ${UI.timeAgo(c.lastVisit || c.joinedAt)}</span></li>`).join('')}</ul>${list.length > 5 ? `<p class="note">${I18N.t('d.andMore', { n: list.length - 5 })}</p>` : ''}` : `<p class="note">${I18N.t('d.nobody')}</p>`;
@@ -1248,6 +1290,7 @@ I18N.add({
         <div class="kpi"><span class="lab">${I18N.t('d.kRewards')}</span><span class="val" data-k="rewards"></span>${delta(r.rewards, r.prevRewards, hasBefore)}</div>
       </div>
       <div class="res-grid">
+        ${locBox}
         <div class="card-box"><h3>${I18N.t('d.cGrowth')}</h3><p class="note">${I18N.t('d.cGrowthN')}</p><div id="ch-growth"></div></div>
         <div class="card-box"><h3>${I18N.t('d.cVisits')}</h3><p class="note">${I18N.t('d.cVisitsN')[r.bucket]}</p><div id="ch-visits"></div></div>
         <div class="card-box"><h3>${I18N.t('d.cDays')}</h3><p class="note">${I18N.t('d.cDaysN')}</p><div id="ch-days"></div></div>
@@ -1286,6 +1329,8 @@ I18N.add({
   }
   $('res-range').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { resDays = Number(b.dataset.d); renderResults(); } });
   $('res-sample-b').addEventListener('click', () => { resExample = !resExample; renderResults(); });
+  $('res-loc').addEventListener('change', e => { resLoc = e.target.value; renderResults(); });
+  $('res').addEventListener('click', e => { const b = e.target.closest('[data-loc]'); if (b) { resLoc = b.dataset.loc; renderResults(); $('res-loc').focus(); } });
   document.addEventListener('langchange', () => { if (!$('tab-results').hidden) renderResults(); });
   let resTimer; window.addEventListener('resize', () => { clearTimeout(resTimer); resTimer = setTimeout(() => { if (!$('tab-results').hidden) renderResults(); }, 200); });
 

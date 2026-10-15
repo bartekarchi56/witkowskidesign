@@ -97,6 +97,7 @@
     sendDesign: (cardId, kind, design, note, images, links) => rpc('owner_send_design', { p_card_id: cardId, p_kind: kind, p_design: design, p_note: note, p_images: images, p_links: links }),
     linkCode: () => rpc('owner_link_code'),
     removeDevice: id => rpc('owner_remove_device', { p_device_id: id }),
+    setDeviceLocation: (id, location) => rpc('owner_set_device_location', { p_device_id: id, p_location: location }),
 
     // ---- Witkowski Design ----
     adminCards: () => rpc('admin_cards'),

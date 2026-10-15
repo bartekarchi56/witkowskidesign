@@ -82,6 +82,8 @@ create table if not exists devices (                           -- cashiers' phon
   last_used    timestamptz
 );
 
+alter table devices add column if not exists location text not null default '';
+
 create table if not exists link_codes (                        -- one-time codes to link a phone
   code         text primary key,
   business_id  uuid not null references businesses(id) on delete cascade,

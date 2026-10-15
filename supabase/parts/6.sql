@@ -1,6 +1,19 @@
 -- Timbro database, part 6 of 8. Run the parts in order.
 set search_path = timbro, extensions;
 
+create or replace function admin_publish(p_card_id text, p_design jsonb) returns jsonb
+language plpgsql security definer set search_path = timbro
+as $$
+declare c cards;
+begin
+  if not _is_admin() then raise exception 'Only Witkowski Design can publish designs.' using errcode = '42501'; end if;
+  update cards set design = design || _clean_design(p_design),
+    review = jsonb_build_object('status', 'approved', 'at', (extract(epoch from now()) * 1000)::bigint, 'reply', ''),
+    updated_at = now()
+  where id = lower(p_card_id) returning * into c;
+  return _card_json(c, true);
+end $$;
+
 create or replace function admin_ask_changes(p_card_id text, p_reply text) returns jsonb
 language plpgsql security definer set search_path = timbro
 as $$
@@ -76,21 +89,3 @@ as $$
     'periodEnd', (extract(epoch from b.billing_period_end) * 1000)::bigint, 'trialUsed', b.trial_used,
     'customer', b.stripe_customer is not null, 'canceling', b.billing_canceling)
 $$;
-
-create or replace function stripe_business(p_user uuid) returns jsonb
-language sql stable security definer set search_path = timbro
-as $$
-  select jsonb_build_object('id', b.id, 'name', b.name, 'email', u.email, 'phone', b.phone,
-    'customer', b.stripe_customer, 'subscription', b.stripe_subscription, 'status', b.billing_status, 'trialUsed', b.trial_used)
-  from businesses b left join auth.users u on u.id = b.owner_id where b.owner_id = p_user
-$$;
-
-create or replace function stripe_is_admin(p_user uuid) returns boolean
-language sql stable security definer set search_path = timbro
-as $$ select exists (select 1 from admins where user_id = p_user) $$;
-
-create or replace function stripe_set_customer(p_business uuid, p_customer text) returns void
-language sql security definer set search_path = timbro
-as $$ update businesses set stripe_customer = p_customer where id = p_business and stripe_customer is null $$;
-
-drop function if exists stripe_sync(text, text, text, text, text, bigint);   -- older version without p_canceling

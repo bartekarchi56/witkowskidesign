@@ -1,6 +1,13 @@
 -- Timbro database, part 8 of 8. Run the parts in order.
 set search_path = timbro, extensions;
 
+create table if not exists job_keys (
+  name  text primary key,
+  key   text not null default _token()
+);
+
+insert into job_keys (name) values ('reminders') on conflict (name) do nothing;
+
 create or replace function reminders_due(p_key text) returns jsonb
 language plpgsql security definer set search_path = timbro
 as $$
@@ -35,7 +42,7 @@ grant execute on function get_card(text), join_card(text, text, text, text, date
   to anon, authenticated;
 
 grant execute on function owner_data(), owner_save_card(jsonb), owner_save_messages(text, jsonb), owner_send_design(text, text, jsonb, text, jsonb, jsonb),
-  owner_link_code(), owner_remove_device(uuid),
+  owner_link_code(), owner_remove_device(uuid), owner_set_device_location(uuid, text),
   admin_cards(), admin_publish(text, jsonb), admin_ask_changes(text, text), admin_set_plan(text, text)
   to authenticated;
 

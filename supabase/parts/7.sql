@@ -1,6 +1,24 @@
 -- Timbro database, part 7 of 8. Run the parts in order.
 set search_path = timbro, extensions;
 
+create or replace function stripe_business(p_user uuid) returns jsonb
+language sql stable security definer set search_path = timbro
+as $$
+  select jsonb_build_object('id', b.id, 'name', b.name, 'email', u.email, 'phone', b.phone,
+    'customer', b.stripe_customer, 'subscription', b.stripe_subscription, 'status', b.billing_status, 'trialUsed', b.trial_used)
+  from businesses b left join auth.users u on u.id = b.owner_id where b.owner_id = p_user
+$$;
+
+create or replace function stripe_is_admin(p_user uuid) returns boolean
+language sql stable security definer set search_path = timbro
+as $$ select exists (select 1 from admins where user_id = p_user) $$;
+
+create or replace function stripe_set_customer(p_business uuid, p_customer text) returns void
+language sql security definer set search_path = timbro
+as $$ update businesses set stripe_customer = p_customer where id = p_business and stripe_customer is null $$;
+
+drop function if exists stripe_sync(text, text, text, text, text, bigint);   -- older version without p_canceling
+
 create or replace function stripe_sync(p_customer text, p_subscription text, p_status text, p_plan text, p_interval text, p_period_end bigint,
   p_canceling boolean default false)
 returns uuid
@@ -75,10 +93,3 @@ begin
   return coalesce((select jsonb_agg(w.push_token) from wallet_devices w join customers m on m.id = w.customer_id
     join cards c on c.id = m.card_id where m.id = upper(trim(p_code)) and c.business_id = d.business_id), '[]'::jsonb);
 end $$;
-
-create table if not exists job_keys (
-  name  text primary key,
-  key   text not null default _token()
-);
-
-insert into job_keys (name) values ('reminders') on conflict (name) do nothing;
