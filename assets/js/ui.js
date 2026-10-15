@@ -107,7 +107,14 @@
     const codeBox = opts.compact ? '' : `<div class="wp-code"><div class="qr" aria-hidden="true">${qrSvg(code)}</div><small>${esc(code)}</small></div>`;
     const field = (label, value, cls = '') => `<div class="${cls}"><span class="wp-label">${esc(label)}</span><span class="wp-val">${esc(value)}</span></div>`;
     const ready = full ? `<div class="wp-ready">${t('pass.ready')}</div>` : '';
-    const strip = `<div class="wp-strip" style="--cols:${cols}${card.stripImage ? `;background-image:url('${esc(card.stripImage)}')` : ''}" aria-hidden="true">${dots}</div>`;
+    // stripLogo: the café's logo kept clear in the middle of the strip, half the stamps on each side.
+    let grid = `--cols:${cols}`, middle = '';
+    if (card.stripLogo) {
+      const rows = need > 12 ? 3 : 2, perRow = Math.ceil(need / rows), left = Math.ceil(perRow / 2), right = Math.max(1, perRow - left);
+      grid = `grid-template-columns:repeat(${left},minmax(0,1fr)) minmax(0,1.9fr) repeat(${right},minmax(0,1fr))`;
+      middle = `<span class="wp-slogo" style="grid-column:${left + 1};grid-row:1 / span ${rows}"><img src="${esc(card.stripLogo)}" alt=""></span>`;
+    }
+    const strip = `<div class="wp-strip${card.stripLogo ? ' has-logo' : ''}" style="${grid}${card.stripImage ? `;background-image:url('${esc(card.stripImage)}')` : ''}" aria-hidden="true">${middle}${dots}</div>`;
     const style = `--c:${esc(bg)};--t:${textOn(bg)};--s:${esc(card.ink || '#2B32FF')};--sb:${esc(look.strip || bg)}`;
     const fontCls = ` f-${look.font}`;
     const aria = esc(t('pass.aria', { title, have, need }));
