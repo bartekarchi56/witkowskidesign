@@ -24,6 +24,7 @@
         if (tc && (!tc.stamp || !tc.plan)) { Object.assign(tc, COFFEE_LOOK); save(db); }
         // Browsers from before the Orsonero proposal get its example card too.
         if (!db.cards.orsonero || db.cards.orsonero.stampImage !== ORSONERO_BEAR) { db.cards.orsonero = { ...db.cards.orsonero, ...ORSONERO }; save(db); }
+        if (!db.cards.sowa || db.cards.sowa.stampImage !== SOWA.stampImage) { db.cards.sowa = { createdAt: Date.now(), ...db.cards.sowa, ...SOWA }; save(db); }
         return db;
       }
     } catch (e) { if (memory) return memory; }
@@ -53,6 +54,17 @@
     strip: '#EADFCB', tagline: 'Specialty coffee', stampImage: ORSONERO_BEAR
   };
 
+  // Cukiernia Sowa, Bydgoszcz (proposal): their 80th-anniversary coffee card, with
+  // their "80" logo, their feather pattern and their owl as the stamp. The artwork
+  // lives in assets/demo/sowa/ (the card page turns it into data for Wallet).
+  const SOWA = {
+    id: 'sowa', business: 'Cukiernia Sowa', city: 'Bydgoszcz', type: 'pasticceria', lang: 'pl',
+    title: 'Karta kawowa', reward: 'kawa gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee',
+    stampsNeeded: 8, icon: 'cup', plan: 'chain', style: 'bottega',
+    color: '#FBF6EE', ink: '#522D24', font: 'serif', strip: '#FBF6EE', tagline: '80 lat tradycji',
+    logo: '/assets/demo/sowa/logo-80.svg', stampImage: '/assets/demo/sowa/owl-stamp.png', stripImage: '/assets/demo/sowa/strip.png'
+  };
+
   // Every fresh browser starts with the example card for The Coffee, so a
   // QR code on the brochure opens a working card on any phone.
   function seed() {
@@ -72,6 +84,7 @@
       createdAt: Date.now()
     };
     db.cards.orsonero = { ...ORSONERO, createdAt: Date.now() };
+    db.cards.sowa = { ...SOWA, createdAt: Date.now() };
     save(db);
     return db;
   }

@@ -234,6 +234,9 @@ I18N.add({
     const field = form.querySelector('input[name=data]');
     const data = JSON.parse(field.value);
     Object.assign(data.card, await UI.walletAssets(data.card));
+    // Artwork kept as files (e.g. the Sowa example) goes as data, which the server can read.
+    const toData = src => fetch(src).then(r => r.blob()).then(b => new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.readAsDataURL(b); }));
+    for (const k of ['logo', 'stampImage', 'stripImage']) if (data.card[k] && !/^data:/.test(data.card[k])) try { data.card[k] = await toData(data.card[k]); } catch (err) {}
     data.lang = I18N.lang;
     field.value = JSON.stringify(data);
     form.dataset.ready = '1';

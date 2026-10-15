@@ -12,7 +12,7 @@ export const settings = {
   brand: process.env.BRAND || 'Timbro',
   // Example cards that live only in the browser (website demo, brochures): their passes are
   // built from what the page sends, since they are not in the database.
-  demoCards: (process.env.DEMO_CARDS ?? 'the-coffee,orsonero').split(',').map(s => s.trim()).filter(Boolean),
+  demoCards: (process.env.DEMO_CARDS ?? 'the-coffee,orsonero,sowa').split(',').map(s => s.trim()).filter(Boolean),
   // When set, the card and stamps are read from the database (trusted)
   // instead of from what the customer's phone sends.
   supabase: {
