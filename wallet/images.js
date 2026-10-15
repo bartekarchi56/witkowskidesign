@@ -22,10 +22,20 @@ export function colours(card) {
 
 const ANGLES = [-8, 5, -3, 9, -6, 3, -10, 7, -2, 6, -7, 4, -4, 8, -9, 2, -5, 10, -1, 5];
 const pngData = (v, max = 200000) => /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(v || '') && v.length < max ? v : '';
+// A café's own stamp artwork: PNG/JPEG/WebP, or an SVG (base64 or URL-encoded) that loads
+// nothing from outside itself (no scripts, no links except to data: images).
+function artData(v, max = 400000) {
+  if (pngData(v, max)) return v;
+  const m = /^data:image\/svg\+xml(;charset=[\w-]+)?(;base64)?,(.+)$/s.exec(v || '');
+  if (!m || v.length >= max) return '';
+  let text; try { text = m[2] ? Buffer.from(m[3], 'base64').toString('utf8') : decodeURIComponent(m[3]); } catch (e) { return ''; }
+  if (/<script|on\w+\s*=|file:|(?:xlink:)?href\s*=\s*["'](?!data:)/i.test(text)) return '';
+  return 'data:image/svg+xml;base64,' + Buffer.from(text, 'utf8').toString('base64');
+}
 
 // The picture one stamp prints at x,y (size d): the café's own artwork, or its standard stamp.
 function stampAt(card, ink, x, y, d, empty = false) {
-  const art = pngData(card.stampImage, 400000);
+  const art = artData(card.stampImage);
   return art
     ? `<image href="${art}" x="${x}" y="${y}" width="${d}" height="${d}" preserveAspectRatio="xMidYMid meet"/>`
     : STAMPS.svg(STAMPS.stampOf(card), ink, `x="${x}" y="${y}" width="${d}" height="${d}"`, empty);
@@ -49,7 +59,7 @@ export async function strip(card, have, { w = 375, h = 123, scale = 1 } = {}) {
   const top = (h - (rows * d + (rows - 1) * gapY)) / 2;
 
   // The dot has its own empty box (a circle); other stamps leave a faint print.
-  const drawnEmpty = !pngData(card.stampImage, 400000) && STAMPS.hasEmpty(STAMPS.stampOf(card));
+  const drawnEmpty = !artData(card.stampImage) && STAMPS.hasEmpty(STAMPS.stampOf(card));
   let out = '';
   for (let i = 0; i < need; i++) {
     const x = padX + (i % cols) * (d + gapX), y = top + Math.floor(i / cols) * (d + gapY);
