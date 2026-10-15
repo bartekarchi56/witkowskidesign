@@ -33,6 +33,7 @@ function parse(req, body) {
 async function trusted(raw) {
   const { url, anonKey } = settings.supabase;
   if (!url) return raw;
+  if (!raw?.customer?.secret && settings.demoCards.includes(raw?.card?.id)) return raw;   // a demo card, not in the database
   const r = await fetch(`${url}/rest/v1/rpc/get_my_card`, {
     method: 'POST',
     headers: { apikey: anonKey, authorization: `Bearer ${anonKey}`, 'content-type': 'application/json', 'content-profile': 'timbro' },

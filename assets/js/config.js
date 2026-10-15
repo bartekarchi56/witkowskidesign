@@ -22,7 +22,9 @@ window.CONFIG = {
 
   // Address of the wallet server (wallet/server.js) once it is deployed,
   // e.g. 'https://wallet.timbro.it'. Empty = "Add to Wallet" stays switched off.
-  walletApi: '',
+  walletApi: 'https://timbro-wallet.onrender.com',
+  // Which Wallets the server is set up for (its /health says so). Add 'google' once Google Wallet is ready.
+  walletPlatforms: ['apple'],
 
   contact: {
     name: 'Bartek Witkowski',

@@ -134,7 +134,8 @@ I18N.add({
     const data = UI.esc(JSON.stringify({ card, customer: { id: me.id, name: me.name, stamps: me.stamps, secret: entry.secret } }));
     const one = (kind, main) => {
       const label = t(kind === 'apple' ? 'c.apple' : 'c.google');
-      if (!CONFIG.walletApi) return main ? `<button class="wbtn" type="button" disabled>${WALLET_ICON}${label}</button>` : '';
+      const on = CONFIG.walletApi && (CONFIG.walletPlatforms || ['apple', 'google']).includes(kind);
+      if (!on) return main ? `<button class="wbtn" type="button" disabled>${WALLET_ICON}${label}</button>` : '';
       return main
         ? `<form method="post" action="${UI.esc(CONFIG.walletApi.replace(/\/$/, ''))}/${kind}"><input type="hidden" name="data" value="${data}"><button class="wbtn" type="submit">${WALLET_ICON}${label}</button></form>`
         : `<form method="post" action="${UI.esc(CONFIG.walletApi.replace(/\/$/, ''))}/${kind}"><input type="hidden" name="data" value="${data}"><button class="link other" type="submit">${label}</button></form>`;
@@ -217,7 +218,7 @@ I18N.add({
       ${ownText ? `<p class="left mine">${UI.esc(ownText)}</p>` : `<p class="left">${left > 0 ? t('c.left', { n: left, reward: UI.esc(w.reward) }) : t('c.claim')}</p>`}
       <div class="wallet">${walletButtons(card, me)}
       </div>
-      ${CONFIG.walletApi ? '' : `<p class="note">${t('c.walletNote')}</p>`}
+      ${CONFIG.walletApi && (CONFIG.walletPlatforms || ['apple', 'google']).includes(UI.getPlatform() === 'google' ? 'google' : 'apple') ? '' : `<p class="note">${t('c.walletNote')}</p>`}
       <div class="box"><h2>${t('c.activity')}</h2><ul class="history">${events}</ul></div>
       <p class="by">${t('c.by')} <i></i><b>${UI.esc(CONFIG.brand)}</b></p>`;
   }
