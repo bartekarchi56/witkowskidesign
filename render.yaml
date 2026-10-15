@@ -34,4 +34,4 @@ services:
       - key: GOOGLE_SERVICE_ACCOUNT
         value: /etc/secrets/service-account.json   # Secret File with the service account's JSON key
       - key: GOOGLE_ISSUER_ID
-        sync: false       # from pay.google.com/business/console, e.g. 3388000000012345678
+        value: "3388000000023221940"   # from pay.google.com/business/console (not secret: it is in every save link)
