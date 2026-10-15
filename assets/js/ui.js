@@ -75,7 +75,7 @@
   /**
    * Draws the card the way Apple Wallet (opts.platform 'apple') or Google
    * Wallet ('google') shows it.
-   * card: {business,title,reward,stampsNeeded,color,ink,icon,logo}
+   * card: {business,title,reward,stampsNeeded,color,ink,icon,logo} (logoCenter: the logo alone, top middle)
    * customer (optional): {id,name,stamps}
    * opts.stamps: stamps to show when there is no customer
    * opts.pop: index of a stamp to animate in
@@ -107,14 +107,7 @@
     const codeBox = opts.compact ? '' : `<div class="wp-code"><div class="qr" aria-hidden="true">${qrSvg(code)}</div><small>${esc(code)}</small></div>`;
     const field = (label, value, cls = '') => `<div class="${cls}"><span class="wp-label">${esc(label)}</span><span class="wp-val">${esc(value)}</span></div>`;
     const ready = full ? `<div class="wp-ready">${t('pass.ready')}</div>` : '';
-    // stripLogo: the café's logo kept clear in the middle of the strip, half the stamps on each side.
-    let grid = `--cols:${cols}`, middle = '';
-    if (card.stripLogo) {
-      const rows = need > 12 ? 3 : 2, perRow = Math.ceil(need / rows), left = Math.ceil(perRow / 2), right = Math.max(1, perRow - left);
-      grid = `grid-template-columns:repeat(${left},minmax(0,1fr)) minmax(0,1.9fr) repeat(${right},minmax(0,1fr))`;
-      middle = `<span class="wp-slogo" style="grid-column:${left + 1};grid-row:1 / span ${rows}"><img src="${esc(card.stripLogo)}" alt=""></span>`;
-    }
-    const strip = `<div class="wp-strip${card.stripLogo ? ' has-logo' : ''}" style="${grid}${card.stripImage ? `;background-image:url('${esc(card.stripImage)}')` : ''}" aria-hidden="true">${middle}${dots}</div>`;
+    const strip = `<div class="wp-strip" style="--cols:${cols}${card.stripImage ? `;background-image:url('${esc(card.stripImage)}')` : ''}" aria-hidden="true">${dots}</div>`;
     const style = `--c:${esc(bg)};--t:${textOn(bg)};--s:${esc(card.ink || '#2B32FF')};--sb:${esc(look.strip || bg)}`;
     const fontCls = ` f-${look.font}`;
     const aria = esc(t('pass.aria', { title, have, need }));
@@ -123,7 +116,7 @@
       const logo = card.logo ? `<img src="${esc(card.logo)}" alt="">` : art ? `<img class="wp-gstamp" src="${esc(art)}" alt="">` : icon('star');
       return `
       <div class="pass google${fontCls}" style="${style}" role="group" aria-label="${aria}">
-        <div class="wp-head"><span class="wp-glogo">${logo}</span><span class="wp-name">${esc(card.business)}</span></div>
+        ${card.logoCenter && card.logo ? `<div class="wp-head center"><img class="wp-clogo" src="${esc(card.logo)}" alt="${esc(card.business)}"></div>` : `<div class="wp-head"><span class="wp-glogo">${logo}</span><span class="wp-name">${esc(card.business)}</span></div>`}
         <div class="wp-title">${esc(title)}</div>
         <div class="wp-fields">${field(t('pass.stamps'), `${have}/${need}`)}${field(t('pass.reward'), reward)}</div>
         ${ready}
@@ -136,7 +129,7 @@
       : `<span class="wp-word"><span class="wp-name">${esc(card.business)}</span>${card.tagline ? `<small>${esc(card.tagline)}</small>` : ''}</span>`;
     return `
       <div class="pass apple${fontCls}${opts.compact ? ' compact' : ''}" style="${style}" role="group" aria-label="${aria}">
-        <div class="wp-head"><div class="wp-logo">${logo}</div>${field(t('pass.stamps'), `${have}/${need}`, 'wp-hf')}</div>
+        <div class="wp-head${card.logoCenter && card.logo ? ' center' : ''}"><div class="wp-logo">${logo}</div>${field(t('pass.stamps'), `${have}/${need}`, 'wp-hf')}</div>
         ${strip}
         <div class="wp-fields">${field(t('pass.reward'), reward)}${field(customer ? t('pass.member') : t('pass.card'), customer ? customer.name : title)}</div>
         ${ready}

@@ -53,7 +53,7 @@ const name = arc('ORSONERO', 200, 262, 196, -64, 64, 0.38);
 const coffee = word('COFFEE', 0, 0, 0.13, 70);
 const coffeeX = 200 - coffee.width / 2;
 const dal = word('dal', 22, 266, 0.20, 18), year = word('2016', 0, 0, 0.20, 16);
-const logo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 0 456 360">
+const logo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 0 456 360" width="456" height="360">
 <g fill="none" stroke="${INK}" stroke-linecap="round" stroke-linejoin="round">
   <g stroke-width="${(5.5 / 0.38).toFixed(1)}">${name}</g>
   <g stroke-width="10">${BEAR}</g>${EYE}

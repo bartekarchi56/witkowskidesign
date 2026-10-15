@@ -155,10 +155,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .wp-gmark{font:700 17px/1 "Noto Serif JP",serif;color:var(--s)}
 .wp-dot.pop{animation:stamp .38s cubic-bezier(.2,1.5,.5,1)}
 @keyframes stamp{0%{transform:scale(1.9);opacity:0}60%{opacity:1}100%{transform:scale(1)}}
-.wp-strip{display:grid;grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));gap:12px 14px;padding:18px 26px;background:var(--sb)}
-.wp-strip.has-logo{gap:10px 10px;align-items:center}
-.wp-slogo{display:grid;place-items:center;height:100%;min-height:0}
-.wp-slogo img{width:100%;height:100%;max-height:100%;object-fit:contain}
+.wp-strip{display:grid;grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));gap:12px 14px;padding:18px 26px;background-color:var(--sb)}
 .wp-label{display:block;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.6}
 .wp-val{display:block;font-size:16px;font-weight:500;line-height:1.2}
 .wp-code{display:grid;justify-items:center;gap:6px;color:#000}
@@ -175,6 +172,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .apple .wp-logo svg{width:24px;height:24px;flex:0 0 24px}
 .apple .wp-logo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .apple .wp-hf{text-align:right;flex:0 0 auto}
+.apple .wp-head.center{position:relative;justify-content:center;min-height:0;padding-top:12px}
+.apple .wp-head.center .wp-logo img{height:86px;max-height:none;width:auto;max-width:180px;object-position:center}
+.apple .wp-head.center .wp-hf{position:absolute;right:16px;top:14px}
 .apple .wp-hf .wp-val{font-size:19px}
 .apple .wp-strip{padding:18px 26px;margin:10px 0 8px}
 .apple .wp-fields{display:flex;justify-content:space-between;gap:12px;padding:6px 16px 0}
@@ -190,6 +190,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .google .wp-glogo svg{width:19px;height:19px}
 .google .wp-glogo img{width:100%;height:100%;object-fit:contain}
 .google .wp-glogo img.wp-gstamp{width:74%;height:74%}
+.google .wp-head.center{justify-content:center;padding-top:14px}
+.google .wp-clogo{max-height:84px;max-width:60%;object-fit:contain}
 .google .wp-title{padding:14px 18px 0;font-size:24px;font-weight:400;line-height:1.15}
 .google .wp-fields{display:flex;gap:28px;padding:14px 18px 0}
 .google .wp-label{text-transform:none;letter-spacing:0;font-size:12px;font-weight:400;opacity:.75}

@@ -38,8 +38,7 @@ h1{font-size:28px;margin:0 0 6px}
   // Sowa's feather pattern (as on cukierniasowa.pl): pointed scales in offset rows, in cream.
   const W = 78, H = 44, feather = (x, y) => `M${x} ${y}C${x} ${y + H * .55} ${x + W * .28} ${y + H * .9} ${x + W / 2} ${y + H}C${x + W * .72} ${y + H * .9} ${x + W} ${y + H * .55} ${x + W} ${y}`;
   const scales = svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><defs><pattern id="s" width="${W}" height="${H * 2}" patternUnits="userSpaceOnUse"><path d="${[feather(0, 0), feather(-W / 2, H), feather(W / 2, H), feather(0, H * 2), feather(-W / 2, -H), feather(W / 2, -H)].join('')}" fill="none" stroke="#E4D6C2" stroke-width="2.2" stroke-linecap="round"/></pattern></defs><rect width="1020" height="450" fill="#FBF6EE"/><rect width="1020" height="450" fill="url(#s)"/></svg>`);
-  // Orsonero's awning: grey and white stripes with soft folds of light, drawn (not a photo),
-  // and their logo in the middle where the stripes fade to white.
+  // Orsonero's awning: grey and white stripes with soft folds of light, drawn (not a photo).
   const folds = [[0, .00], [.12, .16], [.22, .02], [.34, .20], [.47, .04], [.58, .14], [.70, .00], [.83, .18], [1, .03]]
     .map(([o, a]) => `<stop offset="${o}" stop-color="#2E3440" stop-opacity="${a}"/>`).join('');
   const awning = svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1020 450">
@@ -47,10 +46,8 @@ h1{font-size:28px;margin:0 0 6px}
       <pattern id="st" x="-6" width="68" height="900" patternUnits="userSpaceOnUse"><rect width="34" height="900" fill="#F5F5F3"/><rect x="34" width="34" height="900" fill="#C9CCD3"/></pattern>
       <linearGradient id="fold" x1="0" y1="0" x2="1" y2="0" gradientTransform="rotate(14 .5 .5)">${folds}</linearGradient>
       <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".18"/><stop offset=".5" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="1" stop-color="#1E2430" stop-opacity=".12"/></linearGradient>
-      <radialGradient id="calm" cx=".5" cy=".5" r=".5" gradientTransform="translate(.5 .5) scale(.58 1) translate(-.5 -.5)"><stop offset=".45" stop-color="#FFFFFF" stop-opacity=".9"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
     </defs>
     <g transform="translate(-200 -225)"><rect width="1420" height="900" fill="url(#st)"/><rect width="1420" height="900" fill="url(#fold)"/><rect width="1420" height="900" fill="url(#sheen)"/></g>
-    <rect x="250" y="-60" width="520" height="570" fill="url(#calm)"/>
 </svg>`);
 
   // Kofeina: their black wordmark and storefront drawing; stamps are plain, flat dots (no ink texture).
@@ -72,9 +69,9 @@ h1{font-size:28px;margin:0 0 6px}
       { name: 'kofeina-dark', label: 'Czarna: ich kawiarnia w tle, białe kropki', stamps: 5,
         card: { ...KOF, stampsNeeded: 8, color: '#0B0B0C', ink: '#FFFFFF', strip: '#0B0B0C', logo: 'kit-kofeina/art/kofeina-logo-white.png', stripImage: watermark(STORE_W, '#0B0B0C', .17, 1020, 450, 600), stampImage: dot('#FFFFFF') } }
     ] },
-    { id: 'orsonero', lang: 'en', title: 'Orsonero Coffee', note: 'Their logo in the middle of the grey and white awning; every stamp is the bear in a circle.', cards: [
-      { name: 'orsonero-stripes', label: 'Their logo in the middle of the awning, bear stamps', stamps: 5,
-        card: { ...ORSO, color: '#FFFFFF', ink: '#141414', font: 'wide', strip: '#F5F5F3', stripImage: awning, stripLogo: ORSO_LOGO, stampImage: ORSO_STAMP } }
+    { id: 'orsonero', lang: 'en', title: 'Orsonero Coffee', note: 'Their logo alone at the top, the grey and white awning behind the stamps; every stamp is the bear in a circle.', cards: [
+      { name: 'orsonero-stripes', label: 'Their logo on top, awning stripes, bear stamps', stamps: 5,
+        card: { ...ORSO, color: '#FFFFFF', ink: '#141414', font: 'wide', strip: '#F5F5F3', logo: ORSO_LOGO, logoCenter: true, stripImage: awning, stampImage: ORSO_STAMP } }
     ] }
   ];
   const only = new URLSearchParams(location.search).get('set');
