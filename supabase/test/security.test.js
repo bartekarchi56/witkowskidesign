@@ -88,6 +88,12 @@ assert.equal(await call(anon, 'wallet_unregister', { p_code: joined.id, p_secret
 assert.deepEqual(await call(anon, 'wallet_targets', { p_token: dev.token, p_code: joined.id }), []);
 ok('Wallet phones register with the pass token; only the café\'s own till can wake them');
 
+// ---- daily reminders: only with the job key ----
+await rejects(call(anon, 'reminders_due', { p_key: '' }), /Wrong key/);
+await rejects(call(anon, 'reminders_due', { p_key: 'guess' }), /Wrong key/);
+await rejects(raw(anon, 'select key from timbro.job_keys'), /permission denied/);
+ok('the daily reminder list needs the job key, which visitors cannot read');
+
 // ---- owner dashboard data ----
 const dataA = await call(users.ownerA, 'owner_data');
 assert.equal(dataA.cards.length, 1); assert.equal(dataA.customers.length, 1); assert.equal(dataA.devices.length, 1); assert.equal(dataA.isAdmin, false);
@@ -176,7 +182,7 @@ ok('cards keep their language and Polish messages; the designer can set the Chai
 // ---- no function is open by accident (Postgres lets PUBLIC run new functions) ----
 const open = async role => (await pool.query(`select coalesce(string_agg(p.proname, ',' order by p.proname), '') as f from pg_proc p
   join pg_namespace s on s.oid = p.pronamespace where s.nspname = 'timbro' and has_function_privilege($1, p.oid, 'execute')`, [role])).rows[0].f.split(',').filter(Boolean);
-const PUBLIC_FNS = ['device_link', 'get_card', 'get_my_card', 'join_card', 'stamper_lookup', 'stamper_redeem', 'stamper_stamp', 'wallet_register', 'wallet_targets', 'wallet_unregister', 'wallet_updated'];
+const PUBLIC_FNS = ['device_link', 'get_card', 'get_my_card', 'join_card', 'reminders_due', 'stamper_lookup', 'stamper_redeem', 'stamper_stamp', 'wallet_register', 'wallet_targets', 'wallet_unregister', 'wallet_updated'];
 assert.deepEqual(await open('anon'), PUBLIC_FNS);
 assert.deepEqual(await open('authenticated'), [...PUBLIC_FNS, 'admin_ask_changes', 'admin_cards', 'admin_publish', 'admin_set_plan',
   'owner_data', 'owner_link_code', 'owner_remove_device', 'owner_save_card', 'owner_save_messages', 'owner_send_design'].sort());

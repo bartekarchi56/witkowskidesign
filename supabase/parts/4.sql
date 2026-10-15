@@ -1,5 +1,19 @@
--- Timbro database, part 4 of 7. Run the parts in order.
+-- Timbro database, part 4 of 8. Run the parts in order.
 set search_path = timbro, extensions;
+
+create or replace function device_link(p_code text, p_name text) returns jsonb
+language plpgsql security definer set search_path = timbro
+as $$
+declare
+  v_biz uuid; v_token text := _token(); v_name text;
+begin
+  delete from link_codes where expires_at < now();
+  delete from link_codes where code = upper(trim(p_code)) returning business_id into v_biz;
+  if v_biz is null then raise exception 'This code has expired or was already used. Ask the owner for a new one.' using errcode = '28000'; end if;
+  insert into devices (business_id, name, token_hash) values (v_biz, coalesce(nullif(left(trim(p_name), 40), ''), 'Cassa'), _hash(v_token));
+  select name into v_name from businesses where id = v_biz;
+  return jsonb_build_object('token', v_token, 'business', v_name);
+end $$;
 
 create or replace function stamper_lookup(p_token text, p_code text) returns jsonb
 language plpgsql security definer set search_path = timbro
@@ -58,35 +72,4 @@ begin
     'customers', coalesce((select jsonb_agg(_customer_json(m, 200) || _customer_contact(m)) from customers m join cards c on c.id = m.card_id where c.business_id = v_biz), '[]'::jsonb),
     'devices', coalesce((select jsonb_agg(jsonb_build_object('id', d.id, 'name', d.name, 'lastUsed', (extract(epoch from d.last_used) * 1000)::bigint) order by d.created_at) from devices d where d.business_id = v_biz), '[]'::jsonb)
   );
-end $$;
-
-create or replace function owner_save_card(p_card jsonb) returns jsonb
-language plpgsql security definer set search_path = timbro
-as $$
-declare
-  v_biz uuid := _my_business(); c cards; v_id text := lower(p_card->>'id');
-begin
-  if auth.uid() is null then raise exception 'Not logged in.' using errcode = '28000'; end if;
-  if v_biz is null then
-    v_biz := _new_business();
-  end if;
-  select * into c from cards where id = v_id;
-  if found and c.business_id <> v_biz then raise exception 'This card belongs to another café.' using errcode = '42501'; end if;
-  if not found then
-    insert into cards (id, business_id, design) values (v_id, v_biz, _clean_design(p_card->'design'));
-  end if;
-  update cards set
-    business = left(coalesce(p_card->>'business', business), 40),
-    city = left(coalesce(p_card->>'city', city), 40),
-    type = left(coalesce(p_card->>'type', type), 20),
-    title = left(coalesce(p_card->>'title', title), 40),
-    reward = left(coalesce(p_card->>'reward', reward), 60),
-    title_en = left(coalesce(p_card->>'titleEn', title_en), 40),
-    reward_en = left(coalesce(p_card->>'rewardEn', reward_en), 60),
-    lang = case when p_card->>'lang' in ('it', 'en', 'pl') then p_card->>'lang' else lang end,
-    stamps_needed = greatest(3, least(20, coalesce((p_card->>'stampsNeeded')::int, stamps_needed))),
-    updated_at = now()
-  where id = v_id returning * into c;
-  update businesses set name = c.business where id = v_biz;   -- the name the till phones show
-  return _card_json(c, true);
 end $$;

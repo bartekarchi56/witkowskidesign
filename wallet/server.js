@@ -4,6 +4,7 @@
 //   GET  /img/strip?card=&need=&have=  (or the look: color=&ink=&stamp=…) → stamp strip PNG (Google hero image)
 //   GET  /img/icon?card=  (or the look)                                  → square stamp PNG (Google program logo)
 //   POST /notify  {token, code}  (the till, after a stamp)               → updates the customer's Wallet cards
+//   GET  /reminders?key=  (once a day, e.g. cron-job.org)                → sends due "we miss you" reminders
 //   GET  /health
 import http from 'node:http';
 import { settings, appleReady, googleReady, googleProblem } from './settings.js';
@@ -188,6 +189,26 @@ export const server = http.createServer(async (req, res) => {
         }
       }
       return send(res, 200, JSON.stringify(out), { ...cors, 'content-type': 'application/json' });
+    }
+
+    // ---- Once a day: the café's reminder to customers who haven't been in for a while ----
+    if (url.pathname === '/reminders') {
+      if (!settings.supabase.url) return send(res, 503, 'No database');
+      const due = await rpc('reminders_due', { p_key: url.searchParams.get('key') || req.headers['x-timbro-key'] || '' });
+      const out = { reminded: due.length, apple: 0, google: 0 };
+      // iPhones: an empty push; the new pass carries the reminder (see currentMessage).
+      const tokens = due.flatMap(d => d.pushTokens);
+      if (tokens.length && appleReady()) out.apple = (await pushPassUpdate(tokens)).filter(r => r.status === 200).length;
+      if (googleReady()) {
+        for (let i = 0; i < due.length; i += 10) {
+          const st = await Promise.all(due.slice(i, i + 10).map(d => {
+            const lang = ['it', 'en', 'pl'].includes(d.card.lang) ? d.card.lang : 'it';
+            return updateGoogleObject(readPassRequest({ lang, card: d.card, customer: d.customer })).catch(() => 0);
+          }));
+          out.google += st.filter(x => x === 200).length;
+        }
+      }
+      return send(res, 200, JSON.stringify(out), { 'content-type': 'application/json' });
     }
 
     if (req.method === 'POST' && (url.pathname === '/apple' || url.pathname === '/google')) {

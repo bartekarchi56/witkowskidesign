@@ -1,5 +1,14 @@
--- Timbro database, part 2 of 7. Run the parts in order.
+-- Timbro database, part 2 of 8. Run the parts in order.
 set search_path = timbro, extensions;
+
+create table if not exists events (
+  id           bigint generated always as identity primary key,
+  customer_id  text not null references customers(id) on delete cascade,
+  device_id    uuid references devices(id) on delete set null,
+  type         text not null check (type in ('joined','stamp','unstamp','redeem')),
+  n            int  not null default 1,
+  created_at   timestamptz not null default now()
+);
 
 create index if not exists events_customer on events(customer_id, created_at);
 
@@ -81,16 +90,4 @@ as $$
   from jsonb_each(coalesce(d, '{}'::jsonb))
   where key in ('style','color','ink','stamp','shape','mark','markText','empty','font','strip','tagline','icon','logo','stampImage','stripImage')
     and octet_length(value::text) < 1200000
-$$;
-
-create or replace function _card_json(c cards, with_review boolean default false) returns jsonb
-language sql stable
-as $$
-  select c.design || jsonb_build_object(
-    'id', c.id, 'business', c.business, 'city', c.city, 'type', c.type,
-    'title', c.title, 'reward', c.reward, 'titleEn', c.title_en, 'rewardEn', c.reward_en, 'lang', c.lang,
-    'stampsNeeded', c.stamps_needed, 'plan', c.plan, 'messages', c.messages,
-    'createdAt', (extract(epoch from c.created_at) * 1000)::bigint,
-    'updatedAt', (extract(epoch from c.updated_at) * 1000)::bigint
-  ) || case when with_review and c.review is not null then jsonb_build_object('review', c.review) else '{}'::jsonb end
 $$;

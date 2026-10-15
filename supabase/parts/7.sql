@@ -1,5 +1,23 @@
--- Timbro database, part 7 of 7. Run the parts in order.
+-- Timbro database, part 7 of 8. Run the parts in order.
 set search_path = timbro, extensions;
+
+create or replace function stripe_sync(p_customer text, p_subscription text, p_status text, p_plan text, p_interval text, p_period_end bigint,
+  p_canceling boolean default false)
+returns uuid
+language plpgsql security definer set search_path = timbro
+as $$
+declare v_biz uuid;
+begin
+  update businesses set stripe_subscription = p_subscription, billing_status = coalesce(p_status, ''),
+    billing_plan = coalesce(p_plan, ''), billing_interval = coalesce(p_interval, ''),
+    billing_period_end = case when p_period_end is null then null else to_timestamp(p_period_end) end,
+    trial_used = trial_used or p_status is not null, billing_canceling = coalesce(p_canceling, false)
+  where stripe_customer = p_customer returning id into v_biz;
+  if v_biz is not null and p_status in ('trialing', 'active', 'past_due') and p_plan in ('start', 'plus', 'pro') then
+    update cards set plan = p_plan where business_id = v_biz;
+  end if;
+  return v_biz;
+end $$;
 
 create table if not exists wallet_devices (
   device_id    text not null,
@@ -12,7 +30,7 @@ create table if not exists wallet_devices (
 create or replace function _pass_updated(m customers) returns bigint
 language sql stable set search_path = timbro
 as $$
-  select (extract(epoch from greatest(m.joined_at, c.updated_at,
+  select (extract(epoch from greatest(m.joined_at, c.updated_at, m.reminded_at,
     coalesce((select max(e.created_at) from events e where e.customer_id = m.id), m.joined_at))) * 1000)::bigint
   from cards c where c.id = m.card_id
 $$;
@@ -58,23 +76,9 @@ begin
     join cards c on c.id = m.card_id where m.id = upper(trim(p_code)) and c.business_id = d.business_id), '[]'::jsonb);
 end $$;
 
-grant usage on schema timbro to anon, authenticated;
+create table if not exists job_keys (
+  name  text primary key,
+  key   text not null default _token()
+);
 
-revoke all on all tables in schema timbro from anon, authenticated;
-
-revoke execute on all functions in schema timbro from public, anon, authenticated;
-
-grant execute on function get_card(text), join_card(text, text, text, text, date, boolean), get_my_card(text, text),
-  device_link(text, text), stamper_lookup(text, text), stamper_stamp(text, text, int), stamper_redeem(text, text),
-  wallet_register(text, text, text, text), wallet_unregister(text, text, text), wallet_updated(text, bigint), wallet_targets(text, text)
-  to anon, authenticated;
-
-grant execute on function owner_data(), owner_save_card(jsonb), owner_save_messages(text, jsonb), owner_send_design(text, text, jsonb, text, jsonb, jsonb),
-  owner_link_code(), owner_remove_device(uuid),
-  admin_cards(), admin_publish(text, jsonb), admin_ask_changes(text, text), admin_set_plan(text, text)
-  to authenticated;
-
-grant usage on schema timbro to service_role;
-
-grant execute on function stripe_business(uuid), stripe_set_customer(uuid, text),
-  stripe_sync(text, text, text, text, text, bigint, boolean), stripe_is_admin(uuid) to service_role;
+insert into job_keys (name) values ('reminders') on conflict (name) do nothing;

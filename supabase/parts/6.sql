@@ -1,5 +1,26 @@
--- Timbro database, part 6 of 7. Run the parts in order.
+-- Timbro database, part 6 of 8. Run the parts in order.
 set search_path = timbro, extensions;
+
+create or replace function admin_ask_changes(p_card_id text, p_reply text) returns jsonb
+language plpgsql security definer set search_path = timbro
+as $$
+declare c cards;
+begin
+  if not _is_admin() then raise exception 'Only Witkowski Design can reply.' using errcode = '42501'; end if;
+  update cards set review = coalesce(review, '{}'::jsonb) || jsonb_build_object('status', 'changes', 'reply', left(coalesce(p_reply, ''), 2000), 'at', (extract(epoch from now()) * 1000)::bigint)
+  where id = lower(p_card_id) returning * into c;
+  return _card_json(c, true);
+end $$;
+
+create or replace function admin_set_plan(p_card_id text, p_plan text) returns jsonb
+language plpgsql security definer set search_path = timbro
+as $$
+declare c cards;
+begin
+  if not _is_admin() then raise exception 'Only Witkowski Design can change plans.' using errcode = '42501'; end if;
+  update cards set plan = p_plan where id = lower(p_card_id) returning * into c;
+  return _card_json(c, true);
+end $$;
 
 create or replace function _clean_messages(m jsonb) returns jsonb
 language sql immutable
@@ -73,21 +94,3 @@ language sql security definer set search_path = timbro
 as $$ update businesses set stripe_customer = p_customer where id = p_business and stripe_customer is null $$;
 
 drop function if exists stripe_sync(text, text, text, text, text, bigint);   -- older version without p_canceling
-
-create or replace function stripe_sync(p_customer text, p_subscription text, p_status text, p_plan text, p_interval text, p_period_end bigint,
-  p_canceling boolean default false)
-returns uuid
-language plpgsql security definer set search_path = timbro
-as $$
-declare v_biz uuid;
-begin
-  update businesses set stripe_subscription = p_subscription, billing_status = coalesce(p_status, ''),
-    billing_plan = coalesce(p_plan, ''), billing_interval = coalesce(p_interval, ''),
-    billing_period_end = case when p_period_end is null then null else to_timestamp(p_period_end) end,
-    trial_used = trial_used or p_status is not null, billing_canceling = coalesce(p_canceling, false)
-  where stripe_customer = p_customer returning id into v_biz;
-  if v_biz is not null and p_status in ('trialing', 'active', 'past_due') and p_plan in ('start', 'plus', 'pro') then
-    update cards set plan = p_plan where business_id = v_biz;
-  end if;
-  return v_biz;
-end $$;

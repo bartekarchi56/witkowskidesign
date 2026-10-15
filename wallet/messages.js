@@ -58,12 +58,16 @@ export function fill(text, card, { name = '', left = 1, lang = 'it' } = {}) {
     .replace(/^\s*[,!]\s*/, '').replace(/\s+([!?,.])/g, '$1').replace(/\s{2,}/g, ' ').trim().replace(/^./, c => c.toUpperCase());
 }
 
-// The message a pass shows right now: an explicit notice from the server
-// (e.g. a reminder), else "reward ready" or "almost there" when they apply.
+// The customer was sent the daily reminder since their last visit (reminders_due in schema.sql).
+export const reminded = customer => Boolean(customer.remindedAt) && customer.remindedAt >= (customer.lastVisit || customer.joinedAt || 0);
+
+// The message a pass shows right now: an explicit notice from the server, else the
+// café's reminder until the next visit, else "reward ready" or "almost there" when they apply.
 export function currentMessage(card, customer, lang, notice) {
   if (notice) return str(notice, 140);
   const m = card.messages || readMessages({}), left = card.stampsNeeded - customer.stamps;
-  const rule = left <= 0 ? (m.ready.on && m.ready) : left <= m.close.left ? (m.close.on && m.close) : null;
+  const rule = left > 0 && m.remind.on && reminded(customer) ? m.remind
+    : left <= 0 ? (m.ready.on && m.ready) : left <= m.close.left ? (m.close.on && m.close) : null;
   const ml = msgLang(card, lang);
   return rule ? fill(rule[ml], card, { name: customer.name, left, lang: ml }) : '';
 }

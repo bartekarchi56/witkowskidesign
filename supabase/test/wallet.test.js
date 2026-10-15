@@ -107,6 +107,19 @@ try {
   assert.equal(new URL(last.body.heroImage.sourceUri.uri).searchParams.get('have'), '2');
   ok('Google Wallet: the saved card shows the café\'s pictures and gets the new stamp after the till\'s stamp');
 
+  // The daily reminder: a customer away longer than the café's days gets the café's own text, once.
+  await pool.query(`update timbro.customers set last_visit = now() - interval '30 days' where id = $1`, [me.id]);
+  const key = (await pool.query(`select key from timbro.job_keys where name = 'reminders'`)).rows[0].key;
+  assert.notEqual((await W('/reminders?key=wrong')).status, 200);
+  const rem = await (await W(`/reminders?key=${key}`)).json();
+  assert.equal(rem.reminded, 1); assert.equal(rem.google, 1);
+  const msg = patches.at(-1).body.messages[0];
+  assert.match(msg.body, /Bar Live/); assert.equal(msg.messageType, 'TEXT_AND_NOTIFY');
+  const withReminder = passJson(Buffer.from(await (await W(`/passkit/v1/passes/${PT}/${serial}`, { headers: auth })).arrayBuffer()));
+  assert.match(withReminder.storeCard.backFields.find(f => f.key === 'news').value, /Giulia.*Bar Live/);
+  assert.equal((await (await W(`/reminders?key=${key}`)).json()).reminded, 0);   // not again before the next visit
+  ok('the daily reminder carries the café\'s name to Apple and Google Wallet, once per visit');
+
   // Removing the pass.
   assert.equal((await W(`/passkit/v1/devices/dev1/registrations/${PT}/${serial}`, { method: 'DELETE', headers: auth })).status, 200);
   assert.equal(((await (await W('/notify', { method: 'POST', headers: { origin: ORIGIN }, body: JSON.stringify({ token: dev.token, code: me.id }) })).json()).phones), 0);

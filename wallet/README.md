@@ -117,5 +117,5 @@ Today a pass shows the message it was saved with. To update passes already in Wa
 
 1. **Apple:** done (see *Live updates* above): after each stamp the phone downloads the new pass and shows the message.
 2. **Google:** done (see *Live updates*).
-3. **Reminders:** a daily job (Supabase `pg_cron` or a scheduled function) finds customers whose last visit is older than the café's `remind.days` and who haven't been reminded since that visit, builds their pass with `notice` set to the reminder text (`buildApplePass({ ..., notice })`) and pushes it.
+3. **Reminders:** done. Once a day call `GET /reminders?key=<key>` (cron-job.org, around 11:00). The key is in the database: `select key from timbro.job_keys where name = 'reminders';` (`supabase/updates/10-reminders.sql`). The database picks customers who haven't been in for the café's chosen days (`messages.remind`, default 21) and haven't been reminded since their last visit, at most 300 a run, and marks them. iPhones get a push and the new pass shows the café's reminder text (with `{business}`, `{name}`, `{left}`, `{reward}` filled in) on the lock screen; Google cards get it as a notification. The reminder stays on the card until the next stamp.
 

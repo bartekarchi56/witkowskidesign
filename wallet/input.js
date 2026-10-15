@@ -32,6 +32,8 @@ export function readPassRequest(raw) {
     id: str(customer.id, 6).toUpperCase(),
     name: str(customer.name, 60) || 'Guest',
     stamps: Math.max(0, parseInt(customer.stamps, 10) || 0),
+    // Times (ms) for the reminder: shown from remindedAt until the next visit.
+    joinedAt: Math.max(0, +customer.joinedAt || 0), lastVisit: Math.max(0, +customer.lastVisit || 0), remindedAt: Math.max(0, +customer.remindedAt || 0),
     // The customer's own secret (database cards): it becomes the pass's token for live updates.
     secret: /^[a-f0-9]{48}$/.test(customer.secret || '') ? customer.secret : ''
   };

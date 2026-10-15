@@ -1,5 +1,17 @@
--- Timbro database, part 3 of 7. Run the parts in order.
+-- Timbro database, part 3 of 8. Run the parts in order.
 set search_path = timbro, extensions;
+
+create or replace function _card_json(c cards, with_review boolean default false) returns jsonb
+language sql stable
+as $$
+  select c.design || jsonb_build_object(
+    'id', c.id, 'business', c.business, 'city', c.city, 'type', c.type,
+    'title', c.title, 'reward', c.reward, 'titleEn', c.title_en, 'rewardEn', c.reward_en, 'lang', c.lang,
+    'stampsNeeded', c.stamps_needed, 'plan', c.plan, 'messages', c.messages,
+    'createdAt', (extract(epoch from c.created_at) * 1000)::bigint,
+    'updatedAt', (extract(epoch from c.updated_at) * 1000)::bigint
+  ) || case when with_review and c.review is not null then jsonb_build_object('review', c.review) else '{}'::jsonb end
+$$;
 
 create or replace function _customer_json(m customers, history_limit int default 5) returns jsonb
 language sql stable
@@ -8,6 +20,7 @@ as $$
     'id', m.id, 'cardId', m.card_id, 'name', m.name, 'stamps', m.stamps, 'redeemed', m.redeemed,
     'joinedAt', (extract(epoch from m.joined_at) * 1000)::bigint,
     'lastVisit', (extract(epoch from m.last_visit) * 1000)::bigint,
+    'remindedAt', (extract(epoch from m.reminded_at) * 1000)::bigint,
     'history', coalesce((
       select jsonb_agg(jsonb_build_object('t', (extract(epoch from e.created_at) * 1000)::bigint, 'type', e.type, 'n', e.n) order by e.created_at)
       from (select * from events where customer_id = m.id order by created_at desc limit history_limit) e
@@ -76,17 +89,3 @@ as $$
   from customers m join cards c on c.id = m.card_id
   where m.id = upper(p_code) and m.secret_hash = _hash(p_secret)
 $$;
-
-create or replace function device_link(p_code text, p_name text) returns jsonb
-language plpgsql security definer set search_path = timbro
-as $$
-declare
-  v_biz uuid; v_token text := _token(); v_name text;
-begin
-  delete from link_codes where expires_at < now();
-  delete from link_codes where code = upper(trim(p_code)) returning business_id into v_biz;
-  if v_biz is null then raise exception 'This code has expired or was already used. Ask the owner for a new one.' using errcode = '28000'; end if;
-  insert into devices (business_id, name, token_hash) values (v_biz, coalesce(nullif(left(trim(p_name), 40), ''), 'Cassa'), _hash(v_token));
-  select name into v_name from businesses where id = v_biz;
-  return jsonb_build_object('token', v_token, 'business', v_name);
-end $$;

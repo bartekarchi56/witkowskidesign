@@ -1,4 +1,4 @@
--- Timbro database, part 1 of 7. Run the parts in order.
+-- Timbro database, part 1 of 8. Run the parts in order.
 create extension if not exists pgcrypto with schema extensions;
 
 create schema if not exists timbro;
@@ -71,6 +71,8 @@ alter table customers add column if not exists birth_date date;
 
 alter table customers add column if not exists marketing  boolean not null default false;   -- agreed to news and offers
 
+alter table customers add column if not exists reminded_at timestamptz;                     -- last "we miss you" reminder
+
 create table if not exists devices (                           -- cashiers' phones
   id           uuid primary key default gen_random_uuid(),
   business_id  uuid not null references businesses(id) on delete cascade,
@@ -84,13 +86,4 @@ create table if not exists link_codes (                        -- one-time codes
   code         text primary key,
   business_id  uuid not null references businesses(id) on delete cascade,
   expires_at   timestamptz not null
-);
-
-create table if not exists events (
-  id           bigint generated always as identity primary key,
-  customer_id  text not null references customers(id) on delete cascade,
-  device_id    uuid references devices(id) on delete set null,
-  type         text not null check (type in ('joined','stamp','unstamp','redeem')),
-  n            int  not null default 1,
-  created_at   timestamptz not null default now()
 );
