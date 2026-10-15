@@ -84,11 +84,21 @@ Each card keeps its own look: card and strip colours, the name's font with an op
 
 The server draws the stamps from `stamps.cjs`, a copy of the website's `assets/js/stamps.js` (`npm test` fails if they differ: copy the website's file over it). Wallet apps draw text in their own font, so the website turns the name into an image (`logoAuto`) and sends it with the card. The lock-screen icon is the card's stamp.
 
-## What's not done yet (needs the database)
+## Live updates (Apple Wallet)
 
-- **Live updates.** A saved pass shows the stamps it had when it was added. To update it on every stamp:
-  - Apple: add `webServiceURL` + `authenticationToken` to the pass, implement Apple's PassKit web service endpoints (register device, list updated passes, send latest pass) and send an APNs push with the pass certificate after each stamp.
-  - Google: after each stamp, `PATCH` the loyalty object through the Google Wallet REST API.
+A pass added from a database card updates by itself after every stamp or reward:
+
+- The pass carries `webServiceURL` (`PUBLIC_URL` + `/passkit`) and an `authenticationToken`, which is the customer's own card secret. Demo cards (`DEMO_CARDS`, only on one phone) have neither and stay as they were saved.
+- This server implements Apple's PassKit web service under `/passkit/v1/...` (register, unregister, list updated passes, latest pass, log). Registrations live in the database table `timbro.wallet_devices` (`supabase/updates/8-wallet-updates.sql`).
+- After a stamp the till page calls `POST /notify` with its device token; the server asks the database which phones hold that customer's pass (`wallet_targets`, same café only) and sends each an empty APNs push with the Pass Type ID certificate. Wallet then downloads the new pass.
+- Passes saved before this existed have no update address: remove them from Wallet and add them again.
+- On Render's free plan the server sleeps after 15 minutes, so the first update after a pause can take up to a minute. Use the Starter plan for real cafés.
+
+Tested by `supabase/test/wallet.test.js` (needs the local Postgres from `supabase/README.md`).
+
+## What's not done yet
+
+- **Google Wallet live updates.** After each stamp, `PATCH` the loyalty object through the Google Wallet REST API.
 - **Trusting the browser.** Solved when `SUPABASE_URL` is set: the card and stamps come from the database. In demo mode the page still sends them, so keep `ALLOWED_ORIGINS` set.
 - **Uploaded logos on Google Wallet.** Google needs the logo at a public URL, so it uses the card's stamp for now. Apple uses the uploaded logo.
 - **Official buttons.** Apple and Google publish official "Add to Wallet" badge artwork with usage rules. Swap them in for the buttons in `app/card.html` before launch.
@@ -104,8 +114,7 @@ Each café writes its own messages in the dashboard (**Notifiche / Notifications
 
 Today a pass shows the message it was saved with. To update passes already in Wallet:
 
-1. **Host this server** (e.g. Render, Railway or Fly.io) and set `PUBLIC_URL`.
-2. **Apple:** add `webServiceURL` and an `authenticationToken` to each pass, implement Apple's PassKit web service on this server (register / unregister a device, list updated passes, return the latest pass, log), and store device registrations in the database. After each stamp, or when a message applies, send an empty push through APNs with the Pass Type ID certificate; the phone then downloads the new pass and shows the message.
-3. **Google:** after each stamp, PATCH the loyalty object; to notify, add a message with `messageType: TEXT_AND_NOTIFY` (Google allows a few per day per pass).
-4. **Reminders:** a daily job (Supabase `pg_cron` or a scheduled function) finds customers whose last visit is older than the café's `remind.days` and who haven't been reminded since that visit, builds their pass with `notice` set to the reminder text (`buildApplePass({ ..., notice })`) and pushes it.
+1. **Apple:** done (see *Live updates* above): after each stamp the phone downloads the new pass and shows the message.
+2. **Google:** after each stamp, PATCH the loyalty object; to notify, add a message with `messageType: TEXT_AND_NOTIFY` (Google allows a few per day per pass).
+3. **Reminders:** a daily job (Supabase `pg_cron` or a scheduled function) finds customers whose last visit is older than the café's `remind.days` and who haven't been reminded since that visit, builds their pass with `notice` set to the reminder text (`buildApplePass({ ..., notice })`) and pushes it.
 

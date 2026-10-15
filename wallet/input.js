@@ -30,7 +30,9 @@ export function readPassRequest(raw) {
   const m = {
     id: str(customer.id, 6).toUpperCase(),
     name: str(customer.name, 60) || 'Guest',
-    stamps: Math.max(0, parseInt(customer.stamps, 10) || 0)
+    stamps: Math.max(0, parseInt(customer.stamps, 10) || 0),
+    // The customer's own secret (database cards): it becomes the pass's token for live updates.
+    secret: /^[a-f0-9]{48}$/.test(customer.secret || '') ? customer.secret : ''
   };
   if (!/^[a-z0-9-]{1,40}$/.test(c.id)) throw new Error('Invalid card id');
   if (!/^[A-Z0-9]{6}$/.test(m.id)) throw new Error('Invalid customer code');

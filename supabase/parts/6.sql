@@ -91,7 +91,3 @@ begin
   end if;
   return v_biz;
 end $$;
-
-grant usage on schema timbro to anon, authenticated;
-
-revoke all on all tables in schema timbro from anon, authenticated;

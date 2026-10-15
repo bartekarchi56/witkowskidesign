@@ -73,6 +73,21 @@ assert.equal(await call(anon, 'stamper_lookup', { p_token: devB.token, p_code: j
 await rejects(call(anon, 'stamper_stamp', { p_token: devB.token, p_code: joined.id, p_delta: 1 }), /No customer/);
 ok('another café\'s phone cannot see or stamp this customer');
 
+// ---- live Wallet updates: phones register with the pass's token; only the café's till gets push tokens ----
+const wr = (secret, device = 'phone-1') => call(anon, 'wallet_register', { p_code: joined.id, p_secret: secret, p_device: device, p_push: 'push-abc' });
+assert.equal(await wr('wrong'), 401);
+assert.equal(await wr(joined.secret), 201);
+assert.equal(await wr(joined.secret), 200);
+const upd = await call(anon, 'wallet_updated', { p_device: 'phone-1', p_since: 0 });
+assert.deepEqual(upd.serialNumbers, [id + '-' + joined.id]); assert.ok(+upd.lastUpdated > 0);
+assert.deepEqual((await call(anon, 'wallet_updated', { p_device: 'phone-1', p_since: +upd.lastUpdated })).serialNumbers, []);
+assert.deepEqual(await call(anon, 'wallet_targets', { p_token: dev.token, p_code: joined.id }), ['push-abc']);
+assert.deepEqual(await call(anon, 'wallet_targets', { p_token: devB.token, p_code: joined.id }), []);
+await rejects(call(anon, 'wallet_targets', { p_token: 'nope', p_code: joined.id }), /not linked/);
+assert.equal(await call(anon, 'wallet_unregister', { p_code: joined.id, p_secret: joined.secret, p_device: 'phone-1' }), 200);
+assert.deepEqual(await call(anon, 'wallet_targets', { p_token: dev.token, p_code: joined.id }), []);
+ok('Wallet phones register with the pass token; only the café\'s own till can wake them');
+
 // ---- owner dashboard data ----
 const dataA = await call(users.ownerA, 'owner_data');
 assert.equal(dataA.cards.length, 1); assert.equal(dataA.customers.length, 1); assert.equal(dataA.devices.length, 1); assert.equal(dataA.isAdmin, false);
@@ -161,7 +176,7 @@ ok('cards keep their language and Polish messages; the designer can set the Chai
 // ---- no function is open by accident (Postgres lets PUBLIC run new functions) ----
 const open = async role => (await pool.query(`select coalesce(string_agg(p.proname, ',' order by p.proname), '') as f from pg_proc p
   join pg_namespace s on s.oid = p.pronamespace where s.nspname = 'timbro' and has_function_privilege($1, p.oid, 'execute')`, [role])).rows[0].f.split(',').filter(Boolean);
-const PUBLIC_FNS = ['device_link', 'get_card', 'get_my_card', 'join_card', 'stamper_lookup', 'stamper_redeem', 'stamper_stamp'];
+const PUBLIC_FNS = ['device_link', 'get_card', 'get_my_card', 'join_card', 'stamper_lookup', 'stamper_redeem', 'stamper_stamp', 'wallet_register', 'wallet_targets', 'wallet_unregister', 'wallet_updated'];
 assert.deepEqual(await open('anon'), PUBLIC_FNS);
 assert.deepEqual(await open('authenticated'), [...PUBLIC_FNS, 'admin_ask_changes', 'admin_cards', 'admin_publish', 'admin_set_plan',
   'owner_data', 'owner_link_code', 'owner_remove_device', 'owner_save_card', 'owner_save_messages', 'owner_send_design'].sort());

@@ -18,6 +18,14 @@
   const DEVICE = 'timbro:device';
   const ROOT = new URL('../../', document.currentScript.src);
 
+  // After a stamp, ask the wallet server (CONFIG.walletApi) to update the customer's
+  // pass in Apple Wallet. Fire and forget: the stamp itself is already saved.
+  function wakeWallet(code) {
+    if (!CONFIG.walletApi) return;
+    const token = (JSON.parse(localStorage.getItem(DEVICE) || '{}')).token;
+    fetch(CONFIG.walletApi.replace(/\/$/, '') + '/notify', { method: 'POST', headers: { 'content-type': 'text/plain' }, body: JSON.stringify({ token, code }) }).catch(() => {});
+  }
+
   async function rpc(fn, args = {}) {
     const { data, error } = await sb.rpc(fn, args);
     if (error) throw new Error(error.message || 'Something went wrong. Try again.');
@@ -54,8 +62,8 @@
     },
     unlinkDevice() { localStorage.removeItem(DEVICE); },
     lookup: code => rpc('stamper_lookup', { p_token: device().token, p_code: code }),
-    stamp: (code, delta) => rpc('stamper_stamp', { p_token: device().token, p_code: code, p_delta: delta }),
-    redeem: code => rpc('stamper_redeem', { p_token: device().token, p_code: code }),
+    stamp: (code, delta) => rpc('stamper_stamp', { p_token: device().token, p_code: code, p_delta: delta }).then(r => (wakeWallet(code), r)),
+    redeem: code => rpc('stamper_redeem', { p_token: device().token, p_code: code }).then(r => (wakeWallet(code), r)),
 
     // ---- owner login ----
     async session() { return (await sb.auth.getSession()).data.session; },

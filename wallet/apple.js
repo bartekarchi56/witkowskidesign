@@ -41,6 +41,8 @@ export async function buildApplePass({ card, customer, lang, notice }) {
       ]
     },
     barcodes: [{ format: 'PKBarcodeFormatQR', message: customer.id, messageEncoding: 'iso-8859-1', altText: customer.id }],
+    // Live updates (database cards only): Wallet asks this server for the new pass after each stamp.
+    ...(customer.secret && /^https:\/\//.test(settings.publicUrl) ? { webServiceURL: settings.publicUrl + '/passkit', authenticationToken: customer.secret } : {}),
     ...(near ? { locations: [near], maxDistance: 150 } : {})
   };
 
