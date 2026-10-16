@@ -47,7 +47,7 @@ Rebuild the files after changes: `node print/make-pdfs.js`, then `node print/mak
 
 ## Before Orsonero starts
 
-- **Wallet works.** Apple Wallet is live: the card updates by itself after every stamp. Google Wallet works too, for everyone once Google approves the publishing request (a few days after 15 October 2026). At the visit you can add their example card to your own iPhone: open the card link, join, tap "Add to Apple Wallet".
+- **Wallet works.** Apple Wallet is live: the card updates by itself after every stamp. Google Wallet works too, for every Android user (Google approved Timbro in October 2026). At the visit you can add their example card to your own iPhone: open the card link, join, tap "Add to Apple Wallet".
 - **The example card lives on your phone only.** `card.html?card=orsonero` is a demo: stamps you give on one phone don't show on another. For a live demo with the till and Wallet updates, use the Sowa card (`card.html?card=sowa`) with your linked till phone, or make their real card in your dashboard once they say yes.
 - **Reminders** ("we miss you" after 21 days, editable) are sent once a day by the cron job on cron-job.org (see `wallet/README.md`). Check it runs before their launch.
 - **Stripe is still in test mode.** Don't send them to the Plan tab yet. Witkowski Design starts on 1 November 2026: switch Stripe to live then (`supabase/STRIPE.md`), and their 30 free days start when they pick the plan.

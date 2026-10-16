@@ -35,7 +35,7 @@ The customer's card page (`app/card.html`) shows an "Add to Apple Wallet" or "Ad
 2. At **console.cloud.google.com**: create a project (e.g. `timbro`), enable the **Google Wallet API**, then *IAM & Admin > Service accounts > Create* (e.g. `timbro-wallet`, no roles needed). In the account, *Keys > Add key > JSON* downloads the key file. Keep it secret like `signer.key`.
 3. Back in the Wallet console, *Users > Invite a user*: the service account's email (`…@….iam.gserviceaccount.com`), access level *Developer*.
 4. On Render: *Environment > Secret Files* add `service-account.json` (paste the key file's text), and set `GOOGLE_ISSUER_ID`. `/health` then says `"google":true`.
-5. Until Google approves the issuer, only accounts added as test users in the Wallet console can save cards. When it works, ask for publishing access in the console (*Google Wallet API > Request publishing access*).
+5. Publishing access: approved for Witkowski Design (issuer `3388000000023221940`) in October 2026, so every Android user can save cards. (Before approval only test users in the Wallet console could.)
 
 ## Settings (environment variables)
 
