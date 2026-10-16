@@ -18,6 +18,31 @@
       "note": "English version of the price post"
     },
     {
+      "at": "2026-10-16 18:40",
+      "post": "post-wallet-live",
+      "type": "image"
+    },
+    {
+      "at": "2026-10-17 10:00",
+      "post": "carousel-doubts",
+      "type": "carousel"
+    },
+    {
+      "at": "2026-10-18 10:00",
+      "post": "post-reminder",
+      "type": "image"
+    },
+    {
+      "at": "2026-10-19 10:00",
+      "post": "post-apple-google",
+      "type": "image"
+    },
+    {
+      "at": "2026-10-20 10:00",
+      "post": "post-chains",
+      "type": "image"
+    },
+    {
       "at": "2026-11-02 09:30",
       "post": "ad-hero",
       "type": "image"
@@ -91,31 +116,6 @@
       "at": "2026-12-04 10:00",
       "post": "reel-ad-hero",
       "type": "reel"
-    },
-    {
-      "at": "2026-12-07 10:00",
-      "post": "post-wallet-live",
-      "type": "image"
-    },
-    {
-      "at": "2026-12-09 10:00",
-      "post": "carousel-doubts",
-      "type": "carousel"
-    },
-    {
-      "at": "2026-12-11 10:00",
-      "post": "post-reminder",
-      "type": "image"
-    },
-    {
-      "at": "2026-12-14 10:00",
-      "post": "post-apple-google",
-      "type": "image"
-    },
-    {
-      "at": "2026-12-16 10:00",
-      "post": "post-chains",
-      "type": "image"
     }
   ]
 }
