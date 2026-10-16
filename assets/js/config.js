@@ -42,7 +42,7 @@ window.CONFIG = {
     address: '',          // registered address, e.g. 'ul. ..., 00-000 Warszawa, Polska'
     vat: '',              // VAT / NIP / partita IVA
     email: '',            // contact for privacy and legal requests
-    country: '',          // country of registration, e.g. 'Polska' / 'Italia'; sets the applicable law
+    country: 'Polska',    // country of registration, e.g. 'Polska' / 'Italia'; sets the applicable law
     updated: '2026-10-15' // date shown as "last updated"
   },
 

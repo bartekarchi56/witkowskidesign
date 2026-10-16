@@ -11,6 +11,8 @@ Dashboard ──► stripe-portal ──► Billing portal     stripe-webhook �
 
 The four functions are in [`functions/`](functions). They run on Supabase (Edge Functions), in the same project as the database. **Your Stripe key lives only in Supabase's secrets**: never in the website, in GitHub or in a chat.
 
+**Status:** live since October 2026, on the Polish Stripe account (prices in EUR, payouts weekly on Monday, Radar Lite). Test changes in the account's sandbox first.
+
 Do everything first in Stripe's **test mode** (the "Test mode" switch in the Stripe dashboard), try it, then repeat steps 2, 4 and 5 in live mode.
 
 ## 1. Update the database
