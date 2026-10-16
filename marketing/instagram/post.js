@@ -14,7 +14,8 @@ const fs = require('fs'), path = require('path');
 const DIR = __dirname;
 const SITE = (process.env.SITE || 'https://timbro.witkowskidesign.com').replace(/\/$/, '');
 const API = (process.env.IG_API_BASE || 'https://graph.instagram.com/v21.0').replace(/\/$/, '');
-const USER = process.env.IG_USER_ID || '', TOKEN = process.env.IG_ACCESS_TOKEN || '';
+let USER = process.env.IG_USER_ID || '';
+const TOKEN = process.env.IG_ACCESS_TOKEN || '';
 const LATE = 2 * 864e5;   // posts more than 2 days late are skipped
 const args = process.argv.slice(2), dry = args.includes('--dry');
 const nowArg = args.includes('--now') ? args[args.indexOf('--now') + 1] : '';
@@ -124,7 +125,15 @@ async function publish(item, files, caption) {
   if (problems.length) console.log('Problems in schedule.json:\n  ' + problems.join('\n  '));
 
   if (!due.length) { console.log('Nothing due.'); process.exit(problems.length ? 1 : 0); }
-  if (!dry && (!USER || !TOKEN)) { console.log('Instagram is not connected yet (IG_USER_ID and IG_ACCESS_TOKEN secrets). Nothing posted.'); return; }
+  if (!dry && !TOKEN) { console.log('Instagram is not connected yet (IG_ACCESS_TOKEN secret). Nothing posted.'); return; }
+  // Ask Instagram which account the key belongs to (Instagram login), so a wrong IG_USER_ID can't break it.
+  if (!dry && !/graph\.facebook\.com/.test(API)) {
+    const me = await call('GET', 'me', { fields: 'user_id,username,account_type' });
+    if (USER && USER !== String(me.user_id)) console.log(`IG_USER_ID (${USER}) is not this key's account; using ${me.username}'s ID instead.`);
+    USER = String(me.user_id || me.id);
+    console.log(`Posting as @${me.username} (${me.account_type || 'account'}).`);
+  }
+  if (!dry && !USER) { console.log('Instagram is not connected yet (IG_USER_ID secret). Nothing posted.'); return; }
   let failed = problems.length > 0;
   for (const p of due) {
     if (now - utcOf(p.at, tz) > LATE) { console.log(`skip  ${p.at} ${p.post} (more than 2 days late)`); if (!dry) posted[key(p)] = { skipped: true }; continue; }

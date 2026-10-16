@@ -12,12 +12,13 @@ const api = http.createServer((req, res) => {
     if (p.access_token !== 'tok') { res.writeHead(400); return res.end('{"error":{"message":"bad token"}}'); }
     if (req.method === 'POST' && url.pathname === '/123/media') { const id = 'c' + (++n); calls.push({ kind: 'media', id, ...p }); return send({ id }); }
     if (req.method === 'POST' && url.pathname === '/123/media_publish') { calls.push({ kind: 'publish', ...p }); return send({ id: 'm' + p.creation_id }); }
+    if (req.method === 'GET' && url.pathname === '/me') return send({ user_id: '123', username: 'timbro.test', account_type: 'BUSINESS' });
     if (req.method === 'GET') { const id = url.pathname.slice(1); polls[id] = (polls[id] || 0) + 1; return send({ status_code: polls[id] < 2 ? 'IN_PROGRESS' : 'FINISHED' }); }
     res.writeHead(404); res.end('{}');
   });
 }).listen(0, () => {
   const posted = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ig-')), 'posted.json');
-  const env = { ...process.env, IG_USER_ID: '123', IG_ACCESS_TOKEN: 'tok', IG_API_BASE: `http://localhost:${api.address().port}`, IG_POLL_MS: '5', IG_POSTED: posted };
+  const env = { ...process.env, IG_USER_ID: '999', IG_ACCESS_TOKEN: 'tok', IG_API_BASE: `http://localhost:${api.address().port}`, IG_POLL_MS: '5', IG_POSTED: posted };
   const run = now => new Promise(done => require('child_process').execFile('node', [path.join(__dirname, 'post.js'), '--now', now], { env }, (err, out) => done(out)));
   (async () => {
     // Day one: three posts due by 18:30 (image, reel, carousel).
