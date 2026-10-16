@@ -41,7 +41,7 @@ window.CONFIG = {
     owner: 'Bartosz Witkowski',  // legal name (brochures use 'Bartek' from contact.name)
     address: '',          // registered address, e.g. 'ul. ..., 00-000 Warszawa, Polska'
     vat: '',              // VAT / NIP / partita IVA
-    email: '',            // contact for privacy and legal requests
+    email: 'bartek.archi56@gmail.com', // contact for privacy and legal requests
     country: 'Polska',    // country of registration, e.g. 'Polska' / 'Italia'; sets the applicable law
     updated: '2026-10-15' // date shown as "last updated"
   },
