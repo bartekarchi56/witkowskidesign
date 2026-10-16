@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Timbro cover</title>
+<link rel="stylesheet" href="../../../assets/css/base.css">
+<style>
+/* Facebook Page cover, 1640 x 624. Phones show only the middle (about x 265 to 1375),
+   so everything that matters sits there. Rendered by make-cover.js. */
+body{margin:0;background:#fff}
+#stage{position:relative;width:1640px;height:624px;overflow:hidden;background:var(--pop-wash)}
+.dots{position:absolute;inset:0;background-image:radial-gradient(color-mix(in srgb,var(--pop) 16%,transparent) 2.2px,transparent 2.6px);background-size:34px 34px;opacity:.7}
+.inner{position:absolute;left:290px;top:0;width:1060px;height:624px;display:grid;grid-template-columns:1fr 330px;gap:60px;align-items:center}
+.brandline{display:inline-flex;align-items:center;gap:12px;font-weight:800;font-stretch:125%;font-size:30px;letter-spacing:-.03em}
+.brandline .brand-mark{width:32px;height:32px;flex:0 0 32px}
+h1{font-weight:800;font-stretch:125%;letter-spacing:-.035em;font-size:64px;line-height:.98;margin:22px 0 18px}
+h1 em{font-style:normal;color:var(--pop)}
+.sub{font-size:24px;line-height:1.35;color:var(--ink-2);margin:0 0 26px;max-width:560px}
+.chips{display:flex;gap:10px;flex-wrap:wrap}
+.chips span{background:#fff;border:1.5px solid var(--ink);border-radius:999px;padding:9px 16px;font-weight:600;font-size:18px}
+.chips span.pop{background:var(--ink);color:#fff}
+.phonebox{align-self:start;margin-top:64px;transform:rotate(4deg)}
+.phonebox .phone{width:330px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="dots"></div>
+  <div class="inner">
+    <div>
+      <span class="brandline"><span class="brand-mark"></span>Timbro</span>
+      <h1>Your café's loyalty card, <em>on the phone.</em></h1>
+      <p class="sub">Customers scan a QR at the till and the card goes into Apple or Google Wallet. No app, no paper.</p>
+      <div class="chips"><span class="pop">30 days free</span><span>From €19 a month</span><span>timbro.witkowskidesign.com</span></div>
+    </div>
+    <div class="phonebox"><div class="phone"><div class="phone-screen" id="pass"></div></div></div>
+  </div>
+</div>
+<script src="../../../assets/vendor/qrcode.js"></script>
+<script src="../../../assets/js/config.js"></script>
+<script src="../../../assets/js/i18n.js"></script>
+<script src="../../../assets/js/stamps.js"></script>
+<script src="../../../assets/js/ui.js"></script>
+<script>
+I18N.lang = 'en';
+const card = { business: 'Your café', title: 'Coffee card', reward: 'a free coffee', stampsNeeded: 10, color: '#FFFFFF', ink: '#2B32FF', stamp: 'sole', font: 'sans', strip: '' };
+document.getElementById('pass').innerHTML = UI.renderPass(card, null, { stamps: 7, platform: 'apple' });
+document.fonts.ready.then(() => { window.READY = true; });
+</script>
+</body>
+</html>
