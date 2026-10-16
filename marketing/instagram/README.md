@@ -59,6 +59,28 @@ The reels have no sound on purpose: add a trending sound or music from Instagram
 
 Post the first three on the same day before you start sharing the page, so it doesn't look empty. Reply to every comment in the first hour.
 
+## Automatic posting
+
+A GitHub Action (`.github/workflows/instagram.yml`) runs every hour from 6:00 to 21:00 (Rome) and posts whatever [`schedule.json`](schedule.json) says is due, through Instagram's official API. Captions come from the **Captions** section below: the Italian text, the English text under it, then the Italian hashtags. What it posted is written to `posted.json`, so nothing goes out twice. A post more than 2 days late is skipped, never dumped.
+
+- **Add or move a post:** add a line to `schedule.json` (`at` in Rome time, `post` = the file name without extension, `type` = `image`, `carousel`, `reel` or `story`), or ask Claude.
+- **New images:** after `make.js`, run `node marketing/instagram/make-jpg.js` (Instagram's API takes JPEG only) and push at least 15 minutes before the post, so the website already serves the file.
+- **Check before it goes out:** `node marketing/instagram/post.js --dry --now "2026-11-02 12:45"` shows what would be posted at that time. `node marketing/instagram/test-post.js` tests the whole flow against a fake Instagram.
+- **Post now by hand:** GitHub > Actions > Instagram > Run workflow.
+
+### Connecting the account (once, about 30 minutes)
+
+1. **Professional account.** In the Instagram app: Settings > Account type and tools > Switch to professional account > Business.
+2. **Facebook Page.** Create a Page called Timbro (facebook.com/pages/create), then in the Instagram app: Edit profile > Page > connect it.
+3. **Business portfolio.** At business.facebook.com make a portfolio for Witkowski Design and add the Page and the Instagram account (Settings > Accounts).
+4. **App.** At developers.facebook.com: My Apps > Create app > Other > Business, linked to the portfolio. Add the product **Instagram** (API setup with Facebook login).
+5. **Key that never expires.** business.facebook.com > Settings > Users > System users > Add (Admin). Assign it the app, the Page and the Instagram account (full control). Then **Generate token**: pick the app, expiry **Never**, permissions `instagram_basic`, `instagram_content_publish`, `pages_show_list`, `pages_read_engagement`, `business_management`. Copy the token. It is a password: never in chat, email or the repo.
+6. **Instagram account ID.** At developers.facebook.com/tools/explorer paste the token and run `me/accounts?fields=instagram_business_account{id,username}`. The `id` next to your username is the account ID.
+7. **GitHub secrets.** In the repository: Settings > Secrets and variables > Actions > New repository secret: `IG_ACCESS_TOKEN` (the token) and `IG_USER_ID` (the ID).
+8. **Test.** Actions > Instagram > Run workflow. The log says "Nothing due" until the first date in `schedule.json`, or the post it published.
+
+GitHub may start an hourly run a few minutes late, and it pauses scheduled runs in a repository with no commits for 60 days.
+
 ## Captions
 
 Instagram allows at most 5 hashtags per post.

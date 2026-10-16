@@ -1,0 +1,24 @@
+{
+  "about": "What the GitHub Action (.github/workflows/instagram.yml) posts, and when (Rome time). type: image | carousel | reel | story. The file comes from jpg/<lang>/ (images, covers) or <lang>/ (reels); the caption from the README section that names the post. Posts more than 2 days late are skipped, not posted. See README.md, 'Automatic posting'.",
+  "timezone": "Europe/Rome",
+  "lang": "it",
+  "captions": ["it", "en"],
+  "posts": [
+    { "at": "2026-11-02 09:30", "post": "ad-hero", "type": "image" },
+    { "at": "2026-11-02 12:30", "post": "reel-stamps", "type": "reel" },
+    { "at": "2026-11-02 18:00", "post": "carousel-mistakes", "type": "carousel" },
+    { "at": "2026-11-04 10:00", "post": "post-intro", "type": "image" },
+    { "at": "2026-11-09 10:00", "post": "reel-showcase", "type": "reel" },
+    { "at": "2026-11-11 10:00", "post": "post-paper-vs-phone", "type": "image" },
+    { "at": "2026-11-13 10:00", "post": "reel-how", "type": "reel" },
+    { "at": "2026-11-16 10:00", "post": "carousel-tricks", "type": "carousel" },
+    { "at": "2026-11-18 10:00", "post": "reel-styles", "type": "reel" },
+    { "at": "2026-11-20 10:00", "post": "post-prices", "type": "image" },
+    { "at": "2026-11-23 10:00", "post": "reel-results", "type": "reel" },
+    { "at": "2026-11-25 10:00", "post": "post-not-just-coffee", "type": "image" },
+    { "at": "2026-11-27 10:00", "post": "reel-not-just-coffee", "type": "reel" },
+    { "at": "2026-11-30 10:00", "post": "reel-paper-to-phone", "type": "reel" },
+    { "at": "2026-12-02 10:00", "post": "post-prices", "type": "story" },
+    { "at": "2026-12-04 10:00", "post": "reel-ad-hero", "type": "reel" }
+  ]
+}
