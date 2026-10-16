@@ -141,6 +141,24 @@ html,body{margin:0;background:#CFCFCF}
 .st{display:grid;justify-items:center;gap:12px}
 .st svg{display:block}
 .st span{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#6E665A}
+
+/* lock screen and notifications */
+.lock{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#3B41FF 0%,#1B1F8A 48%,#0B0B0C 100%);color:#fff;box-shadow:0 40px 70px -30px rgba(20,26,110,.6)}
+.lock .lt{font:300 76px/1 -apple-system,"SF Pro Display",var(--font);text-align:center;letter-spacing:-.02em}
+.lock .ld{font:600 16px/1 -apple-system,"SF Pro Text",var(--font);text-align:center;opacity:.85}
+.notif{background:rgba(255,255,255,.86);color:#0B0B0C;border-radius:18px;padding:11px 13px;display:grid;grid-template-columns:38px 1fr auto;gap:2px 10px;align-items:start;font:14px/1.3 -apple-system,"SF Pro Text",var(--font);box-shadow:0 10px 30px -12px rgba(0,0,0,.45)}
+.notif .ni{grid-row:1/3;width:38px;height:38px;border-radius:9px;background:#0B0B0C;display:grid;align-content:center;gap:2px;padding:0 6px}
+.notif .ni i{display:block;height:4px;border-radius:2px}
+.notif b{font-weight:600}
+.notif small{color:#6B6B70;font-size:12px}
+.notif p{grid-column:2/4;margin:0}
+.locs2{display:grid;gap:14px}
+.locs2 .lr{display:grid;grid-template-columns:1fr auto;gap:6px 12px}
+.locs2 .lr b{font-size:19px;letter-spacing:-.01em}
+.locs2 .lr span{font:800 22px/1 var(--font);font-stretch:118%}
+.locs2 .bar{grid-column:1/-1;height:12px;border-radius:6px;background:var(--wash)}
+.locs2 .bar i{display:block;height:100%;border-radius:6px;background:var(--pop)}
+.locs2 small{grid-column:1/-1;color:var(--muted);font-size:14px}
 </style>
 </head>
 <body>
@@ -833,6 +851,89 @@ ASSETS['stamps-inks'] = { size: 'feed', build() {
   el(`<div class="abs lbl" style="left:36px;top:322px;color:#6E665A">${L('Sulla carta', 'On the card')}</div>`);
   const card = { ...YOUR, stampsNeeded: 10, color: '#FFFFFF', ink: '#2B32FF', stamp: 'ramo', strip: '#F2EDE1' };
   const c = solo(card, 300, '', { compact: true }); c.card.set(7); fit(c.el, 346, 640, -2);
+} };
+
+
+// ---------- newer posts: live Wallet, reminders, both wallets, doubts, chains ----------
+const WALLET_ICON = '<span class="ni"><i style="background:#39B54A"></i><i style="background:#F7B500"></i><i style="background:#F2552C"></i><i style="background:#2B8EF0"></i></span>';
+const notif = (title, text, when) => `<div class="notif">${WALLET_ICON}<b>${esc(title)}</b><small>${esc(when || L('ora', 'now'))}</small><p>${esc(text)}</p></div>`;
+
+ASSETS['post-wallet-live'] = { size: 'feed', build() {
+  stage.style.background = 'radial-gradient(110% 70% at 75% 70%, #F0F1FF 0%, #FFFFFF 62%)';
+  el(`<div class="abs lbl" style="left:36px;top:40px">${L('Novità', 'New')}</div>`);
+  el(`<h1 class="abs disp" style="left:36px;right:36px;top:62px;font-size:40px">${esc(L('La carta si aggiorna da sola.', 'The card updates itself.'))}</h1>`);
+  el(`<p class="abs body" style="left:36px;width:218px;top:176px;font-size:16px">${esc(L('Il barista timbra, e la carta nel Wallet del cliente cambia in un secondo. Niente da riaprire, niente da scaricare.', 'Staff add a stamp and the card in your customer\'s Wallet changes in a second. Nothing to reopen, nothing to download.'))}</p>`);
+  const card = { ...YOUR };
+  const ph = iphone(card, 'left:282px;top:184px;transform:rotate(4deg) scale(.6);transform-origin:top left');
+  ph.card.set(9);
+  el(`<div class="abs" style="left:28px;width:270px;top:398px;transform:rotate(-3deg)">${notif('Wallet', L(`${card.business}: timbri 9/10. Ancora 1 per ${card.reward}!`, `${card.business}: stamps 9/10. Just 1 to go for ${card.reward}!`))}</div>`);
+  el(`<div class="abs blue" style="left:84px;top:492px;width:100px;transform:rotate(-12deg)">${UI.inkStamp('TIMBRO · LIVE · TIMBRO · LIVE ·')}</div>`);
+  foot();
+} };
+
+ASSETS['post-reminder'] = { size: 'feed', build() {
+  el(`<h1 class="abs disp" style="left:36px;right:36px;top:40px;font-size:42px">${esc(L('Non passa da 3 settimane? Glielo ricorda la carta.', 'Not in for 3 weeks? The card reminds them.'))}</h1>`);
+  const lock = el(`<div class="lock" style="left:36px;right:36px;top:206px;height:330px;padding:26px 22px">
+    <div class="ld">${esc(new Date(2026, 10, 24).toLocaleDateString(lang === 'it' ? 'it-IT' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long' }))}</div>
+    <div class="lt" style="margin:6px 0 22px">10:30</div></div>`);
+  const text = UI.fillMessage(CONFIG.messages.remind[lang], { ...YOUR }, { name: 'Giulia', left: 2, lang });
+  lock.insertAdjacentHTML('beforeend', notif('Wallet · ' + YOUR.business, text));
+  el(`<p class="abs body" style="left:36px;right:36px;top:556px;font-size:16px">${esc(L('Il testo e i giorni li scegli tu, con il nome del tuo locale. Al massimo un promemoria per visita.', 'You choose the words and the days, with your café\'s name. At most one reminder per visit.'))}</p>`);
+  foot();
+} };
+
+ASSETS['post-apple-google'] = { size: 'feed', build() {
+  el(`<h1 class="abs disp" style="left:36px;right:36px;top:40px;font-size:44px">${esc(L('iPhone o Android? Tutti e due.', 'iPhone or Android? Both.'))}</h1>`);
+  el(`<p class="abs body" style="left:36px;right:36px;top:146px;font-size:17px">${esc(L('La stessa carta, nel Wallet che il cliente ha già.', 'The same card, in the Wallet your customer already has.'))}</p>`);
+  const card = { ...YOUR, stampsNeeded: 8 };
+  const a = solo(card, 300, 'left:24px;top:212px;transform:rotate(-4deg) scale(.78);transform-origin:top left', { compact: true }); a.card.set(5);
+  const g = solo(card, 300, 'left:282px;top:226px;transform:rotate(3deg) scale(.78);transform-origin:top left', { compact: true, platform: 'google' }); g.card.set(5);
+  el(`<div class="abs lbl" style="left:40px;top:196px">Apple Wallet</div>`);
+  el(`<div class="abs lbl" style="left:300px;top:210px">Google Wallet</div>`);
+  el(`<div class="abs ticks" style="left:36px;right:36px;top:520px;gap:10px">
+    <div style="font-size:18px"><b>✓</b>${esc(L('Si aggiorna da sola a ogni timbro', 'Updates itself with every stamp'))}</div>
+    <div style="font-size:18px"><b>✓</b>${esc(L('Niente app da scaricare', 'No app to download'))}</div></div>`);
+  foot();
+} };
+
+ASSETS['carousel-doubts'] = { size: 'feed', slides: 6, build(s) {
+  const D = [null,
+    [L('Devono scaricare un\'app?', 'Do customers need an app?'), L('No. Inquadrano il QR alla cassa e la carta va nel Wallet del telefono, su iPhone e Android.', 'No. They scan the QR at the till and the card goes into their phone\'s Wallet, on iPhone and Android.')],
+    [L('Serve un lettore o un tablet?', 'Do I need a reader or a tablet?'), L('No. Il barista timbra con il telefono che ha già, dal browser. Due secondi a cliente.', 'No. Staff stamp with the phone they already have, in the browser. Two seconds per customer.')],
+    [L('E chi non usa il Wallet?', 'What if they don\'t use Wallet?'), L('La carta si apre anche come pagina web, su qualsiasi telefono. La salvano nella schermata Home.', 'The card also opens as a web page on any phone. They save it to the home screen.')],
+    [L('Quanto ci vuole per partire?', 'How long does it take to start?'), L('Dieci minuti per creare la carta. Il poster per la cassa lo stampi subito.', 'Ten minutes to create the card. The till poster prints straight away.')]
+  ];
+  if (s === 1) {
+    el(`<div class="abs lbl" style="left:36px;top:40px">${L('Domande dei baristi', 'Questions from café owners')}</div>`);
+    el(`<h1 class="abs disp" style="left:36px;right:36px;top:70px;font-size:50px">${esc(L('4 dubbi prima di passare alla carta digitale.', '4 doubts before switching to a digital card.'))}</h1>`);
+    el(`<div class="abs" style="left:0;right:0;top:330px;text-align:center;font:800 210px/1 var(--font);font-stretch:118%;color:var(--pop)">?</div>`);
+    return foot(L('Scorri →', 'Swipe →'));
+  }
+  if (s === 6) return ctaSlide(L('Altri dubbi? Scrivici in DM.', 'More questions? Send us a DM.'), YOUR, 6);
+  const [title, body] = D[s - 1];
+  const top = Math.max(330, slideHead(s, 6, title, body) + 40);
+  if (s === 2) el(`<div class="abs poster" style="left:170px;top:${top}px;transform:rotate(-3deg)"><h4>${esc(L('Raccogli 10 timbri.', 'Collect 10 stamps.'))}</h4><div class="q">${UI.qrSvg(CONFIG.siteUrl)}</div><small>${esc(L('Inquadra il codice', 'Scan the code'))}</small></div>`);
+  else if (s === 3) el(`<div class="abs" style="left:36px;right:36px;top:${top + 10}px;display:flex;gap:18px;align-items:center">
+      <div class="hl-ic" style="width:150px;height:150px">${ICON.phone.replace('<svg', '<svg style="width:76px;height:76px"')}</div>
+      <div><div class="t-v" style="font:800 64px/1 var(--font);font-stretch:118%;color:var(--pop)">2&nbsp;s</div><div class="body" style="font-size:16px">${esc(L('per timbrare', 'to stamp'))}</div></div></div>`);
+  else if (s === 4) { const c = solo(YOUR, 300, '', { compact: true }); c.card.set(4); fit(c.el, top, 600, -3); }
+  else if (s === 5) el(`<div class="abs tile" style="left:36px;right:36px;top:${top + 6}px;display:flex;align-items:center;gap:20px">
+      <div class="t-v" style="font:800 96px/1 var(--font);font-stretch:118%;color:var(--pop)">10′</div>
+      <div class="body" style="font-size:17px">${esc(L('Nome, timbro, premio. Poi stampi il poster e sei pronto.', 'Name, stamp, reward. Then print the poster and you\'re ready.'))}</div></div>`);
+  foot(L('Scorri →', 'Swipe →'));
+} };
+
+ASSETS['post-chains'] = { size: 'feed', build() {
+  const ch = plan('chain');
+  el(`<div class="abs lbl" style="left:36px;top:40px">${esc(I18N.pick(ch).name)} · ${esc(I18N.pick(ch).for)}</div>`);
+  el(`<h1 class="abs disp" style="left:36px;right:36px;top:62px;font-size:42px">${esc(L('Più sedi, una carta. E i numeri di ognuna.', 'Many locations, one card. And numbers for each.'))}</h1>`);
+  const rows = [[L('Centro', 'Centre'), 291, 84, 20], [L('Stazione', 'Station'), 199, 66, 7], [L('Porta Nuova', 'Old Town'), 179, 63, 9]];
+  el(`<div class="abs tile locs2" style="left:36px;right:36px;top:212px;padding:18px 22px">
+    <div class="lbl">${L('Visite timbrate · 30 giorni (esempio)', 'Stamped visits · 30 days (example)')}</div>
+    ${rows.map(([n, v, c, r]) => `<div class="lr"><b>${esc(n)}</b><span>${v}</span><div class="bar"><i style="width:${Math.round(v / 291 * 100)}%"></i></div><small>${c} ${L('clienti', 'customers')} · ${r} ${L('premi', 'rewards')}</small></div>`).join('')}</div>`);
+  el(`<div class="abs" style="left:36px;right:36px;top:556px;display:flex;gap:14px;align-items:center"><span class="pill">${esc(L(`Da ${money(ch.month)} a sede al mese`, `From ${money(ch.month)} per location a month`))}</span>
+    <span class="body" style="font-size:15px">${esc(L('Prova in alcune sedi prima.', 'Pilot in a few first.'))}</span></div>`);
+  foot();
 } };
 
 // ---------- run ----------

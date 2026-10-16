@@ -9,7 +9,7 @@ FFMPEG=/path/to/ffmpeg node marketing/instagram/make.js          # everything
 FFMPEG=/path/to/ffmpeg node marketing/instagram/make.js reel-how # one asset
 ```
 
-Milan cafés mostly read Italian: post the `it/` version with the Italian caption, and put the English caption underneath if you like.
+The account posts in English: the `en/` images with the English caption (`schedule.json`: `"lang": "en"`, `"captions": ["en"]`). The Italian versions stay here if that ever changes.
 
 ## The files
 
@@ -32,6 +32,11 @@ Milan cafés mostly read Italian: post the `it/` version with the Italian captio
 | `reel-results.mp4` | Reel 9:16, 11.5 s | What the café sees (example data) |
 | `reel-how.mp4` | Reel 9:16, 13 s | How it works in 3 steps |
 | `reel-not-just-coffee.mp4` | Reel 9:16, 11.8 s | Four other kinds of shops |
+| `post-wallet-live.png` | Feed 4:5 | The card updates itself: iPhone, lock-screen notification, 9/10 |
+| `post-reminder.png` | Feed 4:5 | The automatic "we miss you" reminder on a lock screen, with the café's name |
+| `post-apple-google.png` | Feed 4:5 | The same card in Apple Wallet and Google Wallet |
+| `carousel-doubts-1…6.png` | Carousel 4:5 | 4 doubts before switching: app, reader, no Wallet, time to start |
+| `post-chains.png` | Feed 4:5 | Chains: visits per location (example numbers) and the per-location price |
 | `reel-*-cover.png` | 9:16 | Cover image for each reel |
 | `brand/profile.png` | 1:1 | Profile picture (the Timbro stamp) |
 | `brand/highlight-*.png` | 9:16 | Highlight covers: how, prices, examples, faq, contact |
@@ -312,6 +317,79 @@ Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9
 > Gelato shops, cocktail bars, bakeries, salons: anywhere customers come back. Tag a place that needs this 👇
 >
 > #gelato #cocktailbar #bakery #hairsalon #smallbusiness
+
+### post-wallet-live
+**IT**
+> La carta si aggiorna da sola ✨
+> Il barista timbra e la carta nel Wallet del cliente cambia in un secondo: niente da riaprire, niente app. Quando manca un timbro, arriva anche l'avviso sul telefono.
+> 30 giorni gratis: link in bio.
+>
+> #cartafedeltà #applewallet #barmilano #caffè #piccoleimprese
+
+**EN**
+> The card updates itself ✨
+> Staff add a stamp and the card in your customer's Wallet changes in a second: nothing to reopen, no app. One stamp away? Their phone tells them.
+> 30 days free: link in bio.
+>
+> #loyaltycard #applewallet #coffeeshop #smallbusiness #cafe
+
+### carousel-doubts
+**IT**
+> Le 4 domande che ci fanno tutti i baristi, con le risposte brevi 👇
+> App? Tablet? E chi non usa il Wallet? Scorri, e se hai un altro dubbio scrivici in DM.
+>
+> #cartafedeltà #barmilano #baristi #piccoleimprese #milano
+
+**EN**
+> The 4 questions every café owner asks us, with short answers 👇
+> An app? A tablet? What if they don't use Wallet? Swipe, and if you have another question, send us a DM.
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #cafe #milan
+
+### post-reminder
+**IT**
+> Il cliente non passa da tre settimane? Glielo ricorda la carta, da sola 📲
+> Un promemoria sul telefono con il nome del tuo bar e quanti timbri mancano. Il testo e i giorni li scegli tu, e arriva al massimo una volta per visita.
+> Link in bio.
+>
+> #cartafedeltà #fidelizzazione #barmilano #marketingbar #piccoleimprese
+
+**EN**
+> A regular hasn't been in for three weeks? The card reminds them, by itself 📲
+> A note on their phone with your café's name and how many stamps are left. You choose the words and the days, and it comes at most once per visit.
+> Link in bio.
+>
+> #loyaltycard #customerloyalty #cafemarketing #coffeeshopowner #smallbusiness
+
+### post-apple-google
+**IT**
+> iPhone o Android? Tutti e due ✅
+> La stessa carta finisce nel Wallet che il cliente ha già, Apple o Google, e si aggiorna a ogni timbro. Niente app da scaricare.
+> 30 giorni gratis: link in bio.
+>
+> #cartafedeltà #applewallet #googlewallet #barmilano #caffè
+
+**EN**
+> iPhone or Android? Both ✅
+> The same card goes into the Wallet your customer already has, Apple or Google, and updates with every stamp. No app to download.
+> 30 days free: link in bio.
+>
+> #loyaltycard #applewallet #googlewallet #coffeeshop #smallbusiness
+
+### post-chains
+**IT**
+> Più sedi, una sola carta, e i numeri di ognuna 📊
+> I clienti timbrano in qualsiasi sede; tu vedi visite, clienti e premi sede per sede. Per le catene da 11 sedi: da 8 € a sede al mese, con una prova in alcune sedi prima di partire.
+> Scrivici in DM o dal link in bio.
+>
+> #cartafedeltà #franchising #catene #ristorazione #retail
+
+**EN**
+> Many locations, one card, and numbers for each 📊
+> Customers collect stamps at any location; you see visits, customers and rewards shop by shop. For chains of 11 locations or more: from €8 per location a month, with a pilot in a few locations first.
+> DM us or use the link in bio.
+>
+> #loyaltycard #franchise #retail #hospitality #multiunit
 
 ## Keep it honest
 

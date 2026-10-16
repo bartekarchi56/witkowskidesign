@@ -1,9 +1,8 @@
 {
   "about": "What the GitHub Action (.github/workflows/instagram.yml) posts, and when (Rome time). type: image | carousel | reel | story. The file comes from jpg/<lang>/ (images, covers) or <lang>/ (reels); the caption from the README section that names the post. Posts more than 2 days late are skipped, not posted. See README.md, 'Automatic posting'.",
   "timezone": "Europe/Rome",
-  "lang": "it",
+  "lang": "en",
   "captions": [
-    "it",
     "en"
   ],
   "posts": [
@@ -11,6 +10,12 @@
       "at": "2026-10-16 18:29",
       "post": "post-prices",
       "type": "image"
+    },
+    {
+      "at": "2026-10-16 18:38",
+      "post": "post-prices",
+      "type": "image",
+      "note": "English version of the price post"
     },
     {
       "at": "2026-11-02 09:30",
@@ -86,6 +91,31 @@
       "at": "2026-12-04 10:00",
       "post": "reel-ad-hero",
       "type": "reel"
+    },
+    {
+      "at": "2026-12-07 10:00",
+      "post": "post-wallet-live",
+      "type": "image"
+    },
+    {
+      "at": "2026-12-09 10:00",
+      "post": "carousel-doubts",
+      "type": "carousel"
+    },
+    {
+      "at": "2026-12-11 10:00",
+      "post": "post-reminder",
+      "type": "image"
+    },
+    {
+      "at": "2026-12-14 10:00",
+      "post": "post-apple-google",
+      "type": "image"
+    },
+    {
+      "at": "2026-12-16 10:00",
+      "post": "post-chains",
+      "type": "image"
     }
   ]
 }
