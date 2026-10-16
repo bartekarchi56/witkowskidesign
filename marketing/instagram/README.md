@@ -68,16 +68,19 @@ A GitHub Action (`.github/workflows/instagram.yml`) runs every hour from 6:00 to
 - **Check before it goes out:** `node marketing/instagram/post.js --dry --now "2026-11-02 12:45"` shows what would be posted at that time. `node marketing/instagram/test-post.js` tests the whole flow against a fake Instagram.
 - **Post now by hand:** GitHub > Actions > Instagram > Run workflow.
 
-### Connecting the account (once, about 30 minutes)
+### Connecting the account (once, about 20 minutes)
 
-1. **Professional account.** In the Instagram app: Settings > Account type and tools > Switch to professional account > Business.
-2. **Facebook Page.** Create a Page called Timbro (facebook.com/pages/create), then in the Instagram app: Edit profile > Page > connect it.
-3. **Business portfolio.** At business.facebook.com make a portfolio for Witkowski Design and add the Page and the Instagram account (Settings > Accounts).
-4. **App.** At developers.facebook.com: My Apps > Create app > Other > Business, linked to the portfolio. Add the product **Instagram** (API setup with Facebook login).
-5. **Key that never expires.** business.facebook.com > Settings > Users > System users > Add (Admin). Assign it the app, the Page and the Instagram account (full control). Then **Generate token**: pick the app, expiry **Never**, permissions `instagram_basic`, `instagram_content_publish`, `pages_show_list`, `pages_read_engagement`, `business_management`. Copy the token. It is a password: never in chat, email or the repo.
-6. **Instagram account ID.** At developers.facebook.com/tools/explorer paste the token and run `me/accounts?fields=instagram_business_account{id,username}`. The `id` next to your username is the account ID.
-7. **GitHub secrets.** In the repository: Settings > Secrets and variables > Actions > New repository secret: `IG_ACCESS_TOKEN` (the token) and `IG_USER_ID` (the ID).
-8. **Test.** Actions > Instagram > Run workflow. The log says "Nothing due" until the first date in `schedule.json`, or the post it published.
+This uses Instagram's own login, so no Facebook Page is needed. The account must be professional (Business or Creator).
+
+1. **Developer account.** Go to developers.facebook.com and log in (register as a developer if it asks).
+2. **App.** My Apps > Create app. Name: `Timbro poster`. Use case: **Manage messaging and content on Instagram**. Skip linking a business portfolio if it asks, then Create.
+3. **Connect Instagram.** In the app: Instagram > **API setup with Instagram login** > Generate access tokens > **Add account**, and log in with Timbro's Instagram. If it asks for a tester first: App roles > Roles > Add Instagram tester, then accept it in the Instagram app (Settings > Apps and websites > Tester invites).
+4. **Copy two things.** Next to the account: its **Instagram user ID** (a long number), and **Generate token** gives the key. The key is a password: never in chat, email or the repo.
+5. **GitHub secrets.** In the repository: Settings > Secrets and variables > Actions > New repository secret: `IG_ACCESS_TOKEN` (the key) and `IG_USER_ID` (the ID).
+6. **Key renewal.** The key lasts 60 days; `.github/workflows/instagram-token.yml` renews it every Monday. So that it can save a renewed key: github.com/settings/personal-access-tokens > Generate new token (fine-grained), only this repository, permission **Secrets: Read and write**, expiry 1 year. Save it as a third secret, `GH_SECRETS_TOKEN`.
+7. **Test.** Actions > **Instagram key** > Run workflow (should say the key is valid for about 60 days), then Actions > **Instagram** > Run workflow (says "Nothing due" until the first date in `schedule.json`).
+
+With a key made through a Facebook Page and a Meta system user instead (never expires), add the repository variable `IG_API_BASE` = `https://graph.facebook.com/v21.0`; the renewal job is then not needed.
 
 GitHub may start an hourly run a few minutes late, and it pauses scheduled runs in a repository with no commits for 60 days.
 

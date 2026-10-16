@@ -7,12 +7,13 @@
 //   node marketing/instagram/post.js --dry --now "2026-11-02 12:45"
 //
 // Settings (GitHub secrets): IG_USER_ID, IG_ACCESS_TOKEN. Optional: IG_API_BASE
-// (default https://graph.facebook.com/v21.0), SITE (where the files are public).
+// (default https://graph.instagram.com/v21.0, Instagram login; https://graph.facebook.com/v21.0
+// for a key made through a Facebook Page), SITE (where the files are public).
 const fs = require('fs'), path = require('path');
 
 const DIR = __dirname;
 const SITE = (process.env.SITE || 'https://timbro.witkowskidesign.com').replace(/\/$/, '');
-const API = (process.env.IG_API_BASE || 'https://graph.facebook.com/v21.0').replace(/\/$/, '');
+const API = (process.env.IG_API_BASE || 'https://graph.instagram.com/v21.0').replace(/\/$/, '');
 const USER = process.env.IG_USER_ID || '', TOKEN = process.env.IG_ACCESS_TOKEN || '';
 const LATE = 2 * 864e5;   // posts more than 2 days late are skipped
 const args = process.argv.slice(2), dry = args.includes('--dry');

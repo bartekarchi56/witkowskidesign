@@ -1,0 +1,21 @@
+# Renews the Instagram key every week (keys last 60 days) and saves a new one into the
+# IG_ACCESS_TOKEN secret. Needs the GH_SECRETS_TOKEN secret (marketing/instagram/README.md).
+name: Instagram key
+on:
+  schedule:
+    - cron: '30 4 * * 1'   # Mondays, 5:30 in Rome
+  workflow_dispatch: {}
+jobs:
+  renew:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-save libsodium-wrappers@0.7.15
+      - name: Renew the key
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_SECRETS_TOKEN: ${{ secrets.GH_SECRETS_TOKEN }}
+        run: node marketing/instagram/refresh-token.js
