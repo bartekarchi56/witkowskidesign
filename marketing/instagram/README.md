@@ -66,7 +66,7 @@ Post the first three on the same day before you start sharing the page, so it do
 
 ## Automatic posting
 
-A GitHub Action (`.github/workflows/instagram.yml`) runs every hour from 6:00 to 21:00 (Rome) and posts whatever [`schedule.json`](schedule.json) says is due, through Instagram's official API. Captions come from the **Captions** section below: the Italian text, the English text under it, then the Italian hashtags. What it posted is written to `posted.json`, so nothing goes out twice. A post more than 2 days late is skipped, never dumped.
+A GitHub Action (`.github/workflows/instagram.yml`) runs every 30 minutes during the day and posts whatever [`schedule.json`](schedule.json) says is due, through Instagram's official API. Captions come from the **Captions** section below: the Italian text, the English text under it, then the Italian hashtags. What it posted is written to `posted.json`, so nothing goes out twice. A post more than 2 days late is skipped, never dumped.
 
 - **Add or move a post:** add a line to `schedule.json` (`at` in Rome time, `post` = the file name without extension, `type` = `image`, `carousel`, `reel` or `story`), or ask Claude.
 - **New images:** after `make.js`, run `node marketing/instagram/make-jpg.js` (Instagram's API takes JPEG only) and push at least 15 minutes before the post, so the website already serves the file.
@@ -87,7 +87,7 @@ This uses Instagram's own login, so no Facebook Page is needed. The account must
 
 With a key made through a Facebook Page and a Meta system user instead (never expires), add the repository variable `IG_API_BASE` = `https://graph.facebook.com/v21.0`; the renewal job is then not needed.
 
-GitHub may start an hourly run a few minutes late, and it pauses scheduled runs in a repository with no commits for 60 days.
+GitHub often starts scheduled runs late (sometimes by an hour), and it pauses scheduled runs in a repository with no commits for 60 days. For exact times, let cron-job.org start the job: make a fine-grained GitHub token for this repository with **Actions: Read and write**, then a cron-job.org job (every 30 minutes) with URL `https://api.github.com/repos/bartekarchi56/witkowskidesign/actions/workflows/instagram.yml/dispatches`, method **POST**, headers `Authorization: Bearer <token>`, `Accept: application/vnd.github+json`, and body `{"ref":"claude/loopy-loyalty-pricing-redesign-yg54mp"}`. GitHub answers 204 when it starts.
 
 ## Captions
 

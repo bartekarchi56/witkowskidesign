@@ -4,7 +4,7 @@
 name: Instagram
 on:
   schedule:
-    - cron: '7 5-20 * * *'   # every hour, 6:07 to 21:07 in Rome (winter time)
+    - cron: '7,37 5-20 * * *'   # every 30 minutes, about 7:07 to 22:37 in Rome (GitHub often starts these late)
   workflow_dispatch: {}
 permissions:
   contents: write
