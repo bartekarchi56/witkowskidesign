@@ -100,7 +100,7 @@
     },
     pl: {
       'pass.collect': ({ n }) => `Zbierz ${n} ${I18N.plural(+n, ['pieczątkę', 'pieczątki', 'pieczątek'])}: {reward}`,
-      'pass.ready': 'Nagroda gotowa: pokaż ją przy kasie',
+      'pass.ready': 'Nagroda gotowa: pokaż kartę przy kasie',
       'pass.show': 'Pokaż przy kasie',
       'pass.stamps': 'Pieczątki', 'pass.reward': 'Nagroda', 'pass.member': 'Klient', 'pass.card': 'Karta', 'pass.tap': 'Dotknij ···, aby zobaczyć szczegóły',
       'pass.aria': '{title}: {have} z {need} pieczątek',

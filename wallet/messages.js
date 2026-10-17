@@ -8,10 +8,10 @@ export const DEFAULTS = {
   near: { on: false, it: 'Sei vicino a {business}: ancora {left} per {reward}.', en: 'You are near {business}: {left} to go for {reward}.' }
 };
 const PL = {
-  close: 'Jeszcze {left} do nagrody: {reward}! {business} czeka na Ciebie.',
+  close: 'Jeszcze {left} i odbierasz nagrodę: {reward}. {business} czeka na Ciebie!',
   ready: '{name}, Twoja nagroda czeka: {reward}. Pokaż kartę przy kasie.',
-  remind: 'Cześć {name}! Jeszcze {left} do nagrody: {reward}. {business} czeka na Ciebie.',
-  near: 'Jesteś blisko: {business}. Jeszcze {left} do nagrody: {reward}.'
+  remind: 'Cześć {name}! Jeszcze {left} i odbierasz nagrodę: {reward}. Wpadnij, {business} czeka na Ciebie.',
+  near: '{business} jest tuż obok! Jeszcze {left} i odbierasz nagrodę: {reward}.'
 };
 for (const k of Object.keys(PL)) DEFAULTS[k].pl = PL[k];
 

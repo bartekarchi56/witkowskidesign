@@ -51,13 +51,13 @@ window.CONFIG = {
   // A card shows them in its own language (card.lang) and in English to visitors browsing in English.
   messages: {
     close:  { on: true, left: 1, it: 'Ancora {left} per {reward}! Ti aspettiamo da {business}.', en: 'Just {left} to go for {reward}! See you at {business}.',
-              pl: 'Jeszcze {left} do nagrody: {reward}! {business} czeka na Ciebie.' },
+              pl: 'Jeszcze {left} i odbierasz nagrodę: {reward}. {business} czeka na Ciebie!' },
     ready:  { on: true, it: '{name}, il tuo premio è pronto: {reward}. Mostra la carta alla cassa.', en: '{name}, your reward is ready: {reward}. Show your card at the till.',
               pl: '{name}, Twoja nagroda czeka: {reward}. Pokaż kartę przy kasie.' },
     remind: { on: true, days: 21, it: 'Ciao {name}! Ancora {left} per {reward}. Passa a trovarci da {business}.', en: 'Hi {name}! Just {left} to go for {reward}. Come and see us at {business}.',
-              pl: 'Cześć {name}! Jeszcze {left} do nagrody: {reward}. {business} czeka na Ciebie.' },
+              pl: 'Cześć {name}! Jeszcze {left} i odbierasz nagrodę: {reward}. Wpadnij, {business} czeka na Ciebie.' },
     near:   { on: false, it: 'Sei vicino a {business}: ancora {left} per {reward}.', en: 'You are near {business}: {left} to go for {reward}.',
-              pl: 'Jesteś blisko: {business}. Jeszcze {left} do nagrody: {reward}.' }
+              pl: '{business} jest tuż obok! Jeszcze {left} i odbierasz nagrodę: {reward}.' }
   },
 
   currency: '€',
@@ -73,11 +73,11 @@ window.CONFIG = {
     { id: 'start', design: 'self', month: 19, locations: 1, cards: 1, staff: 3,
       it: { name: 'Start', for: 'Un bar, una sede', extras: ['Personalizzi tu logo, colori, sfondo e timbro', 'Poster e QR da stampare', 'Piano di lancio di 7 giorni', 'Post Instagram pronti'] },
       en: { name: 'Start', for: 'One café, one location', extras: ['Customise logo, colours, background and stamp', 'Printable poster and QR code', '7-day launch plan', 'Ready-made Instagram posts'] },
-      pl: { name: 'Start', for: 'Jedna kawiarnia, jeden lokal', extras: ['Sam ustawiasz logo, kolory, tło i pieczątkę', 'Plakat i kod QR do wydruku', '7-dniowy plan startu', 'Gotowe posty na Instagram'] } },
+      pl: { name: 'Start', for: 'Jeden lokal', extras: ['Sam ustawiasz logo, kolory, tło i pieczątkę', 'Plakat i kod QR do wydruku', '7-dniowy plan startu', 'Gotowe posty na Instagrama'] } },
     { id: 'plus', design: 'custom', month: 39, locations: 3, cards: 3, staff: 10, popular: true,
       it: { name: 'Plus', for: 'Vuoi che ci pensiamo noi', extras: ['Tutto di Start', 'Carta disegnata su misura da noi', 'Kit stampato a casa tua', 'Nuovi post e messaggi ogni mese'] },
       en: { name: 'Plus', for: 'You want us to handle it', extras: ['Everything in Start', 'Card custom-designed by us', 'Printed kit sent to you', 'New posts and messages every month'] },
-      pl: { name: 'Plus', for: 'Chcesz, żebyśmy zajęli się wszystkim', extras: ['Wszystko z planu Start', 'Karta zaprojektowana przez nas', 'Wydrukowany zestaw wysłany do Ciebie', 'Nowe posty i wiadomości co miesiąc'] } },
+      pl: { name: 'Plus', for: 'Chcesz, żebyśmy zajęli się wszystkim', extras: ['Wszystko z planu Start', 'Karta zaprojektowana przez nas', 'Wydrukowane materiały z wysyłką do Ciebie', 'Nowe posty i wiadomości co miesiąc'] } },
     { id: 'pro', design: 'custom', month: 79, locations: 10, cards: 10, staff: 50,
       it: { name: 'Pro', for: 'Più sedi', extras: ['Tutto di Plus', 'Statistiche per sede', 'Esporta i clienti in Excel', 'Assistenza prioritaria su WhatsApp'] },
       en: { name: 'Pro', for: 'Several locations', extras: ['Everything in Plus', 'Stats per location', 'Export customers to Excel', 'Priority WhatsApp support'] },
@@ -85,7 +85,7 @@ window.CONFIG = {
     { id: 'chain', design: 'custom', month: 8, contact: true, locations: 0, cards: 0, staff: 0,
       it: { name: 'Catene', for: 'Da 11 sedi in su', extras: ['Tutto di Pro', 'Prezzo per sede, con sconto sui volumi', 'Prova in alcune sedi prima di partire', 'Avvio, formazione e kit per ogni sede', 'Contratto, fattura e accordo GDPR'] },
       en: { name: 'Chains', for: '11 locations or more', extras: ['Everything in Pro', 'Price per location, with volume discounts', 'Pilot in a few locations first', 'Setup, training and a kit for every location', 'Contract, invoice and GDPR agreement'] },
-      pl: { name: 'Sieci', for: 'Od 11 lokali', extras: ['Wszystko z planu Pro', 'Cena za lokal, z rabatem za skalę', 'Najpierw pilotaż w kilku lokalach', 'Wdrożenie, szkolenie i zestaw dla każdego lokalu', 'Umowa, faktura i umowa powierzenia danych (RODO)'] } }
+      pl: { name: 'Sieci', for: 'Od 11 lokali', extras: ['Wszystko z planu Pro', 'Cena za lokal, niższa przy większej sieci', 'Najpierw pilotaż w kilku lokalach', 'Wdrożenie, szkolenie i zestaw dla każdego lokalu', 'Umowa, faktura i umowa powierzenia przetwarzania danych (RODO)'] } }
   ],
 
   // Card styles. A style sets the whole look; every part can still be changed.
@@ -116,7 +116,7 @@ window.CONFIG = {
     { id: 'pasticceria', icon: 'cake', stamps: 8, color: '#FFFFFF',
       it: { type: 'Pasticceria', title: 'Carta dolce', reward: 'una brioche gratis' },
       en: { type: 'Bakery', title: 'Pastry card', reward: 'a free pastry' },
-      pl: { type: 'Cukiernia', title: 'Karta słodka', reward: 'darmowe ciastko' } },
+      pl: { type: 'Cukiernia', title: 'Słodka karta', reward: 'darmowe ciastko' } },
     { id: 'aperitivo', icon: 'glass', stamps: 8, color: '#0B0B0C',
       it: { type: 'Aperitivo', title: 'Carta aperitivo', reward: 'uno spritz gratis' },
       en: { type: 'Cocktail bar', title: 'Aperitivo card', reward: 'a free spritz' },
@@ -124,11 +124,11 @@ window.CONFIG = {
     { id: 'gelateria', icon: 'cone', stamps: 8, color: '#FFFFFF',
       it: { type: 'Gelateria', title: 'Carta gelato', reward: 'una coppetta gratis' },
       en: { type: 'Gelato shop', title: 'Gelato card', reward: 'a free gelato' },
-      pl: { type: 'Lodziarnia', title: 'Karta lodowa', reward: 'darmowa gałka lodów' } },
+      pl: { type: 'Lodziarnia', title: 'Lodowa karta', reward: 'darmowa gałka lodów' } },
     { id: 'pizzeria', icon: 'pizza', stamps: 10, color: '#0B0B0C',
       it: { type: 'Pizzeria', title: 'Carta pizza', reward: 'una margherita gratis' },
       en: { type: 'Pizzeria', title: 'Pizza card', reward: 'a free margherita' },
-      pl: { type: 'Pizzeria', title: 'Karta pizzy', reward: 'darmowa margherita' } },
+      pl: { type: 'Pizzeria', title: 'Karta pizzerii', reward: 'darmowa margherita' } },
     { id: 'parrucchiere', icon: 'scissors', stamps: 6, color: '#0B0B0C',
       it: { type: 'Parrucchiere', title: 'Carta taglio', reward: 'una piega gratis' },
       en: { type: 'Hair salon', title: 'Haircut card', reward: 'a free blow-dry' },
@@ -136,6 +136,6 @@ window.CONFIG = {
     { id: 'estetica', icon: 'leaf', stamps: 6, color: '#FFFFFF',
       it: { type: 'Centro estetico', title: 'Carta bellezza', reward: 'un trattamento viso gratis' },
       en: { type: 'Beauty salon', title: 'Beauty card', reward: 'a free facial' },
-      pl: { type: 'Salon kosmetyczny', title: 'Karta urody', reward: 'darmowy zabieg na twarz' } }
+      pl: { type: 'Salon kosmetyczny', title: 'Karta salonu', reward: 'darmowy zabieg na twarz' } }
   ]
 };

@@ -58,7 +58,7 @@ body{background:var(--wash)}
   const T = {
     it: { none: 'Carta non trovata.', print: 'Stampa', tip: 'Nella finestra di stampa scegli lo stesso formato (A5 o A4), margini "Nessuno" e attiva "Grafica di sfondo".' },
     en: { none: 'Card not found.', print: 'Print', tip: 'In the print window pick the same paper size (A5 or A4), margins "None" and turn on "Background graphics".' },
-    pl: { none: 'Nie znaleziono karty.', print: 'Drukuj', tip: 'W oknie drukowania wybierz ten sam format (A5 lub A4), marginesy "Brak" i włącz "Grafika tła".' }
+    pl: { none: 'Nie znaleziono karty.', print: 'Drukuj', tip: 'W oknie drukowania wybierz ten sam format (A5 lub A4), marginesy „Brak” i włącz „Grafika tła”.' }
   }[I18N.lang];
   if (!card) { document.getElementById('sheet').textContent = T.none; return; }
   // The poster's language: ?lang=it|en|pl, else the card's own.

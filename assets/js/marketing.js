@@ -206,31 +206,31 @@ Ask at the till 👋` },
       igCta: 'Zapytaj przy kasie i zeskanuj kod QR.',
       igSub: 'Bez aplikacji. Nic do zgubienia.',
       copy: w => [
-        { id: 'caption', label: 'Opis posta na Instagram', text:
-`Nowość w ${w.business}: karta lojalnościowa jest teraz w telefonie ☕️
-Przy każdej wizycie pieczątka. Po ${w.n} pieczątkach: ${w.reward}.
+        { id: 'caption', label: 'Opis posta na Instagramie', text:
+`${w.business} ma nowość: kartę lojalnościową w telefonie ☕️
+Przy każdej wizycie dostajesz pieczątkę. Po ${w.n} pieczątkach: ${w.reward}.
 
 Jak? Zeskanuj kod QR przy kasie i zapisz kartę. Bez aplikacji do pobrania, bez papierowej karty do zgubienia.
 
 Do zobaczenia przy ladzie!` },
-        { id: 'story', label: 'Tekst do relacji', text:
+        { id: 'story', label: 'Tekst do relacji na Instagramie', text:
 `Nasza karta lojalnościowa jest już cyfrowa ✨
 ${w.n} ${UI.stampsWord(w.n, 'pl')} = ${w.reward}
 Zapytaj przy kasie 👋` },
         { id: 'whatsapp', label: 'Wiadomość do stałych klientów (WhatsApp)', text:
-`Cześć! Mamy nowość w ${w.business}: karta lojalnościowa jest teraz w telefonie. Przy następnej wizycie zeskanuj kod QR przy kasie. Po ${w.n} pieczątkach ${w.reward} od nas. Do zobaczenia!` },
+`Cześć, tu ${w.business}! Mamy nowość: naszą kartę lojalnościową możesz teraz mieć w telefonie. Przy następnej wizycie zeskanuj kod QR przy kasie. Po ${w.n} pieczątkach ${w.reward} od nas. Do zobaczenia!` },
         { id: 'staff', label: 'Co mówić przy kasie (dla obsługi)', text:
-`"Ma Pan/Pani już naszą kartę lojalnościową? Jest w telefonie: wystarczy zeskanować tutaj, a od razu dodam pierwszą pieczątkę. Po ${w.n}: ${w.reward}."` },
+`„Ma Pan/Pani już naszą kartę lojalnościową? Jest w telefonie: wystarczy zeskanować ten kod, a od razu dodam pierwszą pieczątkę. Po ${w.n} pieczątkach: ${w.reward}.”` },
         { id: 'reminder', label: 'Przypomnienie (gdy brakuje jednej pieczątki)', text:
-`Brakuje Ci tylko jednej pieczątki! Przy następnej wizycie w ${w.business}: ${w.reward}.` },
-        { id: 'google', label: 'Post w Google (profil firmy)', text:
-`Nowa cyfrowa karta lojalnościowa w ${w.business}: pieczątka przy każdej wizycie, a po ${w.n} pieczątkach ${w.reward}. Wystarczy zeskanować kod QR przy kasie.` }
+`Brakuje Ci tylko jednej pieczątki! Przy następnej wizycie odbierasz nagrodę: ${w.reward}.` },
+        { id: 'google', label: 'Post w Google (Profil Firmy)', text:
+`${w.business} ma nową cyfrową kartę lojalnościową: pieczątka przy każdej wizycie, a po ${w.n} pieczątkach ${w.reward}. Wystarczy zeskanować kod QR przy kasie.` }
       ],
       plan: [
         ['Dzień 1', 'Powieś plakat przy kasie, na wysokości oczu.'],
-        ['Dzień 1', 'Pokaż kartę obsłudze: 2 minuty, użyj tekstu "Co mówić przy kasie".'],
+        ['Dzień 1', 'Pokaż kartę obsłudze (2 minuty) i przećwiczcie tekst „Co mówić przy kasie”.'],
         ['Dzień 2', 'Opublikuj post i relację na Instagramie.'],
-        ['Dzień 3', 'Daj pierwszą pieczątkę gratis każdemu, kto dołączy w tym tygodniu.'],
+        ['Dzień 3', 'Każdy, kto dołączy w tym tygodniu, dostaje pierwszą pieczątkę gratis.'],
         ['Dzień 4', 'Wyślij wiadomość na WhatsAppie do stałych klientów.'],
         ['Dzień 5', 'Naklej naklejkę na witrynę i postaw karteczki na stolikach.'],
         ['Dzień 7', 'Sprawdź w zakładce Klienci, ile osób dołączyło. Cel: 30.']

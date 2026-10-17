@@ -86,17 +86,17 @@ I18N.add({
     'c.tStamp': 'Stamp added', 'c.tFull': 'Card full! Your reward is ready.', 'c.tRedeem': 'Enjoy your reward!', 'c.by': 'Loyalty card by'
   },
   pl: {
-    'c.broken': 'Ten link nie działa', 'c.brokenP': 'Poproś przy kasie o ich kod QR i zeskanuj go jeszcze raz.',
-    'c.join': 'Dołącz do {business}', 'c.joinP': 'Pieczątka przy każdej wizycie. Po {n} pieczątkach: {reward}.',
-    'c.name': 'Imię i nazwisko', 'c.namePh': 'Np. Anna Kowalska', 'c.get': 'Odbierz moją kartę',
+    'c.broken': 'Ten link nie działa', 'c.brokenP': 'Poproś przy kasie o kod QR i zeskanuj go jeszcze raz.',
+    'c.join': '{business} zaprasza do programu lojalnościowego', 'c.joinP': 'Pieczątka przy każdej wizycie. Po {n} pieczątkach: {reward}.',
+    'c.name': 'Imię i nazwisko', 'c.namePh': 'Np. Anna Kowalska', 'c.get': 'Odbierz kartę',
     'c.email': 'E-mail', 'c.phone': 'Numer telefonu komórkowego', 'c.phonePh': '+48 600 123 456', 'c.birth': 'Data urodzenia',
-    'c.marketing': 'Chcę dostawać nowości i oferty od {business} e-mailem lub SMS-em (opcjonalnie).',
+    'c.marketing': 'Chcę otrzymywać od lokalu {business} nowości i oferty e-mailem lub SMS-em (opcjonalnie).',
     'c.errName': 'Wpisz imię i nazwisko.', 'c.errEmail': 'Sprawdź adres e-mail.', 'c.errPhone': 'Sprawdź numer telefonu.', 'c.errBirth': 'Sprawdź datę urodzenia.',
     'c.fine': 'Bez aplikacji. Twoje dane widzi tylko {business}, na potrzeby karty lojalnościowej.', 'c.privacy': 'Prywatność', 'c.ready': 'Twoja karta jest gotowa',
-    'c.left': 'Pokaż kod przy płaceniu. Jeszcze <b>{n}</b> do nagrody: {reward}.', 'c.claim': 'Pokaż tę kartę przy kasie i odbierz nagrodę.',
+    'c.left': ({ n }) => `Pokaż kod przy płatności. Jeszcze <b>${n} ${I18N.plural(+n, ['pieczątka', 'pieczątki', 'pieczątek'])}</b> i odbierasz nagrodę: {reward}.`, 'c.claim': 'Pokaż tę kartę przy kasie i odbierz nagrodę.',
     'c.apple': 'Dodaj do Apple Wallet', 'c.google': 'Dodaj do Google Wallet',
     'c.walletNote': 'Zapisywanie w Portfelu już wkrótce. Na razie dodaj tę stronę do ekranu głównego.',
-    'c.activity': 'Ostatnie wizyty', 'c.joined': 'Dołączenie', 'c.stamp': ({ n }) => `+${n} ${I18N.plural(+n, ['pieczątka', 'pieczątki', 'pieczątek'])}`, 'c.unstamp': ({ n }) => `−${n} ${I18N.plural(+n, ['pieczątka', 'pieczątki', 'pieczątek'])}`, 'c.redeem': 'Odebrana nagroda',
+    'c.activity': 'Ostatnie wizyty', 'c.joined': 'Dołączenie do programu', 'c.stamp': ({ n }) => `+${n} ${I18N.plural(+n, ['pieczątka', 'pieczątki', 'pieczątek'])}`, 'c.unstamp': ({ n }) => `−${n} ${I18N.plural(+n, ['pieczątka', 'pieczątki', 'pieczątek'])}`, 'c.redeem': 'Nagroda odebrana',
     'c.tStamp': 'Pieczątka dodana', 'c.tFull': 'Karta pełna! Nagroda czeka.', 'c.tRedeem': 'Smacznego!', 'c.by': 'Karta lojalnościowa od'
   }
 });

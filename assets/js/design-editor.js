@@ -33,11 +33,11 @@
     },
     pl: {
       'de.style': 'Styl na start', 'de.logo': 'Logo', 'de.logoHint': 'Poziomy PNG z przezroczystym tłem. Zastępuje nazwę.',
-      'de.upload': 'Wgraj', 'de.remove': 'Usuń', 'de.tagline': 'Podpis pod nazwą', 'de.font': 'Krój nazwy',
+      'de.upload': 'Wgraj', 'de.remove': 'Usuń', 'de.tagline': 'Tekst pod nazwą', 'de.font': 'Czcionka nazwy',
       'de.fSans': 'Nowoczesny', 'de.fWide': 'Szeroki', 'de.fSerif': 'Klasyczny', 'de.fMono': 'Maszynowy',
       'de.color': 'Kolor karty', 'de.strip': 'Tło pod pieczątkami', 'de.stripImg': 'albo obraz w tle', 'de.stripHint': 'Zdjęcie lub tekstura, szeroka i niska (około 3:1).',
       'de.stamp': 'Pieczątka', 'de.art': 'albo Twój własny wzór pieczątki', 'de.artHint': 'Kwadratowy PNG z przezroczystym tłem. Zastępuje wybraną pieczątkę.',
-      'de.ink': 'Kolor tuszu', 'de.same': 'Taki jak karta'
+      'de.ink': 'Kolor tuszu', 'de.same': 'Jak karta'
     }
   });
 
