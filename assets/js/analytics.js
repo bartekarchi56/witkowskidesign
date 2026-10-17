@@ -8,7 +8,7 @@
  *   ANALYTICS.locations(customers)                 → the shops visits were stamped in (chains)
  *   ANALYTICS.byLocation(card, customers, { days }) → visits, customers and rewards per shop
  *   ANALYTICS.sample(card, now, places)            → example customers for demos (spread over places)
- *   ANALYTICS.line(el, points, opts) / .columns(el, bars, opts) / .countUp(el, n, fmt)
+ *   ANALYTICS.line(el, points, opts) / .columns(el, bars, opts) / .countUp(el, n, fmt) / .roll(el, n, fmt)
  */
 (function () {
   const DAY = 864e5;
@@ -100,10 +100,11 @@
   // ---------- example data, for demos and for cafés that have just started ----------
   function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   const NAMES = ['Giulia', 'Marco', 'Sara', 'Luca', 'Chiara', 'Matteo', 'Francesca', 'Andrea', 'Elena', 'Davide', 'Anna', 'Paolo', 'Marta', 'Simone', 'Laura', 'Tom', 'Emma', 'Lucas', 'Sofia', 'Leo'];
+  const NAMES_PL = ['Kasia', 'Michał', 'Ola', 'Tomek', 'Magda', 'Piotr', 'Agnieszka', 'Kuba', 'Natalia', 'Paweł', 'Anna', 'Marcin', 'Marta', 'Bartek', 'Ewa', 'Tom', 'Emma', 'Lucas', 'Zosia', 'Adam'];
   const WEEKDAY = [0.8, 0.9, 0.95, 1, 1.1, 1.5, 1.2];   // Monday … Sunday
   const HOURS = [[7, 2.2], [8, 3], [9, 2.6], [10, 1.6], [11, 1.1], [12, 1.4], [13, 1.8], [14, 1.2], [15, 0.9], [16, 1.2], [17, 1.3], [18, 0.8]];
   function sample(card, now = Date.now(), places = []) {
-    const rand = rng(7), need = card.stampsNeeded || 10, days = 120, out = [];
+    const rand = rng(7), need = card.stampsNeeded || 10, days = 120, out = [], names = card.lang === 'pl' ? NAMES_PL : NAMES;
     // Chains: each customer has a usual shop and now and then visits another.
     const placeOf = home => !places.length ? null : rand() < 0.85 ? places[home] : places[Math.floor(rand() * places.length)];
     const pickHour = () => { const total = HOURS.reduce((a, h) => a + h[1], 0); let x = rand() * total; for (const [h, w] of HOURS) { if ((x -= w) <= 0) return h; } return 9; };
@@ -127,7 +128,7 @@
         if (++stamps >= need) { history.push({ t: d.getTime() + 60000, type: 'redeem', ...where }); stamps = 0; redeemed++; }
       }
       const visits = history.filter(h => h.type === 'stamp');
-      out.push({ id: 'EX' + i, cardId: card.id, name: NAMES[i % NAMES.length] + (i >= NAMES.length ? ' ' + String.fromCharCode(65 + (i % 26)) + '.' : ''),
+      out.push({ id: 'EX' + i, cardId: card.id, name: names[i % names.length] + (i >= names.length ? ' ' + String.fromCharCode(65 + (i % 26)) + '.' : ''),
         stamps, redeemed, joinedAt: joined, lastVisit: visits.length ? visits[visits.length - 1].t : null, history });
     }
     return out;
@@ -233,5 +234,28 @@
     io.observe(node);
   }
 
-  window.ANALYTICS = { compute, locations, byLocation, sample, line, columns, countUp, DAY };
+  // Odometer: every digit is a strip 0-9 that rolls to its place, starting when the number
+  // scrolls into view and again on each change. Screen readers get the whole number.
+  // Needs the .odo CSS (index.html).
+  function roll(node, to, fmt = n => Math.round(n).toLocaleString()) {
+    const text = fmt(to), digits = text.replace(/\D/g, '');
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) { node.textContent = text; return; }
+    node.setAttribute('aria-label', text);
+    const shape = text.replace(/\d/g, '0');
+    if (node.dataset.shape !== shape) {
+      node.dataset.shape = shape;
+      const strip = '<span class="odo-s">' + [...'0123456789'].map(d => `<span>${d}</span>`).join('') + '</span>';
+      node.innerHTML = [...text].map(ch => /\d/.test(ch) ? `<span class="odo" aria-hidden="true">${strip}</span>` : `<span aria-hidden="true">${ch}</span>`).join('');
+    }
+    const strips = [...node.querySelectorAll('.odo-s')];
+    const go = () => requestAnimationFrame(() => requestAnimationFrame(() => strips.forEach((st, i) => {
+      st.style.transitionDelay = `${(strips.length - 1 - i) * 60}ms`;
+      st.style.transform = `translateY(-${digits[i] * 10}%)`;
+    })));
+    if (node.dataset.seen) return go();
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); node.dataset.seen = 1; go(); } }, { threshold: 0.3 });
+    io.observe(node);
+  }
+
+  window.ANALYTICS = { compute, locations, byLocation, sample, line, columns, countUp, roll, DAY };
 })();

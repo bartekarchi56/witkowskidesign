@@ -19,7 +19,9 @@ const FILES = [
   ['sales/brochure.html?cafe=Cukiernia%20Sowa&lang=pl&format=a5', 'brochure-sowa-pl.pdf'],
   ['sales/brochure.html?cafe=Kofeina&lang=pl&format=a5', 'brochure-kofeina-pl.pdf'],
   ['app/poster.html?card=the-coffee&lang=it&size=A5', 'poster-the-coffee-a5.pdf'],
-  ['app/poster.html?card=orsonero&lang=en&size=A5', 'poster-orsonero-a5.pdf']
+  ['app/poster.html?card=orsonero&lang=en&size=A5', 'poster-orsonero-a5.pdf'],
+  ['sales/sowa.html', 'kit-sowa/prezentacja-sowa.pdf'],
+  ['sales/korzysci.html', 'korzysci-dla-wlasciciela-pl.pdf']
 ];
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.json': 'application/json' };
 
@@ -43,6 +45,7 @@ server.listen(0, async () => {
     const p = await ctx.newPage();
     const errors = []; p.on('pageerror', e => errors.push(e.message));
     await p.goto(base + page); await p.waitForTimeout(800);
+    await p.waitForFunction(() => !window.WAIT_READY || window.READY, null, { timeout: 30000 });   // pages that draw cards and load pictures first
     await p.evaluate(() => document.fonts.ready);
     await p.emulateMedia({ media: 'print' });
     await p.pdf({ path: path.join(OUT, name), preferCSSPageSize: true, printBackground: true });

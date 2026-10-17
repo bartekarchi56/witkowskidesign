@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timbro dla Cukierni Sowa</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* A 16:9 deck for Cukiernia Sowa: one .slide per page. print/make-pdfs.js saves it as
+   print/kit-sowa/prezentacja-sowa.pdf. Cards are drawn by the real renderer (UI.renderPass);
+   the dashboard pictures in img/ are screenshots of the demo panel. */
+@page{size:1280px 720px;margin:0}
+:root{--brown:#522D24;--cream:#FBF6EE;--sand:#E4D6C2;--soft:#F3EADC}
+html,body{margin:0;background:#D9D2C7}
+body{font-family:var(--font);color:var(--brown)}
+.slide{width:1280px;height:720px;box-sizing:border-box;padding:64px 80px;position:relative;overflow:hidden;background:var(--cream);margin:0 auto 24px;page-break-after:always;break-after:page;display:flex;flex-direction:column}
+@media print{html,body{background:none}.slide{margin:0}}
+.slide.dark{background:var(--brown);color:var(--cream)}
+.kicker{font:500 15px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;opacity:.7;margin:0 0 18px}
+h1{font-size:68px;line-height:1.02;font-stretch:112%;font-weight:800;margin:0 0 20px;letter-spacing:-.01em}
+h2{font-size:46px;line-height:1.08;font-stretch:108%;font-weight:800;margin:0 0 18px}
+h3{font-size:24px;margin:0 0 8px;font-weight:700}
+p{font-size:21px;line-height:1.45;margin:0 0 12px}
+.lede{font-size:24px;max-width:760px;opacity:.88}
+.foot{position:absolute;left:80px;right:80px;bottom:30px;display:flex;justify-content:space-between;font:500 13px/1 var(--mono);letter-spacing:.08em;opacity:.55;text-transform:uppercase}
+.row{display:flex;gap:36px;align-items:flex-start}
+.grow{flex:1}
+.cols{display:grid;gap:26px;margin:auto 0}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:repeat(3,1fr)}.c4{grid-template-columns:repeat(4,1fr)}
+.box{background:#fff;border:1.5px solid var(--sand);border-radius:18px;padding:24px 26px}
+.dark .box{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18)}
+.box p{font-size:18px;margin:0;opacity:.85}
+.num,.box p.num{opacity:1;font-size:54px;font-weight:800;font-stretch:115%;line-height:1;margin:0 0 8px}
+.pass-wrap .pass{width:330px;max-width:330px}
+.pass-wrap .pass.apple{border-radius:14px;box-shadow:0 2px 4px rgba(0,0,0,.12),0 24px 50px -24px rgba(60,30,20,.55)}
+.cap{font:500 13px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin:12px 0 0;text-align:center}
+.shot{display:block;border-radius:16px;box-shadow:0 2px 4px rgba(0,0,0,.08),0 20px 40px -24px rgba(60,30,20,.5);background:#fff}
+ul.ticks{list-style:none;padding:0;margin:0;display:grid;gap:14px}
+ul.ticks li{font-size:21px;line-height:1.4;padding-left:34px;position:relative}
+ul.ticks li::before{content:"";position:absolute;left:0;top:7px;width:18px;height:18px;border-radius:50%;background:var(--brown)}
+.dark ul.ticks li::before{background:var(--cream)}
+.step b{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--brown);color:var(--cream);font-size:20px;margin-bottom:14px}
+table{border-collapse:collapse;width:100%;font-size:19px}
+td,th{padding:11px 14px;border-bottom:1.5px solid var(--sand);text-align:left}
+th{font:500 13px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+td.r,th.r{text-align:right}
+tr.total td{font-weight:800;font-size:22px;border-bottom:0}
+.note{font-size:15px;opacity:.65;line-height:1.4}
+.qr{width:150px;height:150px;background:#fff;padding:12px;border-radius:14px}
+.qr svg{width:100%;height:100%;display:block}
+.paper{width:300px;height:180px;border-radius:12px;background:#fff;border:1.5px solid var(--sand);padding:18px;box-sizing:border-box;position:relative;transform:rotate(-4deg);box-shadow:0 18px 30px -20px rgba(60,30,20,.5)}
+.paper .dots{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
+.paper .dots i{aspect-ratio:1;border-radius:50%;border:2px dashed var(--sand)}
+.paper .dots i.on{background:var(--brown);border-color:var(--brown)}
+.paper small{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;opacity:.6}
+</style>
+</head>
+<body>
+<div id="deck"></div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+window.WAIT_READY = true;
+(async () => {
+  I18N.lang = 'pl';
+  const svgUrl = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+  const dataUrl = async src => { const b = await (await fetch(src)).blob(); return new Promise(ok => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(b); }); };
+  const OWL = await dataUrl('../print/kit-sowa/art/sowa-owl-brown.png');
+  const watermark = (img, bg, opacity) => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/><image href="${img}" xlink:href="${img}" x="295" y="10" width="430" height="430" opacity="${opacity}" preserveAspectRatio="xMidYMid meet"/></svg>`);
+  // The two designs from print/example-cards.html: the ice-cream fan club and the 80th-anniversary coffee card.
+  const BASE = { business: 'Cukiernia Sowa', lang: 'pl', tagline: '80 lat tradycji', titleEn: 'Coffee card', rewardEn: 'a free coffee' };
+  const FANKLUB = { ...BASE, id: 'sowa-lody', title: 'Lodowy Fanklub', reward: '1 gałka lodów gratis', stampsNeeded: 10, color: '#FFFFFF', ink: '#522D24', stamp: 'punto', font: 'serif', strip: '#FFFFFF', stripImage: watermark(OWL, '#FFFFFF', .16) };
+  const KAWA = { ...BASE, id: 'sowa', title: 'Karta kawowa', reward: 'kawa gratis', stampsNeeded: 8, color: '#FBF6EE', ink: '#522D24', font: 'serif', strip: '#FBF6EE',
+    logo: '/assets/demo/sowa/logo-80.svg', stampImage: '/assets/demo/sowa/owl-stamp.png', stripImage: '/assets/demo/sowa/strip.png' };
+  const pass = (card, stamps, platform, cap) => `<div class="pass-wrap">${UI.renderPass(card, { id: 'K7M2QX', name: 'Anna Kowalska', stamps }, { stamps, platform, compact: true })}${cap ? `<p class="cap">${cap}</p>` : ''}</div>`;
+  const demoUrl = UI.publicJoinUrl('sowa');
+  const c = CONFIG.contact;
+  const foot = n => `<div class="foot"><span>Timbro · Witkowski Design</span><span>Cukiernia Sowa · ${n}</span></div>`;
+  const paper = on => `<div class="paper"><small>Lodowy Fanklub</small><div class="dots">${Array.from({ length: 10 }, (_, i) => `<i class="${i < on ? 'on' : ''}"></i>`).join('')}</div></div>`;
+
+  const slides = [
+  // 1. cover
+  `<section class="slide dark">
+    <div class="row grow" style="align-items:center">
+      <div class="grow">
+        <p class="kicker">Propozycja dla Cukierni Sowa</p>
+        <h1>Lodowy Fanklub<br>w telefonie.</h1>
+        <p class="lede">Ta sama karta z pieczątkami, którą Wasi klienci już znają, tylko w Apple Wallet i Google Wallet. Bez aplikacji i bez papieru.</p>
+      </div>
+      ${pass(FANKLUB, 6, 'apple')}
+    </div>${foot(1)}</section>`,
+  // 2. the paper card today
+  `<section class="slide">
+    <p class="kicker">Dziś</p>
+    <h2>Papierowa karta działa.<br>Ale sporo przez nią ucieka.</h2>
+    <div class="row" style="margin:auto 0;align-items:center">
+      <div style="width:360px;display:grid;place-items:center">${paper(7)}</div>
+      <ul class="ticks grow">
+        <li><b>Gubi się albo zostaje w drugiej kurtce.</b> Klient zaczyna od zera i traci motywację.</li>
+        <li><b>Nie wiecie, kto wraca.</b> Karta nie mówi, ilu macie stałych klientów ani kiedy przestali przychodzić.</li>
+        <li><b>Koszty co sezon:</b> druk kart, naklejki, dodruki po zmianie wzoru.</li>
+        <li><b>Łatwo ją oszukać:</b> naklejkę można dokleić, kartę skopiować.</li>
+      </ul>
+    </div>${foot(2)}</section>`,
+  // 3. the solution
+  `<section class="slide">
+    <p class="kicker">Rozwiązanie</p>
+    <h2>Karta, której nikt nie gubi.</h2>
+    <div class="row" style="justify-content:center;gap:56px;margin-top:auto;margin-bottom:auto">
+      ${pass(FANKLUB, 6, 'apple', 'Lodowy Fanklub · iPhone')}
+      ${pass(KAWA, 5, 'google', 'Na 80 lat: karta kawowa · Android')}
+    </div>
+    <p class="note" style="text-align:center">Projekt w kolorach Sowy: Wasza sowa, Wasze pióra w tle, sowa jako pieczątka. Oba projekty to propozycje do dopracowania razem.</p>
+    ${foot(3)}</section>`,
+  // 4. how it works
+  `<section class="slide">
+    <p class="kicker">Jak to działa</p>
+    <h2>Trzy kroki. Dziesięć sekund przy kasie.</h2>
+    <div class="cols c3">
+      <div class="box step"><b>1</b><h3>Klient skanuje kod QR</h3><p>Plakat przy kasie albo naklejka na witrynie. Karta trafia do Apple Wallet lub Google Wallet, bez pobierania aplikacji.</p></div>
+      <div class="box step"><b>2</b><h3>Obsługa przybija pieczątkę</h3><p>Skanuje kartę klienta zwykłym telefonem i jednym dotknięciem dodaje pieczątkę. Bez dodatkowego sprzętu.</p></div>
+      <div class="box step"><b>3</b><h3>Pełna karta: nagroda</h3><p>Klient dostaje powiadomienie „Nagroda gotowa”. Obsługa wydaje gałkę lodów, a karta zaczyna się od nowa.</p></div>
+    </div>${foot(4)}</section>`,
+  // 5. the till
+  `<section class="slide">
+    <div class="row grow" style="align-items:center;gap:70px">
+      <div class="grow">
+        <p class="kicker">Przy kasie</p>
+        <h2>Prosto dla obsługi, także w kolejce w upalny dzień.</h2>
+        <ul class="ticks" style="margin-top:22px">
+          <li>Działa na każdym telefonie lub tablecie, który już macie.</li>
+          <li>Obsługa nie zakłada konta: telefon łączy się z lokalem jednym kodem.</li>
+          <li>Obsługa widzi tylko imię i pieczątki, nie widzi e-maila ani telefonu klienta.</li>
+          <li>Pomyłkę cofa przycisk „Usuń pieczątkę”.</li>
+        </ul>
+      </div>
+      <img class="shot" src="img/kasa.png" alt="Skaner pieczątek" style="height:600px">
+    </div>${foot(5)}</section>`,
+  // 6. notifications
+  `<section class="slide dark">
+    <div class="row grow" style="align-items:center;gap:70px">
+      <div class="grow">
+        <p class="kicker">Powiadomienia</p>
+        <h2>Karta sama przypomina o Sowie.</h2>
+        <ul class="ticks" style="margin-top:22px">
+          <li><b>Już blisko:</b> gdy brakuje jednej pieczątki do nagrody.</li>
+          <li><b>Nagroda gotowa:</b> gdy karta jest pełna.</li>
+          <li><b>Przypomnienie:</b> gdy klient nie był od np. 21 dni, z jego imieniem.</li>
+          <li><b>W pobliżu lokalu:</b> karta pojawia się na ekranie blokady iPhone'a.</li>
+        </ul>
+        <p class="note" style="margin-top:20px">Teksty piszecie sami, w stylu Sowy. Bez SMS-ów i bez kosztów za wiadomość.</p>
+      </div>
+      <img class="shot" src="img/powiadomienia.png" alt="Powiadomienia na ekranie blokady" style="height:560px;background:none;box-shadow:none">
+    </div>${foot(6)}</section>`,
+  // 7. results: KPIs and locations
+  `<section class="slide">
+    <p class="kicker">Panel wyników</p>
+    <h2>Wreszcie widać, kto wraca. W każdym lokalu.</h2>
+    <img class="shot" src="img/panel-kpi.png" alt="" style="width:1000px;margin:4px auto 18px">
+    <img class="shot" src="img/panel-lokale.png" alt="" style="width:1000px;margin:0 auto">
+    ${foot(7)}</section>`,
+  // 8. results: when and who
+  `<section class="slide">
+    <p class="kicker">Panel wyników</p>
+    <h2>Kiedy przychodzą i kogo warto zaprosić z powrotem.</h2>
+    <div class="cols c2" style="margin-top:4px;align-items:start">
+      <img class="shot" src="img/panel-dni.png" alt="" style="width:100%">
+      <img class="shot" src="img/panel-blisko.png" alt="" style="width:100%">
+    </div>
+    <p class="note" style="margin-top:20px">Oprócz tego: godziny szczytu, klienci, którzy nie byli od ponad 30 dni, i szacunek, ile wydali klienci z kartą. Na zrzutach dane przykładowe; listę klientów można pobrać do Excela.</p>
+    ${foot(8)}</section>`,
+  // 9. paper costs
+  `<section class="slide">
+    <p class="kicker">Koszty papieru</p>
+    <h2>Ile kosztuje papierowy Fanklub w 175 lokalach?</h2>
+    <div class="row" style="margin-top:10px;gap:50px">
+      <table class="grow">
+        <tr><th>Założenie (przykład)</th><th class="r">Wartość</th></tr>
+        <tr><td>Nowe karty na lokal, miesięcznie</td><td class="r">100</td></tr>
+        <tr><td>Druk jednej karty</td><td class="r">0,20 zł</td></tr>
+        <tr><td>Naklejki na jedną pełną kartę (10 × 0,03 zł)</td><td class="r">0,30 zł</td></tr>
+        <tr><td>Lokale</td><td class="r">175</td></tr>
+        <tr class="total"><td>Rocznie, sam papier i naklejki</td><td class="r">ok. 105 000 zł</td></tr>
+      </table>
+      <div style="width:340px">
+        <div class="box"><p class="num">0 zł</p><p>na druk kart i naklejki z Timbro. Do tego bez dodruków po zmianie wzoru: nowy wygląd trafia do wszystkich klientów od razu.</p></div>
+        <p class="note" style="margin-top:16px">Ceny i liczby to przykład do podmiany na Wasze. Wzór: lokale × karty miesięcznie × 12 × koszt karty z naklejkami.</p>
+      </div>
+    </div>${foot(9)}</section>`,
+  // 10. GDPR
+  `<section class="slide">
+    <p class="kicker">RODO i bezpieczeństwo</p>
+    <h2>Dane klientów należą do Sowy.</h2>
+    <div class="cols c2" style="margin-top:12px">
+      <div class="box"><h3>Kto za co odpowiada</h3><p>Sowa jest administratorem danych, Witkowski Design podmiotem przetwarzającym (art. 28 RODO). Podpisujemy umowę powierzenia. Dane nie są sprzedawane ani używane do reklam.</p></div>
+      <div class="box"><h3>Kto co widzi</h3><p>Zarząd w panelu: imię, kontakt, wizyty. Obsługa przy kasie: tylko imię i pieczątki. Każdy lokal widzi wyłącznie swoją kartę.</p></div>
+      <div class="box"><h3>Zgody</h3><p>Zgoda na oferty e-mailem lub SMS-em jest osobna i domyślnie odznaczona. Można ją wycofać w każdej chwili.</p></div>
+      <div class="box"><h3>Zabezpieczenia</h3><p>Dostęp pilnowany przez bazę danych, telefony przy kasie z kodem do unieważnienia, płatności przez Stripe, bez śledzących plików cookie.</p></div>
+    </div>${foot(10)}</section>`,
+  // 11. pilot
+  `<section class="slide dark">
+    <p class="kicker">Propozycja</p>
+    <h2>Zacznijmy od pilotażu w kilku lokalach.</h2>
+    <div class="cols c3" style="margin:auto 0">
+      <div class="box"><p class="num">3–5</p><h3>lokali w Bydgoszczy</h3><p>Wybieracie lokale. My projektujemy kartę, drukujemy plakaty i szkolimy obsługę.</p></div>
+      <div class="box"><p class="num">6 tyg.</p><h3>na sprawdzenie</h3><p>Liczymy klientów z kartą, powroty i wydane nagrody, lokal po lokalu, w porównaniu z papierem.</p></div>
+      <div class="box"><p class="num">od 8 €</p><h3>za lokal miesięcznie</h3><p>Po pilotażu cena za całą sieć, na fakturę, z umową i umową powierzenia danych.</p></div>
+    </div>${foot(11)}</section>`,
+  // 12. contact
+  `<section class="slide">
+    <div class="row grow" style="align-items:center;gap:60px">
+      <div class="grow">
+        <p class="kicker">Porozmawiajmy</p>
+        <h1>Zeskanujcie i zobaczcie kartę Sowy w swoim telefonie.</h1>
+        <p class="lede">${UI.esc(c.name)} · Witkowski Design<br>${UI.esc(c.phone)} (także WhatsApp)<br>${UI.esc(CONFIG.legal && CONFIG.legal.email || '')}</p>
+      </div>
+      <div style="display:grid;justify-items:center;gap:12px"><div class="qr">${UI.qrSvg(demoUrl)}</div><p class="cap">Karta kawowa Sowy</p></div>
+    </div>${foot(12)}</section>`
+  ];
+  document.getElementById('deck').innerHTML = slides.join('');
+  await Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(ok => { i.onload = i.onerror = ok; })));
+  await document.fonts.ready;
+  window.READY = true;
+})();
+</script>
+</body>
+</html>

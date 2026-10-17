@@ -162,6 +162,13 @@ details p{color:var(--ink-2);padding:0 0 22px;max-width:40em}
 .fig span{font-size:14px;color:var(--ink-2)}
 .fig.top{grid-column:1/-1;background:var(--ink);color:#fff;border-color:var(--ink)}
 .fig.top b{font-size:clamp(44px,6vw,64px)}
+/* rolling digits (ANALYTICS.roll) */
+.fig b{font-variant-numeric:tabular-nums}
+.fig b > span{display:inline-block;height:1.1em;line-height:1.1em;vertical-align:top;font-size:inherit;color:inherit}
+.fig b span{font-size:inherit;color:inherit}
+.odo{display:inline-block;height:1.1em;line-height:1.1em;overflow:hidden;vertical-align:top}
+.odo-s{display:block;transition:transform 1.1s cubic-bezier(.2,.75,.15,1)}
+.odo-s span{display:block;height:1.1em;text-align:center}
 .fig.top span{color:#C9C9CD}
 .calc-chart{border:1.5px solid var(--line);border-radius:16px;padding:16px 16px 6px;margin-top:12px}
 .chart-t{font-weight:700;margin-bottom:4px}
@@ -862,7 +869,7 @@ I18N.add({
     // Customers join over the first three months, then the card runs at full speed.
     const ramp = [0.35, 0.7, 1], months = Array.from({ length: 12 }, (_, i) => month * (ramp[i] ?? 1));
     const year = months.reduce((a, b) => a + b, 0), plus = CONFIG.plans.find(p => p.id === 'plus').month;
-    const set = (k, n, f) => ANALYTICS.countUp(document.querySelector(`[data-c="${k}"]`), n, f);
+    const set = (k, n, f) => ANALYTICS.roll(document.querySelector(`[data-c="${k}"]`), n, f);
     set('month', month, n => eur(n)); set('members', members, n => Math.round(n).toLocaleString(loc));
     set('visits', visits, n => Math.round(n).toLocaleString(loc)); set('year', year, n => eur(n));
     set('payback', Math.ceil(plus / v.ticket), n => Math.round(n).toLocaleString(loc));
