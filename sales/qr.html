@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timbro QR</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* A card with the website's QR code, to show on a phone or print (A6).
+   print/make-pdfs.js saves print/qr-timbro.pdf; the PNG is a screenshot of .card.
+   The plain address opens the site in the phone's own language. */
+@page{size:A6;margin:0}
+html,body{margin:0;background:#fff}
+body{font-family:var(--font);color:var(--ink);display:grid;place-items:center;min-height:100vh}
+.card{width:105mm;height:148mm;box-sizing:border-box;padding:10mm 9mm 8mm;display:flex;flex-direction:column;align-items:center;text-align:center;background:#fff}
+.brand{display:flex;align-items:center;gap:2.5mm;font-size:17pt;font-weight:800;font-stretch:112%}
+.brand i{width:6.5mm;height:6.5mm;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 1.4mm var(--pop),inset 0 0 0 1.8mm #fff}
+h1{font-size:19pt;line-height:1.1;font-stretch:110%;font-weight:800;margin:7mm 0 2mm}
+.sub{font-size:9.5pt;line-height:1.35;color:var(--ink-2);margin:0}
+.qr{width:62mm;height:62mm;margin:6mm 0 4mm;padding:3mm;border:1.5px solid var(--line);border-radius:4mm}
+.qr svg{width:100%;height:100%;display:block}
+.url{font:500 9pt/1 var(--mono);letter-spacing:.04em;color:var(--pop)}
+.langs{margin-top:auto;font-size:8pt;line-height:1.4;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand"><i></i>Timbro</div>
+  <h1>Karta lojalnościowa w telefonie</h1>
+  <p class="sub">Carta fedeltà sul telefono · Loyalty card on your phone</p>
+  <div class="qr" id="qr"></div>
+  <div class="url" id="url"></div>
+  <p class="langs">Zeskanuj aparatem telefonu · Inquadra con la fotocamera · Scan with your camera<br>Witkowski Design</p>
+</div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script>
+const qr = qrcode(0, 'M'); qr.addData(CONFIG.siteUrl); qr.make();
+document.getElementById('qr').innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+document.getElementById('url').textContent = CONFIG.siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+window.READY = true;
+</script>
+</body>
+</html>
