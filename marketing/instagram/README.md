@@ -346,6 +346,32 @@ Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9
 >
 > #loyaltycard #coffeeshopowner #smallbusiness #cafe #milan
 
+### carousel-pocket
+**IT**
+> Il posto dove i tuoi clienti tengono sempre il telefono? In tasca. Ed è lì che vive la tua carta fedeltà 📲
+> Bar, pasticceria, salone, gelateria: ogni locale con la sua carta, il suo timbro e il suo premio. Scorri fino all'ultima.
+>
+> #cartafedeltà #piccoleimprese #barmilano #marketinglocale #milano
+
+**EN**
+> Where do your customers always keep their phone? In their pocket. That's where your loyalty card lives now 📲
+> Café, bakery, salon, gelato shop: every place gets its own card, its own stamp and its own reward. Swipe to the last one.
+>
+> #loyaltycard #smallbusiness #coffeeshop #localbusiness #cafeowner
+
+### carousel-new-way
+**IT**
+> Il cartoncino fedeltà finisce sempre nella giacca sbagliata. Il telefono no ✨
+> Il cliente inquadra il QR alla cassa, salva la carta nel Wallet e raccoglie i timbri. Niente app, niente carta.
+>
+> #cartafedeltà #baristi #piccoleimprese #applewallet #milano
+
+**EN**
+> The paper loyalty card always ends up in the wrong jacket. The phone never does ✨
+> Customers scan the QR at the till, save the card to their Wallet and collect stamps. No app, no paper.
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #applewallet #googlewallet
+
 ### post-reminder
 **IT**
 > Il cliente non passa da tre settimane? Glielo ricorda la carta, da sola 📲
