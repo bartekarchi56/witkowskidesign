@@ -704,7 +704,13 @@ I18N.add({
   const fmt = (n, dec = 0) => new Intl.NumberFormat(L() === 'en' ? 'en-IE' : I18N.locale(), { style: 'currency', currency: 'EUR', minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
 
   // ---------- hero: a card you can stamp ----------
-  const heroCard = () => Store.getCard('the-coffee');
+  // The hero's example café: its own look (cream, deep green ink, coffee-bean stamps), so it
+  // isn't mistaken for a real café's card. Title and reward follow the page language.
+  const heroCard = () => {
+    const tp = CONFIG.templates.find(x => x.id === 'caffe'), main = I18N.pick(tp);
+    return { id: 'hero', business: 'Cafeteria', title: main.title, reward: main.reward, titleEn: tp.en.title, rewardEn: tp.en.reward,
+      lang: L(), stampsNeeded: 8, icon: 'cup', color: '#F6F1E7', ink: '#1F4D3A', stamp: 'ziarno', font: 'serif', strip: '#EDE4D3', tagline: 'Espresso bar' };
+  };
   let n = 3, hint = 'hero.h0', hintVars;
   const heroBtn = document.getElementById('hero-stamp');
   function hero(pop) {
@@ -798,7 +804,7 @@ I18N.add({
   });
 
   // ---------- kit ----------
-  function kit() { document.getElementById('kit-poster').innerHTML = MARKETING.poster(heroCard(), { lang: L() === 'en' ? 'en' : 'it' }); }
+  function kit() { document.getElementById('kit-poster').innerHTML = MARKETING.poster(Store.getCard('the-coffee'), { lang: L() === 'en' ? 'en' : 'it' }); }
 
   // ---------- pricing ----------
   let bill = 'month';
