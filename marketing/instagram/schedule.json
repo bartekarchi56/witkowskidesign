@@ -43,6 +43,16 @@
       "type": "image"
     },
     {
+      "at": "2026-10-21 10:00",
+      "post": "carousel-pocket",
+      "type": "carousel"
+    },
+    {
+      "at": "2026-10-23 10:00",
+      "post": "carousel-new-way",
+      "type": "carousel"
+    },
+    {
       "at": "2026-11-02 09:30",
       "post": "ad-hero",
       "type": "image"
