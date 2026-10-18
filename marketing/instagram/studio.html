@@ -174,7 +174,6 @@ html,body{margin:0;background:#CFCFCF}
 .pk-head i{font-style:normal;color:var(--acc,#2B32FF)}
 .pk-sub{position:absolute;left:36px;right:60px;font-size:18px;line-height:1.4}
 .pk-top{position:absolute;left:36px;right:36px;top:34px;display:flex;justify-content:space-between;align-items:center;font:600 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase}
-.pk-top span:last-child{background:rgba(0,0,0,.35);color:#fff;padding:6px 9px;border-radius:999px}
 .pk-url{position:absolute;left:36px;bottom:28px;font:600 12px/1 var(--mono);letter-spacing:.06em}
 
 /* "the new way": steps and an arc behind the phone */
@@ -981,7 +980,7 @@ function pocketScene(o) {
       <path d="${e.d}" fill="none" stroke="${o.thread}" stroke-width="2.4" stroke-dasharray="7 5" stroke-linecap="round" transform="translate(0,12)"/>
       <path d="${e.d}" fill="none" stroke="${o.thread}" stroke-width="2.4" stroke-dasharray="7 5" stroke-linecap="round" transform="translate(0,21)"/></svg>
     <div class="rivet" style="left:${o.rivet || 74}px;top:${o.edge + 22}px"></div></div>`);
-  el(`<div class="pk-top"><span style="opacity:.85">${esc(o.label)}</span><span>${o.n} / 5</span></div>`);
+  el(`<div class="pk-top"><span style="opacity:.85">${esc(o.label)}</span></div>`);
   const h = el(`<div class="pk-head" style="top:${o.edge + 70}px;--acc:${o.acc}">${o.head}</div>`);
   if (o.sub) el(`<p class="pk-sub" style="top:${o.edge + 70 + h.offsetHeight + 14}px;opacity:.88">${esc(o.sub)}</p>`);
   else el(`<div class="pk-url" style="opacity:.75">${esc(URL_TXT)}</div>`);
