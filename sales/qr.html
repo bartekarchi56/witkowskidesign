@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pl">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,7 +8,7 @@
 <style>
 /* A card with the website's QR code, to show on a phone or print (A6).
    print/make-pdfs.js saves print/qr-timbro.pdf; the PNG is a screenshot of .card.
-   The plain address opens the site in the phone's own language. */
+   It opens the site in English (?lang=en). */
 @page{size:A6;margin:0}
 html,body{margin:0;background:#fff}
 body{font-family:var(--font);color:var(--ink);display:grid;place-items:center;min-height:100vh}
@@ -26,16 +26,16 @@ h1{font-size:19pt;line-height:1.1;font-stretch:110%;font-weight:800;margin:7mm 0
 <body>
 <div class="card">
   <div class="brand"><i></i>Timbro</div>
-  <h1>Karta lojalnościowa w telefonie</h1>
-  <p class="sub">Carta fedeltà sul telefono · Loyalty card on your phone</p>
+  <h1>The loyalty card on your phone</h1>
+  <p class="sub">No app, no paper. Scan to see how it works.</p>
   <div class="qr" id="qr"></div>
   <div class="url" id="url"></div>
-  <p class="langs">Zeskanuj aparatem telefonu · Inquadra con la fotocamera · Scan with your camera<br>Witkowski Design</p>
+  <p class="langs">Scan with your phone camera<br>Witkowski Design</p>
 </div>
 <script src="../assets/vendor/qrcode.js"></script>
 <script src="../assets/js/config.js"></script>
 <script>
-const qr = qrcode(0, 'M'); qr.addData(CONFIG.siteUrl); qr.make();
+const qr = qrcode(0, 'M'); qr.addData(CONFIG.siteUrl + '?lang=en'); qr.make();
 document.getElementById('qr').innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
 document.getElementById('url').textContent = CONFIG.siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
 window.READY = true;
