@@ -36,9 +36,13 @@ h1{font-size:19pt;line-height:1.1;font-stretch:110%;font-weight:800;margin:7mm 0
 <script src="../assets/js/config.js"></script>
 <script>
 // ?card=sisu: a café's example card instead of the website (Italian), e.g. print/kit-sisu/qr-sisu.png.
-const CARDS = { sisu: { name: 'SISU.', lang: 'it', h1: 'Provate la carta fedeltà di SISU.', sub: 'Inquadrate, iscrivetevi e salvatela nel Wallet.', foot: 'Inquadra con la fotocamera del telefono' } };
+const CARDS = {
+  sisu: { name: 'SISU.', lang: 'it', h1: 'Provate la carta fedeltà di SISU.', sub: 'Inquadrate, iscrivetevi e salvatela nel Wallet.', foot: 'Inquadra con la fotocamera del telefono' },
+  // ?card=sisu-pdf: opens the proposal PDF (print/kit-sisu/proposta-sisu.pdf) instead of the card.
+  'sisu-pdf': { name: 'SISU.', lang: 'it', href: 'print/kit-sisu/proposta-sisu.pdf', h1: 'La proposta per SISU.', sub: 'Inquadrate per aprire e scaricare il PDF.', foot: 'Inquadra con la fotocamera del telefono' }
+};
 const ex = CARDS[new URLSearchParams(location.search).get('card')];
-const link = ex ? `${CONFIG.siteUrl}app/card.html?card=${new URLSearchParams(location.search).get('card')}&lang=${ex.lang}` : CONFIG.siteUrl + '?lang=en';
+const link = !ex ? CONFIG.siteUrl + '?lang=en' : ex.href ? CONFIG.siteUrl + ex.href : `${CONFIG.siteUrl}app/card.html?card=${new URLSearchParams(location.search).get('card')}&lang=${ex.lang}`;
 if (ex) {
   document.documentElement.lang = ex.lang;
   document.querySelector('h1').textContent = ex.h1;
