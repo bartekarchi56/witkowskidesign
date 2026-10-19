@@ -8,9 +8,9 @@ try { ({ chromium } = require('playwright')); } catch (e) { ({ chromium } = requ
 const ROOT = path.join(__dirname, '..');
 const OUT = __dirname;
 const FILES = [
-  ['sales/brochure.html?cafe=The%20Coffee&lang=it&format=a5', 'brochure-the-coffee-it.pdf'],
-  ['sales/brochure.html?cafe=The%20Coffee&lang=en&format=a5', 'brochure-the-coffee-en.pdf'],
-  ['sales/brochure.html?cafe=The%20Coffee&lang=it&format=fold', 'brochure-the-coffee-it-a4-da-piegare.pdf'],
+  ['sales/brochure.html?cafe=The%20Coffee&lang=it&format=a5&plan=pro', 'brochure-the-coffee-it.pdf'],
+  ['sales/brochure.html?cafe=The%20Coffee&lang=en&format=a5&plan=pro', 'brochure-the-coffee-en.pdf'],
+  ['sales/brochure.html?cafe=The%20Coffee&lang=it&format=fold&plan=pro', 'brochure-the-coffee-it-a4-da-piegare.pdf'],
   ['sales/brochure.html?cafe=&lang=it&format=a5', 'brochure-generale-it.pdf'],
   ['sales/brochure.html?cafe=&lang=en&format=a5', 'brochure-general-en.pdf'],
   ['sales/brochure.html?cafe=Orsonero%20Coffee&lang=en&format=a5', 'brochure-orsonero-en.pdf'],

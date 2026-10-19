@@ -166,7 +166,7 @@ const COPY = {
     kit: 'Il kit stampato arriva pronto da appendere.', posterCap: 'Il poster A5 per la cassa',
     startLbl: 'Per iniziare', start: ['Ci sentiamo 10 minuti, anche al bancone.', 'Prepariamo la carta e il kit stampato.', 'Appendi il poster. Il primo timbro è oggi.'],
     priceLbl: 'Prezzi', priceH: 'Un abbonamento. Tutto incluso.',
-    month: '/ mese', loc: 'sedi', loc1: 'sede', cards: 'carte', cards1: 'carta', staff: 'baristi', popular: 'Il più scelto',
+    month: '/ mese', loc: 'sedi', loc1: 'sede', cards: 'carte', cards1: 'carta', staff: 'baristi', popular: 'Il più scelto', forYou: 'Consigliato per voi',
     from: 'da', perLoc: '/ sede al mese', chainLim: '11+ sedi · prezzo per sede, prima una prova',
     stampText: 'TIMBRO · MILANO · TIMBRO · MILANO · ',
     note: 'I primi {d} giorni sono gratis. Annuale: 2 mesi in regalo. Prezzi IVA esclusa.',
@@ -190,7 +190,7 @@ const COPY = {
     kit: 'The printed kit arrives ready to put up.', posterCap: 'The A5 poster for your till',
     startLbl: 'To get started', start: ['We talk for 10 minutes, even at your counter.', 'We make your card and the printed kit.', 'Put up the poster. The first stamp is today.'],
     priceLbl: 'Pricing', priceH: 'One subscription. Everything included.',
-    month: '/ month', loc: 'locations', loc1: 'location', cards: 'cards', cards1: 'card', staff: 'staff', popular: 'Most popular',
+    month: '/ month', loc: 'locations', loc1: 'location', cards: 'cards', cards1: 'card', staff: 'staff', popular: 'Most popular', forYou: 'Recommended for you',
     from: 'from', perLoc: '/ location a month', chainLim: '11+ locations · price per location, pilot first',
     stampText: 'TIMBRO · MILAN · TIMBRO · MILAN · ',
     note: 'The first {d} days are free. Yearly: 2 months free. Prices exclude VAT.',
@@ -214,7 +214,7 @@ const COPY = {
     kit: 'Materiały drukowane dostajesz gotowe do powieszenia.', posterCap: 'Plakat A5 przy kasie',
     startLbl: 'Na początek', start: ['Rozmawiamy 10 minut, na wideo albo na miejscu.', 'Przygotowujemy kartę i wydrukowany zestaw.', 'Wieszasz plakat i jeszcze tego samego dnia przybijasz pierwszą pieczątkę.'],
     priceLbl: 'Cennik', priceH: 'Jedna subskrypcja. Wszystko w cenie.',
-    month: '/ miesiąc', loc: ['lokal', 'lokale', 'lokali'], loc1: 'lokal', cards: ['karta', 'karty', 'kart'], cards1: 'karta', staff: ['osoba z obsługi', 'osoby z obsługi', 'osób z obsługi'], popular: 'Najczęściej wybierany',
+    month: '/ miesiąc', loc: ['lokal', 'lokale', 'lokali'], loc1: 'lokal', cards: ['karta', 'karty', 'kart'], cards1: 'karta', staff: ['osoba z obsługi', 'osoby z obsługi', 'osób z obsługi'], popular: 'Najczęściej wybierany', forYou: 'Polecany dla Was',
     from: 'od', perLoc: '/ lokal miesięcznie', chainLim: '11+ lokali · cena za lokal, najpierw pilotaż',
     stampText: 'TIMBRO · KARTA LOJALNOŚCIOWA · ',
     note: 'Pierwsze {d} dni za darmo. Rocznie: 2 miesiące gratis. Ceny netto (bez VAT).',
@@ -248,6 +248,8 @@ const COPY = {
     const lang = COPY[o.lang] ? o.lang : 'it', L = COPY[lang], cafe = o.cafe.trim();
     const fmt = n => new Intl.NumberFormat(lang === 'en' ? 'en-IE' : I18N.locale(lang), { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
     const card = cardFor(cafe, lang);
+    // ?plan=pro highlights the plan recommended for this café instead of the most popular one.
+    const pick = CONFIG.plans.some(p => p.id === q.get('plan') && !p.contact) ? q.get('plan') : '';
     const prevLang = I18N.lang; I18N.lang = lang;            // render the card in the brochure's language
     const pass = UI.renderPass(card, null, { stamps: 4 });
     I18N.lang = prevLang;
@@ -296,8 +298,8 @@ const COPY = {
           <div class="pp"><small>${esc(L.from)}</small> ${fmt(p.month)} <small>${esc(L.perLoc)}</small></div>
           <div class="lim">${esc(L.chainLim)}</div>
         </div>` : `
-        <div class="plan${p.popular ? ' pop-plan' : ''}">
-          <div><b>${esc(tx.name)}</b>${p.popular ? `<span class="tag">${esc(L.popular)}</span>` : ''}<div style="color:var(--ink-2)">${esc(tx.for)}</div></div>
+        <div class="plan${(pick ? p.id === pick : p.popular) ? ' pop-plan' : ''}">
+          <div><b>${esc(tx.name)}</b>${(pick ? p.id === pick : p.popular) ? `<span class="tag">${esc(pick ? L.forYou : L.popular)}</span>` : ''}<div style="color:var(--ink-2)">${esc(tx.for)}</div></div>
           <div class="pp">${fmt(p.month)} <small>${esc(L.month)}</small></div>
           <div class="lim">${lim(p.locations, L.loc1, L.loc)} · ${lim(p.cards, L.cards1, L.cards)} · ${lim(p.staff, L.staff, L.staff)} · ${esc(tx.extras[p.id === 'start' ? 0 : 1])}</div>
         </div>`; }).join('')}</div>
