@@ -113,7 +113,9 @@
     const aria = esc(t('pass.aria', { title, have, need }));
 
     if (kind === 'google') {
-      const logo = card.logo ? `<img src="${esc(card.logo)}" alt="">` : art ? `<img class="wp-gstamp" src="${esc(art)}" alt="">` : icon('star');
+      // Google shows the logo in a small circle: a wide wordmark gets lost there, so a card can give a round mark (iconLogo).
+      const mark = card.iconLogo || card.logo;
+      const logo = mark ? `<img src="${esc(mark)}" alt=""${card.iconLogo ? ' class="wp-gmark"' : ''}>` : art ? `<img class="wp-gstamp" src="${esc(art)}" alt="">` : icon('star');
       return `
       <div class="pass google${fontCls}" style="${style}" role="group" aria-label="${aria}">
         <div class="wp-head"><span class="wp-glogo">${logo}</span><span class="wp-name">${esc(card.business)}</span></div>
