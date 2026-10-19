@@ -25,6 +25,7 @@
         // Browsers from before the Orsonero proposal get its example card too.
         if (!db.cards.orsonero || db.cards.orsonero.stampImage !== ORSONERO_BEAR) { db.cards.orsonero = { ...db.cards.orsonero, ...ORSONERO }; save(db); }
         if (!db.cards.sowa || db.cards.sowa.stampImage !== SOWA.stampImage) { db.cards.sowa = { createdAt: Date.now(), ...db.cards.sowa, ...SOWA }; save(db); }
+        if (!db.cards.sisu || db.cards.sisu.stripImage !== SISU.stripImage) { db.cards.sisu = { createdAt: Date.now(), ...db.cards.sisu, ...SISU }; save(db); }
         return db;
       }
     } catch (e) { if (memory) return memory; }
@@ -67,6 +68,16 @@
     logo: '/assets/demo/sowa/logo-80.svg', stampImage: '/assets/demo/sowa/owl-stamp.png', stripImage: '/assets/demo/sowa/strip.png'
   };
 
+  // SISU., Milano (proposal): their serif SISU. in sage on cream, liquid sage stripes behind
+  // cream stamps (print/sisu-look.js draws it; the PNGs are in assets/demo/sisu/).
+  const SISU = {
+    id: 'sisu', business: 'SISU.', city: 'Milano', type: 'caffe', lang: 'it',
+    title: 'Carta Sisu', reward: 'un caffè gratis', titleEn: 'Sisu card', rewardEn: 'a free coffee',
+    stampsNeeded: 10, icon: 'cup', plan: 'plus', style: 'minimal',
+    color: '#EEE5D8', ink: '#6B7262', font: 'sans', strip: '#EEE5D8',
+    logo: '/assets/demo/sisu/logo.png', iconLogo: '/assets/demo/sisu/mark.png', stampImage: '/assets/demo/sisu/stamp.png', stripImage: '/assets/demo/sisu/strip.png'
+  };
+
   // Every fresh browser starts with the example card for The Coffee, so a
   // QR code on the brochure opens a working card on any phone.
   function seed() {
@@ -87,6 +98,7 @@
     };
     db.cards.orsonero = { ...ORSONERO, createdAt: Date.now() };
     db.cards.sowa = { ...SOWA, createdAt: Date.now() };
+    db.cards.sisu = { ...SISU, createdAt: Date.now() };
     save(db);
     return db;
   }

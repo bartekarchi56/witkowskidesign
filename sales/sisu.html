@@ -81,7 +81,11 @@ window.WAIT_READY = true;
       ${pass(SISU_LOOK.cream, 'apple', 'Crema · iPhone')}
       ${pass(SISU_LOOK.sage, 'google', 'Salvia · Android')}
     </div>
-    <p class="note" style="text-align:center">Due proposte da scegliere e rifinire insieme: il vostro logo, i vostri colori, il premio che preferite.</p>
+    <div class="contact" style="margin-top:0;background:var(--cream-2)">
+      <div class="qr">${UI.qrSvg(UI.publicJoinUrl('sisu') + '&lang=it')}</div>
+      <div><b>Provatela ora sul vostro telefono</b><p style="margin:0;font-size:10.5pt">Inquadrate il codice: vi iscrivete in 10 secondi e salvate la carta di SISU. in Apple Wallet o Google Wallet.</p></div>
+    </div>
+    <p class="note" style="text-align:center;margin-top:4mm">Due proposte da scegliere e rifinire insieme: il vostro logo, i vostri colori, il premio che preferite.</p>
     ${foot(1)}
   </section>
 
