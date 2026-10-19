@@ -27,6 +27,7 @@ h1{font-size:28px;margin:0 0 6px}
 <script src="../assets/js/stamps.js"></script>
 <script src="../assets/js/ui.js"></script>
 <script src="sisu-look.js"></script>
+<script src="parzymy-look.js"></script>
 <script>
 (async () => {
   const svgUrl = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
@@ -58,6 +59,10 @@ h1{font-size:28px;margin:0 0 6px}
   const SOWA = { id: 'sowa', business: 'Cukiernia Sowa', title: 'Lodowy Fanklub', reward: '1 gałka lodów gratis', titleEn: 'Ice cream fan club', rewardEn: 'a free scoop', stampsNeeded: 10, lang: 'pl', tagline: '80 lat tradycji' };
   const ORSO = { id: 'orsonero', business: 'Orsonero Coffee', title: 'Carta Orsonero', reward: 'un caffè a scelta', titleEn: 'Orsonero card', rewardEn: 'any coffee, on us', stampsNeeded: 8, tagline: 'Specialty coffee' };
   const SETS = [
+    { id: 'parzymy', lang: 'pl', title: 'Parzymy Tutaj, Bydgoszcz', note: 'Ich jasna zieleń i ich znak (łuk z trzema kroplami) jako pieczątka.', cards: [
+      { name: 'parzymy-green', label: 'Jasnozielona: ciemne pieczątki z ich znakiem', stamps: 4, card: PARZYMY_LOOK.green },
+      { name: 'parzymy-dark', label: 'Ciemnozielona: jasne pieczątki', stamps: 4, card: PARZYMY_LOOK.dark }
+    ] },
     { id: 'sisu', lang: 'it', title: 'SISU., Milano', note: 'Il loro SISU. in verde salvia su crema, onde morbide dietro i timbri.', cards: [
       { name: 'sisu-waves', label: 'Onde: crema e salvia, timbri crema', stamps: 4, card: SISU_LOOK.cream },
       { name: 'sisu-sage', label: 'Salvia: carta verde, onde tono su tono, timbri crema', stamps: 4, card: SISU_LOOK.sage }

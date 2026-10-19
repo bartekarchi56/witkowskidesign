@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timbro dla Parzymy Tutaj</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* A short proposal for Parzymy Tutaj (Bydgoszcz), in Polish and in their light green: three
+   A4 pages. print/make-pdfs.js saves print/kit-parzymy/propozycja-parzymy.pdf. The cards come
+   from print/parzymy-look.js; the panel pictures in img/ are screenshots of the demo dashboard. */
+@page{size:A4;margin:0}
+:root{--sage:#2F4A2B;--sage-2:#7FA866;--cream:#EEF5E4;--cream-2:#F8FBF3}
+html,body{margin:0;background:#D8D1C4}
+body{font-family:var(--font);color:#22301F}
+.page{width:210mm;height:297mm;box-sizing:border-box;padding:18mm 17mm 15mm;background:var(--cream);margin:0 auto 20px;position:relative;overflow:hidden;page-break-after:always;break-after:page;display:flex;flex-direction:column}
+.page.dark{background:var(--sage);color:var(--cream)}
+@media print{html,body{background:none}.page{margin:0}}
+.kicker{font:500 9pt/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:0 0 4mm}
+.dark .kicker{color:#D9D2C2}
+h1,h2{font-family:"EB Garamond",Georgia,serif;font-weight:600;letter-spacing:-.01em;margin:0}
+h1{font-size:40pt;line-height:1.02;margin-bottom:5mm}
+h2{font-size:26pt;line-height:1.08;margin-bottom:4mm}
+h3{font-size:12pt;margin:0 0 1.5mm}
+p{font-size:11pt;line-height:1.5;margin:0 0 3mm}
+.lede{font-size:13pt;max-width:150mm;opacity:.9}
+.cards{display:flex;gap:9mm;justify-content:center;align-items:flex-start;margin:auto 0}
+.cards .pass{width:84mm;max-width:84mm}
+.cards .pass.apple{border-radius:12px;box-shadow:0 2px 4px rgba(0,0,0,.1),0 24px 40px -22px rgba(40,45,35,.6)}
+.cap{font:500 8pt/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;text-align:center;opacity:.65;margin-top:3mm}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm;margin:5mm 0 2mm}
+.step{background:var(--cream-2);border-radius:5mm;padding:5mm}
+.step b{display:inline-grid;place-items:center;width:8mm;height:8mm;border-radius:50%;background:var(--sage);color:var(--cream);font-size:10.5pt;margin-bottom:3mm}
+.step p{font-size:10pt;margin:0;opacity:.85}
+img.shot{display:block;width:100%;border-radius:3mm;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:3mm;align-items:start}
+.note{font-size:8.5pt;opacity:.7;line-height:1.4}
+.plans{display:grid;gap:4mm;margin:4mm 0}
+.plan{display:grid;grid-template-columns:1fr auto;gap:1mm 6mm;align-items:center;background:var(--cream-2);border-radius:5mm;padding:5mm 6mm;color:#2F332A}
+.plan.hl{background:#fff;box-shadow:0 0 0 2px var(--sage-2)}
+.plan h3{font-size:15pt;display:flex;gap:3mm;align-items:center}
+.plan .tag{font:600 7.5pt/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;background:var(--sage);color:var(--cream);padding:1.5mm 2.5mm;border-radius:99px}
+.plan p{grid-column:1;margin:0;font-size:10pt;opacity:.8}
+.plan .pr{grid-row:1/3;grid-column:2;text-align:right;font-family:"EB Garamond",Georgia,serif;font-size:26pt;font-weight:600;line-height:1}
+.plan .pr small{display:block;font:500 8pt/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase;opacity:.7}
+ul.ticks{list-style:none;padding:0;margin:3mm 0;display:grid;gap:2.5mm}
+ul.ticks li{font-size:11pt;line-height:1.4;padding-left:7mm;position:relative}
+ul.ticks li::before{content:"";position:absolute;left:0;top:1.6mm;width:3.2mm;height:3.2mm;border-radius:50%;background:currentColor;opacity:.75}
+.contact{margin-top:auto;display:flex;gap:7mm;align-items:center;background:var(--cream);color:#2F332A;border-radius:5mm;padding:6mm}
+.contact .qr{width:30mm;height:30mm;flex:0 0 30mm;background:#fff;padding:2.5mm;border-radius:3mm;box-sizing:border-box}
+.contact .qr svg{width:100%;height:100%;display:block}
+.contact b{font-size:14pt;display:block;margin-bottom:1mm}
+.contact span{font:500 9.5pt/1.6 var(--mono);display:block}
+.foot{position:absolute;left:17mm;right:17mm;bottom:8mm;display:flex;justify-content:space-between;font:500 7.5pt/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;opacity:.55}
+
+/* PDF viewers (iPhone) draw soft shadows as grey boxes: none in print, a thin edge instead */
+@media print{*{box-shadow:none!important;filter:none!important;text-shadow:none!important}.pass{outline:1px solid rgba(0,0,0,.12);outline-offset:-1px}}
+</style>
+</head>
+<body>
+<div id="doc"></div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../print/parzymy-look.js"></script>
+<script>
+window.WAIT_READY = true;
+(async () => {
+  I18N.lang = 'pl';
+  const esc = UI.esc, c = CONFIG.contact;
+  const plan = id => CONFIG.plans.find(p => p.id === id);
+  const site = CONFIG.siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const foot = n => `<div class="foot"><span>Timbro · Witkowski Design</span><span>Parzymy Tutaj · ${n} / 3</span></div>`;
+  const pass = (card, platform, cap) => `<div>${UI.renderPass(card, { id: 'K7M2QX', name: 'Ola K.', stamps: 4 }, { stamps: 4, platform, compact: true })}<p class="cap">${cap}</p></div>`;
+
+  document.getElementById('doc').innerHTML = `
+  <section class="page">
+    <p class="kicker">Propozycja dla Parzymy Tutaj · Bydgoszcz</p>
+    <h1>Karta lojalnościowa Parzymy Tutaj, w telefonie.</h1>
+    <p class="lede">Wasi klienci zbierają pieczątki w Apple Wallet albo Google Wallet. Bez aplikacji do pobrania i bez kartoników do zgubienia. Zaprojektowana w kolorach i ze znakiem Waszej kawiarni.</p>
+    <div class="cards">
+      ${pass(PARZYMY_LOOK.green, 'apple', 'Jasnozielona · iPhone')}
+      ${pass(PARZYMY_LOOK.dark, 'google', 'Ciemnozielona · Android')}
+    </div>
+    <div class="contact" style="margin-top:0;background:var(--cream-2)">
+      <div class="qr">${UI.qrSvg(UI.publicJoinUrl('parzymy') + '&lang=pl')}</div>
+      <div><b>Wypróbujcie ją teraz w telefonie</b><p style="margin:0;font-size:10.5pt">Zeskanujcie kod: dołączacie w 10 sekund i zapisujecie kartę Parzymy Tutaj w Apple Wallet albo Google Wallet.</p></div>
+    </div>
+    <p class="note" style="text-align:center;margin-top:4mm">Dwa projekty do wyboru i dopracowania razem: Wasze logo, Wasze kolory, nagroda, jaką chcecie.</p>
+    ${foot(1)}
+  </section>
+
+  <section class="page">
+    <p class="kicker">Jak to działa</p>
+    <h2>Trzy kroki. Dziesięć sekund przy kasie.</h2>
+    <div class="steps">
+      <div class="step"><b>1</b><h3>Klient skanuje kod QR</h3><p>Z plakatu przy kasie. Karta trafia do Portfela w telefonie, na iPhonie i Androidzie.</p></div>
+      <div class="step"><b>2</b><h3>Barista przybija pieczątkę</h3><p>Telefonem, który już macie: skanuje kartę i jednym dotknięciem dodaje pieczątkę.</p></div>
+      <div class="step"><b>3</b><h3>Pełna karta: kawa gratis</h3><p>Klient dostaje powiadomienie „Twoja nagroda czeka” i karta zaczyna się od nowa.</p></div>
+    </div>
+    <h2 style="margin-top:7mm;font-size:21pt">Co widzicie w swoim panelu</h2>
+    <img class="shot" src="img/panel-kpi.png" alt="">
+    <div class="pair">
+      <img class="shot" src="img/panel-dni.png" alt="">
+      <img class="shot" src="img/panel-blisko.png" alt="">
+    </div>
+    <ul class="ticks" style="margin-top:5mm">
+      <li>Ilu klientów wraca, w które dni i godziny jest największy ruch.</li>
+      <li>Komu brakuje jednej pieczątki do nagrody, a kto nie był od 30 dni.</li>
+      <li>Automatyczne przypomnienia w telefonie, z nazwą Parzymy Tutaj i tekstem, który sami wybieracie.</li>
+    </ul>
+    <p class="note">Na zrzutach przykładowe dane.</p>
+    ${foot(2)}
+  </section>
+
+  <section class="page dark">
+    <p class="kicker">Cennik</p>
+    <h2>Jedna subskrypcja. Wszystko w cenie.</h2>
+    <div class="plans">
+      <div class="plan hl"><h3>${esc(I18N.pick(plan('plus')).name)} <span class="tag">Polecany dla Was</span></h3>
+        <p>Projektuję Waszą kartę i wysyłam wydrukowany zestaw: plakat przy kasie, naklejkę na witrynę i karteczki na stoliki.</p>
+        <div class="pr">${plan('plus').month} €<small>miesięcznie</small></div></div>
+      <div class="plan"><h3>${esc(I18N.pick(plan('start')).name)}</h3>
+        <p>Sami ustawiacie logo, kolory i pieczątkę; plakat i kod QR do wydruku.</p>
+        <div class="pr">${plan('start').month} €<small>miesięcznie</small></div></div>
+    </div>
+    <ul class="ticks">
+      <li>Pierwsze ${CONFIG.trialDays} dni za darmo.</li>
+      <li>Rezygnujecie, kiedy chcecie. Rocznie: 2 miesiące gratis.</li>
+      <li>Ceny netto (bez VAT), w euro: 39 € to ok. 165 zł, 19 € to ok. 80 zł. Bez limitu klientów i pieczątek.</li>
+    </ul>
+    <p class="kicker" style="margin-top:8mm">Jak zaczynamy</p>
+    <div class="steps" style="margin-top:0">
+      <div class="step" style="color:#2F332A"><b>1</b><h3>Wybieracie projekt</h3><p>Jasno- albo ciemnozielony, z Waszym logo i nagrodą.</p></div>
+      <div class="step" style="color:#2F332A"><b>2</b><h3>Przygotowuję kartę</h3><p>Gotowa w kilka dni, razem z plakatem przy kasie.</p></div>
+      <div class="step" style="color:#2F332A"><b>3</b><h3>Pierwsza pieczątka</h3><p>Wieszacie plakat i klienci zaczynają zbierać.</p></div>
+    </div>
+    <div class="contact">
+      <div class="qr">${UI.qrSvg(CONFIG.siteUrl + '?lang=pl')}</div>
+      <div><b>${esc(c.name)} · Witkowski Design</b><span>${esc(c.phone)} (także WhatsApp)</span><span>${esc(CONFIG.legal.email)}</span><span>${esc(site)}</span></div>
+    </div>
+    ${foot(3)}
+  </section>`;
+  await Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(ok => { i.onload = i.onerror = ok; })));
+  await document.fonts.ready;
+  window.READY = true;
+})();
+</script>
+</body>
+</html>

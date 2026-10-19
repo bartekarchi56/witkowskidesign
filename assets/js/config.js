@@ -13,7 +13,7 @@ window.CONFIG = {
   // Your Supabase project (Settings → API). Leave empty to run the
   // browser-only demo, where data stays on one device.
   // Example cards that always run as a browser demo (printed brochures point to them).
-  demoCards: ['the-coffee', 'orsonero', 'sisu'],
+  demoCards: ['the-coffee', 'orsonero', 'sisu', 'parzymy'],
 
   supabase: {
     url: 'https://xchpnvadjxonhnknywis.supabase.co',

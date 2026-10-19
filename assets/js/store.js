@@ -26,6 +26,7 @@
         if (!db.cards.orsonero || db.cards.orsonero.stampImage !== ORSONERO_BEAR) { db.cards.orsonero = { ...db.cards.orsonero, ...ORSONERO }; save(db); }
         if (!db.cards.sowa || db.cards.sowa.stampImage !== SOWA.stampImage) { db.cards.sowa = { createdAt: Date.now(), ...db.cards.sowa, ...SOWA }; save(db); }
         if (!db.cards.sisu || db.cards.sisu.stripImage !== SISU.stripImage) { db.cards.sisu = { createdAt: Date.now(), ...db.cards.sisu, ...SISU }; save(db); }
+        if (!db.cards.parzymy || db.cards.parzymy.stripImage !== PARZYMY.stripImage) { db.cards.parzymy = { createdAt: Date.now(), ...db.cards.parzymy, ...PARZYMY }; save(db); }
         return db;
       }
     } catch (e) { if (memory) return memory; }
@@ -78,6 +79,16 @@
     logo: '/assets/demo/sisu/logo.png', iconLogo: '/assets/demo/sisu/mark.png', stampImage: '/assets/demo/sisu/stamp.png', stripImage: '/assets/demo/sisu/strip.png'
   };
 
+  // Parzymy Tutaj, Bydgoszcz (proposal): their light green and their mark as the stamp
+  // (print/parzymy-look.js draws it; the PNGs are in assets/demo/parzymy/).
+  const PARZYMY = {
+    id: 'parzymy', business: 'Parzymy Tutaj', city: 'Bydgoszcz', type: 'caffe', lang: 'pl',
+    title: 'Karta kawowa', reward: 'kawa gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee',
+    stampsNeeded: 10, icon: 'cup', plan: 'plus', style: 'minimal',
+    color: '#C9E3A3', ink: '#2F4A2B', font: 'sans', strip: '#C9E3A3',
+    logo: '/assets/demo/parzymy/logo.png', iconLogo: '/assets/demo/parzymy/mark.png', stampImage: '/assets/demo/parzymy/stamp.png', stripImage: '/assets/demo/parzymy/strip.png'
+  };
+
   // Every fresh browser starts with the example card for The Coffee, so a
   // QR code on the brochure opens a working card on any phone.
   function seed() {
@@ -99,6 +110,7 @@
     db.cards.orsonero = { ...ORSONERO, createdAt: Date.now() };
     db.cards.sowa = { ...SOWA, createdAt: Date.now() };
     db.cards.sisu = { ...SISU, createdAt: Date.now() };
+    db.cards.parzymy = { ...PARZYMY, createdAt: Date.now() };
     save(db);
     return db;
   }
