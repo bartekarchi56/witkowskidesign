@@ -56,7 +56,20 @@ h1{font-size:28px;margin:0 0 6px}
   const KOF = { id: 'kofeina', business: 'Kofeina', title: 'Karta kawowa', reward: 'kawa gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee', lang: 'pl', city: 'Bydgoszcz', stamp: 'punto', font: 'wide' };
   const SOWA = { id: 'sowa', business: 'Cukiernia Sowa', title: 'Lodowy Fanklub', reward: '1 gałka lodów gratis', titleEn: 'Ice cream fan club', rewardEn: 'a free scoop', stampsNeeded: 10, lang: 'pl', tagline: '80 lat tradycji' };
   const ORSO = { id: 'orsonero', business: 'Orsonero Coffee', title: 'Carta Orsonero', reward: 'un caffè a scelta', titleEn: 'Orsonero card', rewardEn: 'any coffee, on us', stampsNeeded: 8, tagline: 'Specialty coffee' };
+  // SISU. (Via Meravigli, Milano): cream and sage greens, stacked arches like their menu.
+  const SISU_C = ['#A3AC97', '#8D987B', '#767D61', '#5D6249', '#6B7263'];
+  const arches = (bg, cols) => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/>${cols.map((c, i) => {
+    const y = 18 + i * 78;
+    return `<path d="M-10 460 L-10 ${y + 210} C-10 ${y - 40} 1030 ${y - 40} 1030 ${y + 210} L1030 460 Z" fill="${c}" stroke="#F1E9DD" stroke-width="2.5"/>`; }).join('')}</svg>`);
+  const sisuDot = (fill, ring) => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="31" fill="${fill}"/>${ring ? `<circle cx="50" cy="50" r="36" fill="none" stroke="${ring}" stroke-width="2"/>` : ''}</svg>`);
+  const SISU = { id: 'sisu', business: 'SISU.', title: 'Carta Sisu', reward: 'un cappuccino gratis', titleEn: 'Sisu card', rewardEn: 'a free cappuccino', stampsNeeded: 10, lang: 'it', tagline: 'Bakery · Brunch', font: 'sans' };
   const SETS = [
+    { id: 'sisu', lang: 'it', title: 'SISU., Milano', note: 'Crema e verde salvia, gli archi del loro menu dietro i timbri.', cards: [
+      { name: 'sisu-arches', label: 'Archi: crema e verdi salvia, timbri crema', stamps: 4,
+        card: { ...SISU, color: '#EEE5D8', ink: '#5D6249', strip: '#EEE5D8', stripImage: arches('#EEE5D8', SISU_C), stampImage: sisuDot('#F4EDE2', '#F4EDE2') } },
+      { name: 'sisu-sage', label: 'Salvia: carta verde, archi chiari, timbri crema', stamps: 4,
+        card: { ...SISU, color: '#5D6249', ink: '#F1E9DD', strip: '#5D6249', stripImage: arches('#5D6249', ['#8D987B', '#7C8569', '#6B7263', '#646A52', '#575C45']), stampImage: sisuDot('#F1E9DD') } }
+    ] },
     { id: 'sowa', lang: 'pl', title: 'Cukiernia Sowa', note: 'Lodowy Fanklub z papierowej karty do telefonu, i karta kawowa na 80 lat.', cards: [
       { name: 'sowa-simple', label: 'Prosta: logo w środku, brązowe kropki', stamps: 6,
         card: { ...SOWA, color: '#FFFFFF', ink: '#522D24', stamp: 'punto', font: 'serif', strip: '#FFFFFF', stripImage: watermark(OWL, '#FFFFFF', .16, 1020, 450, 430), logo: '' } },
