@@ -21,7 +21,7 @@
         const db = JSON.parse(raw);
         // Browsers that saw the older example get The Coffee's new look.
         const tc = db.cards['the-coffee'];
-        if (tc && (!tc.stamp || !tc.plan)) { Object.assign(tc, COFFEE_LOOK); save(db); }
+        if (tc && tc.stampImage !== COFFEE_DOT) { Object.assign(tc, COFFEE_LOOK); save(db); }
         // Browsers from before the Orsonero proposal get its example card too.
         if (!db.cards.orsonero || db.cards.orsonero.stampImage !== ORSONERO_BEAR) { db.cards.orsonero = { ...db.cards.orsonero, ...ORSONERO }; save(db); }
         if (!db.cards.sowa || db.cards.sowa.stampImage !== SOWA.stampImage) { db.cards.sowa = { createdAt: Date.now(), ...db.cards.sowa, ...SOWA }; save(db); }
@@ -37,10 +37,12 @@
     try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { /* memory only */ }
   }
 
-  // The Coffee, Viale Piave 20: Japanese minimalism (white, beige, stone,
-  // light wood) and the name in katakana. Stamps are red linocut waves.
-  const COFFEE_LOOK = { plan: 'plus', style: 'giappone', color: '#FFFFFF', ink: '#B5442E', stamp: 'onda',
-    font: 'wide', strip: '#EEE9E1', tagline: 'ザ・コーヒー' };
+  // The Coffee, Viale Piave 20: Japanese minimalism and the name in katakana. Kept very
+  // simple: a white card with flat black dots; empty boxes show the same dot, faint grey.
+  // (stamp 'punto' is what the Wallet server draws, since demo cards send no artwork.)
+  const COFFEE_DOT = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="#0B0B0C"/></svg>');
+  const COFFEE_LOOK = { plan: 'plus', style: 'minimal', color: '#FFFFFF', ink: '#0B0B0C', stamp: 'punto',
+    font: 'wide', strip: '', tagline: 'ザ・コーヒー', stampImage: COFFEE_DOT };
 
   // Orsonero Coffee, Via Broggi 15 (proposal): the black bear of the name
   // (Brent's Canada), light oak and white walls, Nordic-Japanese calm.
