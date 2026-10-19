@@ -33,8 +33,9 @@ h1{font-size:28px;margin:0 0 6px}
   const OWL = await dataUrl('kit-sowa/art/sowa-owl-brown.png');
   const ORSO_LOGO = await dataUrl('kit-orsonero/art/orsonero-logo.svg');
   const ORSO_STAMP = await dataUrl('kit-orsonero/art/orsonero-stamp.svg');
-  // A strip with a big, faint logo in the middle: the stamps sit on top of it.
-  const watermark = (img, bg, opacity, w = 1020, h = 450, size = 400) => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${bg}"/><image href="${img}" xlink:href="${img}" x="${(w - size) / 2}" y="${(h - size) / 2}" width="${size}" height="${size}" opacity="${opacity}" preserveAspectRatio="xMidYMid meet"/></svg>`);
+  // A strip with a big, faint logo in the middle: the stamps sit on top of it. `y` moves it
+  // (Kofeina: the storefront's KOFEINA sign sits between the two rows of stamps).
+  const watermark = (img, bg, opacity, w = 1020, h = 450, size = 400, y = (h - size) / 2) => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${bg}"/><image href="${img}" xlink:href="${img}" x="${(w - size) / 2}" y="${y}" width="${size}" height="${size}" opacity="${opacity}" preserveAspectRatio="xMidYMid meet"/></svg>`);
   // Sowa's feather pattern (as on cukierniasowa.pl): pointed scales in offset rows, in cream.
   const W = 78, H = 44, feather = (x, y) => `M${x} ${y}C${x} ${y + H * .55} ${x + W * .28} ${y + H * .9} ${x + W / 2} ${y + H}C${x + W * .72} ${y + H * .9} ${x + W} ${y + H * .55} ${x + W} ${y}`;
   const scales = svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><defs><pattern id="s" width="${W}" height="${H * 2}" patternUnits="userSpaceOnUse"><path d="${[feather(0, 0), feather(-W / 2, H), feather(W / 2, H), feather(0, H * 2), feather(-W / 2, -H), feather(W / 2, -H)].join('')}" fill="none" stroke="#E4D6C2" stroke-width="2.2" stroke-linecap="round"/></pattern></defs><rect width="1020" height="450" fill="#FBF6EE"/><rect width="1020" height="450" fill="url(#s)"/></svg>`);
@@ -67,7 +68,7 @@ h1{font-size:28px;margin:0 0 6px}
       { name: 'kofeina-simple', label: 'Prosta: logo, czarne kropki', stamps: 6,
         card: { ...KOF, stampsNeeded: 10, color: '#FFFFFF', ink: '#0B0B0C', strip: '#FFFFFF', logo: 'kit-kofeina/art/kofeina-logo-black.png', stampImage: dot('#0B0B0C') } },
       { name: 'kofeina-dark', label: 'Czarna: ich kawiarnia w tle, białe kropki', stamps: 5,
-        card: { ...KOF, stampsNeeded: 8, color: '#0B0B0C', ink: '#FFFFFF', strip: '#0B0B0C', logo: 'kit-kofeina/art/kofeina-logo-white.png', stripImage: watermark(STORE_W, '#0B0B0C', .17, 1020, 450, 600), stampImage: dot('#FFFFFF') } }
+        card: { ...KOF, stampsNeeded: 8, color: '#0B0B0C', ink: '#FFFFFF', strip: '#0B0B0C', logo: 'kit-kofeina/art/kofeina-logo-white.png', stripImage: watermark(STORE_W, '#0B0B0C', .2, 1020, 450, 600, 40), stampImage: dot('#FFFFFF') } }
     ] },
     { id: 'orsonero', lang: 'en', title: 'Orsonero Coffee', note: 'Their logo at the top left, the grey and white awning behind the stamps; every stamp is the bear in a circle.', cards: [
       { name: 'orsonero-stripes', label: 'Their logo top left, awning stripes, bear stamps', stamps: 5,
