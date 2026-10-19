@@ -75,7 +75,7 @@
   /**
    * Draws the card the way Apple Wallet (opts.platform 'apple') or Google
    * Wallet ('google') shows it.
-   * card: {business,title,reward,stampsNeeded,color,ink,icon,logo}
+   * card: {business,title,reward,stampsNeeded,color,ink,icon,logo}; hideCount: no "3/10" field (the dots say it)
    * customer (optional): {id,name,stamps}
    * opts.stamps: stamps to show when there is no customer
    * opts.pop: index of a stamp to animate in
@@ -118,7 +118,7 @@
       <div class="pass google${fontCls}" style="${style}" role="group" aria-label="${aria}">
         <div class="wp-head"><span class="wp-glogo">${logo}</span><span class="wp-name">${esc(card.business)}</span></div>
         <div class="wp-title">${esc(title)}</div>
-        <div class="wp-fields">${field(t('pass.stamps'), `${have}/${need}`)}${field(t('pass.reward'), reward)}</div>
+        <div class="wp-fields">${card.hideCount ? '' : field(t('pass.stamps'), `${have}/${need}`)}${field(t('pass.reward'), reward)}</div>
         ${ready}
         ${codeBox}
         ${strip}
@@ -129,7 +129,7 @@
       : `<span class="wp-word"><span class="wp-name">${esc(card.business)}</span>${card.tagline ? `<small>${esc(card.tagline)}</small>` : ''}</span>`;
     return `
       <div class="pass apple${fontCls}${opts.compact ? ' compact' : ''}" style="${style}" role="group" aria-label="${aria}">
-        <div class="wp-head"><div class="wp-logo">${logo}</div>${field(t('pass.stamps'), `${have}/${need}`, 'wp-hf')}</div>
+        <div class="wp-head"><div class="wp-logo">${logo}</div>${card.hideCount ? '' : field(t('pass.stamps'), `${have}/${need}`, 'wp-hf')}</div>
         ${strip}
         <div class="wp-fields">${field(t('pass.reward'), reward)}${field(customer ? t('pass.member') : t('pass.card'), customer ? customer.name : title)}</div>
         ${ready}

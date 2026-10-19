@@ -21,7 +21,7 @@
         const db = JSON.parse(raw);
         // Browsers that saw the older example get The Coffee's new look.
         const tc = db.cards['the-coffee'];
-        if (tc && tc.stampImage !== COFFEE_DOT) { Object.assign(tc, COFFEE_LOOK); save(db); }
+        if (tc && (tc.stampImage !== COFFEE_DOT || !tc.hideCount)) { Object.assign(tc, COFFEE_LOOK); save(db); }
         // Browsers from before the Orsonero proposal get its example card too.
         if (!db.cards.orsonero || db.cards.orsonero.stampImage !== ORSONERO_BEAR) { db.cards.orsonero = { ...db.cards.orsonero, ...ORSONERO }; save(db); }
         if (!db.cards.sowa || db.cards.sowa.stampImage !== SOWA.stampImage) { db.cards.sowa = { createdAt: Date.now(), ...db.cards.sowa, ...SOWA }; save(db); }
@@ -42,7 +42,7 @@
   // (stamp 'punto' is what the Wallet server draws, since demo cards send no artwork.)
   const COFFEE_DOT = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="#0B0B0C"/></svg>');
   const COFFEE_LOOK = { plan: 'plus', style: 'minimal', color: '#FFFFFF', ink: '#0B0B0C', stamp: 'punto',
-    font: 'wide', strip: '', tagline: 'ザ・コーヒー', stampImage: COFFEE_DOT };
+    font: 'wide', strip: '', tagline: 'ザ・コーヒー', stampImage: COFFEE_DOT, hideCount: true };
 
   // Orsonero Coffee, Via Broggi 15 (proposal): the black bear of the name
   // (Brent's Canada), light oak and white walls, Nordic-Japanese calm.
