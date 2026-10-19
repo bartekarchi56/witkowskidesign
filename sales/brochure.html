@@ -6,7 +6,10 @@
 <title>Brochure · Timbro</title>
 <link rel="stylesheet" href="../assets/css/base.css">
 <link rel="stylesheet" href="../assets/css/poster.css">
-<style id="page-size">@page{size:A5;margin:0}</style>
+<style id="page-size">@page{size:A5;margin:0}
+/* PDF viewers (iPhone) draw soft shadows as grey boxes: none in print, a thin edge instead */
+@media print{*{box-shadow:none!important;filter:none!important;text-shadow:none!important}.pass{outline:1px solid rgba(0,0,0,.12);outline-offset:-1px}}
+</style>
 <style>
 body{background:var(--wash)}
 /* ---------- controls (screen only) ---------- */

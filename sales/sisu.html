@@ -52,6 +52,9 @@ ul.ticks li::before{content:"";position:absolute;left:0;top:1.6mm;width:3.2mm;he
 .contact b{font-size:14pt;display:block;margin-bottom:1mm}
 .contact span{font:500 9.5pt/1.6 var(--mono);display:block}
 .foot{position:absolute;left:17mm;right:17mm;bottom:8mm;display:flex;justify-content:space-between;font:500 7.5pt/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;opacity:.55}
+
+/* PDF viewers (iPhone) draw soft shadows as grey boxes: none in print, a thin edge instead */
+@media print{*{box-shadow:none!important;filter:none!important;text-shadow:none!important}.pass{outline:1px solid rgba(0,0,0,.12);outline-offset:-1px}}
 </style>
 </head>
 <body>

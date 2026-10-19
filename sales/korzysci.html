@@ -41,6 +41,9 @@ img.shot{display:block;width:100%;border-radius:3mm;border:1px solid var(--line)
 .cap img.narrow{width:80%}
 ul.plain{margin:0;padding-left:5mm}
 .foot{position:absolute;left:16mm;right:16mm;bottom:8mm;display:flex;justify-content:space-between;font:500 8pt/1 var(--mono);letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+
+/* PDF viewers (iPhone) draw soft shadows as grey boxes: none in print, a thin edge instead */
+@media print{*{box-shadow:none!important;filter:none!important;text-shadow:none!important}.pass{outline:1px solid rgba(0,0,0,.12);outline-offset:-1px}}
 </style>
 </head>
 <body>

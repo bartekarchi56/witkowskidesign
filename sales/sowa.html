@@ -53,6 +53,9 @@ tr.total td{font-weight:800;font-size:22px;border-bottom:0}
 .paper .dots i{aspect-ratio:1;border-radius:50%;border:2px dashed var(--sand)}
 .paper .dots i.on{background:var(--brown);border-color:var(--brown)}
 .paper small{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;opacity:.6}
+
+/* PDF viewers (iPhone) draw soft shadows as grey boxes: none in print, a thin edge instead */
+@media print{*{box-shadow:none!important;filter:none!important;text-shadow:none!important}.pass{outline:1px solid rgba(0,0,0,.12);outline-offset:-1px}}
 </style>
 </head>
 <body>
