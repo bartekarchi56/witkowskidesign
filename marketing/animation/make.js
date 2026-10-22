@@ -1,4 +1,5 @@
-// Renders marketing/animation/due-caffe.html frame by frame and makes an MP4 (1080 x 1920, 30 fps).
+// Renders marketing/animation/due-caffe.html frame by frame and makes an MP4 (1080 x 1920, 30 fps)
+// with the soundtrack from sound.js.
 //   node marketing/animation/make.js [it|en]     (needs ffmpeg: FFMPEG=/path/to/ffmpeg or on PATH)
 let chromium;
 try { ({ chromium } = require('playwright')); } catch (e) { ({ chromium } = require('/opt/node22/lib/node_modules/playwright')); }
@@ -26,7 +27,10 @@ const server = http.createServer((req, res) => {
   }
   await browser.close(); server.close();
   const out = path.join(__dirname, `timbro-due-caffe-${lang}.mp4`);
-  execFileSync(FFMPEG, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(dir, 'f%04d.jpg'), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '20', '-movflags', '+faststart', out]);
+  const wav = path.join(dir, 'sound.wav');
+  require('./sound.js').write(wav);
+  execFileSync(FFMPEG, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(dir, 'f%04d.jpg'), '-i', wav,
+    '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '20', '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', out]);
   fs.rmSync(dir, { recursive: true });
   console.log('✓', path.relative(ROOT, out));
 });

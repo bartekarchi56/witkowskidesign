@@ -289,7 +289,7 @@ function setText(t) {
   const e = ease((t - T_END) / .6);
   $('end').style.opacity = e;
   // the card on the end screen fills up to the reward
-  const n = t < T_END ? 6 : Math.min(10, 6 + Math.floor((t - T_END - .6) / .55) + 1);
+  const n = t < T_END + .6 ? 6 : Math.min(10, 7 + Math.floor((t - T_END - .6) / .55));
   if (setText.n !== n) {
     setText.n = n;
     $('card').innerHTML = UI.renderPass({ business: T.card, title: T.card, reward: T.reward, color: '#FFFFFF', ink: '#2B32FF', stamp: 'punto', stampsNeeded: 10, font: 'wide' }, null, { stamps: n, platform: 'apple', compact: true, pop: n - 1 });
