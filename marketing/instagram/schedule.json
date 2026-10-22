@@ -9,6 +9,17 @@
     "en": "Comment TIMBRO and we will send you the design of your card ☕",
     "it": "Commenta TIMBRO e ti mandiamo il design della tua carta ☕"
   },
+  "commentReply": {
+    "keyword": "TIMBRO",
+    "message": {
+      "it": "Ciao! Grazie per aver commentato TIMBRO ☕ Ti preparo gratis una carta fedeltà di prova per il tuo locale, così la vedi sul telefono. Come si chiama il locale e qual è il suo Instagram?",
+      "en": "Hi! Thanks for commenting TIMBRO ☕ I'll design a sample loyalty card for your café, free, so you can see it on a phone. What's your café called, and what's its Instagram?"
+    },
+    "reply": {
+      "it": "Ti ho scritto in DM! 📩",
+      "en": "Sent you a DM! 📩"
+    }
+  },
   "posts": [
     {
       "at": "2026-10-16 18:29",

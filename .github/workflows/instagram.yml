@@ -1,4 +1,5 @@
-# Posts to Instagram what marketing/instagram/schedule.json says is due (Rome time).
+# Posts to Instagram what marketing/instagram/schedule.json says is due (Rome time),
+# then answers new TIMBRO comments with a private message (marketing/instagram/replies.js).
 # Needs the repository secrets IG_USER_ID and IG_ACCESS_TOKEN (marketing/instagram/README.md,
 # "Automatic posting"). Until they exist it posts nothing. Run it by hand from the Actions tab too.
 name: Instagram
@@ -25,10 +26,17 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_API_BASE: ${{ vars.IG_API_BASE }}
         run: node marketing/instagram/post.js
+      - name: Answer TIMBRO comments
+        if: always()
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_API_BASE: ${{ vars.IG_API_BASE }}
+        run: node marketing/instagram/replies.js
       - name: Remember what was posted
         if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add marketing/instagram/posted.json 2>/dev/null || true
+          git add marketing/instagram/posted.json marketing/instagram/replied.json 2>/dev/null || true
           git diff --cached --quiet || (git commit -m "Instagram: record posted" && git push)
