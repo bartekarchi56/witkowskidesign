@@ -254,8 +254,9 @@ function screenAdd(D, press, slide) {
   // Add to Wallet button
   const by = h - 220;
   g.fillStyle = press ? '#333' : '#000'; rr(g, 60, by, w - 120, 96, 18); g.fill();
-  g.fillStyle = '#fff'; g.font = '600 28px Archivo'; g.fillText(' ' + T.add, w / 2 + 16, by + 58);
-  g.fillStyle = '#fff'; rr(g, 104, by + 30, 40, 34, 6); g.fill(); g.fillStyle = BLUE; g.fillRect(104, by + 38, 40, 6); g.fillStyle = '#FFC24B'; g.fillRect(104, by + 46, 40, 6);
+  g.font = '600 25px Archivo'; const tw = g.measureText(T.add).width, x0 = w / 2 - (tw + 52) / 2;
+  g.fillStyle = '#fff'; rr(g, x0, by + 31, 38, 32, 6); g.fill(); g.fillStyle = BLUE; g.fillRect(x0, by + 39, 38, 6); g.fillStyle = '#FFC24B'; g.fillRect(x0, by + 47, 38, 6);
+  g.fillStyle = '#fff'; g.textAlign = 'left'; g.fillText(T.add, x0 + 52, by + 57);
   if (press) { g.fillStyle = 'rgba(255,255,255,.25)'; g.beginPath(); g.arc(w / 2, by + 48, 30 + press * 90, 0, 7); g.fill(); }
 }
 function screenWallet(D, n, opts = {}) {
