@@ -29,7 +29,15 @@ const FILES = [
   ['sales/younique.html', 'kit-younique/proposta-younique.pdf'],
   ['sales/panfuwa.html', 'kit-panfuwa/proposta-panfuwa.pdf'],
   ['sales/matchamo.html', 'kit-matchamo/proposta-matchamo.pdf'],
-  ['sales/nowhere.html', 'kit-nowhere/proposta-nowhere.pdf']
+  ['sales/nowhere.html', 'kit-nowhere/proposta-nowhere.pdf'],
+  ['sales/flyer.html?lang=it', 'stampa/volantino-timbro-it-a5.pdf'],
+  ['sales/flyer.html?lang=it&format=a4', 'stampa/volantino-timbro-it-a4-casa.pdf'],
+  ['sales/flyer.html?lang=en', 'stampa/flyer-timbro-en-a5.pdf'],
+  ['sales/flyer.html?lang=en&format=a4', 'stampa/flyer-timbro-en-a4-home.pdf'],
+  ['sales/bizcard.html?lang=it', 'stampa/biglietto-timbro-it.pdf'],
+  ['sales/bizcard.html?lang=it&format=a4', 'stampa/biglietti-timbro-it-a4-casa.pdf'],
+  ['sales/bizcard.html?lang=en', 'stampa/business-card-timbro-en.pdf'],
+  ['sales/bizcard.html?lang=en&format=a4', 'stampa/business-cards-timbro-en-a4-home.pdf']
 ];
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.json': 'application/json' };
 

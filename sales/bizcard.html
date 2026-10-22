@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timbro business card</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style id="page-size">@page{size:85mm 55mm;margin:0}</style>
+<style>
+/* Business card, 85 x 55 mm, front and back. ?lang=it|en.
+   ?format=a4: ten cards per A4 side (2 x 5, centred, with cut lines) for a home printer,
+   double-sided, flip on long edge. print/make-pdfs.js saves them in print/stampa/. */
+html,body{margin:0;background:#ccc}
+body{font-family:var(--font);color:var(--ink)}
+.card{width:85mm;height:55mm;box-sizing:border-box;position:relative;overflow:hidden}
+.solo{page-break-after:always;break-after:page;margin:0 auto 12px;width:85mm}
+.front{background:var(--pop);color:#fff;padding:6mm 6mm 5mm;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:2mm;font-size:15pt;font-weight:800;font-stretch:112%}
+.brand i{width:5mm;height:5mm;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 1.05mm #fff,inset 0 0 0 1.4mm var(--pop)}
+.front h1{font-size:12.5pt;line-height:1.08;font-stretch:110%;font-weight:800;margin:auto 0 1.6mm;max-width:58mm}
+.front p{font:500 6.4pt/1.35 var(--mono);letter-spacing:.06em;text-transform:uppercase;margin:0;opacity:.85}
+.dots{position:absolute;right:5mm;top:6mm;display:grid;grid-template-columns:repeat(5,3.6mm);gap:1.5mm}
+.dots span{width:3.6mm;height:3.6mm;border-radius:50%;border:.35mm solid rgba(255,255,255,.55);box-sizing:border-box}
+.dots span.on{background:#fff;border-color:#fff}
+.back{background:#fff;padding:6mm 5.5mm;display:flex;gap:4mm;align-items:center}
+.back .qr{width:22mm;height:22mm;flex:0 0 22mm}
+.back .qr svg{width:100%;height:100%;display:block}
+.back b{display:block;font-size:11pt;font-stretch:108%;margin-bottom:.4mm}
+.back .role{display:block;font-size:7pt;color:var(--muted);margin-bottom:2.6mm}
+.back span.l{display:block;font:500 6.6pt/1.65 var(--mono);color:var(--ink);white-space:nowrap}
+.back span.l small{font:500 6pt/1 var(--font);color:var(--muted)}
+.back .scan{display:block;font-size:6.4pt;color:var(--pop);margin-top:2mm}
+.sheet{width:210mm;height:297mm;background:#fff;position:relative;page-break-after:always;break-after:page;margin:0 auto 20px}
+.grid{position:absolute;left:20mm;top:11mm;display:grid;grid-template-columns:85mm 85mm;grid-auto-rows:55mm}
+.grid .card{outline:.15mm dashed #bbb;outline-offset:0}
+@media print{html,body{background:none}.solo,.sheet{margin:0}}
+</style>
+</head>
+<body>
+<div id="doc"></div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+window.WAIT_READY = true;
+(async () => {
+  const q = new URLSearchParams(location.search);
+  const lang = q.get('lang') === 'en' ? 'en' : 'it';
+  document.documentElement.lang = lang;
+  const T = {
+    it: { h1: 'La carta fedeltà, sul telefono.', sub: 'Apple Wallet · Google Wallet<br>per bar e caffetterie', role: 'Witkowski Design · Milano', also: 'WhatsApp', scan: 'Inquadrate per vedere come funziona' },
+    en: { h1: 'The loyalty card, on the phone.', sub: 'Apple Wallet · Google Wallet<br>for cafés', role: 'Witkowski Design · Milan', also: 'WhatsApp', scan: 'Scan to see how it works' }
+  }[lang];
+  const esc = UI.esc, c = CONFIG.contact;
+  const site = CONFIG.siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const dots = Array.from({ length: 10 }, (_, i) => `<span${i < 7 ? ' class="on"' : ''}></span>`).join('');
+  const front = `<div class="card front"><div class="brand"><i></i>Timbro</div><div class="dots">${dots}</div><h1>${T.h1}</h1><p>${T.sub}</p></div>`;
+  const back = `<div class="card back"><div class="qr">${UI.qrSvg(CONFIG.siteUrl + '?lang=' + lang)}</div><div><b>${esc(c.name)}</b><span class="role">${T.role}</span><span class="l">${esc(c.phone)} <small>${T.also}</small></span><span class="l">${esc(CONFIG.legal.email)}</span><span class="l">${esc(site)}</span><span class="scan">${T.scan}</span></div></div>`;
+  const a4 = q.get('format') === 'a4';
+  document.getElementById('doc').innerHTML = a4
+    ? `<div class="sheet"><div class="grid">${front.repeat(10)}</div></div><div class="sheet"><div class="grid">${back.repeat(10)}</div></div>`
+    : `<div class="solo">${front}</div><div class="solo">${back}</div>`;
+  document.getElementById('page-size').textContent = `@page{size:${a4 ? 'A4' : '85mm 55mm'};margin:0}`;
+  await document.fonts.ready;
+  window.READY = true;
+})();
+</script>
+</body>
+</html>
