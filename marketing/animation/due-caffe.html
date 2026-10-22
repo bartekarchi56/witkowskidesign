@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Due caffè</title>
+<link rel="stylesheet" href="../../assets/css/base.css">
+<style>
+/* "Two cafés, same street": a short 3D animation (three.js) for café owners and Instagram.
+   Top: a café without a loyalty card, fewer customers every day. Bottom: a café with Timbro,
+   the same customers come back and more each day. Ends on the Timbro card filling up.
+   Vertical 540 x 960 (1080 x 1920 at 2x). ?lang=it|en. Plays on its own; make.js calls
+   window.renderAt(t) frame by frame and turns the frames into an MP4. */
+html,body{margin:0;background:#111}
+body{display:grid;place-items:center;min-height:100vh;font-family:var(--font)}
+.stage{width:540px;height:960px;position:relative;overflow:hidden;background:#F4F1EA}
+canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
+.ov{position:absolute;left:0;right:0;pointer-events:none}
+.title{top:34px;text-align:center;color:var(--ink)}
+.title h1{margin:0;font-size:34px;line-height:1.05;font-weight:800;font-stretch:112%;letter-spacing:-.01em}
+.title p{margin:8px 0 0;font-size:17px;color:var(--ink-2)}
+.half{height:375px}
+.half.a{top:150px}
+.half.b{top:535px}
+.chip{position:absolute;left:16px;top:14px;font:600 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:8px 11px;border-radius:99px;background:#fff;color:#55555c;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.b .chip{background:var(--pop);color:#fff}
+.b .chip i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3px var(--pop);margin-right:6px;vertical-align:-1px}
+.stats{position:absolute;right:14px;top:12px;background:rgba(255,255,255,.92);border-radius:14px;padding:9px 11px 8px;box-shadow:0 2px 12px rgba(0,0,0,.08);width:118px}
+.stats small{display:block;font:500 10px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#77777d}
+.stats b{display:block;font-size:26px;line-height:1.1;font-weight:800;font-stretch:110%;color:#55555c}
+.b .stats b{color:var(--pop)}
+.bars{display:flex;gap:4px;align-items:flex-end;height:38px;margin-top:5px}
+.bars span{flex:1;background:#BDBDC3;border-radius:2px 2px 0 0;height:0}
+.b .bars span{background:var(--pop)}
+.dim{position:absolute;inset:0;background:rgba(40,40,46,.5);opacity:0}
+.glow{position:absolute;inset:4px;border-radius:18px;box-shadow:0 0 0 3px var(--pop),0 0 40px rgba(43,50,255,.45);opacity:0}
+.foot{top:912px;height:48px;display:flex;align-items:center;justify-content:center;gap:12px;font:600 13px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.dots{display:flex;gap:6px}
+.dots span{width:9px;height:9px;border-radius:50%;background:#D5D2CB}
+.dots span.on{background:var(--ink)}
+.caption{top:470px;text-align:center;opacity:0}
+.caption span{display:inline-block;background:var(--ink);color:#fff;font-size:21px;font-weight:700;padding:12px 18px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.end{inset:0;background:#fff;opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 40px}
+.brand{display:flex;align-items:center;gap:10px;font-size:30px;font-weight:800;font-stretch:112%}
+.brand i{width:26px;height:26px;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 6px var(--pop),inset 0 0 0 8px #fff}
+.end h2{margin:22px 0 6px;font-size:34px;line-height:1.05;font-weight:800;font-stretch:112%}
+.end h2 em{font-style:normal;color:var(--pop)}
+.end p{margin:0;font-size:17px;color:var(--ink-2)}
+.end .card{margin:26px 0 24px;width:330px;transform-origin:50% 60%}
+.end .card .pass{max-width:330px}
+.end .free{display:inline-block;background:var(--pop-wash);color:var(--pop);font-weight:700;font-size:18px;padding:10px 16px;border-radius:12px}
+.end .url{margin-top:14px;font:500 15px/1 var(--mono);letter-spacing:.04em;color:var(--ink)}
+.note{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:10px;color:#9a9aa0}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="c"></canvas>
+  <div class="ov title" id="title"><h1></h1><p></p></div>
+  <div class="ov half a"><div class="dim" id="dimA"></div><span class="chip" id="chipA"></span><div class="stats"><small id="todayA"></small><b id="numA">0</b><div class="bars" id="barsA"></div></div></div>
+  <div class="ov half b"><div class="glow" id="glowB"></div><span class="chip" id="chipB"><i></i></span><div class="stats"><small id="todayB"></small><b id="numB">0</b><div class="bars" id="barsB"></div></div></div>
+  <div class="ov caption" id="caption"><span></span></div>
+  <div class="ov foot" id="foot"><span id="dayLabel"></span><div class="dots" id="dots"></div></div>
+  <div class="ov end" id="end">
+    <div class="brand"><i></i>Timbro</div>
+    <h2 id="endH"></h2>
+    <p id="endP"></p>
+    <div class="card" id="card"></div>
+    <span class="free" id="endFree"></span>
+    <div class="url" id="endUrl"></div>
+    <div class="note" id="note"></div>
+  </div>
+</div>
+<script src="../../assets/vendor/qrcode.js"></script>
+<script src="../../assets/js/config.js"></script>
+<script src="../../assets/js/i18n.js"></script>
+<script src="../../assets/js/stamps.js"></script>
+<script src="../../assets/js/ui.js"></script>
+<script type="module">
+import * as THREE from '../../assets/vendor/three.module.min.js';
+
+const q = new URLSearchParams(location.search);
+const lang = q.get('lang') === 'en' ? 'en' : 'it';
+document.documentElement.lang = lang;
+I18N.lang = lang;
+const T = {
+  it: { h1: 'Due caffè, stessa via.', p: 'Solo uno usa Timbro.', a: 'Senza carta fedeltà', b: 'Con Timbro', today: 'Clienti oggi', day: 'Giorno',
+    caption: 'Con Timbro i clienti tornano.', endH: 'La carta fedeltà, <em>sul telefono.</em>', endP: 'Apple Wallet · Google Wallet. Niente app, niente cartoncini.',
+    free: 'Primi 30 giorni gratis', note: 'Simulazione illustrativa', card: 'Il tuo bar', reward: 'un caffè gratis', signA: 'BAR', signB: 'CAFFÈ' },
+  en: { h1: 'Two cafés, same street.', p: 'Only one uses Timbro.', a: 'No loyalty card', b: 'With Timbro', today: 'Customers today', day: 'Day',
+    caption: 'With Timbro, customers come back.', endH: 'The loyalty card, <em>on the phone.</em>', endP: 'Apple Wallet · Google Wallet. No app, no paper cards.',
+    free: 'First 30 days free', note: 'Illustrative simulation', card: 'Your café', reward: 'a free coffee', signA: 'BAR', signB: 'CAFFÈ' }
+}[lang];
+const $ = id => document.getElementById(id);
+document.querySelector('#title h1').textContent = T.h1;
+document.querySelector('#title p').textContent = T.p;
+$('chipA').textContent = T.a; $('chipB').insertAdjacentText('beforeend', T.b);
+$('todayA').textContent = $('todayB').textContent = T.today;
+document.querySelector('#caption span').textContent = T.caption;
+$('endH').innerHTML = T.endH; $('endP').textContent = T.endP; $('endFree').textContent = T.free;
+$('endUrl').textContent = CONFIG.siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+$('note').textContent = T.note;
+
+// Timeline (seconds)
+const T0 = 2.0, DAY = 1.7, DAYS = 7, T_CMP = T0 + DAYS * DAY + .4, T_END = T_CMP + 2.6, DURATION = T_END + 4.6;
+const COUNT_A = [3, 3, 2, 2, 2, 1, 1], COUNT_B = [2, 3, 4, 5, 6, 7, 8];
+$('barsA').innerHTML = $('barsB').innerHTML = '<span></span>'.repeat(DAYS);
+$('dots').innerHTML = '<span></span>'.repeat(DAYS);
+
+// The signs and the poster are drawn with Archivo: load it before drawing them
+await Promise.all(['800 58px Archivo', 'bold 58px Archivo', '600 15px Archivo'].map(f => document.fonts.load(f)));
+
+const W = 540, H = 960, DPR = +(q.get('dpr') || 2);
+const renderer = new THREE.WebGLRenderer({ canvas: $('c'), antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(DPR);
+renderer.setSize(W, H, false);
+renderer.setScissorTest(true);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const ease = x => x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x);
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const backOut = x => { x = clamp01(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const hash = n => { const s = Math.sin(n * 127.1) * 43758.5453; return s - Math.floor(s); };
+const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: .85, metalness: 0, ...extra });
+
+function textTexture(text, bg, fg, w = 512, h = 96, font = 'bold 58px Archivo, Arial') {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d'); g.fillStyle = bg; g.fillRect(0, 0, w, h);
+  g.fillStyle = fg; g.font = font; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, w / 2, h / 2 + 3);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+}
+function spriteTexture(draw, size = 128) {
+  const c = document.createElement('canvas'); c.width = c.height = size; draw(c.getContext('2d'), size);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+// "+1" stamp bubble, and a paper loyalty card (the kind that gets lost)
+const STAMP_TEX = spriteTexture((g, s) => {
+  g.fillStyle = '#2B32FF'; g.beginPath(); g.arc(s / 2, s / 2, s * .46, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = '#fff'; g.lineWidth = s * .05; g.beginPath(); g.arc(s / 2, s / 2, s * .34, 0, Math.PI * 2); g.stroke();
+  g.fillStyle = '#fff'; g.font = `800 ${s * .38}px Archivo, Arial`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('+1', s / 2, s / 2 + s * .03);
+});
+const PAPER_TEX = spriteTexture((g, s) => {
+  g.fillStyle = '#ffffff'; g.strokeStyle = '#cfcfd4'; g.lineWidth = 4;
+  g.beginPath(); g.roundRect(s * .12, s * .28, s * .76, s * .44, 10); g.fill(); g.stroke();
+  g.fillStyle = '#b8b8be'; for (let i = 0; i < 5; i++) { g.beginPath(); g.arc(s * (.24 + i * .13), s * .5, s * .04, 0, Math.PI * 2); g.fill(); }
+});
+
+function makeCafe(o) {
+  const g = new THREE.Group();
+  const box = (w, h, d, m, x, y, z) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = b.receiveShadow = true; g.add(b); return b; };
+  box(3.4, 2.2, 2.4, mat(o.wall), 0, 1.1, 0);
+  box(3.7, .22, 2.7, mat(o.roof), 0, 2.31, 0);
+  box(.72, 1.3, .06, mat('#3b2f2a'), -.85, .65, 1.22);
+  const win = new THREE.Mesh(new THREE.PlaneGeometry(1.4, .85), new THREE.MeshStandardMaterial({ color: '#2a2622', emissive: o.glow, emissiveIntensity: .4, roughness: .3 }));
+  win.position.set(.62, .98, 1.215); g.add(win);
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(2.6, .42), new THREE.MeshStandardMaterial({ map: textTexture(o.sign, o.signBg, o.signFg), roughness: .6 }));
+  sign.position.set(0, 1.93, 1.215); g.add(sign);
+  // striped awning over the front
+  for (let i = 0; i < 8; i++) {
+    const s = box(3.5 / 8, .05, .7, mat(i % 2 ? o.awningA : o.awningB), -1.75 + 3.5 / 16 + i * 3.5 / 8, 1.58, 1.5);
+    s.rotation.x = .38;
+  }
+  // a table and two stools outside, a plant on each side
+  box(.06, .5, .06, mat('#555'), 1.55, .25, 2.05);
+  const top = new THREE.Mesh(new THREE.CylinderGeometry(.32, .32, .05, 20), mat('#f2efe8')); top.position.set(1.55, .52, 2.05); top.castShadow = true; g.add(top);
+  for (const dx of [-.42, .42]) { const st = new THREE.Mesh(new THREE.CylinderGeometry(.13, .13, .32, 14), mat(o.awningA)); st.position.set(1.55 + dx, .16, 2.05); st.castShadow = true; g.add(st); }
+  for (const x of [-2.15, 2.15]) {
+    const pot = new THREE.Mesh(new THREE.CylinderGeometry(.22, .17, .36, 14), mat('#b9876a')); pot.position.set(x, .18, 1.0); pot.castShadow = true; g.add(pot);
+    const leaf = new THREE.Mesh(new THREE.IcosahedronGeometry(.42, 1), mat(o.plant, { flatShading: true })); leaf.position.set(x, .72, 1.0); leaf.castShadow = true; g.add(leaf);
+  }
+  if (o.poster) {
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(.42, .58), new THREE.MeshStandardMaterial({ map: o.poster, roughness: .6 }));
+    p.position.set(-1.5, .95, 1.215); g.add(p);
+  }
+  return { group: g, win };
+}
+// The Timbro poster by the door: a blue card with a QR
+const POSTER = (() => {
+  const c = document.createElement('canvas'); c.width = 168; c.height = 232; const g = c.getContext('2d');
+  g.fillStyle = '#2B32FF'; g.fillRect(0, 0, 168, 232);
+  g.fillStyle = '#fff'; g.fillRect(24, 64, 120, 120);
+  g.fillStyle = '#111'; for (let y = 0; y < 10; y++) for (let x = 0; x < 10; x++) if (hash(x * 13 + y * 7) > .5 || (x < 3 && y < 3) || (x > 6 && y < 3) || (x < 3 && y > 6)) g.fillRect(32 + x * 10.4, 72 + y * 10.4, 10.4, 10.4);
+  g.fillStyle = '#fff'; g.font = '800 26px Archivo, Arial'; g.textAlign = 'center'; g.fillText('Timbro', 84, 42); g.font = '600 15px Archivo, Arial'; g.fillText('Wallet', 84, 212);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
+
+function makeScene(o) {
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(o.bg);
+  scene.add(new THREE.HemisphereLight('#ffffff', o.groundTint, 1.6));
+  const sun = new THREE.DirectionalLight('#fff6e8', 2.2);
+  sun.position.set(5, 9, 6); sun.castShadow = true;
+  sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7 }); sun.shadow.radius = 4;
+  scene.add(sun);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), mat(o.ground)); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+  const street = new THREE.Mesh(new THREE.PlaneGeometry(40, 2.2), mat(o.street)); street.rotation.x = -Math.PI / 2; street.position.set(0, .005, 3.3); street.receiveShadow = true; scene.add(street);
+  for (let i = -8; i <= 8; i++) { const l = new THREE.Mesh(new THREE.PlaneGeometry(.7, .08), mat('#ffffff')); l.rotation.x = -Math.PI / 2; l.position.set(i * 1.4, .01, 3.3); scene.add(l); }
+  const cafe = makeCafe(o.cafe); scene.add(cafe.group);
+  const camera = new THREE.PerspectiveCamera(30, W / 375, .1, 100);
+  // people pool
+  const people = [];
+  for (let i = 0; i < 24; i++) {
+    const p = new THREE.Group();
+    const body = new THREE.Mesh(new THREE.CapsuleGeometry(.17, .34, 4, 12), mat('#888')); body.position.y = .38; body.castShadow = true; p.add(body);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(.14, 16, 12), mat(['#f1c9a5', '#d9a77f', '#a8774f', '#f6d7bd'][i % 4])); head.position.y = .78; head.castShadow = true; p.add(head);
+    p.visible = false; scene.add(p); people.push({ g: p, body });
+  }
+  const sprites = [];
+  for (let i = 0; i < 12; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: o.spriteTex, transparent: true, depthTest: false })); s.visible = false; s.scale.set(.6, .6, 1); scene.add(s); sprites.push(s); }
+  return { scene, camera, cafe, people, sprites, o };
+}
+
+const COLORS = ['#E4572E', '#2B9EB3', '#F3A712', '#6C4AB6', '#29BF12', '#E84A8A', '#3D5A80', '#FF8C42', '#1B998B', '#C1666B'];
+const A = makeScene({ bg: '#E8E8EC', groundTint: '#9a9aa2', ground: '#DCDCE1', street: '#C4C4CB', spriteTex: PAPER_TEX,
+  cafe: { wall: '#C9C6C2', roof: '#8E8C8A', glow: '#d8d3c8', sign: T.signA, signBg: '#7d7b78', signFg: '#eeeeee', awningA: '#9b9a98', awningB: '#d7d5d2', plant: '#8fa08a' } });
+const B = makeScene({ bg: '#F5EFE4', groundTint: '#c9b9a0', ground: '#EDE4D3', street: '#D9CCB6', spriteTex: STAMP_TEX,
+  cafe: { wall: '#F2E3CF', roof: '#7A4E3A', glow: '#ffcf7a', sign: T.signB, signBg: '#2B32FF', signFg: '#ffffff', awningA: '#2B32FF', awningB: '#ffffff', plant: '#5f9a55', poster: POSTER } });
+
+// A customer's walk: in from one side along the street, up to the door, inside, back out the other way.
+const DOOR = new THREE.Vector3(-.85, 0, 1.5);
+function walkPos(ul, side, lane) {
+  const far = new THREE.Vector3(side * 6.5, 0, 3.0 + lane), turn = new THREE.Vector3(-.85 + side * .3, 0, 3.0 + lane), away = new THREE.Vector3(-side * 6.5, 0, 3.3 + lane);
+  if (ul < .22) return { p: far.clone().lerp(turn, ease(ul / .22)), walking: true, dir: -side };
+  if (ul < .35) return { p: turn.clone().lerp(DOOR, ease((ul - .22) / .13)), walking: true, dir: 0, enter: (ul - .22) / .13 };
+  if (ul < .55) return null;   // inside
+  if (ul < .65) return { p: DOOR.clone().lerp(new THREE.Vector3(-.85 - side * .3, 0, 3.3 + lane), ease((ul - .55) / .1)), walking: true, dir: 0, exit: (ul - .55) / .1 };
+  return { p: new THREE.Vector3(-.85 - side * .3, 0, 3.3 + lane).lerp(away, ease((ul - .65) / .3)), walking: true, dir: side };
+}
+
+function updateScene(S, t, counts, returning) {
+  const { people, sprites, cafe } = S;
+  people.forEach(p => p.g.visible = false); sprites.forEach(s => s.visible = false);
+  let pi = 0, si = 0;
+  const dayF = (t - T0) / DAY, d = Math.floor(dayF);
+  for (let dd = d - 1; dd <= d; dd++) {
+    if (dd < 0 || dd >= DAYS) continue;
+    const uu = dayF - dd;
+    for (let k = 0; k < counts[dd]; k++) {
+      const ul = uu - k * .1;
+      if (ul < 0 || ul > .95) continue;
+      const side = (returning ? k : dd + k) % 2 ? 1 : -1, lane = ((k * 37) % 5) * .09 - .18;
+      const w = walkPos(ul, side, lane);
+      if (!w || pi >= people.length) continue;
+      const P = people[pi++];
+      P.g.visible = true; P.g.position.copy(w.p);
+      P.g.position.y = w.walking ? Math.abs(Math.sin(t * 14 + k)) * .05 : 0;
+      const sc = w.enter !== undefined ? 1 - .5 * ease(w.enter) : w.exit !== undefined ? .5 + .5 * ease(w.exit) : 1;
+      P.g.scale.setScalar(sc * 1.35);
+      // the same people come back to the Timbro café (same colours every day); strangers at the other one
+      P.body.material.color.set(COLORS[(returning ? k : Math.floor(hash(dd * 11 + k * 3) * 10)) % COLORS.length]);
+      // leaving: a +1 stamp pops at Timbro; at the other café a paper card falls and stays behind
+      if (ul > .55 && ul < .9 && si < sprites.length) {
+        const s = sprites[si];
+        const x = (ul - .55) / .35;
+        if (returning) {
+          s.visible = true; s.position.set(w.p.x, 1.25 + x * .7, w.p.z); s.material.opacity = x < .7 ? 1 : 1 - (x - .7) / .3; s.scale.setScalar(.55 * backOut(x * 3)); si++;
+        } else if (k === 0) {
+          s.visible = true; s.position.set(DOOR.x + .25, Math.max(.06, .9 - ease(x * 1.6) * .84), DOOR.z + .5); s.material.opacity = x < .75 ? 1 : 1 - (x - .75) / .25; s.scale.setScalar(.45); si++;
+        }
+      }
+    }
+  }
+  // the window glows warmer as the Timbro café fills up, and dims at the other one
+  const dc = Math.max(0, Math.min(DAYS - 1, dayF));
+  cafe.win.material.emissiveIntensity = returning ? .35 + dc * .12 : .45 - dc * .05;
+  // cafés pop up at the start
+  cafe.group.scale.setScalar(backOut((t - (returning ? .5 : .2)) / .9) || .001);
+  const cam = S.camera;
+  cam.position.set(3.4 + Math.sin(t * .35) * .4, 5.6, 10.6); cam.lookAt(.9, 1.55, 1.9);
+}
+
+function setText(t) {
+  const dayF = (t - T0) / DAY, d = Math.max(0, Math.min(DAYS - 1, Math.floor(dayF)));
+  const inDays = t >= T0;
+  $('numA').textContent = inDays ? COUNT_A[d] : 0;
+  $('numB').textContent = inDays ? COUNT_B[d] : 0;
+  const maxC = 8;
+  [...$('barsA').children].forEach((b, i) => b.style.height = `${clamp01((dayF - i - .6) / .4) * COUNT_A[i] / maxC * 100}%`);
+  [...$('barsB').children].forEach((b, i) => b.style.height = `${clamp01((dayF - i - .6) / .4) * COUNT_B[i] / maxC * 100}%`);
+  $('dayLabel').textContent = `${T.day} ${inDays ? d + 1 : 1}`;
+  [...$('dots').children].forEach((s, i) => s.classList.toggle('on', inDays && i <= d));
+  $('title').style.opacity = 1 - ease((t - T_CMP) / .5) * .0;
+  const cmp = ease((t - T_CMP) / .6);
+  $('dimA').style.opacity = cmp; $('glowB').style.opacity = cmp;
+  $('caption').style.opacity = cmp * (1 - ease((t - T_END + .3) / .3));
+  $('caption').style.transform = `translateY(${(1 - cmp) * 14}px)`;
+  const e = ease((t - T_END) / .6);
+  $('end').style.opacity = e;
+  // the card on the end screen fills up to the reward
+  const n = t < T_END ? 6 : Math.min(10, 6 + Math.floor((t - T_END - .6) / .55) + 1);
+  if (setText.n !== n) {
+    setText.n = n;
+    $('card').innerHTML = UI.renderPass({ business: T.card, title: T.card, reward: T.reward, color: '#FFFFFF', ink: '#2B32FF', stamp: 'punto', stampsNeeded: 10, font: 'wide' }, null, { stamps: n, platform: 'apple', compact: true, pop: n - 1 });
+  }
+  $('card').style.transform = `scale(${.9 + .1 * backOut((t - T_END - .2) / .7)})`;
+}
+
+function renderAt(t) {
+  updateScene(A, t, COUNT_A, false);
+  updateScene(B, t, COUNT_B, true);
+  setText(t);
+  renderer.setViewport(0, H - 525, W, 375); renderer.setScissor(0, H - 525, W, 375); renderer.render(A.scene, A.camera);
+  renderer.setViewport(0, H - 910, W, 375); renderer.setScissor(0, H - 910, W, 375); renderer.render(B.scene, B.camera);
+}
+window.renderAt = renderAt;
+window.DURATION = DURATION;
+await document.fonts.ready;
+renderAt(0);
+window.READY = true;
+if (!q.has('capture')) {
+  const start = performance.now();
+  const loop = () => { renderAt(((performance.now() - start) / 1000) % (DURATION + 1)); requestAnimationFrame(loop); };
+  loop();
+}
+</script>
+</body>
+</html>

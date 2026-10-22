@@ -1,0 +1,32 @@
+// Renders marketing/animation/due-caffe.html frame by frame and makes an MP4 (1080 x 1920, 30 fps).
+//   node marketing/animation/make.js [it|en]     (needs ffmpeg: FFMPEG=/path/to/ffmpeg or on PATH)
+let chromium;
+try { ({ chromium } = require('playwright')); } catch (e) { ({ chromium } = require('/opt/node22/lib/node_modules/playwright')); }
+const http = require('http'), fs = require('fs'), path = require('path'), os = require('os'), { execFileSync } = require('child_process');
+const ROOT = path.join(__dirname, '..', '..');
+const lang = process.argv[2] === 'en' ? 'en' : 'it';
+const FPS = 30, FFMPEG = process.env.FFMPEG || 'ffmpeg';
+const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png' };
+const server = http.createServer((req, res) => {
+  const file = path.join(ROOT, decodeURIComponent(new URL(req.url, 'http://x').pathname));
+  fs.readFile(file, (err, data) => { if (err) { res.writeHead(404); return res.end(); } res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream' }); res.end(data); });
+}).listen(0, async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'due-caffe-'));
+  const browser = await chromium.launch({ executablePath: fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  const page = await browser.newPage({ viewport: { width: 540, height: 960 }, deviceScaleFactor: 2 });
+  page.on('pageerror', e => console.error('page error:', e.message));
+  await page.goto(`http://localhost:${server.address().port}/marketing/animation/due-caffe.html?capture&lang=${lang}`);
+  await page.waitForFunction(() => window.READY, null, { timeout: 60000 });
+  const stage = await page.$('#stage');
+  const total = Math.round((await page.evaluate(() => window.DURATION)) * FPS);
+  for (let f = 0; f < total; f++) {
+    await page.evaluate(t => window.renderAt(t), f / FPS);
+    await stage.screenshot({ path: path.join(dir, `f${String(f).padStart(4, '0')}.jpg`), type: 'jpeg', quality: 92 });
+    if (f % 60 === 0) console.log(`frame ${f}/${total}`);
+  }
+  await browser.close(); server.close();
+  const out = path.join(__dirname, `timbro-due-caffe-${lang}.mp4`);
+  execFileSync(FFMPEG, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(dir, 'f%04d.jpg'), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '20', '-movflags', '+faststart', out]);
+  fs.rmSync(dir, { recursive: true });
+  console.log('✓', path.relative(ROOT, out));
+});
