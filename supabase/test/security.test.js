@@ -187,13 +187,28 @@ assert.equal((await call(users.designer, 'admin_set_plan', { p_card_id: id, p_pl
 await rejects(call(users.designer, 'admin_set_plan', { p_card_id: id, p_plan: 'gold' }), /check constraint/);
 ok('cards keep their language and Polish messages; the designer can set the Chains plan, not made-up ones');
 
+// ---- a message to all customers: own cards only, once a day, on the card for everyone ----
+await rejects(call(users.ownerB, 'owner_send_news', { p_card_id: id, p_text: 'Hacked' }), /another café/);
+await rejects(call(users.ownerA, 'owner_send_news', { p_card_id: id, p_text: '   ' }), /Write a message/);
+const news = await call(users.ownerA, 'owner_send_news', { p_card_id: id, p_text: ' Nowość: Matcha Maple Apple\n' + 'x'.repeat(200) });
+assert.ok(news.news.startsWith('Nowość: Matcha Maple Apple x')); assert.equal(news.news.length, 140); assert.ok(news.newsAt > Date.now() - 60000);
+assert.equal((await call(anon, 'get_card', { p_card_id: id })).news, news.news);
+await rejects(call(users.ownerA, 'owner_send_news', { p_card_id: id, p_text: 'Again' }), /One message a day/);
+const targets = await call(users.ownerA, 'owner_news_targets', { p_card_id: id });
+assert.ok(targets.customers.some(c => c.customer.id === joined.id)); assert.ok(Array.isArray(targets.customers[0].pushTokens));
+assert.equal(await call(users.ownerB, 'owner_news_targets', { p_card_id: id }), null);
+await pool.query(`update timbro.cards set news_at = now() - interval '1 hour' where id = $1`, [id]);
+assert.equal(await call(users.ownerA, 'owner_news_targets', { p_card_id: id }), null, 'only right after sending');
+await rejects(call(anon, 'owner_send_news', { p_card_id: id, p_text: 'x' }), /permission denied/);
+ok('owners send one message a day to their own customers; nobody else can send it or read who gets it');
+
 // ---- no function is open by accident (Postgres lets PUBLIC run new functions) ----
 const open = async role => (await pool.query(`select coalesce(string_agg(p.proname, ',' order by p.proname), '') as f from pg_proc p
   join pg_namespace s on s.oid = p.pronamespace where s.nspname = 'timbro' and has_function_privilege($1, p.oid, 'execute')`, [role])).rows[0].f.split(',').filter(Boolean);
 const PUBLIC_FNS = ['device_link', 'get_card', 'get_my_card', 'join_card', 'reminders_due', 'stamper_lookup', 'stamper_redeem', 'stamper_stamp', 'wallet_register', 'wallet_targets', 'wallet_unregister', 'wallet_updated'];
 assert.deepEqual(await open('anon'), PUBLIC_FNS);
 assert.deepEqual(await open('authenticated'), [...PUBLIC_FNS, 'admin_ask_changes', 'admin_cards', 'admin_publish', 'admin_set_plan',
-  'owner_data', 'owner_link_code', 'owner_remove_device', 'owner_save_card', 'owner_set_device_location', 'owner_save_messages', 'owner_send_design'].sort());
+  'owner_data', 'owner_link_code', 'owner_news_targets', 'owner_remove_device', 'owner_save_card', 'owner_set_device_location', 'owner_save_messages', 'owner_send_design', 'owner_send_news'].sort());
 ok('only the intended functions can be called by visitors and logged-in users');
 
 console.log(`\nAll ${n} checks passed.`);

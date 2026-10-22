@@ -61,10 +61,17 @@ export function fill(text, card, { name = '', left = 1, lang = 'it' } = {}) {
 // The customer was sent the daily reminder since their last visit (reminders_due in schema.sql).
 export const reminded = customer => Boolean(customer.remindedAt) && customer.remindedAt >= (customer.lastVisit || customer.joinedAt || 0);
 
-// The message a pass shows right now: an explicit notice from the server, else the
-// café's reminder until the next visit, else "reward ready" or "almost there" when they apply.
+// A message to all customers stays on the cards this long (CONFIG.newsHours on the website).
+export const NEWS_HOURS = 72;
+export const freshNews = (card, now = Date.now()) => card.news && card.newsAt && now - card.newsAt < NEWS_HOURS * 3600000 ? str(card.news, 140) : '';
+
+// The message a pass shows right now: an explicit notice from the server, else the café's
+// message to all customers (for 3 days), else the café's reminder until the next visit,
+// else "reward ready" or "almost there" when they apply.
 export function currentMessage(card, customer, lang, notice) {
   if (notice) return str(notice, 140);
+  const news = freshNews(card);
+  if (news) return news;
   const m = card.messages || readMessages({}), left = card.stampsNeeded - customer.stamps;
   const rule = left > 0 && m.remind.on && reminded(customer) ? m.remind
     : left <= 0 ? (m.ready.on && m.ready) : left <= m.close.left ? (m.close.on && m.close) : null;

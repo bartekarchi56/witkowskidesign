@@ -1,6 +1,24 @@
 -- Timbro database, part 8 of 8. Run the parts in order.
 set search_path = timbro, extensions;
 
+create or replace function wallet_updated(p_device text, p_since bigint) returns jsonb
+language sql stable security definer set search_path = timbro
+as $$
+  select jsonb_build_object('serialNumbers', coalesce(jsonb_agg(c.id || '-' || m.id), '[]'::jsonb),
+    'lastUpdated', coalesce(max(_pass_updated(m)), 0)::text)
+  from wallet_devices w join customers m on m.id = w.customer_id join cards c on c.id = m.card_id
+  where w.device_id = p_device and _pass_updated(m) > coalesce(p_since, 0)
+$$;
+
+create or replace function wallet_targets(p_token text, p_code text) returns jsonb
+language plpgsql security definer set search_path = timbro
+as $$
+declare d devices := _device(p_token);
+begin
+  return coalesce((select jsonb_agg(w.push_token) from wallet_devices w join customers m on m.id = w.customer_id
+    join cards c on c.id = m.card_id where m.id = upper(trim(p_code)) and c.business_id = d.business_id), '[]'::jsonb);
+end $$;
+
 create table if not exists job_keys (
   name  text primary key,
   key   text not null default _token()
@@ -42,7 +60,7 @@ grant execute on function get_card(text), join_card(text, text, text, text, date
   to anon, authenticated;
 
 grant execute on function owner_data(), owner_save_card(jsonb), owner_save_messages(text, jsonb), owner_send_design(text, text, jsonb, text, jsonb, jsonb),
-  owner_link_code(), owner_remove_device(uuid), owner_set_device_location(uuid, text),
+  owner_link_code(), owner_remove_device(uuid), owner_set_device_location(uuid, text), owner_send_news(text, text), owner_news_targets(text),
   admin_cards(), admin_publish(text, jsonb), admin_ask_changes(text, text), admin_set_plan(text, text)
   to authenticated;
 

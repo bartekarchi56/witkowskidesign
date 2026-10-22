@@ -266,6 +266,8 @@
     }
     return out;
   }
+  // The café's message to all customers while it is fresh (CONFIG.newsHours), else ''.
+  const newsOf = (card, now = Date.now()) => card && card.news && card.newsAt && now - card.newsAt < (CONFIG.newsHours || 72) * 3600000 ? card.news : '';
   // The language a card speaks to a customer: English to visitors browsing in
   // English, otherwise the café's own (card.lang: it, pl or en).
   const cardLang = card => ['it', 'en', 'pl'].includes(card && card.lang) ? card.lang : 'it';
@@ -285,5 +287,5 @@
       .replace(/^\s*[,!]\s*/, '').replace(/\s+([!?,.])/g, '$1').replace(/\s{2,}/g, ' ').trim().replace(/^./, c => c.toUpperCase());
   }
 
-  window.UI = { messagesOf, fillMessage, cardLang, msgLang, stampsWord, walletAssets, lookOf, stampArt, stampEmpty, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
+  window.UI = { messagesOf, newsOf, fillMessage, cardLang, msgLang, stampsWord, walletAssets, lookOf, stampArt, stampEmpty, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
 })();

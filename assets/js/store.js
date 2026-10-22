@@ -180,6 +180,25 @@
       return card;
     },
 
+    // A message to all the card's customers (dashboard → Notifications), at most one a day.
+    // Connected: the database checks and sends it (Remote.sendNews). Throws 'daily' when too soon.
+    async sendNews(cardId, text) {
+      const db = load(), card = db.cards[cardId];
+      if (!card) return null;
+      text = String(text || '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 140);
+      if (!text) throw new Error('empty');
+      if (remoteDb) {
+        let r;
+        try { r = await Remote.sendNews(cardId, text); } catch (e) { throw new Error(/a day/i.test(e.message) ? 'daily' : e.message); }
+        Object.assign(card, r);
+        return card;
+      }
+      if (card.newsAt && Date.now() - card.newsAt < 20 * 3600000) throw new Error('daily');
+      Object.assign(card, { news: text, newsAt: Date.now(), updatedAt: Date.now() });
+      save(db);
+      return card;
+    },
+
     // ---- customers (one per person per card) ----
     // who: { name, email, phone, birthDate, marketing } (or just a name)
     join(cardId, who) {

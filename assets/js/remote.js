@@ -94,6 +94,16 @@
     billingPortal: () => edge('stripe-portal'),
     saveCard: card => rpc('owner_save_card', { p_card: card }),
     saveMessages: (cardId, messages) => rpc('owner_save_messages', { p_card_id: cardId, p_messages: messages }),
+    // A message to all customers: saved in the database, then the wallet server wakes their
+    // Wallet cards (as the owner, so only the card's own café can). Returns the card.
+    async sendNews(cardId, text) {
+      const card = await rpc('owner_send_news', { p_card_id: cardId, p_text: text });
+      const s = await this.session();
+      if (CONFIG.walletApi && s) {
+        await fetch(CONFIG.walletApi.replace(/\/$/, '') + '/news', { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${s.access_token}` }, body: JSON.stringify({ card: cardId }) }).catch(() => {});
+      }
+      return card;
+    },
     sendDesign: (cardId, kind, design, note, images, links) => rpc('owner_send_design', { p_card_id: cardId, p_kind: kind, p_design: design, p_note: note, p_images: images, p_links: links }),
     linkCode: () => rpc('owner_link_code'),
     removeDevice: id => rpc('owner_remove_device', { p_device_id: id }),

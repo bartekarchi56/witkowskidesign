@@ -5,6 +5,7 @@
 //   GET  /img/icon?card=  (or the look)                                  → square stamp PNG (Google program logo)
 //   POST /notify  {token, code}  (the till, after a stamp)               → updates the customer's Wallet cards
 //   GET  /reminders?key=  (once a day, e.g. cron-job.org)                → sends due "we miss you" reminders
+//   POST /news  {card}, Authorization: Bearer <owner's login>            → the café's message to all customers
 //   GET  /health
 import http from 'node:http';
 import { settings, appleReady, googleReady, googleProblem } from './settings.js';
@@ -31,12 +32,13 @@ function parse(req, body) {
   return JSON.parse(new URLSearchParams(body).get('data') || '{}');
 }
 
-// Calls one of the database's public functions (supabase/schema.sql).
-async function rpc(name, args) {
+// Calls one of the database's public functions (supabase/schema.sql); `as` is a logged-in
+// owner's access token, for the functions only an owner may call.
+async function rpc(name, args, as) {
   const { url, anonKey } = settings.supabase;
   const r = await fetch(`${url}/rest/v1/rpc/${name}`, {
     method: 'POST',
-    headers: { apikey: anonKey, authorization: `Bearer ${anonKey}`, 'content-type': 'application/json', 'content-profile': 'timbro' },
+    headers: { apikey: anonKey, authorization: `Bearer ${as || anonKey}`, 'content-type': 'application/json', 'content-profile': 'timbro' },
     body: JSON.stringify(args)
   });
   if (!r.ok) throw new Error(`${name}: ${r.status} ${(await r.text()).slice(0, 200)}`);
@@ -186,6 +188,31 @@ export const server = http.createServer(async (req, res) => {
           looks.delete(live.card.id);
           const lang = ['it', 'en', 'pl'].includes(live.card.lang) ? live.card.lang : 'it';
           out.google = await updateGoogleObject(readPassRequest({ lang, card: live.card, customer: live.customer })).catch(e => e.message);
+        }
+      }
+      return send(res, 200, JSON.stringify(out), { ...cors, 'content-type': 'application/json' });
+    }
+
+    // ---- The café's message to all its customers, right after the owner sent it ----
+    if (url.pathname === '/news') {
+      const cors = { 'access-control-allow-origin': req.headers.origin && originAllowed(req) ? req.headers.origin : 'null', 'access-control-allow-headers': 'content-type, authorization', 'access-control-allow-methods': 'POST' };
+      if (req.method === 'OPTIONS') return send(res, 204, '', cors);
+      const as = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+      if (req.method !== 'POST' || !originAllowed(req) || !settings.supabase.url || !as) return send(res, 403, 'No', cors);
+      const { card } = JSON.parse(await readBody(req) || '{}');
+      // Only the card's owner, within minutes of sending (see owner_news_targets).
+      const t = await rpc('owner_news_targets', { p_card_id: String(card || '') }, as);
+      if (!t) return send(res, 403, 'No', cors);
+      const out = { customers: t.customers.length, apple: 0, google: 0 };
+      looks.delete(t.card.id);
+      // iPhones: an empty push; the new pass carries the message (see currentMessage).
+      const tokens = [...new Set(t.customers.flatMap(c => c.pushTokens))];
+      if (tokens.length && appleReady()) out.apple = (await pushPassUpdate(tokens)).filter(r => r.status === 200).length;
+      if (googleReady()) {
+        const lang = ['it', 'en', 'pl'].includes(t.card.lang) ? t.card.lang : 'it';
+        for (let i = 0; i < t.customers.length; i += 10) {
+          const st = await Promise.all(t.customers.slice(i, i + 10).map(c => updateGoogleObject(readPassRequest({ lang, card: t.card, customer: c.customer })).catch(() => 0)));
+          out.google += st.filter(x => x === 200).length;
         }
       }
       return send(res, 200, JSON.stringify(out), { ...cors, 'content-type': 'application/json' });

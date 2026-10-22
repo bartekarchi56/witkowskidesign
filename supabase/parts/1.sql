@@ -44,6 +44,10 @@ create table if not exists cards (
 
 alter table cards add column if not exists messages jsonb not null default '{}'::jsonb;
 
+alter table cards add column if not exists news text not null default '';
+
+alter table cards add column if not exists news_at timestamptz;
+
 alter table cards add column if not exists lang text not null default 'it' check (lang in ('it', 'en', 'pl'));
 
 alter table cards drop constraint if exists cards_plan_check;

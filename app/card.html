@@ -214,7 +214,8 @@ I18N.add({
     // The café's own "almost there" / "reward ready" message (dashboard → Notifications), if switched on.
     const msgs = UI.messagesOf(card), lang = UI.msgLang(card);
     const own = left <= 0 ? (msgs.ready.on && msgs.ready) : left <= (msgs.close.left || 1) ? (msgs.close.on && msgs.close) : null;
-    const ownText = own ? UI.fillMessage(own[lang], card, { name: me.name, left, lang }) : '';
+    // The café's message to all customers comes first while it is fresh.
+    const ownText = UI.newsOf(card) || (own ? UI.fillMessage(own[lang], card, { name: me.name, left, lang }) : '');
     const events = me.history.slice(-5).reverse().map(h => {
       const what = h.type === 'joined' ? t('c.joined') : h.type === 'redeem' ? t('c.redeem') : t(h.type === 'stamp' ? 'c.stamp' : 'c.unstamp', { n: h.n });
       return `<li><span>${what}</span><span>${new Date(h.t).toLocaleDateString(I18N.locale(), { day: 'numeric', month: 'short' })}</span></li>`;

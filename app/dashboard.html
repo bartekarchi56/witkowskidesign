@@ -82,6 +82,15 @@ details.en[open]{padding-bottom:4px}
 .vars button{font:500 13px/1 var(--mono);padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);cursor:pointer}
 .vars button:hover{border-color:var(--ink)}
 .nt-save{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.news{border:1.5px solid var(--pop);border-radius:16px;padding:18px;margin:0 0 22px;background:var(--pop-wash);display:grid;gap:12px;max-width:760px}
+.news h3{margin:0;font-size:18px}
+.news p{margin:4px 0 0;font-size:14px;color:var(--ink-2)}
+.news .field{margin:0}
+.news .field > span{display:flex;justify-content:space-between;font-size:14px}
+.news .field em{font-style:normal;color:var(--muted);font-weight:400;font-variant-numeric:tabular-nums}
+.news textarea{background:#fff}
+.news .vars button{font-family:var(--font);text-align:left;line-height:1.3}
+.news-send{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .nt-preview{position:sticky;top:16px;display:grid;justify-items:center;gap:12px}
 .lock{width:300px;min-height:560px;border-radius:44px;border:10px solid #111;padding:44px 12px 20px;background:radial-gradient(120% 80% at 20% 0%,#3B3F8F 0%,#15172E 55%,#0B0B0C 100%);color:#fff;display:flex;flex-direction:column;gap:8px;box-shadow:0 30px 60px -30px rgba(0,0,0,.5)}
 .lock .clock{text-align:center;margin-bottom:14px}
@@ -478,6 +487,12 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
     <h2 class="sec" data-i18n="d.ntT"></h2>
     <p class="sec-sub" data-i18n="d.ntP"></p>
     <p class="res-sample" data-i18n="d.ntSoon"></p>
+    <div class="news" id="news">
+      <div><h3 data-i18n="d.newsT"></h3><p data-i18n="d.newsP"></p></div>
+      <label class="field"><span><span data-i18n="d.newsLabel"></span> <em id="news-count">0/140</em></span><textarea id="news-text" maxlength="140" rows="2"></textarea></label>
+      <div class="vars" id="news-ideas"></div>
+      <div class="news-send"><button class="btn pop" type="button" id="news-send" data-i18n="d.newsSend"></button><small class="muted" id="news-last"></small></div>
+    </div>
     <div class="nt">
       <form id="nt-form" class="nt-rules" onsubmit="return false"></form>
       <aside class="nt-preview" aria-label="Preview">
@@ -545,6 +560,10 @@ I18N.add({
     'd.nRemind': 'Promemoria', 'd.nRemindW': 'Se un cliente non passa da un po\'. Al massimo uno ogni volta.', 'd.nRemindOpt': 'Dopo', 'd.nDays': '{n} giorni senza visite',
     'd.nNear': 'Vicino al locale', 'd.nNearW': 'La carta appare sulla schermata di blocco quando il cliente passa vicino. Solo iPhone.', 'd.nUseHere': 'Usa la mia posizione (sono al locale)', 'd.nSaved': 'Posizione: {p}', 'd.nNoPlace': 'Nessuna posizione: premi il pulsante quando sei al locale.', 'd.nRemovePlace': 'Rimuovi', 'd.nGeoErr': 'Non riesco a leggere la posizione. Controlla i permessi del browser.',
     'd.nIt': 'Italiano', 'd.nPl': 'Polski', 'd.nEn': 'English (turisti)', 'd.nEnOnly': 'English', 'd.nInsert': 'Inserisci:', 'd.vName': 'nome', 'd.vLeft': 'timbri mancanti', 'd.vReward': 'premio', 'd.vBusiness': 'locale',
+    'd.newsT': 'Messaggio a tutti i clienti', 'd.newsP': 'Una novità sul telefono di tutti quelli che hanno la carta: dolci appena sfornati, una bevanda nuova, un evento. Una volta al giorno.',
+    'd.newsLabel': 'Il messaggio', 'd.newsIdeas': 'Idee:', 'd.newsIdea1': 'Cornetti appena sfornati: vi aspettiamo!', 'd.newsIdea2': 'Novità: Matcha Maple Apple. Venite a provarla!', 'd.newsIdea3': 'Oggi doppio timbro su ogni caffè ☕',
+    'd.newsSend': 'Invia a tutti', 'd.newsConfirm': 'Inviare questo messaggio a tutti i clienti con la carta ({n})? Puoi inviarne uno al giorno.', 'd.newsSent': 'Messaggio inviato a tutti.',
+    'd.newsLast': 'Ultimo invio {when}: “{text}”', 'd.newsDaily': 'Hai già inviato un messaggio oggi: il prossimo domani.', 'd.newsTag': 'Messaggio a tutti', 'd.newsEmpty': 'Scrivi un messaggio.',
     'd.nSave': 'Salva le notifiche', 'd.nSavedOk': 'Notifiche salvate.', 'd.nNow': 'ora', 'd.nNone': 'Accendi una notifica per vedere l\'anteprima.', 'd.nExample': 'Giulia',
     'd.tResults': 'Risultati', 'd.resT': 'Cosa fa la carta per il tuo locale', 'd.resP': 'I numeri delle visite timbrate: chi si iscrive, chi torna, quando e quanto spende.',
     'd.r30': '30 giorni', 'd.r90': '90 giorni', 'd.rAll': 'Sempre',
@@ -641,6 +660,10 @@ I18N.add({
     'd.nRemind': 'Reminder', 'd.nRemindW': 'When a customer hasn\'t been in for a while. At most one each time.', 'd.nRemindOpt': 'After', 'd.nDays': '{n} days without a visit',
     'd.nNear': 'Near the café', 'd.nNearW': 'The card shows on the lock screen when the customer walks nearby. iPhone only.', 'd.nUseHere': 'Use my location (I am at the café)', 'd.nSaved': 'Location: {p}', 'd.nNoPlace': 'No location yet: press the button while you are at the café.', 'd.nRemovePlace': 'Remove', 'd.nGeoErr': 'Can\'t read your location. Check the browser\'s permission.',
     'd.nIt': 'Italiano', 'd.nPl': 'Polski', 'd.nEn': 'English (tourists)', 'd.nEnOnly': 'English', 'd.nInsert': 'Insert:', 'd.vName': 'name', 'd.vLeft': 'stamps left', 'd.vReward': 'reward', 'd.vBusiness': 'café',
+    'd.newsT': 'Message to all customers', 'd.newsP': 'News on the phone of everyone with your card: fresh pastries, a new drink, an event. Once a day.',
+    'd.newsLabel': 'Your message', 'd.newsIdeas': 'Ideas:', 'd.newsIdea1': 'Fresh pastries just out of the oven: come and see us!', 'd.newsIdea2': 'New: Matcha Maple Apple. Come and try it!', 'd.newsIdea3': 'Double stamps on every coffee today ☕',
+    'd.newsSend': 'Send to all', 'd.newsConfirm': 'Send this message to all customers with your card ({n})? You can send one a day.', 'd.newsSent': 'Message sent to everyone.',
+    'd.newsLast': 'Last sent {when}: “{text}”', 'd.newsDaily': 'You already sent a message today: you can send the next one tomorrow.', 'd.newsTag': 'Message to all', 'd.newsEmpty': 'Write a message first.',
     'd.nSave': 'Save notifications', 'd.nSavedOk': 'Notifications saved.', 'd.nNow': 'now', 'd.nNone': 'Switch a notification on to see the preview.', 'd.nExample': 'Emma',
     'd.tResults': 'Results', 'd.resT': 'What the card does for your café', 'd.resP': 'The numbers behind the stamped visits: who joins, who comes back, when, and what they spend.',
     'd.r30': '30 days', 'd.r90': '90 days', 'd.rAll': 'All time',
@@ -738,6 +761,10 @@ I18N.add({
     'd.nRemind': 'Przypomnienie', 'd.nRemindW': 'Gdy klient dawno nie przychodził. Najwyżej jedno między wizytami.', 'd.nRemindOpt': 'Po', 'd.nDays': '{n} dniach bez wizyty',
     'd.nNear': 'W pobliżu lokalu', 'd.nNearW': 'Karta pojawia się na ekranie blokady, gdy klient przechodzi obok. Tylko na iPhonie.', 'd.nUseHere': 'Użyj mojej lokalizacji (jestem w lokalu)', 'd.nSaved': 'Lokalizacja: {p}', 'd.nNoPlace': 'Brak lokalizacji: naciśnij przycisk, gdy jesteś w lokalu.', 'd.nRemovePlace': 'Usuń', 'd.nGeoErr': 'Nie udało się odczytać lokalizacji. Sprawdź uprawnienia przeglądarki.',
     'd.nIt': 'Italiano', 'd.nPl': 'Polski', 'd.nEn': 'English (turyści)', 'd.nEnOnly': 'English', 'd.nInsert': 'Wstaw:', 'd.vName': 'imię', 'd.vLeft': 'brakujące pieczątki', 'd.vReward': 'nagroda', 'd.vBusiness': 'lokal',
+    'd.newsT': 'Wiadomość do wszystkich klientów', 'd.newsP': 'Nowość na telefonie każdego, kto ma Twoją kartę: świeże wypieki, nowy napój, wydarzenie. Raz dziennie.',
+    'd.newsLabel': 'Wiadomość', 'd.newsIdeas': 'Pomysły:', 'd.newsIdea1': 'Świeże wypieki prosto z pieca: zapraszamy!', 'd.newsIdea2': 'Nowość: Matcha Maple Apple. Wpadnij spróbować!', 'd.newsIdea3': 'Dziś podwójna pieczątka za każdą kawę ☕',
+    'd.newsSend': 'Wyślij do wszystkich', 'd.newsConfirm': 'Wysłać tę wiadomość do wszystkich klientów z kartą ({n})? Możesz wysłać jedną dziennie.', 'd.newsSent': 'Wiadomość wysłana do wszystkich.',
+    'd.newsLast': 'Ostatnio wysłana {when}: „{text}”', 'd.newsDaily': 'Dziś wysłano już wiadomość: następną wyślesz jutro.', 'd.newsTag': 'Wiadomość do wszystkich', 'd.newsEmpty': 'Najpierw napisz wiadomość.',
     'd.nSave': 'Zapisz powiadomienia', 'd.nSavedOk': 'Powiadomienia zapisane.', 'd.nNow': 'teraz', 'd.nNone': 'Włącz powiadomienie, aby zobaczyć podgląd.', 'd.nExample': 'Ania',
     'd.tResults': 'Wyniki', 'd.resT': 'Co karta daje Twojemu lokalowi', 'd.resP': 'Dane z wizyt z pieczątką: kto dołącza, kto wraca, kiedy przychodzi i ile wydaje.',
     'd.r30': '30 dni', 'd.r90': '90 dni', 'd.rAll': 'Od początku',
@@ -1158,8 +1185,35 @@ I18N.add({
   const NT_NAMES = { close: ['d.nClose', 'd.nCloseW'], ready: ['d.nReady', 'd.nReadyW'], remind: ['d.nRemind', 'd.nRemindW'], near: ['d.nNear', 'd.nNearW'] };
   let ntDraft = null, ntField = null, ntCard = null;   // ntField: the last text box used, for the insert buttons
   const ntBox = k => $('nt-form').querySelector(`[data-k="${k}"]`);
+  // A message to all customers (Store.sendNews): one a day, shown on their cards for 3 days.
+  const NEWS_GAP = 20 * 3600000;
+  function renderNews() {
+    $('news-ideas').innerHTML = `<span>${I18N.t('d.newsIdeas')}</span>` + [1, 2, 3].map(i => `<button type="button" data-idea>${UI.esc(I18N.t('d.newsIdea' + i))}</button>`).join('');
+    const last = current.newsAt ? I18N.t('d.newsLast', { when: UI.timeAgo(current.newsAt).replace(/^./, c => c.toLowerCase()), text: current.news || '' }) : '';
+    const soon = current.newsAt && Date.now() - current.newsAt < NEWS_GAP;
+    $('news-last').textContent = soon ? `${last} · ${I18N.t('d.newsDaily')}` : last;
+    $('news-send').disabled = !!soon;
+    newsCount();
+  }
+  const newsCount = () => { $('news-count').textContent = `${$('news-text').value.length}/140`; };
+  $('news-text').addEventListener('input', () => { newsCount(); ntPreview(); });
+  $('news-ideas').addEventListener('click', e => { const b = e.target.closest('[data-idea]'); if (b) { $('news-text').value = b.textContent.slice(0, 140); newsCount(); ntPreview(); $('news-text').focus(); } });
+  $('news-send').addEventListener('click', async () => {
+    const text = $('news-text').value.trim();
+    if (!text) { UI.toast(I18N.t('d.newsEmpty')); $('news-text').focus(); return; }
+    if (!confirm(I18N.t('d.newsConfirm', { n: Store.listCustomers(current.id).length }))) return;
+    $('news-send').disabled = true;
+    try {
+      current = await Store.sendNews(current.id, text) || current;
+      $('news-text').value = '';
+      UI.toast(I18N.t('d.newsSent'));
+    } catch (e) { UI.toast(e.message === 'daily' ? I18N.t('d.newsDaily') : e.message === 'empty' ? I18N.t('d.newsEmpty') : e.message); }
+    renderNews(); ntPreview();
+  });
+
   function renderNotify(keepDraft) {
     if (!current) return;
+    renderNews();
     if (!keepDraft || !ntDraft || ntCard !== current.id) { ntDraft = JSON.parse(JSON.stringify(UI.messagesOf(current))); ntCard = current.id; }
     const t = k => I18N.t(k);
     const opts = {
@@ -1199,9 +1253,12 @@ I18N.add({
     const name = (Store.listCustomers(current.id)[0] || {}).name || I18N.t('d.nExample');
     const left = { close: ntDraft.close.left || 1, ready: 0, remind: 3, near: 2 };
     const now = new Date(), ink = UI.esc(current.ink || '#2B32FF'), bg = UI.esc(current.color || '#FFFFFF'), biz = UI.esc(current.business || '');
-    const items = NT.filter(k => ntDraft[k].on).map(k => {
-      const text = UI.esc(UI.fillMessage(ntDraft[k][lang], current, { name: name.split(' ')[0], left: left[k], lang }));
-      return `<p class="tag">${UI.esc(I18N.t(NT_NAMES[k][0]))}</p><div class="ntf">${google
+    // The message to all customers being written (or the last one, while fresh) comes first.
+    const news = $('news-text').value.trim() || UI.newsOf(current);
+    const rows = (news ? [['news', news]] : []).concat(NT.filter(k => ntDraft[k].on).map(k => [k, UI.fillMessage(ntDraft[k][lang], current, { name: name.split(' ')[0], left: left[k], lang })]));
+    const items = rows.map(([k, msg]) => {
+      const text = UI.esc(msg);
+      return `<p class="tag">${UI.esc(I18N.t(k === 'news' ? 'd.newsTag' : NT_NAMES[k][0]))}</p><div class="ntf">${google
         ? `<div><div class="app"><i style="background:${ink}"></i>Google Wallet · ${I18N.t('d.nNow')}</div><div class="top"><b>${biz}</b></div><p>${text}</p></div>`
         : `<span class="ic" style="background:${bg};box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)"><i style="background:${ink}"></i></span><div><div class="top"><b>${biz}</b><span>${I18N.t('d.nNow')}</span></div><p>${text}</p></div>`}</div>`;
     });

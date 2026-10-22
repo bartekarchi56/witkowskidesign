@@ -60,6 +60,9 @@ window.CONFIG = {
               pl: '{business} jest tuż obok! Jeszcze {left} i odbierasz nagrodę: {reward}.' }
   },
 
+  // A message to all customers (dashboard → Notifications): one a day, on the cards for 3 days.
+  newsHours: 72,
+
   currency: '€',
   trialDays: 30,
   yearlyMonths: 10,       // pay 10 months, get 12

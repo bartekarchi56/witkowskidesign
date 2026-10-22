@@ -8,6 +8,7 @@ as $$
     'id', c.id, 'business', c.business, 'city', c.city, 'type', c.type,
     'title', c.title, 'reward', c.reward, 'titleEn', c.title_en, 'rewardEn', c.reward_en, 'lang', c.lang,
     'stampsNeeded', c.stamps_needed, 'plan', c.plan, 'messages', c.messages,
+    'news', c.news, 'newsAt', (extract(epoch from c.news_at) * 1000)::bigint,
     'createdAt', (extract(epoch from c.created_at) * 1000)::bigint,
     'updatedAt', (extract(epoch from c.updated_at) * 1000)::bigint
   ) || case when with_review and c.review is not null then jsonb_build_object('review', c.review) else '{}'::jsonb end

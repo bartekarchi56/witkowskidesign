@@ -26,6 +26,8 @@ export function readPassRequest(raw) {
     shape: str(card.shape, 10), mark: str(card.mark, 10), markText: str(card.markText, 2),
     empty: str(card.empty, 10), strip: str(card.strip, 7), tagline: str(card.tagline, 30),
     messages: readMessages(card.messages),
+    // A message the café sent to all its customers, and when (ms): shown for NEWS_HOURS.
+    news: str(card.news, 140), newsAt: Math.max(0, parseInt(card.newsAt, 10) || 0),
     updatedAt: Math.max(0, parseInt(card.updatedAt, 10) || 0)
   };
   const m = {

@@ -120,6 +120,21 @@ try {
   assert.equal((await (await W(`/reminders?key=${key}`)).json()).reminded, 0);   // not again before the next visit
   ok('the daily reminder carries the café\'s name to Apple and Google Wallet, once per visit');
 
+  // A message to all customers: the owner sends it, then the wallet server (as the owner) wakes every card.
+  await pool.query(`update auth.users set password = encode(sha256('pw'::bytea), 'hex') where id = $1`, [u]);
+  const email = (await pool.query('select email from auth.users where id = $1', [u])).rows[0].email;
+  const login = await (await fetch(`http://localhost:${SB}/auth/v1/token?grant_type=password`, { method: 'POST', body: JSON.stringify({ email, password: 'pw' }) })).json();
+  const news = (await call(owner, 'owner_send_news', { p_card_id: id, p_text: 'Novità: Matcha Maple Apple!' })).news;
+  const N = (h, b = { card: id }) => W('/news', { method: 'POST', headers: { origin: ORIGIN, 'content-type': 'application/json', ...h }, body: JSON.stringify(b) });
+  assert.equal((await N({})).status, 403);
+  assert.equal((await N({ authorization: 'Bearer nope' })).status, 400);
+  const sentNews = await (await N({ authorization: `Bearer ${login.access_token}` })).json();
+  assert.equal(sentNews.customers, 1); assert.equal(sentNews.google, 1);
+  assert.equal(patches.at(-1).body.messages[0].body, news); assert.equal(patches.at(-1).body.messages[0].messageType, 'TEXT_AND_NOTIFY');
+  const withNews = passJson(Buffer.from(await (await W(`/passkit/v1/passes/${PT}/${serial}`, { headers: auth })).arrayBuffer()));
+  assert.equal(withNews.storeCard.backFields.find(f => f.key === 'news').value, news);
+  ok('a message to all customers reaches Apple and Google Wallet, sent only by the café\'s owner');
+
   // Removing the pass.
   assert.equal((await W(`/passkit/v1/devices/dev1/registrations/${PT}/${serial}`, { method: 'DELETE', headers: auth })).status, 200);
   assert.equal(((await (await W('/notify', { method: 'POST', headers: { origin: ORIGIN }, body: JSON.stringify({ token: dev.token, code: me.id }) })).json()).phones), 0);
