@@ -53,10 +53,11 @@ window.WAIT_READY = true;
     en: { h1: 'The loyalty card, on the phone.', sub: 'Apple Wallet · Google Wallet<br>for cafés', role: 'Witkowski Design · Milan', also: 'WhatsApp', scan: 'Scan to see how it works' }
   }[lang];
   const esc = UI.esc, c = CONFIG.contact;
+  const NAME = 'Bartosz Witkowski';   // the full name on the card (Bartek elsewhere)
   const site = CONFIG.siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
   const dots = Array.from({ length: 10 }, (_, i) => `<span${i < 7 ? ' class="on"' : ''}></span>`).join('');
   const front = `<div class="card front"><div class="brand"><i></i>Timbro</div><div class="dots">${dots}</div><h1>${T.h1}</h1><p>${T.sub}</p></div>`;
-  const back = `<div class="card back"><div class="qr">${UI.qrSvg(CONFIG.siteUrl + '?lang=' + lang)}</div><div><b>${esc(c.name)}</b><span class="role">${T.role}</span><span class="l">${esc(c.phone)} <small>${T.also}</small></span><span class="l">${esc(CONFIG.legal.email)}</span><span class="l">${esc(site)}</span><span class="scan">${T.scan}</span></div></div>`;
+  const back = `<div class="card back"><div class="qr">${UI.qrSvg(CONFIG.siteUrl + '?lang=' + lang)}</div><div><b>${NAME}</b><span class="role">${T.role}</span><span class="l">${esc(c.phone)} <small>${T.also}</small></span><span class="l">${esc(CONFIG.legal.email)}</span><span class="l">${esc(site)}</span><span class="scan">${T.scan}</span></div></div>`;
   const a4 = q.get('format') === 'a4';
   document.getElementById('doc').innerHTML = a4
     ? `<div class="sheet"><div class="grid">${front.repeat(10)}</div></div><div class="sheet"><div class="grid">${back.repeat(10)}</div></div>`
