@@ -3,8 +3,8 @@
 //   due-caffe:     a pop when the cafés appear, a tick for each day, a "+1" blip for every stamp at the
 //                  Timbro café, a paper flutter for the lost card, a whoosh, four stamp thuds and a chime
 //   come-funziona: scan beeps, the tap on "Add to Wallet", the card dropping in, the till's beep and
-//                  success, a blip for every stamp, the notification, confetti and a chime, whooshes
-//                  between the steps
+//                  success, a blip for every stamp, the notification, confetti and a chime, typing and
+//                  sending a message to all customers, whooshes between the steps
 //   require('./sound.js').write(file, name)  → writes a 44.1 kHz stereo WAV
 const fs = require('fs');
 
@@ -12,8 +12,8 @@ const RATE = 44100;
 // Same timelines as the pages
 const T0 = 2.0, DAY = 1.7, DAYS = 7, T_CMP = T0 + DAYS * DAY + .4, T_END = T_CMP + 2.6;
 const COUNT_A = [3, 3, 2, 2, 2, 1, 1], COUNT_B = [2, 3, 4, 5, 6, 7, 8];
-const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, END = 22.2;
-const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 26.5 };
+const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, S6 = 22.0, END = 26.4;
+const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7 };
 
 function render(name) {
   const DURATION = DURATIONS[name];
@@ -92,7 +92,7 @@ function render(name) {
     // come-funziona
     const pop = (t, f0, g) => add(t, .25, x => Math.exp(-x * 18) * Math.sin(2 * Math.PI * (f0 + 500 * x) * x), g);
     pop(.35, 420, .22);
-    for (const t of [S1, S2, S3, S4, S5, END]) whoosh(t - .15, .7, .28);
+    for (const t of [S1, S2, S3, S4, S5, S6, END]) whoosh(t - .15, .7, .28);
     beep(S1 + 1.7, 88, .07, .12); beep(S1 + 1.8, 93, .1, .12);            // QR recognised
     click(S1 + 2.7); whoosh(S1 + 3.15, .5, .3);                            // tap "Add to Wallet", the card drops in
     blip(S1 + 3.7, 84, .12, 0);
@@ -104,6 +104,9 @@ function render(name) {
     thud(S4 + .3, .22); chime(S4 + .45, .13);                              // the tenth stamp, the reward
     for (let i = 0; i < 40; i++) { const t = S4 + .35 + hash(i) * 1.6; blip(t, 96 + Math.floor(hash(i + 9) * 10), .025, hash(i + 3) - .5); }
     for (let i = 0; i < 12; i++) click(S5 + .8 + i * .1, .05);              // the chart's bars
+    for (let i = 0; i < 14; i++) click(S6 + .6 + i * .078 + hash(i + 70) * .03, .06);   // typing the message
+    click(S6 + 1.8, .22); whoosh(S6 + 1.9, .6, .3);                        // send
+    for (const d of [2.6, 2.75, 2.9]) [88, 84, 91].forEach((m, i) => beep(S6 + d + i * .1, m, .09, .07));   // every phone gets it
     chime(END + .4, .09);
   }
 

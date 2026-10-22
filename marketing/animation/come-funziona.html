@@ -59,14 +59,16 @@ const lang = q.get('lang') === 'en' ? 'en' : 'it';
 document.documentElement.lang = lang;
 const T = {
   it: {
-    step: 'Passo', intro: ['Come funziona Timbro', 'La carta fedeltà sul telefono, in 4 passi.'],
+    step: 'Passo', intro: ['Come funziona Timbro', 'La carta fedeltà sul telefono, passo dopo passo.'],
     steps: [
       ['Inquadra il QR', 'Il cliente inquadra il QR alla cassa e salva la carta nel Wallet. Niente app.'],
       ['Un tocco alla cassa', 'Il barista inquadra la carta con il telefono che avete già: timbro aggiunto.'],
       ['Il cliente torna', 'Ogni visita, un timbro. E un promemoria quando manca poco al premio.'],
       ['Carta piena: premio!', 'Al decimo timbro il premio è pronto. La carta riparte da capo.'],
-      ['Tu vedi tutto', 'Nel pannello: chi torna, quando, chi è vicino al premio.']
+      ['Tu vedi tutto', 'Nel pannello: chi torna, quando, chi è vicino al premio.'],
+      ['Un messaggio a tutti', 'Scrivi una novità dal pannello: arriva sul telefono di tutti i clienti.']
     ],
+    msg: 'Oggi: cornetto + cappuccino a 3 €', compose: 'Nuovo messaggio', to: 'A: tutti i clienti (190)', send: 'Invia a tutti', sent: 'Inviato ✓',
     days: ['Lun', 'Mer', 'Ven', 'Lun', 'Gio', 'Sab'],
     scan: 'Inquadra il codice', add: 'Aggiungi a Apple Wallet', added: 'Aggiunta al Wallet', bar: 'Il tuo bar', card: 'Carta fedeltà',
     stamps: 'Timbri', reward: 'Premio', rewardV: 'un caffè gratis', customer: 'Cliente', ready: 'Premio pronto: mostralo alla cassa',
@@ -75,14 +77,16 @@ const T = {
     endH: 'La carta fedeltà, <em>sul telefono.</em>', endP: 'Apple Wallet · Google Wallet', endL: ['Nei colori del tuo locale', 'Niente app, niente cartoncini', 'Clienti che tornano'], free: 'Primi 30 giorni gratis'
   },
   en: {
-    step: 'Step', intro: ['How Timbro works', 'The loyalty card on the phone, in 4 steps.'],
+    step: 'Step', intro: ['How Timbro works', 'The loyalty card on the phone, step by step.'],
     steps: [
       ['Scan the QR', 'The customer scans the QR at the till and saves the card in Wallet. No app.'],
       ['One tap at the till', 'The barista scans the card with the phone you already have: stamped.'],
       ['They come back', 'Every visit, a stamp. And a reminder when the reward is close.'],
       ['Card full: reward!', 'At the tenth stamp the reward is ready. The card starts again.'],
-      ['You see everything', 'In the dashboard: who comes back, when, who is close to a reward.']
+      ['You see everything', 'In the dashboard: who comes back, when, who is close to a reward.'],
+      ['One message to everyone', 'Write some news in the dashboard: it reaches every customer\u2019s phone.']
     ],
+    msg: 'Today: croissant + cappuccino for €3', compose: 'New message', to: 'To: all customers (190)', send: 'Send to all', sent: 'Sent ✓',
     days: ['Mon', 'Wed', 'Fri', 'Mon', 'Thu', 'Sat'],
     scan: 'Scan the code', add: 'Add to Apple Wallet', added: 'Added to Wallet', bar: 'Your café', card: 'Loyalty card',
     stamps: 'Stamps', reward: 'Reward', rewardV: 'a free coffee', customer: 'Customer', ready: 'Reward ready: show it at the till',
@@ -99,7 +103,7 @@ $('days').innerHTML = T.days.map(d => `<span>${d}</span>`).join('');
 await Promise.all(['800 40px Archivo', '600 40px Archivo', '500 40px Archivo', '400 40px Archivo'].map(f => document.fonts.load(f)));
 
 // Timeline (seconds)
-const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, END = 22.2, DURATION = 26.5;
+const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, S6 = 22.0, END = 26.4, DURATION = 30.7;
 const BLUE = '#2B32FF';
 
 const W = 540, H = 960, DPR = +(q.get('dpr') || 2);
@@ -149,7 +153,8 @@ function makeDevice(w, h, r, color, texW) {
 const phone = makeDevice(1.0, 2.05, .14, '#1d1d1f', 540);        // the customer's
 const till = makeDevice(1.0, 2.05, .14, '#5b5f66', 540);         // the barista's
 const tablet = makeDevice(1.9, 1.35, .1, '#2a2a2d', 900);        // the owner's dashboard
-scene.add(phone.g, till.g, tablet.g);
+const phoneL = makeDevice(1.0, 2.05, .14, '#e9e4dc', 540), phoneR = makeDevice(1.0, 2.05, .14, '#3c4a63', 540);   // two more customers
+scene.add(phone.g, till.g, tablet.g, phoneL.g, phoneR.g);
 
 // The QR stand on the counter
 const standTex = (() => {
@@ -270,7 +275,7 @@ function screenWallet(D, n, opts = {}) {
     g.fillStyle = 'rgba(250,250,252,.97)'; g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 30; rr(g, 24, y, w - 48, 130, 28); g.fill(); g.shadowColor = 'transparent';
     g.fillStyle = BLUE; rr(g, 46, y + 30, 56, 56, 14); g.fill(); g.fillStyle = '#fff'; g.beginPath(); g.arc(74, y + 58, 13, 0, 7); g.fill(); g.fillStyle = BLUE; g.beginPath(); g.arc(74, y + 58, 9, 0, 7); g.fill();
     g.textAlign = 'left'; g.fillStyle = '#111'; g.font = '700 24px Archivo'; g.fillText('Timbro · ' + T.bar, 120, y + 52);
-    g.fillStyle = '#333'; g.font = '500 22px Archivo'; g.fillText(T.notif, 120, y + 90);
+    g.fillStyle = '#333'; g.font = '500 22px Archivo'; g.fillText(opts.msg || T.notif, 120, y + 90);
     g.fillStyle = '#888'; g.textAlign = 'right'; g.font = '500 20px Archivo'; g.fillText(T.now, w - 50, y + 52);
   }
 }
@@ -289,6 +294,20 @@ function screenTill(D, ok) {
     g.fillStyle = '#111'; g.font = '800 38px Archivo'; g.fillText(T.stamped, w / 2, 620);
     g.fillStyle = '#666'; g.font = '500 28px Archivo'; g.fillText('Giulia R. · 1/10', w / 2, 666);
   }
+}
+function screenCompose(D, typed, press, sent) {
+  const { ctx: g, c } = D, w = c.width, h = c.height;
+  g.fillStyle = '#F7F7F9'; g.fillRect(0, 0, w, h);
+  g.fillStyle = '#111'; g.textAlign = 'left'; g.font = '800 40px Archivo'; g.fillText(T.compose, 48, 80);
+  g.fillStyle = '#fff'; rr(g, 48, 116, w - 96, 60, 14); g.fill(); g.fillStyle = '#555'; g.font = '500 24px Archivo'; g.fillText(T.to, 70, 155);
+  g.fillStyle = '#fff'; rr(g, 48, 196, w - 96, 200, 14); g.fill();
+  const txt = T.msg.slice(0, Math.round(T.msg.length * typed));
+  g.fillStyle = '#111'; g.font = '600 34px Archivo'; g.fillText(txt, 72, 260);
+  if (typed < 1 || Math.floor(typed * 20) % 2) { const cw = g.measureText(txt).width; g.fillStyle = BLUE; g.fillRect(76 + cw, 232, 3, 36); }
+  const by = h - 150, bw = 360, bx = w - 48 - bw;
+  g.fillStyle = sent ? '#22C55E' : press ? '#1B21D6' : BLUE; rr(g, bx, by, bw, 90, 18); g.fill();
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '700 32px Archivo'; g.fillText(sent ? T.sent : T.send, bx + bw / 2, by + 56);
+  if (press && !sent) { g.fillStyle = 'rgba(255,255,255,.25)'; g.beginPath(); g.arc(bx + bw / 2, by + 45, 30 + press * 120, 0, 7); g.fill(); }
 }
 function screenDash(D, p) {
   const { ctx: g, c } = D, w = c.width, h = c.height;
@@ -318,17 +337,19 @@ function track(keys, t) {
   return keys[keys.length - 1][1];
 }
 // [time, [x, y, z, rotX, rotY, rotZ, scale]]
-const PHONE = [[0, [1.2, 1.4, .3, 0, -.6, .1, 0]], [.8, [.2, 1.35, .6, 0, -.25, 0, 1]], [S1 + .7, [.3, 1.3, .8, -.05, -.2, 0, 1]], [S2, [.3, 1.3, .8, -.05, -.2, 0, 1]], [S2 + .8, [.62, 1.3, .6, 0, -.45, 0, .85]], [S3, [.62, 1.3, .6, 0, -.45, 0, .85]], [S3 + .8, [0, 1.35, 1.0, 0, 0, 0, 1]], [S5, [0, 1.35, 1.0, 0, 0, 0, 1]], [S5 + .9, [.95, 1.3, .4, 0, -.5, 0, .8]]];
+const PHONE = [[0, [1.2, 1.4, .3, 0, -.6, .1, 0]], [.8, [.2, 1.35, .6, 0, -.25, 0, 1]], [S1 + .7, [.3, 1.3, .8, -.05, -.2, 0, 1]], [S2, [.3, 1.3, .8, -.05, -.2, 0, 1]], [S2 + .8, [.62, 1.3, .6, 0, -.45, 0, .85]], [S3, [.62, 1.3, .6, 0, -.45, 0, .85]], [S3 + .8, [0, 1.35, 1.0, 0, 0, 0, 1]], [S5, [0, 1.35, 1.0, 0, 0, 0, 1]], [S5 + .9, [.95, 1.3, .4, 0, -.5, 0, .8]], [S6, [.95, 1.3, .4, 0, -.5, 0, .8]], [S6 + .7, [2.9, 1.3, .4, 0, -.5, 0, .8]], [S6 + 2.0, [2.9, 1.0, 1.4, 0, 0, 0, .66]], [S6 + 2.6, [0, 1.0, 1.4, 0, 0, 0, .66]]];
 const TILL = [[S2, [-3.4, 1.3, .8, 0, .6, 0, .85]], [S2 + .9, [-.62, 1.3, .8, 0, .5, 0, .85]], [S3 - .1, [-.62, 1.3, .8, 0, .5, 0, .85]], [S3 + .7, [-3.6, 1.3, .8, 0, .5, 0, .85]]];
-const TABLET = [[S5, [-3.4, 1.3, .9, 0, .5, 0, .8]], [S5 + 1, [-.45, 1.3, .9, 0, .28, 0, .8]]];
-const CAM = [[0, [0, 2.4, 8.9, 0, 1.6, .4]], [S3, [0, 2.4, 8.9, 0, 1.6, .4]], [S3 + .7, [0, 2.3, 7.9, 0, 1.55, .6]], [S5, [0, 2.3, 7.9, 0, 1.55, .6]], [S5 + 1, [0, 2.4, 9.2, 0, 1.6, .4]]];
+const TABLET = [[S5, [-3.4, 1.3, .9, 0, .5, 0, .8]], [S5 + 1, [-.45, 1.3, .9, 0, .28, 0, .8]], [S6, [-.45, 1.3, .9, 0, .28, 0, .8]], [S6 + .7, [0, 1.5, 1.2, 0, 0, 0, 1]], [S6 + 2.0, [0, 1.5, 1.2, 0, 0, 0, 1]], [S6 + 2.6, [0, 2.45, -.5, 0, 0, 0, .7]]];
+const PHONE_L = [[S6 + 2.0, [-3.2, 1.05, 1.2, 0, .3, 0, .62]], [S6 + 2.6, [-.78, 1.05, 1.2, 0, .3, 0, .62]]];
+const PHONE_R = [[S6 + 2.1, [3.2, 1.05, 1.2, 0, -.3, 0, .62]], [S6 + 2.7, [.78, 1.05, 1.2, 0, -.3, 0, .62]]];
+const CAM = [[0, [0, 2.4, 8.9, 0, 1.6, .4]], [S3, [0, 2.4, 8.9, 0, 1.6, .4]], [S3 + .7, [0, 2.3, 7.9, 0, 1.55, .6]], [S5, [0, 2.3, 7.9, 0, 1.55, .6]], [S5 + 1, [0, 2.4, 9.2, 0, 1.6, .4]], [S6, [0, 2.4, 9.2, 0, 1.6, .4]], [S6 + .8, [0, 2.3, 8.6, 0, 1.6, .6]]];
 const place = (obj, k) => { obj.position.set(k[0], k[1], k[2]); obj.rotation.set(k[3], k[4], k[5]); obj.scale.setScalar(Math.max(.0001, k[6])); };
 
 // ---------- frame ----------
 function renderAt(t) {
   // captions
-  const steps = [[0, S1], [S1, S2], [S2, S3], [S3, S4], [S4, S5], [S5, END]];
-  let si = steps.findIndex(([a, b]) => t >= a && t < b); if (si < 0) si = 5;
+  const steps = [[0, S1], [S1, S2], [S2, S3], [S3, S4], [S4, S5], [S5, S6], [S6, END]];
+  let si = steps.findIndex(([a, b]) => t >= a && t < b); if (si < 0) si = 6;
   const [a] = steps[si];
   const fadeIn = ease((t - a) / .4);
   $('head').style.opacity = (si === 0 ? ease(t / .5) : fadeIn) * (1 - ease((t - END) / .4));
@@ -340,6 +361,8 @@ function renderAt(t) {
   place(phone.g, track(PHONE, t));
   place(till.g, t < S2 || t > S3 + .8 ? [-9, 0, 0, 0, 0, 0, 0] : track(TILL, t));
   place(tablet.g, t < S5 ? [-9, 0, 0, 0, 0, 0, 0] : track(TABLET, t));
+  place(phoneL.g, t < S6 + 2 ? [-9, 0, 0, 0, 0, 0, 0] : track(PHONE_L, t));
+  place(phoneR.g, t < S6 + 2 ? [-9, 0, 0, 0, 0, 0, 0] : track(PHONE_R, t));
   phone.g.position.y += Math.sin(t * 1.6) * .02;
   // the QR stand goes away after step 2, the cup arrives with the reward
   const st = 1 - ease((t - S3) / .6); stand.scale.setScalar(Math.max(.0001, st * backOut((t - .3) / .8)));
@@ -360,11 +383,17 @@ function renderAt(t) {
     const banner = t > S3 + 3.2 ? ease((t - S3 - 3.2) / .35) : 0;
     screenWallet(phone, n, { pop: n > 1 ? ((t - S3 - .5) % .42) / .3 : undefined, banner });
     [...$('days').children].forEach((s, i) => s.classList.toggle('on', i < n - 1));
-  } else { n = t > S4 + .3 ? 10 : 9; screenWallet(phone, n, { pop: n === 10 ? (t - S4 - .3) / .4 : undefined }); }
+  } else if (t < S6 + 1) { n = t > S4 + .3 ? 10 : 9; screenWallet(phone, n, { pop: n === 10 ? (t - S4 - .3) / .4 : undefined }); }
+  else screenWallet(phone, 2, { banner: ease((t - S6 - 2.75) / .35), msg: T.msg });
   phone.tex.needsUpdate = true;
   $('days').style.opacity = ease((t - S3 - .2) / .3) * (1 - ease((t - S4) / .3));
   if (t >= S2 && t <= S3 + .8) { screenTill(till, clamp01((t - S2 - 1.2) / 1.0)); till.tex.needsUpdate = true; }
-  if (t >= S5) { screenDash(tablet, clamp01((t - S5 - .8) / 1.6)); tablet.tex.needsUpdate = true; }
+  if (t >= S5 && t < S6 + .4) { screenDash(tablet, clamp01((t - S5 - .8) / 1.6)); tablet.tex.needsUpdate = true; }
+  if (t >= S6 + .4) { const pr = clamp01((t - S6 - 1.8) / .3); screenCompose(tablet, clamp01((t - S6 - .6) / 1.1), pr, t > S6 + 2.1); tablet.tex.needsUpdate = true; }
+  if (t >= S6 + 2) {
+    screenWallet(phoneL, 4, { banner: ease((t - S6 - 2.6) / .35), msg: T.msg }); phoneL.tex.needsUpdate = true;
+    screenWallet(phoneR, 7, { banner: ease((t - S6 - 2.9) / .35), msg: T.msg }); phoneR.tex.needsUpdate = true;
+  }
 
   // the scan beam from the till phone to the card, and the +1
   const bt = clamp01((t - S2 - 1.0) / .9);
