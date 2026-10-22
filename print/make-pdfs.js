@@ -30,6 +30,7 @@ const FILES = [
   ['sales/panfuwa.html', 'kit-panfuwa/proposta-panfuwa.pdf'],
   ['sales/matchamo.html', 'kit-matchamo/proposta-matchamo.pdf'],
   ['sales/nowhere.html', 'kit-nowhere/proposta-nowhere.pdf'],
+  ['sales/pan.html', 'kit-pan/proposta-pan.pdf'],
   ['sales/flyer.html?lang=it', 'stampa/volantino-timbro-it-a5.pdf'],
   ['sales/flyer.html?lang=it&format=a4', 'stampa/volantino-timbro-it-a4-casa.pdf'],
   ['sales/flyer.html?lang=en', 'stampa/flyer-timbro-en-a5.pdf'],
