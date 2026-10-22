@@ -10,14 +10,14 @@
    print/make-pdfs.js saves print/kit-theseed/proposta-theseed.pdf. The cards come from
    print/theseed-look.js; the panel pictures in img/ are screenshots of the demo dashboard. */
 @page{size:A4;margin:0}
-:root{--sage:#1E1E1C;--sage-2:#D9A441;--cream:#F4F0E8;--cream-2:#FBF9F4}
-html,body{margin:0;background:#DCD6CB}
-body{font-family:var(--font);color:#1E1E1C}
+:root{--sage:#3A2C22;--sage-2:#B4533A;--cream:#E8E5D6;--cream-2:#F3F1E7}
+html,body{margin:0;background:#D6D1BE}
+body{font-family:var(--font);color:#3A2C22}
 .page{width:210mm;height:297mm;box-sizing:border-box;padding:18mm 17mm 15mm;background:var(--cream);margin:0 auto 20px;position:relative;overflow:hidden;page-break-after:always;break-after:page;display:flex;flex-direction:column}
 .page.dark{background:var(--sage);color:var(--cream)}
 @media print{html,body{background:none}.page{margin:0}}
 .kicker{font:500 9pt/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:0 0 4mm}
-.dark .kicker{color:#D9A441}
+.dark .kicker{color:#C09A7A}
 h1,h2{font-family:"EB Garamond",Georgia,serif;font-weight:600;letter-spacing:-.01em;margin:0}
 h1{font-size:40pt;line-height:1.02;margin-bottom:5mm}
 h2{font-size:26pt;line-height:1.08;margin-bottom:4mm}
@@ -36,7 +36,7 @@ img.shot{display:block;width:100%;border-radius:3mm;box-shadow:0 1px 2px rgba(0,
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:3mm;align-items:start}
 .note{font-size:8.5pt;opacity:.7;line-height:1.4}
 .plans{display:grid;gap:4mm;margin:4mm 0}
-.plan{display:grid;grid-template-columns:1fr auto;gap:1mm 6mm;align-items:center;background:var(--cream-2);border-radius:5mm;padding:5mm 6mm;color:#1E1E1C}
+.plan{display:grid;grid-template-columns:1fr auto;gap:1mm 6mm;align-items:center;background:var(--cream-2);border-radius:5mm;padding:5mm 6mm;color:#3A2C22}
 .plan.hl{background:#fff;box-shadow:0 0 0 2px var(--sage-2)}
 .plan h3{font-size:15pt;display:flex;gap:3mm;align-items:center}
 .plan .tag{font:600 7.5pt/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;background:var(--sage);color:var(--cream);padding:1.5mm 2.5mm;border-radius:99px}
@@ -46,7 +46,7 @@ img.shot{display:block;width:100%;border-radius:3mm;box-shadow:0 1px 2px rgba(0,
 ul.ticks{list-style:none;padding:0;margin:3mm 0;display:grid;gap:2.5mm}
 ul.ticks li{font-size:11pt;line-height:1.4;padding-left:7mm;position:relative}
 ul.ticks li::before{content:"";position:absolute;left:0;top:1.6mm;width:3.2mm;height:3.2mm;border-radius:50%;background:currentColor;opacity:.75}
-.contact{margin-top:auto;display:flex;gap:7mm;align-items:center;background:var(--cream);color:#1E1E1C;border-radius:5mm;padding:6mm}
+.contact{margin-top:auto;display:flex;gap:7mm;align-items:center;background:var(--cream);color:#3A2C22;border-radius:5mm;padding:6mm}
 .contact .qr{width:30mm;height:30mm;flex:0 0 30mm;background:#fff;padding:2.5mm;border-radius:3mm;box-sizing:border-box}
 .contact .qr svg{width:100%;height:100%;display:block}
 .contact b{font-size:14pt;display:block;margin-bottom:1mm}
@@ -79,12 +79,12 @@ window.WAIT_READY = true;
   <section class="page">
     <p class="kicker">Proposta per The Seed · Viale Monte Nero 78, Milano</p>
     <h1>La carta fedeltà di The Seed, sul telefono.</h1>
-    <p class="lede">I vostri clienti raccolgono i timbri in Apple Wallet o Google Wallet. Niente app da scaricare, niente cartoncini da perdere. Semplice e pulita: bianca, con timbri neri. Per i clienti che tornano ogni giorno per la colazione e il banana bread.</p>
+    <p class="lede">I vostri clienti raccolgono i timbri in Apple Wallet o Google Wallet. Niente app da scaricare, niente cartoncini da perdere. Nei vostri colori, con il germoglio del vostro logo come timbro. Per chi torna ogni mattina per la colazione e per chi lavora nel vostro co-working.</p>
     <div class="cards">
-      ${pass(SEED_LOOK.light, 'apple', 'iPhone')}
-      ${pass(SEED_LOOK.dark, 'google', 'Android')}
+      ${pass(SEED_LOOK.cream, 'apple', 'Crema · iPhone')}
+      ${pass(SEED_LOOK.soil, 'google', 'Terra · Android')}
     </div>
-    <p class="note" style="text-align:center">Una base semplice da rifinire insieme: il vostro logo, il premio che preferite.</p>
+    <p class="note" style="text-align:center">Due proposte da scegliere e rifinire insieme: i colori, il premio che preferite.</p>
     ${foot(1)}
   </section>
 
@@ -129,9 +129,9 @@ window.WAIT_READY = true;
     </ul>
     <p class="kicker" style="margin-top:8mm">Come iniziamo</p>
     <div class="steps" style="margin-top:0">
-      <div class="step" style="color:#1E1E1C"><b>1</b><h3>Scegliete il design</h3><p>Con il vostro logo e il premio che volete.</p></div>
-      <div class="step" style="color:#1E1E1C"><b>2</b><h3>Preparo la carta</h3><p>Pronta in pochi giorni, con il poster per la cassa.</p></div>
-      <div class="step" style="color:#1E1E1C"><b>3</b><h3>Primo timbro</h3><p>Appendete il poster e i clienti iniziano a raccogliere.</p></div>
+      <div class="step" style="color:#3A2C22"><b>1</b><h3>Scegliete il design</h3><p>Crema o terra, con il premio che volete.</p></div>
+      <div class="step" style="color:#3A2C22"><b>2</b><h3>Preparo la carta</h3><p>Pronta in pochi giorni, con il poster per la cassa.</p></div>
+      <div class="step" style="color:#3A2C22"><b>3</b><h3>Primo timbro</h3><p>Appendete il poster e i clienti iniziano a raccogliere.</p></div>
     </div>
     <div class="contact">
       <div class="qr">${UI.qrSvg(CONFIG.siteUrl + '?lang=it')}</div>
