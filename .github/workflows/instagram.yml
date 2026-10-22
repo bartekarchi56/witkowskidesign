@@ -38,5 +38,5 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add marketing/instagram/posted.json marketing/instagram/replied.json 2>/dev/null || true
+          for f in posted.json replied.json; do git add marketing/instagram/$f 2>/dev/null || true; done
           git diff --cached --quiet || (git commit -m "Instagram: record posted" && git push)
