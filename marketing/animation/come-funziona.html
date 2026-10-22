@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Come funziona</title>
+<link rel="stylesheet" href="../../assets/css/base.css">
+<style>
+/* "How Timbro works", step by step in 3D (three.js): the customer scans the QR on the counter and
+   saves the card in Wallet; at the till the barista stamps it with a tap; the customer comes back,
+   gets a reminder and fills the card; the reward; the owner's dashboard. Ends on the Timbro screen.
+   Vertical 540 x 960 (1080 x 1920 at 2x). ?lang=it|en. make.js calls window.renderAt(t). */
+html,body{margin:0;background:#111}
+body{display:grid;place-items:center;min-height:100vh;font-family:var(--font)}
+.stage{width:540px;height:960px;position:relative;overflow:hidden;background:#F4F1EA}
+canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
+.ov{position:absolute;left:0;right:0;pointer-events:none}
+.head{top:44px;text-align:center;padding:0 30px}
+.step{display:inline-flex;align-items:center;gap:8px;font:600 13px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--pop);background:#fff;padding:8px 12px;border-radius:99px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.step b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--pop);color:#fff;font-size:12px}
+.head h1{margin:16px 0 0;font-size:34px;line-height:1.06;font-weight:800;font-stretch:112%;letter-spacing:-.01em;color:var(--ink)}
+.head p{margin:10px 0 0;font-size:17px;line-height:1.35;color:var(--ink-2)}
+.days{top:200px;text-align:center;opacity:0}
+.days span{display:inline-block;margin:0 3px;font:600 14px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:9px 11px;border-radius:10px;background:#fff;color:#9a9aa0;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.days span.on{background:var(--pop);color:#fff}
+.end{inset:0;background:#fff;opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 40px}
+.brand{display:flex;align-items:center;gap:10px;font-size:30px;font-weight:800;font-stretch:112%}
+.brand i{width:26px;height:26px;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 6px var(--pop),inset 0 0 0 8px #fff}
+.end h2{margin:22px 0 8px;font-size:36px;line-height:1.05;font-weight:800;font-stretch:112%}
+.end h2 em{font-style:normal;color:var(--pop)}
+.end p{margin:0;font-size:17px;color:var(--ink-2)}
+.end ul{list-style:none;padding:0;margin:26px 0;text-align:left;display:grid;gap:12px}
+.end li{font-size:18px;font-weight:600;display:flex;gap:10px;align-items:center}
+.end li i{width:22px;height:22px;border-radius:50%;background:var(--pop);display:inline-grid;place-items:center;color:#fff;font-style:normal;font-size:13px}
+.end .free{display:inline-block;background:var(--pop-wash);color:var(--pop);font-weight:700;font-size:19px;padding:11px 18px;border-radius:12px}
+.end .url{margin-top:16px;font:500 15px/1 var(--mono);letter-spacing:.04em;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="c"></canvas>
+  <div class="ov head" id="head"><span class="step" id="step"><b id="stepN">1</b><span id="stepL"></span></span><h1 id="h1"></h1><p id="sub"></p></div>
+  <div class="ov days" id="days"></div>
+  <div class="ov end" id="end">
+    <div class="brand"><i></i>Timbro</div>
+    <h2 id="endH"></h2>
+    <p id="endP"></p>
+    <ul id="endL"></ul>
+    <span class="free" id="endFree"></span>
+    <div class="url" id="endUrl"></div>
+  </div>
+</div>
+<script src="../../assets/js/config.js"></script>
+<script type="module">
+import * as THREE from '../../assets/vendor/three.module.min.js';
+
+const q = new URLSearchParams(location.search);
+const lang = q.get('lang') === 'en' ? 'en' : 'it';
+document.documentElement.lang = lang;
+const T = {
+  it: {
+    step: 'Passo', intro: ['Come funziona Timbro', 'La carta fedeltà sul telefono, in 4 passi.'],
+    steps: [
+      ['Inquadra il QR', 'Il cliente inquadra il QR alla cassa e salva la carta nel Wallet. Niente app.'],
+      ['Un tocco alla cassa', 'Il barista inquadra la carta con il telefono che avete già: timbro aggiunto.'],
+      ['Il cliente torna', 'Ogni visita, un timbro. E un promemoria quando manca poco al premio.'],
+      ['Carta piena: premio!', 'Al decimo timbro il premio è pronto. La carta riparte da capo.'],
+      ['Tu vedi tutto', 'Nel pannello: chi torna, quando, chi è vicino al premio.']
+    ],
+    days: ['Lun', 'Mer', 'Ven', 'Lun', 'Gio', 'Sab'],
+    scan: 'Inquadra il codice', add: 'Aggiungi a Apple Wallet', added: 'Aggiunta al Wallet', bar: 'Il tuo bar', card: 'Carta fedeltà',
+    stamps: 'Timbri', reward: 'Premio', rewardV: 'un caffè gratis', customer: 'Cliente', ready: 'Premio pronto: mostralo alla cassa',
+    till: 'Cassa', stamped: 'Timbro aggiunto', notif: 'Ti manca 1 timbro per un caffè gratis ☕', now: 'ora', poster: ['Raccogli i timbri', 'Inquadra e salva la carta'],
+    dash: 'Il tuo pannello', kpi: [['Clienti', '190'], ['Tornano', '93%'], ['Visite', '692']], chart: 'Visite per giorno', sample: 'Dati di esempio',
+    endH: 'La carta fedeltà, <em>sul telefono.</em>', endP: 'Apple Wallet · Google Wallet', endL: ['Nei colori del tuo locale', 'Niente app, niente cartoncini', 'Clienti che tornano'], free: 'Primi 30 giorni gratis'
+  },
+  en: {
+    step: 'Step', intro: ['How Timbro works', 'The loyalty card on the phone, in 4 steps.'],
+    steps: [
+      ['Scan the QR', 'The customer scans the QR at the till and saves the card in Wallet. No app.'],
+      ['One tap at the till', 'The barista scans the card with the phone you already have: stamped.'],
+      ['They come back', 'Every visit, a stamp. And a reminder when the reward is close.'],
+      ['Card full: reward!', 'At the tenth stamp the reward is ready. The card starts again.'],
+      ['You see everything', 'In the dashboard: who comes back, when, who is close to a reward.']
+    ],
+    days: ['Mon', 'Wed', 'Fri', 'Mon', 'Thu', 'Sat'],
+    scan: 'Scan the code', add: 'Add to Apple Wallet', added: 'Added to Wallet', bar: 'Your café', card: 'Loyalty card',
+    stamps: 'Stamps', reward: 'Reward', rewardV: 'a free coffee', customer: 'Customer', ready: 'Reward ready: show it at the till',
+    till: 'Till', stamped: 'Stamp added', notif: 'One stamp left for a free coffee ☕', now: 'now', poster: ['Collect stamps', 'Scan and save the card'],
+    dash: 'Your dashboard', kpi: [['Customers', '190'], ['Return', '93%'], ['Visits', '692']], chart: 'Visits per day', sample: 'Sample data',
+    endH: 'The loyalty card, <em>on the phone.</em>', endP: 'Apple Wallet · Google Wallet', endL: ['In your café’s colours', 'No app, no paper cards', 'Customers who come back'], free: 'First 30 days free'
+  }
+}[lang];
+const $ = id => document.getElementById(id);
+$('endH').innerHTML = T.endH; $('endP').textContent = T.endP; $('endFree').textContent = T.free;
+$('endL').innerHTML = T.endL.map(s => `<li><i>✓</i>${s}</li>`).join('');
+$('endUrl').textContent = CONFIG.siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+$('days').innerHTML = T.days.map(d => `<span>${d}</span>`).join('');
+await Promise.all(['800 40px Archivo', '600 40px Archivo', '500 40px Archivo', '400 40px Archivo'].map(f => document.fonts.load(f)));
+
+// Timeline (seconds)
+const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, END = 22.2, DURATION = 26.5;
+const BLUE = '#2B32FF';
+
+const W = 540, H = 960, DPR = +(q.get('dpr') || 2);
+const renderer = new THREE.WebGLRenderer({ canvas: $('c'), antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(DPR); renderer.setSize(W, H, false);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const ease = x => { x = clamp01(x); return x * x * (3 - 2 * x); };
+const backOut = x => { x = clamp01(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const hash = n => { const s = Math.sin(n * 127.1) * 43758.5453; return s - Math.floor(s); };
+const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: .8, metalness: 0, ...extra });
+const lerp = (a, b, x) => a + (b - a) * x;
+
+// ---------- scene ----------
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#F4F1EA');
+scene.add(new THREE.HemisphereLight('#ffffff', '#c8bba5', 1.5));
+const sun = new THREE.DirectionalLight('#fff4e6', 2.0);
+sun.position.set(3, 7, 6); sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024);
+Object.assign(sun.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5 }); sun.shadow.radius = 5;
+scene.add(sun);
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(30, 20), mat('#EFE8DC')); wall.position.set(0, 4, -3); scene.add(wall);
+const counter = new THREE.Mesh(new THREE.BoxGeometry(12, 1.2, 3.2), mat('#C89B6D')); counter.position.set(0, -.6, 0); counter.receiveShadow = true; scene.add(counter);
+const counterTop = new THREE.Mesh(new THREE.BoxGeometry(12.1, .08, 3.3), mat('#F3EEE6', { roughness: .4 })); counterTop.position.set(0, .04, 0); counterTop.receiveShadow = true; scene.add(counterTop);
+
+const roundedShape = (w, h, r) => {
+  const s = new THREE.Shape(), x = -w / 2, y = -h / 2;
+  s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r); s.lineTo(x + w, y + h - r);
+  s.quadraticCurveTo(x + w, y + h, x + w - r, y + h); s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y); return s;
+};
+function makeDevice(w, h, r, color, texW) {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.ExtrudeGeometry(roundedShape(w, h, r), { depth: .08, bevelEnabled: true, bevelThickness: .02, bevelSize: .02, bevelSegments: 3 }), mat(color, { roughness: .35, metalness: .3 }));
+  body.position.z = -.04; body.castShadow = true; g.add(body);
+  const c = document.createElement('canvas'); c.width = texW; c.height = Math.round(texW * (h - .07) / (w - .07));
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+  const screen = new THREE.Mesh(new THREE.ShapeGeometry(roundedShape(w - .07, h - .07, r * .8)), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }));
+  // ShapeGeometry UVs follow the shape's coordinates: map them to 0..1
+  const uv = screen.geometry.attributes.uv, pos = screen.geometry.attributes.position;
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, pos.getX(i) / (w - .07) + .5, pos.getY(i) / (h - .07) + .5);
+  screen.position.z = .065; g.add(screen);
+  return { g, c, ctx: c.getContext('2d'), tex };
+}
+const phone = makeDevice(1.0, 2.05, .14, '#1d1d1f', 540);        // the customer's
+const till = makeDevice(1.0, 2.05, .14, '#5b5f66', 540);         // the barista's
+const tablet = makeDevice(1.9, 1.35, .1, '#2a2a2d', 900);        // the owner's dashboard
+scene.add(phone.g, till.g, tablet.g);
+
+// The QR stand on the counter
+const standTex = (() => {
+  const c = document.createElement('canvas'); c.width = 360; c.height = 480; const g = c.getContext('2d');
+  g.fillStyle = BLUE; g.fillRect(0, 0, 360, 480);
+  g.fillStyle = '#fff'; g.font = '800 40px Archivo'; g.textAlign = 'center'; g.fillText('Timbro', 180, 66);
+  g.font = '600 26px Archivo'; g.fillText(T.poster[0], 180, 108);
+  g.fillRect(70, 140, 220, 220); drawQR(g, 82, 152, 196, 3);
+  g.font = '500 22px Archivo'; g.fillText(T.poster[1], 180, 410);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+})();
+const stand = new THREE.Group();
+const board = new THREE.Mesh(new THREE.BoxGeometry(.9, 1.2, .04), [mat('#ddd'), mat('#ddd'), mat('#ddd'), mat('#ddd'), new THREE.MeshStandardMaterial({ map: standTex, roughness: .5 }), mat('#ddd')]);
+board.position.y = .66; board.rotation.x = -.12; board.castShadow = true; stand.add(board);
+const foot = new THREE.Mesh(new THREE.BoxGeometry(.9, .06, .4), mat('#e8e2d8')); foot.position.y = .05; foot.castShadow = true; stand.add(foot);
+stand.position.set(-.95, .08, -.5); scene.add(stand);
+
+// A coffee cup with steam
+const cup = new THREE.Group();
+const cupBody = new THREE.Mesh(new THREE.LatheGeometry([new THREE.Vector2(0, 0), new THREE.Vector2(.2, 0), new THREE.Vector2(.26, .38), new THREE.Vector2(.25, .38), new THREE.Vector2(.19, .02), new THREE.Vector2(0, .02)], 32), mat('#ffffff', { roughness: .3, side: THREE.DoubleSide }));
+cupBody.castShadow = true; cup.add(cupBody);
+const coffee = new THREE.Mesh(new THREE.CircleGeometry(.24, 32), mat('#6b3f22', { roughness: .3 })); coffee.rotation.x = -Math.PI / 2; coffee.position.y = .34; cup.add(coffee);
+const saucer = new THREE.Mesh(new THREE.CylinderGeometry(.42, .36, .04, 32), mat('#ffffff', { roughness: .3 })); saucer.position.y = .0; saucer.castShadow = true; cup.add(saucer);
+const handle = new THREE.Mesh(new THREE.TorusGeometry(.1, .03, 10, 20, Math.PI * 1.2), mat('#ffffff', { roughness: .3 })); handle.position.set(.27, .2, 0); handle.rotation.z = -Math.PI * .6; cup.add(handle);
+const steamTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); const gr = g.createRadialGradient(32, 32, 2, 32, 32, 30); gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+const steam = [...Array(6)].map(() => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: steamTex, transparent: true, depthWrite: false })); cup.add(s); return s; });
+scene.add(cup);
+
+// "+1" bubble, a scan beam between the two phones, confetti
+const plusTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); g.fillStyle = BLUE; g.beginPath(); g.arc(64, 64, 58, 0, 7); g.fill(); g.strokeStyle = '#fff'; g.lineWidth = 6; g.beginPath(); g.arc(64, 64, 44, 0, 7); g.stroke(); g.fillStyle = '#fff'; g.font = '800 48px Archivo'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('+1', 64, 67); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+const plus = new THREE.Sprite(new THREE.SpriteMaterial({ map: plusTex, transparent: true, depthTest: false })); scene.add(plus);
+const beam = new THREE.Mesh(new THREE.PlaneGeometry(1, .9), new THREE.MeshBasicMaterial({ color: '#6f75ff', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
+scene.add(beam);
+const CONF_COL = [BLUE, '#FFC24B', '#FF5C7A', '#2EC4B6', '#ffffff'];
+const confetti = [...Array(70)].map((_, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.07, .12), new THREE.MeshBasicMaterial({ color: CONF_COL[i % 5], side: THREE.DoubleSide })); m.visible = false; scene.add(m); return m; });
+
+const camera = new THREE.PerspectiveCamera(30, W / H, .1, 100);
+
+// ---------- screens (2D canvas, redrawn every frame) ----------
+function drawQR(g, x, y, s, seed) {
+  const n = 21, c = s / n; g.fillStyle = '#111';
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    const finder = (a, b) => i >= a && i < a + 7 && j >= b && j < b + 7;
+    const inF = finder(0, 0) || finder(14, 0) || finder(0, 14);
+    let on;
+    if (inF) { const a = i < 7 ? i : i - 14, b = j < 7 ? j : j - 14; const fx = (i < 7 ? i : i >= 14 ? i - 14 : i), fy = (j < 7 ? j : j >= 14 ? j - 14 : j); on = fx === 0 || fx === 6 || fy === 0 || fy === 6 || (fx >= 2 && fx <= 4 && fy >= 2 && fy <= 4); }
+    else on = hash(i * 31 + j * 17 + seed * 7) > .52;
+    if (on) g.fillRect(x + i * c, y + j * c, c + .5, c + .5);
+  }
+}
+const rr = (g, x, y, w, h, r) => { g.beginPath(); g.roundRect(x, y, w, h, r); };
+function statusBar(g, w, dark) {
+  g.fillStyle = dark ? '#fff' : '#111'; g.font = '600 26px Archivo'; g.textAlign = 'left'; g.fillText('9:41', 44, 52);
+  g.fillRect(w - 110, 34, 40, 20); g.fillRect(w - 64, 34, 30, 20);
+  g.fillStyle = '#000'; rr(g, w / 2 - 80, 22, 160, 44, 22); g.fill();
+}
+function drawPassOn(g, x, y, w, n, opts = {}) {
+  const h = w * 1.25;
+  g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.18)'; g.shadowBlur = 30; g.shadowOffsetY = 10; rr(g, x, y, w, h, 26); g.fill(); g.shadowColor = 'transparent';
+  g.fillStyle = '#111'; g.textAlign = 'left'; g.font = '600 30px Archivo'; g.fillText(T.bar.toUpperCase().split('').join(' '), x + 30, y + 58);
+  g.textAlign = 'right'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.stamps.toUpperCase(), x + w - 30, y + 44);
+  g.fillStyle = '#111'; g.font = '600 32px Archivo'; g.fillText(`${n}/10`, x + w - 30, y + 80);
+  g.fillStyle = '#F1F1F4'; g.fillRect(x, y + 104, w, 210);
+  for (let i = 0; i < 10; i++) {
+    const cx = x + w * (.14 + (i % 5) * .18), cy = y + 104 + (i < 5 ? 62 : 148), on = i < n;
+    let r = 26; if (on && i === n - 1 && opts.pop !== undefined) r *= .6 + .4 * backOut(opts.pop);
+    g.fillStyle = on ? BLUE : '#D9D9DE'; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
+  }
+  g.textAlign = 'left'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.reward.toUpperCase(), x + 30, y + 352);
+  g.fillStyle = '#111'; g.font = '500 28px Archivo'; g.fillText(T.rewardV, x + 30, y + 388);
+  g.textAlign = 'right'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.customer.toUpperCase(), x + w - 30, y + 352);
+  g.fillStyle = '#111'; g.font = '500 28px Archivo'; g.fillText('Giulia R.', x + w - 30, y + 388);
+  if (n >= 10) {
+    g.fillStyle = BLUE; rr(g, x + 24, y + 420, w - 48, 70, 16); g.fill();
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '700 23px Archivo'; g.fillText(T.ready, x + w / 2, y + 464);
+  } else if (!opts.noQR) {
+    g.fillStyle = '#fff'; drawQR(g, x + w / 2 - 85, y + 420, 170, 9);
+  }
+  return h;
+}
+function screenCamera(D, scanY) {
+  const { ctx: g, c } = D, w = c.width, h = c.height;
+  const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#3a3530'); gr.addColorStop(1, '#1d1a17'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  // the poster seen through the camera
+  g.fillStyle = BLUE; rr(g, 70, 210, w - 140, 560, 18); g.fill();
+  g.fillStyle = '#fff'; rr(g, 120, 300, w - 240, w - 240, 10); g.fill(); drawQR(g, 140, 320, w - 280, 3);
+  g.fillStyle = '#fff'; g.font = '800 40px Archivo'; g.textAlign = 'center'; g.fillText('Timbro', w / 2, 270);
+  // brackets and the scan line
+  g.strokeStyle = '#FFD60A'; g.lineWidth = 8; const bx = 100, by = 280, bs = w - 200;
+  for (const [x, y, dx, dy] of [[bx, by, 1, 1], [bx + bs, by, -1, 1], [bx, by + bs, 1, -1], [bx + bs, by + bs, -1, -1]]) { g.beginPath(); g.moveTo(x, y + dy * 50); g.lineTo(x, y); g.lineTo(x + dx * 50, y); g.stroke(); }
+  g.fillStyle = 'rgba(255,214,10,.8)'; g.fillRect(bx + 10, by + 10 + scanY * (bs - 20), bs - 20, 5);
+  g.fillStyle = 'rgba(0,0,0,.55)'; rr(g, w / 2 - 170, h - 230, 340, 64, 32); g.fill();
+  g.fillStyle = '#fff'; g.font = '600 26px Archivo'; g.fillText(T.scan, w / 2, h - 188);
+  statusBar(g, w, true);
+}
+function screenAdd(D, press, slide) {
+  const { ctx: g, c } = D, w = c.width, h = c.height;
+  g.fillStyle = '#F2F2F7'; g.fillRect(0, 0, w, h); statusBar(g, w);
+  g.fillStyle = '#111'; g.textAlign = 'center'; g.font = '800 34px Archivo'; g.fillText('Timbro', w / 2, 140);
+  g.fillStyle = '#666'; g.font = '500 24px Archivo'; g.fillText(T.bar, w / 2, 176);
+  drawPassOn(g, 50, 220 + slide * 40, w - 100, 0, { noQR: true });
+  // Add to Wallet button
+  const by = h - 220;
+  g.fillStyle = press ? '#333' : '#000'; rr(g, 60, by, w - 120, 96, 18); g.fill();
+  g.fillStyle = '#fff'; g.font = '600 28px Archivo'; g.fillText(' ' + T.add, w / 2 + 16, by + 58);
+  g.fillStyle = '#fff'; rr(g, 104, by + 30, 40, 34, 6); g.fill(); g.fillStyle = BLUE; g.fillRect(104, by + 38, 40, 6); g.fillStyle = '#FFC24B'; g.fillRect(104, by + 46, 40, 6);
+  if (press) { g.fillStyle = 'rgba(255,255,255,.25)'; g.beginPath(); g.arc(w / 2, by + 48, 30 + press * 90, 0, 7); g.fill(); }
+}
+function screenWallet(D, n, opts = {}) {
+  const { ctx: g, c } = D, w = c.width, h = c.height;
+  g.fillStyle = '#F2F2F7'; g.fillRect(0, 0, w, h); statusBar(g, w);
+  g.fillStyle = '#111'; g.textAlign = 'left'; g.font = '800 46px Archivo'; g.fillText('Wallet', 40, 150);
+  drawPassOn(g, 36, 200 + (opts.drop || 0) * -500, w - 72, n, { pop: opts.pop });
+  if (opts.added) { g.globalAlpha = opts.added; g.fillStyle = '#111'; rr(g, w / 2 - 170, h - 150, 340, 66, 33); g.fill(); g.fillStyle = '#fff'; g.font = '600 25px Archivo'; g.textAlign = 'center'; g.fillText('✓ ' + T.added, w / 2, h - 108); g.globalAlpha = 1; }
+  if (opts.banner) {
+    const y = -150 + 240 * opts.banner;
+    g.fillStyle = 'rgba(250,250,252,.97)'; g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 30; rr(g, 24, y, w - 48, 130, 28); g.fill(); g.shadowColor = 'transparent';
+    g.fillStyle = BLUE; rr(g, 46, y + 30, 56, 56, 14); g.fill(); g.fillStyle = '#fff'; g.beginPath(); g.arc(74, y + 58, 13, 0, 7); g.fill(); g.fillStyle = BLUE; g.beginPath(); g.arc(74, y + 58, 9, 0, 7); g.fill();
+    g.textAlign = 'left'; g.fillStyle = '#111'; g.font = '700 24px Archivo'; g.fillText('Timbro · ' + T.bar, 120, y + 52);
+    g.fillStyle = '#333'; g.font = '500 22px Archivo'; g.fillText(T.notif, 120, y + 90);
+    g.fillStyle = '#888'; g.textAlign = 'right'; g.font = '500 20px Archivo'; g.fillText(T.now, w - 50, y + 52);
+  }
+}
+function screenTill(D, ok) {
+  const { ctx: g, c } = D, w = c.width, h = c.height;
+  g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); statusBar(g, w);
+  g.fillStyle = '#111'; g.textAlign = 'center'; g.font = '800 32px Archivo'; g.fillText('Timbro · ' + T.till, w / 2, 140);
+  if (ok < .5) {
+    g.fillStyle = '#222'; rr(g, 60, 210, w - 120, w - 120, 24); g.fill();
+    g.strokeStyle = '#4ADE80'; g.lineWidth = 7; g.strokeRect(120, 270, w - 240, w - 240);
+    g.fillStyle = '#fff'; drawQR(g, 150, 300, w - 300, 9);
+  } else {
+    const k = backOut((ok - .5) * 2.5);
+    g.fillStyle = '#22C55E'; g.beginPath(); g.arc(w / 2, 420, 120 * k, 0, 7); g.fill();
+    g.strokeStyle = '#fff'; g.lineWidth = 22; g.lineCap = 'round'; g.beginPath(); g.moveTo(w / 2 - 50, 420); g.lineTo(w / 2 - 12, 458); g.lineTo(w / 2 + 56, 384); g.stroke();
+    g.fillStyle = '#111'; g.font = '800 38px Archivo'; g.fillText(T.stamped, w / 2, 620);
+    g.fillStyle = '#666'; g.font = '500 28px Archivo'; g.fillText('Giulia R. · 1/10', w / 2, 666);
+  }
+}
+function screenDash(D, p) {
+  const { ctx: g, c } = D, w = c.width, h = c.height;
+  g.fillStyle = '#F7F7F9'; g.fillRect(0, 0, w, h);
+  g.fillStyle = '#111'; g.textAlign = 'left'; g.font = '800 40px Archivo'; g.fillText(T.dash, 48, 80);
+  g.fillStyle = BLUE; g.beginPath(); g.arc(w - 70, 66, 18, 0, 7); g.fill(); g.fillStyle = '#fff'; g.beginPath(); g.arc(w - 70, 66, 7, 0, 7); g.fill();
+  T.kpi.forEach(([l, v], i) => {
+    const x = 48 + i * ((w - 96 - 40) / 3 + 20), bw = (w - 96 - 40) / 3;
+    g.fillStyle = '#fff'; rr(g, x, 116, bw, 130, 16); g.fill();
+    g.fillStyle = '#777'; g.font = '500 22px Archivo'; g.fillText(l, x + 20, 156);
+    g.fillStyle = i === 1 ? BLUE : '#111'; g.font = '800 46px Archivo'; g.fillText(v, x + 20, 216);
+  });
+  g.fillStyle = '#fff'; rr(g, 48, 270, w - 96, h - 320, 16); g.fill();
+  g.fillStyle = '#777'; g.font = '500 22px Archivo'; g.fillText(T.chart, 72, 310);
+  const vals = [.35, .42, .4, .55, .62, .58, .7, .76, .74, .86, .9, .95];
+  vals.forEach((v, i) => {
+    const bw = (w - 160) / vals.length, x = 72 + i * bw, hh = (h - 420) * v * ease((p - i * .04) * 2);
+    g.fillStyle = i === vals.length - 1 ? BLUE : '#AEB1FF'; rr(g, x + 6, h - 70 - hh, bw - 12, hh, 6); g.fill();
+  });
+  g.fillStyle = '#aaa'; g.font = '500 18px Archivo'; g.textAlign = 'right'; g.fillText(T.sample, w - 64, 310);
+}
+
+// ---------- keyframes ----------
+function track(keys, t) {
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) { const [t0, a] = keys[i - 1], [t1, b] = keys[i]; const x = ease((t - t0) / (t1 - t0)); return a.map((v, k) => lerp(v, b[k], x)); }
+  return keys[keys.length - 1][1];
+}
+// [time, [x, y, z, rotX, rotY, rotZ, scale]]
+const PHONE = [[0, [1.2, 1.4, .3, 0, -.6, .1, 0]], [.8, [.2, 1.35, .6, 0, -.25, 0, 1]], [S1 + .7, [.3, 1.3, .8, -.05, -.2, 0, 1]], [S2, [.3, 1.3, .8, -.05, -.2, 0, 1]], [S2 + .8, [.62, 1.3, .6, 0, -.45, 0, .85]], [S3, [.62, 1.3, .6, 0, -.45, 0, .85]], [S3 + .8, [0, 1.35, 1.0, 0, 0, 0, 1]], [S5, [0, 1.35, 1.0, 0, 0, 0, 1]], [S5 + .9, [.95, 1.3, .4, 0, -.5, 0, .8]]];
+const TILL = [[S2, [-3.4, 1.3, .8, 0, .6, 0, .85]], [S2 + .9, [-.62, 1.3, .8, 0, .5, 0, .85]], [S3 - .1, [-.62, 1.3, .8, 0, .5, 0, .85]], [S3 + .7, [-3.6, 1.3, .8, 0, .5, 0, .85]]];
+const TABLET = [[S5, [-3.4, 1.3, .9, 0, .5, 0, .8]], [S5 + 1, [-.45, 1.3, .9, 0, .28, 0, .8]]];
+const CAM = [[0, [0, 2.4, 8.9, 0, 1.6, .4]], [S3, [0, 2.4, 8.9, 0, 1.6, .4]], [S3 + .7, [0, 2.3, 7.9, 0, 1.55, .6]], [S5, [0, 2.3, 7.9, 0, 1.55, .6]], [S5 + 1, [0, 2.4, 9.2, 0, 1.6, .4]]];
+const place = (obj, k) => { obj.position.set(k[0], k[1], k[2]); obj.rotation.set(k[3], k[4], k[5]); obj.scale.setScalar(Math.max(.0001, k[6])); };
+
+// ---------- frame ----------
+function renderAt(t) {
+  // captions
+  const steps = [[0, S1], [S1, S2], [S2, S3], [S3, S4], [S4, S5], [S5, END]];
+  let si = steps.findIndex(([a, b]) => t >= a && t < b); if (si < 0) si = 5;
+  const [a] = steps[si];
+  const fadeIn = ease((t - a) / .4);
+  $('head').style.opacity = (si === 0 ? ease(t / .5) : fadeIn) * (1 - ease((t - END) / .4));
+  $('head').style.transform = `translateY(${(1 - fadeIn) * 12}px)`;
+  $('step').style.visibility = si === 0 ? 'hidden' : 'visible';
+  const txt = si === 0 ? T.intro : T.steps[si - 1];
+  $('stepN').textContent = si; $('stepL').textContent = `${T.step} ${si}`; $('h1').textContent = txt[0]; $('sub').textContent = txt[1];
+
+  place(phone.g, track(PHONE, t));
+  place(till.g, t < S2 || t > S3 + .8 ? [-9, 0, 0, 0, 0, 0, 0] : track(TILL, t));
+  place(tablet.g, t < S5 ? [-9, 0, 0, 0, 0, 0, 0] : track(TABLET, t));
+  phone.g.position.y += Math.sin(t * 1.6) * .02;
+  // the QR stand goes away after step 2, the cup arrives with the reward
+  const st = 1 - ease((t - S3) / .6); stand.scale.setScalar(Math.max(.0001, st * backOut((t - .3) / .8)));
+  const cupIn = backOut((t - S4 - .5) / .7) * (1 - ease((t - S5) / .5));
+  cup.position.set(-.9, .08, 1.35); cup.scale.setScalar(Math.max(.0001, cupIn * .95));
+  steam.forEach((s, i) => { const u = ((t * .5 + i / 6) % 1); s.position.set(Math.sin(u * 6 + i) * .06, .45 + u * .7, 0); s.scale.setScalar(.18 + u * .3); s.material.opacity = Math.sin(u * Math.PI) * .5; });
+
+  // the customer's screen
+  let n = 0;
+  if (t < S1 + .2) screenWallet(phone, 0, { drop: 2 });
+  else if (t < S1 + 1.9) screenCamera(phone, (Math.sin((t - S1) * 4) + 1) / 2);
+  else if (t < S1 + 3.2) { const pr = t > S1 + 2.7 ? clamp01((t - S1 - 2.7) / .3) : 0; screenAdd(phone, pr, 0); }
+  else if (t < S2 + 1.6) { const d = ease((t - S1 - 3.2) / .6); screenWallet(phone, 0, { drop: 2 * (1 - d), added: clamp01((t - S1 - 3.6) / .3) * (1 - clamp01((t - S2 - 1) / .3)) }); }
+  else if (t < S3) { n = t > S2 + 1.9 ? 1 : 0; screenWallet(phone, n, { pop: n ? (t - S2 - 1.9) / .4 : undefined }); }
+  else if (t < S4) {
+    // a stamp on each visit (Mon, Wed, Fri, ...), then the reminder
+    const k = Math.min(8, Math.floor((t - S3 - .5) / .42) + 2); n = t < S3 + .5 ? 1 : k;
+    const banner = t > S3 + 3.2 ? ease((t - S3 - 3.2) / .35) : 0;
+    screenWallet(phone, n, { pop: n > 1 ? ((t - S3 - .5) % .42) / .3 : undefined, banner });
+    [...$('days').children].forEach((s, i) => s.classList.toggle('on', i < n - 1));
+  } else { n = t > S4 + .3 ? 10 : 9; screenWallet(phone, n, { pop: n === 10 ? (t - S4 - .3) / .4 : undefined }); }
+  phone.tex.needsUpdate = true;
+  $('days').style.opacity = ease((t - S3 - .2) / .3) * (1 - ease((t - S4) / .3));
+  if (t >= S2 && t <= S3 + .8) { screenTill(till, clamp01((t - S2 - 1.2) / 1.0)); till.tex.needsUpdate = true; }
+  if (t >= S5) { screenDash(tablet, clamp01((t - S5 - .8) / 1.6)); tablet.tex.needsUpdate = true; }
+
+  // the scan beam from the till phone to the card, and the +1
+  const bt = clamp01((t - S2 - 1.0) / .9);
+  beam.material.opacity = Math.sin(bt * Math.PI) * .45;
+  const pp = phone.g.position, tp = till.g.position;
+  beam.position.set((pp.x + tp.x) / 2, (pp.y + tp.y) / 2 - .1, (pp.z + tp.z) / 2 + .2);
+  beam.scale.set(Math.max(.01, Math.hypot(pp.x - tp.x, pp.z - tp.z) - .7), 1, 1); beam.rotation.y = .1;
+  const pt = (t - S2 - 1.9) / .9;
+  plus.visible = pt > 0 && pt < 1;
+  plus.position.set(pp.x + .1, pp.y + .75 + pt * .35, pp.z + .3); plus.scale.setScalar(.34 * backOut(pt * 3)); plus.material.opacity = pt < .7 ? 1 : 1 - (pt - .7) / .3;
+
+  // confetti on the reward
+  const ct = t - S4 - .3;
+  confetti.forEach((m, i) => {
+    m.visible = ct > 0 && ct < 2.6;
+    if (!m.visible) return;
+    const ang = hash(i) * Math.PI * 2, sp = 1.4 + hash(i + 50) * 1.6;
+    m.position.set(Math.cos(ang) * sp * ct * .7, 1.9 + Math.sin(ang) * .3 + 2.2 * ct - 2.4 * ct * ct, .9 + Math.sin(ang) * sp * ct * .3);
+    m.rotation.set(ct * 8 + i, ct * 6 + i * 2, 0);
+  });
+
+  const cam = track(CAM, t); camera.position.set(cam[0] + Math.sin(t * .4) * .15, cam[1], cam[2]); camera.lookAt(cam[3], cam[4], cam[5]);
+  $('end').style.opacity = ease((t - END) / .6);
+  renderer.render(scene, camera);
+}
+window.renderAt = renderAt;
+window.DURATION = DURATION;
+renderAt(0);
+window.READY = true;
+if (!q.has('capture')) {
+  const start = performance.now();
+  const loop = () => { renderAt(((performance.now() - start) / 1000) % (DURATION + 1)); requestAnimationFrame(loop); };
+  loop();
+}
+</script>
+</body>
+</html>
