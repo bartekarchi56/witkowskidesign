@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wallet screenshot</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* An iPhone screenshot of Apple Wallet holding loyalty cards from several made-up places,
+   to show a café owner where their card lives. The places are invented on purpose: no real names.
+   A 3x screenshot of .screen (1179 x 2556) is sales/img/wallet-it.png. ?theme=light for the light look. */
+html,body{margin:0;background:#000}
+body{display:grid;place-items:center;min-height:100vh}
+.screen{--bg:#000;--fg:#fff;--btn:#1C1C1E;width:393px;height:852px;position:relative;overflow:hidden;background:var(--bg);color:var(--fg);font-family:-apple-system,"SF Pro Text","Inter",var(--font)}
+.screen.light{--bg:#F2F2F7;--fg:#000;--btn:#E3E3E8}
+.island{position:absolute;left:50%;top:11px;width:126px;height:37px;margin-left:-63px;border-radius:20px;background:#000;z-index:50}
+.status{position:absolute;left:0;right:0;top:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;z-index:40}
+.status b{font:600 17px/1 -apple-system,"SF Pro Text","Inter",var(--font);letter-spacing:-.2px}
+.status .r{display:flex;gap:6px;align-items:center}
+.status svg{display:block}
+.top{position:absolute;left:20px;right:16px;top:62px;display:flex;align-items:center;justify-content:space-between;z-index:30}
+.top h1{margin:0;font:700 34px/1 -apple-system,"SF Pro Display","Inter",var(--font);letter-spacing:-.6px}
+.top .btns{display:flex;gap:12px}
+.top .btns span{width:34px;height:34px;border-radius:50%;background:var(--btn);display:grid;place-items:center}
+.stack{position:absolute;left:12px;right:12px;top:118px;bottom:0}
+.stack > *{position:absolute;left:0;right:0}
+.stack .pass{width:369px;max-width:369px;border-radius:12px;box-shadow:0 -1px 0 rgba(255,255,255,.06),0 -6px 14px -6px rgba(0,0,0,.55)}
+.light .stack .pass,.light .bank{box-shadow:0 -1px 0 rgba(0,0,0,.04),0 -6px 14px -8px rgba(0,0,0,.3)}
+.bank{height:232px;border-radius:12px;background:linear-gradient(135deg,#1E2A55 0%,#3B3F8F 55%,#6A4FB0 100%);color:#fff;box-sizing:border-box;padding:16px 18px;overflow:hidden}
+.bank::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 90% 0%,rgba(255,255,255,.18),transparent 60%)}
+.bank .row{display:flex;justify-content:space-between;align-items:center;font:600 15px/1 -apple-system,"Inter",var(--font);letter-spacing:.2px}
+.home{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:var(--fg);opacity:.9;z-index:60}
+</style>
+</head>
+<body>
+<div class="screen" id="phone">
+  <div class="island"></div>
+  <div class="status">
+    <b>9:41</b>
+    <div class="r">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2.6c2.3 0 4.4.9 6 2.4l1.2-1.2A10.2 10.2 0 0 0 8 .9 10.2 10.2 0 0 0 .8 3.8L2 5c1.6-1.5 3.7-2.4 6-2.4Z"/><path d="M8 6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 4.3a6.8 6.8 0 0 0-4.8 1.9l1.2 1.2C5.4 6.5 6.6 6 8 6Z"/><path d="M8 9.3c.6 0 1.1.2 1.5.6L8 11.4 6.5 9.9c.4-.4.9-.6 1.5-.6Z"/></svg>
+      <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2" fill="currentColor"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2Z" fill="currentColor" opacity=".4"/></svg>
+    </div>
+  </div>
+  <div class="top">
+    <h1>Wallet</h1>
+    <div class="btns">
+      <span><svg width="16" height="16" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg></span>
+      <span><svg width="18" height="4" viewBox="0 0 18 4" fill="currentColor"><circle cx="2" cy="2" r="2"/><circle cx="9" cy="2" r="2"/><circle cx="16" cy="2" r="2"/></svg></span>
+    </div>
+  </div>
+  <div class="stack" id="stack"></div>
+  <div class="home"></div>
+</div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+window.WAIT_READY = true;
+(async () => {
+  const q = new URLSearchParams(location.search);
+  I18N.lang = 'it';
+  if (q.get('theme') === 'light') document.getElementById('phone').classList.add('light');
+  // Invented places, each with one of Timbro's standard stamps. The last one is in front.
+  const C = (business, tagline, color, ink, strip, stamp, have, font = 'sans') =>
+    ({ card: { business, tagline, color, ink, strip, stamp, font, title: 'Carta fedeltà', reward: 'un omaggio', stampsNeeded: 10 }, have });
+  const cards = [
+    C('Forno Aurora', 'Panetteria', '#F3E4CB', '#8A4B22', '#EAD5B2', 'ramo', 6, 'serif'),
+    C('Caffè Nocciola', 'Torrefazione', '#2E211B', '#E8C9A0', '#251A15', 'ziarno', 3, 'wide'),
+    C('Gelateria Polo', 'Gelato artigianale', '#DDEBF6', '#1F5E8C', '#CCE0F0', 'sole', 8),
+    C('Barberia Dodici', 'Barbiere', '#161616', '#D9B36A', '#0F0F0F', 'stella', 5, 'wide'),
+    { card: { business: 'Pasticceria Viola', tagline: 'Dolci e caffè', color: '#F6EAF2', ink: '#7A3E78', strip: '#EEDBE8', stamp: 'fiore', font: 'serif', title: 'Carta fedeltà', reward: 'una brioche e un caffè', stampsNeeded: 10 }, have: 7, front: true }
+  ];
+  const STEP = 58;
+  let html = `<div class="bank" style="top:0"><div class="row"><span>Debit</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M8.5 7.5a6 6 0 0 1 0 9"/><path d="M12 5a10 10 0 0 1 0 14"/><path d="M15.5 3a13 13 0 0 1 0 18"/></svg></div><div class="row" style="position:absolute;left:18px;right:18px;bottom:16px"><span style="opacity:.85">Conto personale</span><span>•••• 4821</span></div></div>`;
+  cards.forEach((x, i) => {
+    html += `<div style="top:${(i + 1) * STEP}px">${UI.renderPass(x.card, { id: 'K7M2QX', name: 'Giulia R.', stamps: x.have }, { stamps: x.have, platform: 'apple' })}</div>`;
+  });
+  document.getElementById('stack').innerHTML = html;
+  await document.fonts.ready;
+  window.READY = true;
+})();
+</script>
+</body>
+</html>
