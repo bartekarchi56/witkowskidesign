@@ -31,6 +31,7 @@ h1{font-size:28px;margin:0 0 6px}
 <script src="younique-look.js"></script>
 <script src="panfuwa-look.js"></script>
 <script src="matchamo-look.js"></script>
+<script src="nowhere-look.js"></script>
 <script>
 (async () => {
   const svgUrl = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
@@ -62,6 +63,10 @@ h1{font-size:28px;margin:0 0 6px}
   const SOWA = { id: 'sowa', business: 'Cukiernia Sowa', title: 'Lodowy Fanklub', reward: '1 gałka lodów gratis', titleEn: 'Ice cream fan club', rewardEn: 'a free scoop', stampsNeeded: 10, lang: 'pl', tagline: '80 lat tradycji' };
   const ORSO = { id: 'orsonero', business: 'Orsonero Coffee', title: 'Carta Orsonero', reward: 'un caffè a scelta', titleEn: 'Orsonero card', rewardEn: 'any coffee, on us', stampsNeeded: 8, tagline: 'Specialty coffee' };
   const SETS = [
+    { id: 'nowhere', lang: 'it', title: 'Nowhere Coffee & Community, Milano', note: 'Il rosa del locale, una tazza da asporto come timbro.', cards: [
+      { name: 'nowhere-pink', label: 'Rosa: tazze rosa su timbri scuri', stamps: 4, card: NOWHERE_LOOK.pink },
+      { name: 'nowhere-dark', label: 'Scuro: timbri rosa', stamps: 4, card: NOWHERE_LOOK.dark }
+    ] },
     { id: 'matchamo', lang: 'it', title: 'MatchaMo, Milano', note: 'Il loro verde salvia, un frullino da matcha come timbro.', cards: [
       { name: 'matchamo-sage', label: 'Salvia: frullini chiari su timbri verde matcha', stamps: 4, card: MATCHAMO_LOOK.sage },
       { name: 'matchamo-matcha', label: 'Verde matcha: timbri salvia', stamps: 4, card: MATCHAMO_LOOK.matcha }
