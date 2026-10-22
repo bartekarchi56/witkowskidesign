@@ -72,6 +72,7 @@ A GitHub Action (`.github/workflows/instagram.yml`) runs every 30 minutes during
 - **New images:** after `make.js`, run `node marketing/instagram/make-jpg.js` (Instagram's API takes JPEG only) and push at least 15 minutes before the post, so the website already serves the file.
 - **Check before it goes out:** `node marketing/instagram/post.js --dry --now "2026-11-02 12:45"` shows what would be posted at that time. `node marketing/instagram/test-post.js` tests the whole flow against a fake Instagram.
 - **Post now by hand:** GitHub > Actions > Instagram > Run workflow.
+- **First comment:** after every post (not stories) the job adds `firstComment` from `schedule.json` as the first comment (now: "Comment TIMBRO and we will send you the design of your card ☕"). It needs the key's comments permission (`instagram_business_manage_comments`, included when the key is made under *API setup with Instagram login*); if Instagram refuses, the post still goes out and the log says the comment was not added.
 
 ### Connecting the account (once, about 20 minutes)
 

@@ -1,6 +1,7 @@
 // Posts to Instagram whatever schedule.json says is due, through Instagram's official API
 // (content publishing). Run every hour by .github/workflows/instagram.yml; see README.md,
 // "Automatic posting". Remembers what it posted in posted.json, so nothing goes out twice.
+// After each post (not stories) it adds schedule.json's firstComment as the first comment.
 //
 //   node marketing/instagram/post.js                 post what is due now
 //   node marketing/instagram/post.js --dry           only show what would be posted (no keys needed)
@@ -20,7 +21,7 @@ const LATE = 2 * 864e5;   // posts more than 2 days late are skipped
 const args = process.argv.slice(2), dry = args.includes('--dry');
 const nowArg = args.includes('--now') ? args[args.indexOf('--now') + 1] : '';
 
-const schedule = JSON.parse(fs.readFileSync(path.join(DIR, 'schedule.json'), 'utf8'));
+const schedule = JSON.parse(fs.readFileSync(process.env.IG_SCHEDULE || path.join(DIR, 'schedule.json'), 'utf8'));
 const POSTED = process.env.IG_POSTED || path.join(DIR, 'posted.json');
 const posted = fs.existsSync(POSTED) ? JSON.parse(fs.readFileSync(POSTED, 'utf8')) : {};
 
@@ -62,6 +63,15 @@ function captionFor(name, all) {
   const text = [words(first), ...rest.filter(l => c[l]).map(words), tags].filter(Boolean).join('\n\n').trim();
   if (text.length > 2200) throw new Error(`Caption for "${name}" is longer than 2200 characters`);
   return text;
+}
+
+// The first comment under every post ("Comment TIMBRO and we'll send you the design of your card"),
+// in the captions' languages, one below the other.
+function firstComment() {
+  const c = schedule.firstComment;
+  if (!c) return '';
+  if (typeof c === 'string') return c.trim();
+  return (schedule.captions || ['it']).map(l => c[l]).filter(Boolean).join('\n\n').trim();
 }
 
 // The public files for one post (the website serves this folder).
@@ -139,9 +149,15 @@ async function publish(item, files, caption) {
     if (now - utcOf(p.at, tz) > LATE) { console.log(`skip  ${p.at} ${p.post} (more than 2 days late)`); if (!dry) posted[key(p)] = { skipped: true }; continue; }
     try {
       const files = filesFor(p), caption = p.type === 'story' ? '' : captionFor(p.post, all);
-      if (dry) { console.log(`would post  ${p.at} ${p.type} ${p.post}\n  ${Object.values(files).flat().filter(Boolean).join('\n  ')}\n  ---\n  ${caption.replace(/\n/g, '\n  ')}`); continue; }
+      const comment = p.type === 'story' ? '' : firstComment();
+      if (dry) { console.log(`would post  ${p.at} ${p.type} ${p.post}\n  ${Object.values(files).flat().filter(Boolean).join('\n  ')}\n  ---\n  ${caption.replace(/\n/g, '\n  ')}${comment ? `\n  --- first comment\n  ${comment.replace(/\n/g, '\n  ')}` : ''}`); continue; }
       const id = await publish(p, files, caption);
       posted[key(p)] = { id, postedAt: new Date().toISOString() };
+      // The post is out; a comment that fails (e.g. the key lacks the comments permission) only gets a note.
+      if (comment) {
+        try { await call('POST', `${id}/comments`, { message: comment }); posted[key(p)].comment = true; }
+        catch (e) { console.log(`  (first comment not added: ${e.message})`); }
+      }
       fs.writeFileSync(POSTED, JSON.stringify(posted, null, 2) + '\n');
       console.log(`posted ${p.at} ${p.type} ${p.post} → ${id}`);
     } catch (e) { failed = true; console.error(`FAILED ${p.at} ${p.post}: ${e.message}`); }
