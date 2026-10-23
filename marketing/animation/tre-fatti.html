@@ -762,7 +762,7 @@ const CAM = [
 ];
 const appear = (t, a, b) => backOut((t - a) / .6) * (1 - ease((t - b) / .45));
 
-// grain, moved every frame
+// grain, still (grain that moves every frame makes the video four times bigger)
 { const c = canvas(256, 256, (g, w, h) => { const d = g.createImageData(w, h); for (let i = 0; i < d.data.length; i += 4) { const v = 128 + (hash(i * .13) - .5) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } g.putImageData(d, 0, 0); }); $('grain').style.backgroundImage = `url(${c.toDataURL()})`; }
 const SRC_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 19.5V5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2.5z"/><path d="M8 7h6"/></svg>';
 
@@ -785,7 +785,6 @@ function renderAt(t) {
   $('chip').style.transform = `scale(${.7 + .3 * backOut((t - chipStart) / .4)})`;
   const srcStart = cap && cap[3] ? T.caps.find(c => c[3] === cap[3])[0] : 0;
   $('src').style.display = cap && cap[3] ? '' : 'none'; $('src').style.opacity = clamp01((t - srcStart - .3) / .3);
-  $('grain').style.backgroundPosition = `${Math.floor(hash(Math.floor(t * 30)) * 256)}px ${Math.floor(hash(Math.floor(t * 30) + 7) * 256)}px`;
   $('flash').style.opacity = Math.max(0, 1 - Math.abs(t - END - .9) / .25) * 0;
 
   // the café's life: the barista works, the guest at the counter scans, steam and dust drift
