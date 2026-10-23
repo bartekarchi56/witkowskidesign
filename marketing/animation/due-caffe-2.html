@@ -164,13 +164,40 @@ for (const x of [-5.6, 5.6]) {
 
 // people: a queue outside café 2, one customer at café 1
 const COLORS = ['#E4572E', '#2B9EB3', '#F3A712', '#6C4AB6', '#29BF12', '#E84A8A', '#3D5A80', '#FF8C42', '#1B998B'];
-function person(i) {
-  const p = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(.17, .34, 4, 12), mat(COLORS[i % COLORS.length])); body.position.y = .38; body.castShadow = true; p.add(body);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(.14, 16, 12), mat(['#f1c9a5', '#d9a77f', '#a8774f', '#f6d7bd'][i % 4])); head.position.y = .78; head.castShadow = true; p.add(head);
-  p.scale.setScalar(1.25); street.add(p); return p;
+// A little clay figure: legs, a rounded body, arms that swing, a head with eyes and hair (short,
+// a bun or a cap), and in Café 2's queue a phone with the card glowing in one hand.
+const SKIN = ['#f1c9a5', '#d9a77f', '#a8774f', '#f6d7bd', '#8a5a3c'], HAIR = ['#2b1d16', '#6b4226', '#d9b26a', '#1a1a1a', '#a0522d'];
+const PANTS = ['#2d3a5c', '#3b3b45', '#5b4636', '#1f2a38'];
+function person(i, phone = false) {
+  const g = new THREE.Group(), m = c => mat(c, { roughness: .9 });
+  const cap = (r, len, c) => { const x = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 6, 14), m(c)); x.castShadow = true; return x; };
+  const limb = (r, len, c, x, y) => { const pivot = new THREE.Group(); pivot.position.set(x, y, 0); const l = cap(r, len, c); l.position.y = -(len / 2 + r * .6); pivot.add(l); g.add(pivot); return pivot; };
+  const legs = [-.075, .075].map(x => limb(.06, .2, PANTS[i % PANTS.length], x, .3));
+  const shoes = legs.map(l => { const s = new THREE.Mesh(new THREE.SphereGeometry(.065, 12, 8), m('#f2f2f2')); s.scale.set(1, .6, 1.4); s.position.set(0, -.33, .03); l.add(s); return s; });
+  const body = cap(.15, .2, COLORS[i % COLORS.length]); body.position.y = .5; body.scale.set(1, 1, .82); g.add(body);
+  const arms = [-1, 1].map(sd => { const a = limb(.045, .2, COLORS[i % COLORS.length], sd * .19, .62); a.rotation.z = sd * .12; return a; });
+  arms.forEach(a => { const h = new THREE.Mesh(new THREE.SphereGeometry(.045, 10, 8), m(SKIN[i % SKIN.length])); h.position.y = -.33; a.add(h); });
+  const head = new THREE.Mesh(new THREE.SphereGeometry(.14, 20, 16), m(SKIN[i % SKIN.length])); head.position.y = .86; head.castShadow = true; g.add(head);
+  for (const x of [-.048, .048]) { const e = new THREE.Mesh(new THREE.SphereGeometry(.016, 8, 6), new THREE.MeshBasicMaterial({ color: '#1a1a1a' })); e.position.set(x, .88, .128); g.add(e); }
+  const style = i % 3, hc = HAIR[i % HAIR.length];
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(.148, 20, 12, 0, Math.PI * 2, 0, Math.PI * .55), m(style === 2 ? COLORS[(i + 3) % COLORS.length] : hc));
+  hair.position.y = .87; hair.rotation.x = -.25; g.add(hair);
+  if (style === 1) { const bun = new THREE.Mesh(new THREE.SphereGeometry(.06, 12, 10), m(hc)); bun.position.set(0, 1.0, -.08); g.add(bun); }
+  if (style === 2) { const brim = new THREE.Mesh(new THREE.CylinderGeometry(.1, .1, .02, 16), m(COLORS[(i + 3) % COLORS.length])); brim.scale.set(1, 1, 1.3); brim.position.set(0, .93, .12); g.add(brim); }
+  if (phone) {
+    // the right arm holds the phone up in front, the screen glowing with the card
+    arms[1].rotation.set(-1.15, 0, .25);
+    const ph = new THREE.Mesh(new THREE.BoxGeometry(.075, .13, .012), new THREE.MeshStandardMaterial({ color: '#111', emissive: '#4a52ff', emissiveIntensity: 1.2 }));
+    ph.position.set(0, -.36, .02); ph.rotation.x = 1.0; arms[1].add(ph);
+  }
+  g.scale.setScalar(1.15); street.add(g);
+  return { g, legs, arms, phone, walk(t, on) {
+    const k = on ? Math.sin(t * 9) : 0;
+    legs[0].rotation.x = k * .6; legs[1].rotation.x = -k * .6;
+    arms[0].rotation.x = -k * .5; if (!phone) arms[1].rotation.x = k * .5;
+  } };
 }
-const queue = [...Array(7)].map((_, i) => person(i));
+const queue = [...Array(7)].map((_, i) => person(i, i % 2 === 0));
 const loner = person(8);
 
 // ---------------- the phone (café 2's card) ----------------
@@ -283,7 +310,8 @@ function renderAt(t) {
     });
     renderer.render(phoneScene, phoneCam);
   } else {
-    queue.forEach((p, i) => {
+    queue.forEach((q, i) => {
+      const p = q.g; q.walk(t, false);
       // the queue shuffles forward: the first one goes in every 2 seconds
       const cyc = ((t + i * 0) % 2) / 2, step = t > 1 ? cyc : 0;
       // along the pavement from café 2's door towards the right, then down the side of the road
@@ -296,8 +324,8 @@ function renderAt(t) {
     });
     // café 1: someone pays and leaves, wandering away down the road
     const lt = (t - BACK - .2) / 4.2;
-    if (t > BACK && lt < 1) { const a = new THREE.Vector3(-2.75, 0, 1.5), b = ACROSS ? new THREE.Vector3(-6.4, 0, 2.6) : new THREE.Vector3(-3.6, 0, 8.5); loner.position.lerpVectors(a, b, ease(lt)); loner.position.y = Math.abs(Math.sin(t * 9)) * .05; loner.rotation.y = ACROSS ? -Math.PI / 2 : -.25; loner.visible = true; loner.scale.setScalar(1.25 * (lt < .08 ? .5 + lt / .16 : 1)); }
-    else loner.visible = false;
+    if (t > BACK && lt < 1) { const a = new THREE.Vector3(-2.75, 0, 1.5), b = ACROSS ? new THREE.Vector3(-6.4, 0, 2.6) : new THREE.Vector3(-3.6, 0, 8.5); const L = loner.g; L.position.lerpVectors(a, b, ease(lt)); L.position.y = Math.abs(Math.sin(t * 9)) * .03; L.rotation.y = ACROSS ? -Math.PI / 2 : -.25; L.visible = true; L.scale.setScalar(1.15 * (lt < .08 ? .5 + lt / .16 : 1)); loner.walk(t, lt > .03 && lt < .97); }
+    else loner.g.visible = false;
     const c = track(CAM, t);
     camera.position.set(c[0] + Math.sin(t * .3) * .12, c[1], c[2]); camera.lookAt(c[3], c[4], c[5]);
     renderer.render(street, camera);
