@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../assets/css/base.css">
 <style>
 /* "Two cafés, same street, same prices": a 38-second reel in 3D (three.js), night street with the
-   months painted down the road. Café 2 has Timbro: a queue outside, the card on the phone filling
+   months painted along the road (Italian; the English one has plain lane marks). Café 2 has Timbro: a queue outside, the card on the phone filling
    up, a reminder, the free coffee, back every week. Café 1: they pay, leave and come back when they
    remember. A year: 26 visits against 52. "Which café do you want to be? Comment TIMBRO."
    Vertical 540 x 960 (1080 x 1920 at 2x). ?lang=it|en. make.js calls window.renderAt(t). */
@@ -81,7 +81,7 @@ const T = {
       [20.4, 'Across the road: they pay, they leave…'], [22.6, '…and come back <mark class="y">when they remember.</mark>'], [24.4, 'Every two weeks.'],
       [25.8, ''], [30.6, ''], [33.0, 'And you? <mark>Which café</mark> do you want to be?']
     ],
-    sign1: 'CAFÉ 1', sign2: 'CAFÉ 2', months: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+    sign1: 'CAFÉ 1', sign2: 'CAFÉ 2', months: [],   // the English video has a plain road, without the months
     calH: 'In one year', lab1: 'Café 1 · visits', lab2: 'Café 2 · visits', calBrand: 'That system is called', end: 'Comment TIMBRO 👇', note: 'Illustrative simulation',
     bar: 'Your café', stamps: 'STAMPS', reward: 'REWARD', rewardV: 'a free coffee', customer: 'MEMBER', ready: 'Reward ready: show it at the till', notif: 'One stamp left for a free coffee ☕', now: 'now'
   }
@@ -118,15 +118,21 @@ street.add(new THREE.HemisphereLight('#6d78c9', '#1a1a2a', .9));
 const moon = new THREE.DirectionalLight('#9fb0ff', .7); moon.position.set(-6, 10, 8); moon.castShadow = true; moon.shadow.mapSize.set(1024, 1024);
 Object.assign(moon.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10 }); street.add(moon);
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), mat('#2a2f45')); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; street.add(ground);
-const road = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 40), mat('#1f2336')); road.rotation.x = -Math.PI / 2; road.position.set(0, .004, 18); road.receiveShadow = true; street.add(road);
-const pavement = new THREE.Mesh(new THREE.PlaneGeometry(14, 2.2), mat('#3a3f57')); pavement.rotation.x = -Math.PI / 2; pavement.position.set(0, .006, 2.3); pavement.receiveShadow = true; street.add(pavement);
-// The months painted down the road, January nearest the cafés
-T.months.forEach((m, i) => {
+// Italian: the road runs towards the camera with the months painted down it. English: it runs
+// across, in front of the cafés, with plain lane marks.
+const ACROSS = !T.months.length;
+const road = ACROSS ? new THREE.Mesh(new THREE.PlaneGeometry(60, 3.2), mat('#1f2336')) : new THREE.Mesh(new THREE.PlaneGeometry(4.2, 40), mat('#1f2336'));
+road.rotation.x = -Math.PI / 2; road.position.set(0, .004, ACROSS ? 5.0 : 18); road.receiveShadow = true; street.add(road);
+const pavement = new THREE.Mesh(new THREE.PlaneGeometry(ACROSS ? 60 : 14, 2.2), mat('#3a3f57')); pavement.rotation.x = -Math.PI / 2; pavement.position.set(0, .006, 2.3); pavement.receiveShadow = true; street.add(pavement);
+const dashMat = new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: .25 });
+if (ACROSS) for (let i = 0; i < 16; i++) {
+  const dash = new THREE.Mesh(new THREE.PlaneGeometry(.5, .08), dashMat); dash.rotation.x = -Math.PI / 2; dash.position.set(-12 + i * 1.6, .009, 5.0); street.add(dash);
+} else T.months.forEach((m, i) => {
+  // the months painted down the road, January nearest the cafés
   const c = canvas(256, 96, (g, w, h) => { g.fillStyle = 'rgba(255,255,255,.85)'; g.font = '800 64px Archivo'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(m, w / 2, h / 2 + 4); });
   const p = new THREE.Mesh(new THREE.PlaneGeometry(1.5, .56), new THREE.MeshBasicMaterial({ map: tex(c), transparent: true, depthWrite: false }));
   p.rotation.x = -Math.PI / 2; p.position.set(0, .01, 3.9 + i * 1.6); street.add(p);
-  const dash = new THREE.Mesh(new THREE.PlaneGeometry(.08, .5), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: .25 }));
-  dash.rotation.x = -Math.PI / 2; dash.position.set(0, .009, 4.7 + i * 1.6); street.add(dash);
+  const dash = new THREE.Mesh(new THREE.PlaneGeometry(.08, .5), dashMat); dash.rotation.x = -Math.PI / 2; dash.position.set(0, .009, 4.7 + i * 1.6); street.add(dash);
 });
 
 function makeCafe(o) {
@@ -243,7 +249,8 @@ function track(keys, t) {
 }
 // [time, [x, y, z, lookX, lookY, lookZ]]
 const CAM = [[0, [0, 7.4, 19.5, 0, 1.9, 2.5]], [7.6, [0, 5.6, 14.5, 0, 1.6, 1.5]], [PUSH + 2.2, [2.4, 2.5, 4.6, 2.4, 1.3, .4]],
-  [BACK, [-1.0, 2.6, 10.5, -3.0, 1.0, 3.0]], [CAL, [-1.4, 2.4, 10.5, -3.4, .9, 4.0]], [WIDE, [-1.4, 2.4, 10.5, -3.4, .9, 4.0]], [WIDE + 1.6, [0, 7.0, 18.5, 0, 1.8, 2.5]], [DURATION, [0, 7.4, 19.5, 0, 1.8, 2.5]]];
+  ...(ACROSS ? [[BACK, [-1.6, 2.4, 9.5, -3.4, 1.0, 2.0]], [CAL, [-2.2, 2.3, 9.5, -4.4, .9, 2.2]], [WIDE, [-2.2, 2.3, 9.5, -4.4, .9, 2.2]]]
+    : [[BACK, [-1.0, 2.6, 10.5, -3.0, 1.0, 3.0]], [CAL, [-1.4, 2.4, 10.5, -3.4, .9, 4.0]], [WIDE, [-1.4, 2.4, 10.5, -3.4, .9, 4.0]]]), [WIDE + 1.6, [0, 7.0, 18.5, 0, 1.8, 2.5]], [DURATION, [0, 7.4, 19.5, 0, 1.8, 2.5]]];
 
 function renderAt(t) {
   // captions: the latest one that has started
@@ -280,14 +287,16 @@ function renderAt(t) {
       // the queue shuffles forward: the first one goes in every 2 seconds
       const cyc = ((t + i * 0) % 2) / 2, step = t > 1 ? cyc : 0;
       // along the pavement from café 2's door towards the right, then down the side of the road
-      const x = i < 4 ? 1.05 + i * .62 : 1.05 + 3 * .62 + .2, z = i < 4 ? 1.85 : 1.85 + (i - 3) * .62;
+      // along the pavement from café 2's door (and, with the road towards the camera, down its side)
+      const down = !ACROSS && i >= 4;
+      const x = down ? 1.05 + 3 * .62 + .2 : 1.05 + i * (ACROSS ? .56 : .62), z = down ? 1.85 + (i - 3) * .62 : 1.85 + (ACROSS ? (i % 2) * .12 : 0);
       p.position.set(x + Math.sin(i * 1.7) * .05, Math.abs(Math.sin(t * 2 + i)) * .03, z);
-      p.rotation.y = (i < 4 ? -Math.PI / 2 : Math.PI) + Math.sin(t * .8 + i) * .2;
+      p.rotation.y = (down ? Math.PI : -Math.PI / 2) + Math.sin(t * .8 + i) * .2;
       p.visible = true;
     });
     // café 1: someone pays and leaves, wandering away down the road
     const lt = (t - BACK - .2) / 4.2;
-    if (t > BACK && lt < 1) { const a = new THREE.Vector3(-2.75, 0, 1.5), b = new THREE.Vector3(-3.6, 0, 8.5); loner.position.lerpVectors(a, b, ease(lt)); loner.position.y = Math.abs(Math.sin(t * 9)) * .05; loner.rotation.y = -.25; loner.visible = true; loner.scale.setScalar(1.25 * (lt < .08 ? .5 + lt / .16 : 1)); }
+    if (t > BACK && lt < 1) { const a = new THREE.Vector3(-2.75, 0, 1.5), b = ACROSS ? new THREE.Vector3(-6.4, 0, 2.6) : new THREE.Vector3(-3.6, 0, 8.5); loner.position.lerpVectors(a, b, ease(lt)); loner.position.y = Math.abs(Math.sin(t * 9)) * .05; loner.rotation.y = ACROSS ? -Math.PI / 2 : -.25; loner.visible = true; loner.scale.setScalar(1.25 * (lt < .08 ? .5 + lt / .16 : 1)); }
     else loner.visible = false;
     const c = track(CAM, t);
     camera.position.set(c[0] + Math.sin(t * .3) * .12, c[1], c[2]); camera.lookAt(c[3], c[4], c[5]);
