@@ -419,8 +419,30 @@ Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9
 >
 > #loyaltycard #franchise #retail #hospitality #multiunit
 
+### tre-fatti (3D reel: `marketing/animation/timbro-tre-fatti-it.mp4`, `-en.mp4`, 37 s, with sound)
+Three facts from published studies, each named on screen. The cover is `marketing/animation/timbro-tre-fatti-<lang>-cover.jpg`.
+
+**IT**
+> 3 fatti sui clienti abituali che quasi nessun bar conosce 🧠☕
+> 1. Due carte, 8 timbri per tutte e due. Quella che parte con 2 timbri già fatti la completa il 34% dei clienti, l'altra il 19% (Nunes & Drèze, 2006).
+> 2. Più si avvicinano al premio, più spesso tornano (Kivetz, Urminsky & Zheng, 2006, bar della Columbia University).
+> 3. Trovare un cliente nuovo costa da 5 a 25 volte di più che tenerne uno (Harvard Business Review, 2014).
+> Quale ti ha sorpreso di più? 👇
+>
+> #cartafedeltà #clientifedeli #barmilano #marketingperbar #piccoleimprese
+
+**EN**
+> 3 facts about regulars that most cafés don't know 🧠☕
+> 1. Two cards, both need 8 stamps. The one that starts with 2 stamps already in is finished by 34% of customers, the other by 19% (Nunes & Drèze, 2006).
+> 2. The closer they get to the reward, the more often they come (Kivetz, Urminsky & Zheng, 2006, a Columbia University café).
+> 3. Winning a new customer costs 5 to 25 times more than keeping one (Harvard Business Review, 2014).
+> Which one surprised you most? 👇
+>
+> #loyaltycard #customerloyalty #coffeeshopowner #cafemarketing #smallbusiness
+
 ## Keep it honest
 
 - The posts say "on the phone", not "in Apple Wallet": Wallet saving isn't switched on yet (`wallet/README.md`). Change the copy once it is.
 - `reel-results` shows example data, and says so on screen.
+- `tre-fatti`: fact 1 comes from a car wash's loyalty cards and the video says so; the two cards are generic, not coffee cards. The "×5–25" range is HBR's; the coins are a picture of it, not a measurement.
 - No real café's name or logo appears. When a café agrees, make a post about them with their own numbers, as an Instagram Collab post.

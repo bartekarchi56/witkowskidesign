@@ -1,6 +1,6 @@
 // Renders an animation page frame by frame and makes an MP4 (1080 x 1920, 30 fps) with its
 // soundtrack from sound.js: marketing/animation/timbro-<page>-<lang>.mp4
-//   node marketing/animation/make.js [due-caffe|come-funziona] [it|en]   (needs ffmpeg: FFMPEG=/path/to/ffmpeg or on PATH)
+//   node marketing/animation/make.js [due-caffe|come-funziona|due-caffe-2|tre-fatti] [it|en]   (needs ffmpeg: FFMPEG=/path/to/ffmpeg or on PATH)
 let chromium;
 try { ({ chromium } = require('playwright')); } catch (e) { ({ chromium } = require('/opt/node22/lib/node_modules/playwright')); }
 const http = require('http'), fs = require('fs'), path = require('path'), os = require('os'), { execFileSync } = require('child_process');

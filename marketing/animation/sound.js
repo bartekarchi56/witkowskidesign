@@ -5,6 +5,9 @@
 //   come-funziona: scan beeps, the tap on "Add to Wallet", the card dropping in, the till's beep and
 //                  success, a blip for every stamp, the notification, confetti and a chime, typing and
 //                  sending a message to all customers, whooshes between the steps
+//   tre-fatti:     the café dropping into place, caption ticks, whooshes between the facts, two stamp
+//                  thuds, coffee pouring into the glasses, a blip for every stepping stone, the reminder,
+//                  a chime and confetti, coins clinking on the balance, the Wallet card filling up
 //   require('./sound.js').write(file, name)  → writes a 44.1 kHz stereo WAV
 const fs = require('fs');
 
@@ -13,7 +16,7 @@ const RATE = 44100;
 const T0 = 2.0, DAY = 1.7, DAYS = 7, T_CMP = T0 + DAYS * DAY + .4, T_END = T_CMP + 2.6;
 const COUNT_A = [3, 3, 2, 2, 2, 1, 1], COUNT_B = [2, 3, 4, 5, 6, 7, 8];
 const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, S6 = 22.0, END = 26.4;
-const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5 };
+const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0 };
 
 function render(name) {
   const DURATION = DURATIONS[name];
@@ -100,6 +103,30 @@ function render(name) {
     for (let i = 0; i < 26; i++) click(26.2 + i * (3.2 / 26), .045);
     chime(30.6, .1);
     blip(34.4, 84, .12, 0);
+  } else if (name === 'tre-fatti') {
+    const F1 = 3.6, F2 = 13.6, F3 = 23.0, END = 29.0;
+    const pop = (t, f0, g, pan = 0) => add(t, .22, x => Math.exp(-x * 20) * Math.sin(2 * Math.PI * (f0 + 600 * x) * x), g, pan);
+    for (let i = 0; i < 16; i++) pop(.12 + i * .055 + hash(i) * .02, 260 + i * 22, .13, hash(i + 4) - .5);   // the café drops in
+    for (let i = 0; i < 5; i++) pop(1.05 + i * .1, 520 + i * 60, .12, (i - 2) * .2);                          // its people
+    for (const t of [.3, 1.9, F1 + .2, 6.4, 8.6, 11.0, F2 + .2, 16.4, 19.6, F3 + .2, 25.2, END + .2, 32.6]) add(t, .1, x => Math.exp(-x * 40) * Math.sin(2 * Math.PI * 1100 * x), .08);
+    for (const t of [F1 - .1, F2 - .1, F3 - .1, END - .1]) whoosh(t, .75, .3);
+    whoosh(29.95, .6, .25);
+    pop(F1 + .2, 420, .16, -.3); pop(F1 + .32, 500, .16, .3);                 // the two cards
+    thud(6.97, .22); thud(7.57, .22);                                         // card B's two stamps
+    pop(8.32, 380, .14, -.3); pop(8.44, 440, .14, .3);                         // the glasses
+    for (const [pan, g] of [[-.35, .1], [.35, .13]]) { let lp = 0; add(8.9, 1.9, x => { lp += (.05 + x * .05) * (rnd() - lp); return lp * Math.min(1, x / .1) * Math.min(1, (1.9 - x) / .5) * (1 + .5 * Math.sin(2 * Math.PI * (7 + x * 4) * x)); }, g, pan); }
+    chime(11.05, .07);
+    for (let i = 0; i < 10; i++) pop(F2 + .1 + i * .05, 600 + i * 30, .06, (i / 10 - .5));                  // stepping stones appear
+    [14.6, 15.55, 16.37, 17.09, 17.71, 18.25, 18.72, 19.14, 19.51, 21.0].forEach((t, i) => blip(t, 72 + i * 1.6, .11, i % 2 ? .3 : -.3));
+    [88, 84, 91].forEach((m, i) => beep(19.5 + i * .12, m, .1, .09));         // the reminder
+    chime(21.05, .12); for (let i = 0; i < 30; i++) blip(21.1 + hash(i) * 1.4, 96 + Math.floor(hash(i + 9) * 10), .02, hash(i + 3) - .5);
+    const clink = (t, g, pan) => { const k = .9 + hash(t * 100) * .25; add(t, .35, x => Math.exp(-x * 14) * (Math.sin(2 * Math.PI * 2350 * k * x) + .7 * Math.sin(2 * Math.PI * 3720 * k * x) * Math.exp(-x * 10) + .4 * Math.sin(2 * Math.PI * 5210 * k * x) * Math.exp(-x * 20)), g, pan); add(t, .02, x => rnd() * Math.exp(-x * 300), g * .6, pan); };
+    clink(F3 + 1.02, .05, .3);
+    for (let k = 0; k < 25; k++) clink(F3 + 1.12 + k * .085, .045, -.3);
+    [30.5, 30.8, 31.1, 31.35, 31.6, 31.82, 32.04].forEach((t, i) => blip(t, 78 + i * 1.5, .1, i % 2 ? .3 : -.3));
+    thud(32.3, .22); chime(32.42, .12);
+    for (let i = 0; i < 30; i++) blip(32.35 + hash(i + 40) * 1.5, 96 + Math.floor(hash(i + 19) * 10), .02, hash(i + 13) - .5);
+    blip(33.4, 84, .12, 0);
   } else {
     // come-funziona
     const pop = (t, f0, g) => add(t, .25, x => Math.exp(-x * 18) * Math.sin(2 * Math.PI * (f0 + 500 * x) * x), g);
