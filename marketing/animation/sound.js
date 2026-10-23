@@ -13,7 +13,7 @@ const RATE = 44100;
 const T0 = 2.0, DAY = 1.7, DAYS = 7, T_CMP = T0 + DAYS * DAY + .4, T_END = T_CMP + 2.6;
 const COUNT_A = [3, 3, 2, 2, 2, 1, 1], COUNT_B = [2, 3, 4, 5, 6, 7, 8];
 const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, S6 = 22.0, END = 26.4;
-const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7 };
+const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5 };
 
 function render(name) {
   const DURATION = DURATIONS[name];
@@ -88,6 +88,18 @@ function render(name) {
     }
     const chimeT = T_END + .6 + 3 * .55 + .25;
     [72, 76, 79, 84].forEach((m, i) => { const f = hz(m); add(chimeT + i * .08, 1.6, x => Math.exp(-x * 2.6) * (Math.sin(2 * Math.PI * f * x) + .3 * Math.sin(2 * Math.PI * f * 3.01 * x) * Math.exp(-x * 5)), .12); });
+  } else if (name === 'due-caffe-2') {
+    // due-caffe-2: a soft tick for each caption, whooshes into the café and the phone, the stamps,
+    // the reminder, the tenth stamp with confetti, the year filling up, a chime for Timbro
+    for (const t of [.3, 1.9, 3.4, 5.0, 8.3, 11.0, 14.6, 16.6, 18.4, 20.4, 22.6, 24.4, 33.0]) add(t, .1, x => Math.exp(-x * 40) * Math.sin(2 * Math.PI * 1100 * x), .1);
+    for (const t of [8.0, 10.25, 19.85, 25.45, 32.7]) whoosh(t, .7, .3);
+    [11.0, 11.5, 12.0, 12.45, 12.9, 13.3, 13.7, 14.05, 14.4].forEach((t, i) => blip(t, 76 + i * 1.5, .1, i % 2 ? .3 : -.3));
+    [88, 84, 91].forEach((m, i) => beep(14.6 + i * .12, m, .1, .09));
+    thud(16.6, .22); chime(16.75, .12);
+    for (let i = 0; i < 36; i++) blip(16.65 + hash(i) * 1.5, 96 + Math.floor(hash(i + 9) * 10), .022, hash(i + 3) - .5);
+    for (let i = 0; i < 26; i++) click(26.2 + i * (3.2 / 26), .045);
+    chime(30.6, .1);
+    blip(34.4, 84, .12, 0);
   } else {
     // come-funziona
     const pop = (t, f0, g) => add(t, .25, x => Math.exp(-x * 18) * Math.sin(2 * Math.PI * (f0 + 500 * x) * x), g);

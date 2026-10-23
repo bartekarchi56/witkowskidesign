@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Due caffè, stessa via</title>
+<link rel="stylesheet" href="../../assets/css/base.css">
+<style>
+/* "Two cafés, same street, same prices": a 38-second reel in 3D (three.js), night street with the
+   months painted down the road. Café 2 has Timbro: a queue outside, the card on the phone filling
+   up, a reminder, the free coffee, back every week. Café 1: they pay, leave and come back when they
+   remember. A year: 26 visits against 52. "Which café do you want to be? Comment TIMBRO."
+   Vertical 540 x 960 (1080 x 1920 at 2x). ?lang=it|en. make.js calls window.renderAt(t). */
+html,body{margin:0;background:#111}
+body{display:grid;place-items:center;min-height:100vh;font-family:var(--font)}
+.stage{width:540px;height:960px;position:relative;overflow:hidden;background:#0f1530}
+canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
+.ov{position:absolute;left:0;right:0;pointer-events:none}
+.cap{top:110px;text-align:center;padding:0 26px}
+.cap div{display:inline-block;font-size:38px;line-height:1.12;font-weight:800;font-stretch:112%;letter-spacing:-.01em;color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.35),0 8px 30px rgba(0,0,0,.45)}
+.cap mark{background:var(--pop);color:#fff;padding:0 10px;border-radius:10px;box-decoration-break:clone;-webkit-box-decoration-break:clone;text-shadow:none}
+.cap mark.y{background:#FFC24B;color:#1a1a1a}
+.cal{inset:0;background:rgba(10,14,34,.9);opacity:0;display:flex;flex-direction:column;justify-content:center;padding:0 34px;color:#fff}
+.cal h3{margin:0 0 26px;font-size:30px;font-weight:800;font-stretch:112%;text-align:center}
+.row{margin-bottom:26px}
+.row .lab{display:flex;justify-content:space-between;align-items:baseline;font:600 15px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#aab0d6;margin-bottom:10px}
+.row .lab b{font:800 46px/1 var(--font);font-stretch:110%;letter-spacing:0;color:#fff}
+.row.two .lab b{color:#8f95ff}
+.grid{display:grid;grid-template-columns:repeat(13,1fr);gap:5px}
+.grid i{aspect-ratio:1;border-radius:4px;background:rgba(255,255,255,.1)}
+.row.one .grid i.on{background:#9aa0b8}
+.row.two .grid i.on{background:var(--pop);box-shadow:0 0 10px rgba(43,50,255,.7)}
+.cal .brand{margin-top:14px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:30px;font-weight:800;font-stretch:112%;opacity:0}
+.cal .brand i{width:26px;height:26px;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 6px var(--pop),inset 0 0 0 8px #fff}
+.flash{inset:0;background:#fff;opacity:0}
+.note{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:10px;color:rgba(255,255,255,.45)}
+.end{bottom:150px;text-align:center;opacity:0}
+.end span{display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--ink);font-size:22px;font-weight:800;padding:14px 20px;border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.end span i{width:20px;height:20px;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 5px var(--pop),inset 0 0 0 7px #fff}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="c"></canvas>
+  <div class="ov cal" id="cal">
+    <h3 id="calH"></h3>
+    <div class="row one"><div class="lab"><span id="lab1"></span><b id="n1">0</b></div><div class="grid" id="g1"></div></div>
+    <div class="row two"><div class="lab"><span id="lab2"></span><b id="n2">0</b></div><div class="grid" id="g2"></div></div>
+    <div class="brand" id="calBrand"><i></i>Timbro</div>
+  </div>
+  <div class="ov cap" id="cap"><div id="capT"></div></div>
+  <div class="ov end" id="end"><span><i></i><b id="endT"></b></span></div>
+  <div class="ov flash" id="flash"></div>
+  <div class="note" id="note"></div>
+</div>
+<script src="../../assets/js/config.js"></script>
+<script type="module">
+import * as THREE from '../../assets/vendor/three.module.min.js';
+
+const q = new URLSearchParams(location.search);
+const lang = q.get('lang') === 'en' ? 'en' : 'it';
+document.documentElement.lang = lang;
+const T = {
+  it: {
+    caps: [
+      [0.3, 'Due caffè.'], [1.9, 'Stessa via.'], [3.4, 'Stessi prezzi.'], [5.0, 'Uno rivede i suoi clienti <mark>il doppio</mark> delle volte.'],
+      [8.3, 'Perché? <mark>Ha un sistema.</mark>'], [11.0, 'Ogni visita, <mark>un timbro</mark> sul telefono.'], [14.6, 'Un promemoria quando <mark>manca poco.</mark>'],
+      [16.6, 'Al decimo: <mark class="y">caffè gratis</mark> ☕'], [18.4, 'E tornano <mark>ogni settimana.</mark>'],
+      [20.4, 'Di fronte: pagano, escono…'], [22.6, '…e tornano <mark class="y">quando se ne ricordano.</mark>'], [24.4, 'Ogni due settimane.'],
+      [25.8, ''], [30.6, ''], [33.0, 'E tu? <mark>Quale dei due</mark> vuoi essere?']
+    ],
+    sign1: 'CAFFÈ 1', sign2: 'CAFFÈ 2', months: ['GEN', 'FEB', 'MAR', 'APR', 'MAG', 'GIU', 'LUG', 'AGO', 'SET', 'OTT', 'NOV', 'DIC'],
+    calH: 'In un anno', lab1: 'Caffè 1 · visite', lab2: 'Caffè 2 · visite', calBrand: 'Quel sistema si chiama', end: 'Commenta TIMBRO 👇', note: 'Simulazione illustrativa',
+    bar: 'Il tuo bar', stamps: 'TIMBRI', reward: 'PREMIO', rewardV: 'un caffè gratis', customer: 'CLIENTE', ready: 'Premio pronto: mostralo alla cassa', notif: 'Ti manca 1 timbro per un caffè gratis ☕', now: 'ora'
+  },
+  en: {
+    caps: [
+      [0.3, 'Two cafés.'], [1.9, 'Same street.'], [3.4, 'Same prices.'], [5.0, 'One sees its regulars <mark>twice as often.</mark>'],
+      [8.3, 'Why? <mark>It has a system.</mark>'], [11.0, 'Every visit, <mark>a stamp</mark> on their phone.'], [14.6, 'A reminder when <mark>it’s close.</mark>'],
+      [16.6, 'The tenth: <mark class="y">free coffee</mark> ☕'], [18.4, 'So they’re back <mark>every week.</mark>'],
+      [20.4, 'Across the road: they pay, they leave…'], [22.6, '…and come back <mark class="y">when they remember.</mark>'], [24.4, 'Every two weeks.'],
+      [25.8, ''], [30.6, ''], [33.0, 'And you? <mark>Which café</mark> do you want to be?']
+    ],
+    sign1: 'CAFÉ 1', sign2: 'CAFÉ 2', months: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+    calH: 'In one year', lab1: 'Café 1 · visits', lab2: 'Café 2 · visits', calBrand: 'That system is called', end: 'Comment TIMBRO 👇', note: 'Illustrative simulation',
+    bar: 'Your café', stamps: 'STAMPS', reward: 'REWARD', rewardV: 'a free coffee', customer: 'MEMBER', ready: 'Reward ready: show it at the till', notif: 'One stamp left for a free coffee ☕', now: 'now'
+  }
+}[lang];
+const $ = id => document.getElementById(id);
+$('calH').textContent = T.calH; $('lab1').textContent = T.lab1; $('lab2').textContent = T.lab2; $('endT').textContent = T.end; $('note').textContent = T.note;
+$('calBrand').innerHTML = `<span style="font-weight:600;font-size:20px;opacity:.8">${T.calBrand}</span><i></i>Timbro`;
+$('g1').innerHTML = $('g2').innerHTML = '<i></i>'.repeat(52);
+await Promise.all(['800 40px Archivo', '600 40px Archivo', '500 40px Archivo'].map(f => document.fonts.load(f)));
+
+// Timeline (seconds)
+const PUSH = 8.0, PHONE = 10.4, BACK = 20.0, CAL = 25.6, WIDE = 32.8, DURATION = 38.5;
+const BLUE = '#2B32FF';
+const W = 540, H = 960, DPR = +(q.get('dpr') || 2);
+const renderer = new THREE.WebGLRenderer({ canvas: $('c'), antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(DPR); renderer.setSize(W, H, false);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const ease = x => { x = clamp01(x); return x * x * (3 - 2 * x); };
+const backOut = x => { x = clamp01(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const hash = n => { const s = Math.sin(n * 127.1) * 43758.5453; return s - Math.floor(s); };
+const lerp = (a, b, x) => a + (b - a) * x;
+const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: .8, metalness: 0, ...extra });
+const tex = c => { const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
+const canvas = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); return c; };
+
+// ---------------- the street at night ----------------
+const street = new THREE.Scene();
+street.background = new THREE.Color('#0f1530');
+street.fog = new THREE.Fog('#0f1530', 18, 40);
+street.add(new THREE.HemisphereLight('#6d78c9', '#1a1a2a', .9));
+const moon = new THREE.DirectionalLight('#9fb0ff', .7); moon.position.set(-6, 10, 8); moon.castShadow = true; moon.shadow.mapSize.set(1024, 1024);
+Object.assign(moon.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10 }); street.add(moon);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), mat('#2a2f45')); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; street.add(ground);
+const road = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 40), mat('#1f2336')); road.rotation.x = -Math.PI / 2; road.position.set(0, .004, 18); road.receiveShadow = true; street.add(road);
+const pavement = new THREE.Mesh(new THREE.PlaneGeometry(14, 2.2), mat('#3a3f57')); pavement.rotation.x = -Math.PI / 2; pavement.position.set(0, .006, 2.3); pavement.receiveShadow = true; street.add(pavement);
+// The months painted down the road, January nearest the cafés
+T.months.forEach((m, i) => {
+  const c = canvas(256, 96, (g, w, h) => { g.fillStyle = 'rgba(255,255,255,.85)'; g.font = '800 64px Archivo'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(m, w / 2, h / 2 + 4); });
+  const p = new THREE.Mesh(new THREE.PlaneGeometry(1.5, .56), new THREE.MeshBasicMaterial({ map: tex(c), transparent: true, depthWrite: false }));
+  p.rotation.x = -Math.PI / 2; p.position.set(0, .01, 3.9 + i * 1.6); street.add(p);
+  const dash = new THREE.Mesh(new THREE.PlaneGeometry(.08, .5), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: .25 }));
+  dash.rotation.x = -Math.PI / 2; dash.position.set(0, .009, 4.7 + i * 1.6); street.add(dash);
+});
+
+function makeCafe(o) {
+  const g = new THREE.Group();
+  const box = (w, h, d, m, x, y, z) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = b.receiveShadow = true; g.add(b); return b; };
+  box(3.4, 2.4, 2.4, mat(o.wall), 0, 1.2, 0);
+  box(3.7, .22, 2.7, mat(o.roof), 0, 2.51, 0);
+  box(.72, 1.35, .06, mat('#2b2320', { emissive: o.glow, emissiveIntensity: o.doorGlow }), -.85, .68, 1.22);
+  const win = new THREE.Mesh(new THREE.PlaneGeometry(1.45, .95), new THREE.MeshStandardMaterial({ color: '#221c16', emissive: o.glow, emissiveIntensity: o.winGlow, roughness: .3 }));
+  win.position.set(.62, 1.0, 1.215); g.add(win);
+  // a few figures inside the window, in silhouette
+  for (let i = 0; i < o.inside; i++) { const s = new THREE.Mesh(new THREE.CapsuleGeometry(.09, .2, 4, 8), new THREE.MeshBasicMaterial({ color: '#1b1410' })); s.position.set(.12 + i * .28, .78, 1.2); g.add(s); }
+  const sc = canvas(512, 96, (c, w, h) => { c.fillStyle = o.signBg; c.fillRect(0, 0, w, h); c.fillStyle = o.signFg; c.font = '800 60px Archivo'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(o.sign, w / 2, h / 2 + 3); });
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(2.6, .46), new THREE.MeshStandardMaterial({ map: tex(sc), emissive: '#ffffff', emissiveMap: tex(sc), emissiveIntensity: o.signGlow }));
+  sign.position.set(0, 2.08, 1.215); g.add(sign);
+  for (let i = 0; i < 8; i++) { const s = box(3.5 / 8, .05, .7, mat(i % 2 ? o.awningA : o.awningB), -1.75 + 3.5 / 16 + i * 3.5 / 8, 1.72, 1.5); s.rotation.x = .38; }
+  const light = new THREE.PointLight(o.glow, o.light, 7, 1.6); light.position.set(0, 1.4, 2.4); g.add(light);
+  return g;
+}
+const cafe1 = makeCafe({ wall: '#6f6c78', roof: '#3e3c46', glow: '#c9c2b0', doorGlow: .05, winGlow: .45, inside: 1, sign: T.sign1, signBg: '#3e3c46', signFg: '#d8d8de', signGlow: .25, awningA: '#5b5966', awningB: '#8c8a96', light: 2.5 });
+const cafe2 = makeCafe({ wall: '#efe0c8', roof: '#7a4e3a', glow: '#ffbe5c', doorGlow: .5, winGlow: 1.6, inside: 4, sign: T.sign2, signBg: BLUE, signFg: '#ffffff', signGlow: .9, awningA: BLUE, awningB: '#ffffff', light: 9 });
+cafe1.position.set(-1.9, 0, 0); cafe2.position.set(1.9, 0, 0); street.add(cafe1, cafe2);
+// street lamps
+for (const x of [-5.6, 5.6]) {
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(.05, .06, 3.2, 10), mat('#222')); pole.position.set(x, 1.6, 2.6); pole.castShadow = true; street.add(pole);
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(.16, 16, 12), new THREE.MeshBasicMaterial({ color: '#ffe2a8' })); bulb.position.set(x, 3.2, 2.6); street.add(bulb);
+  const l = new THREE.PointLight('#ffd08a', 6, 9, 1.8); l.position.set(x, 3.0, 2.6); street.add(l);
+}
+
+// people: a queue outside café 2, one customer at café 1
+const COLORS = ['#E4572E', '#2B9EB3', '#F3A712', '#6C4AB6', '#29BF12', '#E84A8A', '#3D5A80', '#FF8C42', '#1B998B'];
+function person(i) {
+  const p = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(.17, .34, 4, 12), mat(COLORS[i % COLORS.length])); body.position.y = .38; body.castShadow = true; p.add(body);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(.14, 16, 12), mat(['#f1c9a5', '#d9a77f', '#a8774f', '#f6d7bd'][i % 4])); head.position.y = .78; head.castShadow = true; p.add(head);
+  p.scale.setScalar(1.25); street.add(p); return p;
+}
+const queue = [...Array(7)].map((_, i) => person(i));
+const loner = person(8);
+
+// ---------------- the phone (café 2's card) ----------------
+const phoneScene = new THREE.Scene();
+phoneScene.background = new THREE.Color('#121a3d');
+phoneScene.add(new THREE.HemisphereLight('#ffffff', '#3b3f8f', 1.4));
+const key = new THREE.DirectionalLight('#ffffff', 1.6); key.position.set(2, 3, 5); phoneScene.add(key);
+const glow = new THREE.Mesh(new THREE.CircleGeometry(2.6, 48), new THREE.MeshBasicMaterial({ color: '#2B32FF', transparent: true, opacity: .35 })); glow.position.z = -1.2; phoneScene.add(glow);
+const roundedShape = (w, h, r) => {
+  const s = new THREE.Shape(), x = -w / 2, y = -h / 2;
+  s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r); s.lineTo(x + w, y + h - r);
+  s.quadraticCurveTo(x + w, y + h, x + w - r, y + h); s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y); return s;
+};
+const phone = new THREE.Group();
+const body = new THREE.Mesh(new THREE.ExtrudeGeometry(roundedShape(1, 2.05, .14), { depth: .08, bevelEnabled: true, bevelThickness: .02, bevelSize: .02, bevelSegments: 3 }), mat('#1d1d1f', { roughness: .35, metalness: .3 }));
+body.position.z = -.04; phone.add(body);
+const scr = document.createElement('canvas'); scr.width = 540; scr.height = Math.round(540 * 1.98 / .93);
+const scrTex = tex(scr), sg = scr.getContext('2d');
+const screen = new THREE.Mesh(new THREE.ShapeGeometry(roundedShape(.93, 1.98, .11)), new THREE.MeshBasicMaterial({ map: scrTex, toneMapped: false }));
+{ const uv = screen.geometry.attributes.uv, pos = screen.geometry.attributes.position; for (let i = 0; i < uv.count; i++) uv.setXY(i, pos.getX(i) / .93 + .5, pos.getY(i) / 1.98 + .5); }
+screen.position.z = .065; phone.add(screen); phoneScene.add(phone);
+const CONF = [BLUE, '#FFC24B', '#FF5C7A', '#2EC4B6', '#ffffff'];
+const confetti = [...Array(60)].map((_, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.06, .1), new THREE.MeshBasicMaterial({ color: CONF[i % 5], side: THREE.DoubleSide })); phoneScene.add(m); return m; });
+const phoneCam = new THREE.PerspectiveCamera(30, W / H, .1, 50); phoneCam.position.set(0, -.15, 6.2); phoneCam.lookAt(0, -.15, 0);
+
+const rr = (g, x, y, w, h, r) => { g.beginPath(); g.roundRect(x, y, w, h, r); };
+function drawQR(g, x, y, s) {
+  const n = 21, c = s / n; g.fillStyle = '#111';
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    const fx = i < 7 ? i : i >= 14 ? i - 14 : -1, fy = j < 7 ? j : j >= 14 ? j - 14 : -1;
+    const inF = fx >= 0 && fy >= 0 && !(i >= 14 && j >= 14);
+    const on = inF ? (fx === 0 || fx === 6 || fy === 0 || fy === 6 || (fx >= 2 && fx <= 4 && fy >= 2 && fy <= 4)) : hash(i * 31 + j * 17) > .52;
+    if (on) g.fillRect(x + i * c, y + j * c, c + .5, c + .5);
+  }
+}
+function drawPhone(n, pop, banner) {
+  const g = sg, w = scr.width, h = scr.height;
+  g.fillStyle = '#F2F2F7'; g.fillRect(0, 0, w, h);
+  g.fillStyle = '#111'; g.font = '600 26px Archivo'; g.textAlign = 'left'; g.fillText('9:41', 44, 52); g.fillStyle = '#000'; rr(g, w / 2 - 80, 22, 160, 44, 22); g.fill();
+  g.fillStyle = '#111'; g.font = '800 46px Archivo'; g.fillText('Wallet', 40, 150);
+  const x = 36, y = 200, pw = w - 72;
+  g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.18)'; g.shadowBlur = 30; g.shadowOffsetY = 10; rr(g, x, y, pw, 560, 26); g.fill(); g.shadowColor = 'transparent';
+  g.fillStyle = '#111'; g.font = '600 30px Archivo'; g.fillText(T.bar.toUpperCase().split('').join(' '), x + 30, y + 58);
+  g.textAlign = 'right'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.stamps, x + pw - 30, y + 44);
+  g.fillStyle = '#111'; g.font = '600 32px Archivo'; g.fillText(`${n}/10`, x + pw - 30, y + 80);
+  g.fillStyle = '#F1F1F4'; g.fillRect(x, y + 104, pw, 210);
+  for (let i = 0; i < 10; i++) {
+    const cx = x + pw * (.14 + (i % 5) * .18), cy = y + 104 + (i < 5 ? 62 : 148), on = i < n;
+    let r = 26; if (on && i === n - 1) r *= .6 + .4 * backOut(pop);
+    g.fillStyle = on ? BLUE : '#D9D9DE'; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
+  }
+  g.textAlign = 'left'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.reward, x + 30, y + 352);
+  g.fillStyle = '#111'; g.font = '500 28px Archivo'; g.fillText(T.rewardV, x + 30, y + 388);
+  g.textAlign = 'right'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.customer, x + pw - 30, y + 352);
+  g.fillStyle = '#111'; g.font = '500 28px Archivo'; g.fillText('Giulia R.', x + pw - 30, y + 388);
+  if (n >= 10) { g.fillStyle = BLUE; rr(g, x + 24, y + 430, pw - 48, 74, 16); g.fill(); g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '700 23px Archivo'; g.fillText(T.ready, x + pw / 2, y + 476); }
+  else { g.fillStyle = '#fff'; drawQR(g, x + pw / 2 - 70, y + 410, 140); }
+  if (banner > 0) {
+    const by = -150 + 240 * banner;
+    g.fillStyle = 'rgba(250,250,252,.97)'; g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 30; rr(g, 24, by, w - 48, 130, 28); g.fill(); g.shadowColor = 'transparent';
+    g.fillStyle = BLUE; rr(g, 46, by + 30, 56, 56, 14); g.fill(); g.fillStyle = '#fff'; g.beginPath(); g.arc(74, by + 58, 13, 0, 7); g.fill(); g.fillStyle = BLUE; g.beginPath(); g.arc(74, by + 58, 9, 0, 7); g.fill();
+    g.textAlign = 'left'; g.fillStyle = '#111'; g.font = '700 24px Archivo'; g.fillText('Timbro · ' + T.bar, 120, by + 52);
+    g.fillStyle = '#333'; g.font = '500 21px Archivo'; g.fillText(T.notif, 120, by + 90);
+    g.fillStyle = '#888'; g.textAlign = 'right'; g.font = '500 20px Archivo'; g.fillText(T.now, w - 50, by + 52);
+  }
+  scrTex.needsUpdate = true;
+}
+
+// ---------------- camera path over the street ----------------
+const camera = new THREE.PerspectiveCamera(44, W / H, .1, 80);
+function track(keys, t) {
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) { const [t0, a] = keys[i - 1], [t1, b] = keys[i]; const x = ease((t - t0) / (t1 - t0)); return a.map((v, k) => lerp(v, b[k], x)); }
+  return keys[keys.length - 1][1];
+}
+// [time, [x, y, z, lookX, lookY, lookZ]]
+const CAM = [[0, [0, 6.6, 17, 0, 1.9, 2.5]], [7.6, [0, 5.0, 12.5, 0, 1.6, 1.5]], [PUSH + 2.2, [2.4, 2.5, 4.6, 2.4, 1.3, .4]],
+  [BACK, [-1.0, 2.6, 10.5, -3.0, 1.0, 3.0]], [CAL, [-1.4, 2.4, 10.5, -3.4, .9, 4.0]], [WIDE, [-1.4, 2.4, 10.5, -3.4, .9, 4.0]], [WIDE + 1.6, [0, 6.2, 15.5, 0, 1.8, 2.5]], [DURATION, [0, 6.6, 16.5, 0, 1.8, 2.5]]];
+
+function renderAt(t) {
+  // captions: the latest one that has started
+  const cap = [...T.caps].reverse().find(([s]) => t >= s);
+  const ci = cap ? T.caps.indexOf(cap) : -1, start = cap ? cap[0] : 0;
+  if (renderAt.ci !== ci) { $('capT').innerHTML = cap ? cap[1] : ''; renderAt.ci = ci; }
+  const k = backOut((t - start) / .35);
+  $('capT').style.transform = `scale(${.8 + .2 * k})`; $('capT').style.opacity = clamp01((t - start) / .15);
+  $('cap').style.top = t >= PHONE && t < BACK ? '70px' : '110px';
+
+  // transitions: a white flash into the phone and back out
+  const fl = Math.max(1 - Math.abs(t - PHONE) / .18, 1 - Math.abs(t - BACK) / .18, 0);
+  $('flash').style.opacity = fl * .9;
+
+  if (t >= PHONE && t < BACK) {
+    // the card fills up: stamps 1..9, the reminder, the tenth stamp and the reward
+    const st = [11.0, 11.5, 12.0, 12.45, 12.9, 13.3, 13.7, 14.05, 14.4], tenth = 16.6;
+    let n = 0, pop = 1; st.forEach((s, i) => { if (t >= s) { n = i + 1; pop = (t - s) / .3; } });
+    if (t >= tenth) { n = 10; pop = (t - tenth) / .35; }
+    const banner = t >= 14.6 && t < tenth ? ease((t - 14.6) / .35) * (1 - ease((t - tenth + .25) / .25)) : 0;
+    drawPhone(n, pop, banner);
+    const u = t - PHONE;
+    phone.position.set(0, -.25 + Math.sin(u * 1.4) * .04, 0); phone.rotation.set(-.05 + Math.sin(u * .9) * .04, Math.sin(u * .7) * .22, 0);
+    phone.scale.setScalar(.85 + .15 * backOut(u / .6));
+    const ct = t - tenth;
+    confetti.forEach((m, i) => {
+      m.visible = ct > 0 && ct < 2.4; if (!m.visible) return;
+      const a = hash(i) * Math.PI * 2, sp = 1.2 + hash(i + 50) * 1.4;
+      m.position.set(Math.cos(a) * sp * ct * .8, .9 + Math.sin(a) * .3 + 2 * ct - 2.2 * ct * ct, .8 + Math.sin(a) * .4); m.rotation.set(ct * 8 + i, ct * 6 + i * 2, 0);
+    });
+    renderer.render(phoneScene, phoneCam);
+  } else {
+    queue.forEach((p, i) => {
+      // the queue shuffles forward: the first one goes in every 2 seconds
+      const cyc = ((t + i * 0) % 2) / 2, step = t > 1 ? cyc : 0;
+      // along the pavement from café 2's door towards the right, then down the side of the road
+      const x = i < 4 ? 1.05 + i * .62 : 1.05 + 3 * .62 + .2, z = i < 4 ? 1.85 : 1.85 + (i - 3) * .62;
+      p.position.set(x + Math.sin(i * 1.7) * .05, Math.abs(Math.sin(t * 2 + i)) * .03, z);
+      p.rotation.y = (i < 4 ? -Math.PI / 2 : Math.PI) + Math.sin(t * .8 + i) * .2;
+      p.visible = true;
+    });
+    // café 1: someone pays and leaves, wandering away down the road
+    const lt = (t - BACK - .2) / 4.2;
+    if (t > BACK && lt < 1) { const a = new THREE.Vector3(-2.75, 0, 1.5), b = new THREE.Vector3(-3.6, 0, 8.5); loner.position.lerpVectors(a, b, ease(lt)); loner.position.y = Math.abs(Math.sin(t * 9)) * .05; loner.rotation.y = -.25; loner.visible = true; loner.scale.setScalar(1.25 * (lt < .08 ? .5 + lt / .16 : 1)); }
+    else loner.visible = false;
+    const c = track(CAM, t);
+    camera.position.set(c[0] + Math.sin(t * .3) * .12, c[1], c[2]); camera.lookAt(c[3], c[4], c[5]);
+    renderer.render(street, camera);
+  }
+
+  // the year: 26 visits against 52
+  const cal = ease((t - CAL) / .5) * (1 - ease((t - WIDE) / .5));
+  $('cal').style.opacity = cal;
+  const f = clamp01((t - CAL - .6) / 3.2), c1 = Math.round(26 * f), c2 = Math.round(52 * f);
+  if (renderAt.cal !== c2) {
+    [...$('g1').children].forEach((e, i) => e.classList.toggle('on', i % 2 === 0 && i / 2 < c1));
+    [...$('g2').children].forEach((e, i) => e.classList.toggle('on', i < c2));
+    $('n1').textContent = c1; $('n2').textContent = c2; renderAt.cal = c2;
+  }
+  $('calBrand').style.opacity = ease((t - 30.6) / .4);
+  $('calBrand').style.transform = `scale(${.85 + .15 * backOut((t - 30.6) / .5)})`;
+  $('end').style.opacity = ease((t - 34.4) / .4);
+  $('end').style.transform = `translateY(${(1 - backOut((t - 34.4) / .5)) * 20}px)`;
+}
+window.renderAt = renderAt;
+window.DURATION = DURATION;
+renderAt(0);
+window.READY = true;
+if (!q.has('capture')) {
+  const t0 = performance.now();
+  const loop = () => { renderAt(((performance.now() - t0) / 1000) % (DURATION + .5)); requestAnimationFrame(loop); };
+  loop();
+}
+</script>
+</body>
+</html>
