@@ -8,6 +8,9 @@
 //   tre-fatti:     the café dropping into place, caption ticks, whooshes between the facts, two stamp
 //                  thuds, coffee pouring into the glasses, a blip for every stepping stone, the reminder,
 //                  a chime and confetti, coins clinking on the balance, the Wallet card filling up
+//   tre-clienti:   the café dropping in, a sweep and a ping for each group, a shimmer for the ghosts,
+//                  the phone with the dashboard, the message and the reminder, footsteps of the ones
+//                  coming back (timed from tre-clienti.json)
 //   require('./sound.js').write(file, name)  → writes a 44.1 kHz stereo WAV
 const fs = require('fs');
 
@@ -16,7 +19,8 @@ const RATE = 44100;
 const T0 = 2.0, DAY = 1.7, DAYS = 7, T_CMP = T0 + DAYS * DAY + .4, T_END = T_CMP + 2.6;
 const COUNT_A = [3, 3, 2, 2, 2, 1, 1], COUNT_B = [2, 3, 4, 5, 6, 7, 8];
 const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, S6 = 22.0, END = 26.4;
-const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0 };
+const TC = require('./tre-clienti.json');
+const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration };
 
 function render(name) {
   const DURATION = DURATIONS[name];
@@ -127,6 +131,24 @@ function render(name) {
     thud(32.3, .22); chime(32.42, .12);
     for (let i = 0; i < 30; i++) blip(32.35 + hash(i + 40) * 1.5, 96 + Math.floor(hash(i + 19) * 10), .02, hash(i + 13) - .5);
     blip(33.4, 84, .12, 0);
+  } else if (name === 'tre-clienti') {
+    const [B0, B1, B2, B3, B4, B5, B6, B7, B8] = TC.beats;
+    const pop = (t, f0, g, pan = 0) => add(t, .22, x => Math.exp(-x * 20) * Math.sin(2 * Math.PI * (f0 + 600 * x) * x), g, pan);
+    for (let i = 0; i < 16; i++) pop(.12 + i * .055 + hash(i) * .02, 260 + i * 22, .13, hash(i + 4) - .5);   // the café drops in
+    for (let i = 0; i < 6; i++) pop(1.05 + i * .1, 520 + i * 50, .12, (i - 2.5) * .15);                       // its people
+    for (const t of TC.beats.slice(1)) add(t, .1, x => Math.exp(-x * 40) * Math.sin(2 * Math.PI * 1100 * x), .07);
+    whoosh(B1 - .05, .9, .22);
+    [[B2, 76, 3], [B3, 81, 2], [B4, 69, 3]].forEach(([t, m, n]) => { whoosh(t - .05, 1.1, .28); for (let k = 0; k < n; k++) blip(t + .45 + k * .15, m + k * 2, .1, (k - 1) * .3); });
+    pop(B2 + 1.6, 700, .1);                                                       // "The usual, Marco?"
+    for (let k = 0; k < 3; k++) { const f0 = 660 - k * 70; add(B4 + .35 + k * .15, 1.4, x => Math.sin(2 * Math.PI * (f0 - 60 * x) * x) * Math.sin(Math.PI * x / 1.4) * (.6 + .4 * Math.sin(2 * Math.PI * 6 * x)), .035, (k - 1) * .4); }   // ghosts
+    whoosh(B5 - .05, .7, .3); for (let k = 0; k < 3; k++) pop(B5 + .25 + k * .45, 520 + k * 80, .09);   // the dashboard
+    whoosh(B6 - .25, .6, .22);
+    [88, 84, 91].forEach((m, i) => beep(B6 + .35 + i * .12, m, .1, .09));        // "1 stamp to go"
+    for (let k = 0; k < 3; k++) blip(B6 + .75 + k * .2, 84 + k * 3, .06, .2);
+    whoosh(B7 - .3, .6, .22);
+    [88, 84, 91].forEach((m, i) => beep(B7 + .05 + i * .12, m, .1, .09));        // the reminder
+    for (let i = 0; i < 3; i++) { const s0 = B7 + 1.0 + i * .35; for (let k = 0; k < 14; k++) add(s0 + k * .17, .05, x => rnd() * Math.exp(-x * 90), .05, .5 - i * .3); blip(s0 + 2.4, 79 + i * 3, .09, -.2); }
+    chime(B8 + .1, .1); blip(B8 + .9, 84, .1, 0);
   } else {
     // come-funziona
     const pop = (t, f0, g) => add(t, .25, x => Math.exp(-x * 18) * Math.sin(2 * Math.PI * (f0 + 500 * x) * x), g);
