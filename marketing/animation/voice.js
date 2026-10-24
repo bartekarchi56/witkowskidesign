@@ -3,7 +3,7 @@
 // and lowers the music while the voice speaks.
 //   node marketing/animation/voice.js tre-fatti en voice.mp3 [tempo]
 //   → marketing/animation/timbro-tre-fatti-en-voice.mp4   (needs ffmpeg: FFMPEG=/path/to/ffmpeg or on PATH)
-// tempo speeds the voice up a little (default 1.08; 1 for tre-clienti, whose beats follow the voice).
+// tempo speeds the voice up a little (default 1.08; 1 for tre-clienti and barista, whose beats follow the voice).
 const fs = require('fs'), path = require('path'), { execFileSync, spawnSync } = require('child_process');
 const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 
@@ -12,6 +12,7 @@ const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 const CUES = {
   // tre-clienti: the start of every sentence of the take, set with its beats in tre-clienti.json
   'tre-clienti': require('./tre-clienti.json').voice || [],
+  barista: require('./barista.json').voice || [],
   'tre-fatti': [
     .2,                         // Three facts about regulars that most cafés don't know.
     3.7, 4.5, 6.75,             // Fact one. / Two cards, both need eight stamps. / But card B starts with two already in.
@@ -26,7 +27,7 @@ const CUES = {
 
 const [anim, lang, voice, tempoArg] = process.argv.slice(2);
 if (!CUES[anim] || !['it', 'en'].includes(lang) || !voice) { console.error('usage: node marketing/animation/voice.js <' + Object.keys(CUES).join('|') + '> <it|en> <voice.mp3> [tempo]'); process.exit(1); }
-const tempo = +(tempoArg || { 'tre-clienti': 1 }[anim] || 1.08);
+const tempo = +(tempoArg || { 'tre-clienti': 1, barista: 1 }[anim] || 1.08);
 const video = path.join(__dirname, `timbro-${anim}-${lang}.mp4`), out = path.join(__dirname, `timbro-${anim}-${lang}-voice.mp4`);
 
 // The sentences: the sound between pauses of a quarter of a second or more.
