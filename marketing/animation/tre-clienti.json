@@ -1,5 +1,31 @@
 {
-  "about": "When each sentence of the voice-over starts (seconds), shared by tre-clienti.html, sound.js and voice.js. Set from the ElevenLabs take.",
-  "beats": [0.2, 2.9, 4.4, 9.1, 15.0, 20.4, 22.3, 25.2, 28.7],
-  "duration": 34.0
+  "about": "When each sentence of the voice-over starts (seconds), shared by tre-clienti.html, sound.js and voice.js. beats: the 9 lines of the script; voice: where voice.js puts each piece of the ElevenLabs take (its pauses split some lines). Set from the take of 24 October: the take as spoken, 0.2 s in, with 0.8 s more after \"Timbro shows you all three\" for the dashboard.",
+  "beats": [
+    0.23,
+    2.98,
+    4.59,
+    9.49,
+    15.98,
+    21.45,
+    24.4,
+    27.82,
+    32.13
+  ],
+  "duration": 37.0,
+  "voice": [
+    0.2,
+    2.95,
+    4.56,
+    5.75,
+    7.88,
+    9.46,
+    12.24,
+    15.95,
+    18.2,
+    21.42,
+    24.37,
+    27.79,
+    29.18,
+    32.1
+  ]
 }
