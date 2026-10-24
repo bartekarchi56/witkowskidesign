@@ -453,6 +453,22 @@ Voice-over: `timbro-tre-fatti-en-voice.mp4` is the same video with a voice (Elev
 >
 > #loyaltycard #customerloyalty #coffeeshopowner #cafemarketing #smallbusiness
 
+### tre-clienti (3D reel, English only: `marketing/animation/timbro-tre-clienti-en-voice.mp4`, 37 s, with voice)
+"Your café has 3 kinds of customers. You only see one." The regulars, the ones almost at their reward and the ghosts of the ones who slipped away; the dashboard, the 1-stamp message and the reminder bring them back. Cover: `marketing/animation/timbro-tre-clienti-en-cover.jpg`. The groups, labels and messages are the product's own (dashboard "Customers who come back", "Almost at the reward", "Not back for 30 days"; reminder after 21 days); the dashboard on the phone says "Example".
+
+Voice (ElevenLabs, one take): Your café has three kinds of customers. / You only see one. / The regulars. They come back again and again, and you know their order. / Then there are the almost-there ones: one or two stamps from a free coffee, and nobody tells them. / And the ones who slipped away. Thirty days without a visit, and nobody noticed. / Timbro shows you all three. / It tells the almost-there ones they're one stamp away. / And after three weeks, it reminds the ones who drifted off to come back. / Comment TIMBRO, and we'll send you the design of your card.
+The video is timed to that take (`tre-clienti.json`); a new take means setting the times there again, rendering, then `node marketing/animation/voice.js tre-clienti en voice.mp3`.
+
+**EN**
+> Your café has 3 kinds of customers. You only see one 👀
+> 🔵 The regulars: they come back, you know their order.
+> 🟡 The almost-there ones: 1 or 2 stamps from a free coffee, and nobody tells them.
+> ⚪ The ones who slipped away: 30 days without a visit, and nobody noticed.
+> Timbro shows you all three, tells the almost-there ones when they're 1 stamp away, and after 3 weeks reminds the ones who drifted off.
+> Which kind is your best customer? 👇
+>
+> #loyaltycard #customerloyalty #coffeeshopowner #cafemarketing #smallbusiness #cafe #coffeeshop
+
 ## Keep it honest
 
 - The posts say "on the phone", not "in Apple Wallet": Wallet saving isn't switched on yet (`wallet/README.md`). Change the copy once it is.
