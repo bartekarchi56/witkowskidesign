@@ -32,6 +32,7 @@ The account posts in English: the `en/` images with the English caption (`schedu
 | `reel-results.mp4` | Reel 9:16, 11.5 s | What the café sees (example data) |
 | `reel-how.mp4` | Reel 9:16, 13 s | How it works in 3 steps |
 | `reel-not-just-coffee.mp4` | Reel 9:16, 11.8 s | Four other kinds of shops |
+| `reel-3-kinds.mp4` | Reel 9:16, 37 s, voice | "Your café has 3 kinds of customers": isometric café, regulars, almost there, slipped away (EN only) |
 | `post-wallet-live.png` | Feed 4:5 | The card updates itself: iPhone, lock-screen notification, 9/10 |
 | `post-reminder.png` | Feed 4:5 | The automatic "we miss you" reminder on a lock screen, with the café's name |
 | `post-apple-google.png` | Feed 4:5 | The same card in Apple Wallet and Google Wallet |
@@ -453,8 +454,9 @@ Voice-over: `timbro-tre-fatti-en-voice.mp4` is the same video with a voice (Elev
 >
 > #loyaltycard #customerloyalty #coffeeshopowner #cafemarketing #smallbusiness
 
-### tre-clienti (3D reel, English only: `marketing/animation/timbro-tre-clienti-en-voice.mp4`, 37 s, with voice)
-"Your café has 3 kinds of customers. You only see one." The regulars, the ones almost at their reward and the ghosts of the ones who slipped away; the dashboard, the 1-stamp message and the reminder bring them back. Cover: `marketing/animation/timbro-tre-clienti-en-cover.jpg`. The groups, labels and messages are the product's own (dashboard "Customers who come back", "Almost at the reward", "Not back for 30 days"; reminder after 21 days); the dashboard on the phone says "Example".
+### reel-3-kinds
+The isometric 3D reel with a voice-over, English only, 37 s: `en/reel-3-kinds.mp4` (a copy of `marketing/animation/timbro-tre-clienti-en-voice.mp4`, made by `tre-clienti.html`).
+"Your café has 3 kinds of customers. You only see one." The regulars, the ones almost at their reward and the ghosts of the ones who slipped away; the dashboard, the 1-stamp message and the reminder bring them back. Cover: `jpg/en/reel-3-kinds-cover.jpg`. The groups, labels and messages are the product's own (dashboard "Customers who come back", "Almost at the reward", "Not back for 30 days"; reminder after 21 days); the dashboard on the phone says "Example".
 
 Voice (ElevenLabs, one take): Your café has three kinds of customers. / You only see one. / The regulars. They come back again and again, and you know their order. / Then there are the almost-there ones: one or two stamps from a free coffee, and nobody tells them. / And the ones who slipped away. Thirty days without a visit, and nobody noticed. / Timbro shows you all three. / It tells the almost-there ones they're one stamp away. / And after three weeks, it reminds the ones who drifted off to come back. / Comment TIMBRO, and we'll send you the design of your card.
 The video is timed to that take (`tre-clienti.json`); a new take means setting the times there again, rendering, then `node marketing/animation/voice.js tre-clienti en voice.mp3`.
