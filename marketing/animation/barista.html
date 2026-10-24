@@ -68,7 +68,7 @@ canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
 .who-lab{position:absolute;left:0;top:0;font:500 12px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:#16152b;background:#fff;padding:7px 11px;border-radius:99px;box-shadow:0 6px 14px rgba(40,25,10,.16);opacity:0;z-index:7;white-space:nowrap}
 .tap{position:absolute;left:0;top:0;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:0 0 0 3px rgba(22,21,43,.35);opacity:0;z-index:8}
 .fly{position:absolute;left:0;top:0;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:var(--pop);box-shadow:0 0 0 3px #fff,0 8px 18px rgba(43,50,255,.45);opacity:0;z-index:8}
-.later{position:absolute;left:50%;top:172px;transform:translateX(-50%);font:500 12.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#fff;background:#16152b;padding:8px 13px 7px;border-radius:99px;opacity:0;z-index:7}
+.later{position:absolute;left:50%;top:226px;transform:translateX(-50%);font:500 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#fff;background:#16152b;padding:8px 13px 7px;border-radius:99px;opacity:0;z-index:7}
 .end{bottom:205px;text-align:center;opacity:0;z-index:5}
 .end span{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#16152b;font-size:19px;font-weight:700;padding:13px 18px;border-radius:16px;box-shadow:0 14px 30px rgba(60,35,10,.25)}
 .end span i{width:20px;height:20px;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 5px var(--pop),inset 0 0 0 7px #fff;flex:none}
@@ -256,7 +256,7 @@ function renderAt(t) {
   setPhone($('pC'), 276, 262 + (1 - cVis) * 40, cVis, -8);
   if (cVis > .01 && bVis < .01) setPhone($('pC'), 156, 262 + (1 - cVis) * 40, cVis, 0);
   else if (cVis > .01) { const slide = ease((t - B2 - .15) / .5); setPhone($('pC'), lerp(156, 276, slide), 262, cVis, -8 * slide); }
-  for (const [lab, ph, v] of [['labB', 'pB', bVis], ['labC', 'pC', cVis]]) { const r = $(ph).getBoundingClientRect(), s = $('stage').getBoundingClientRect(); const e = $(lab); e.style.opacity = v; e.style.transform = `translate(${r.left - s.left + r.width / 2}px, ${r.top - s.top - 30}px) translate(-50%, 0)`; }
+  for (const [lab, ph, v] of [['labB', 'pB', bVis], ['labC', 'pC', cVis]]) { const r = $(ph).getBoundingClientRect(), s = $('stage').getBoundingClientRect(); const e = $(lab); e.style.opacity = v * (1 - ease((t - B4 + .1) / .2)); e.style.transform = `translate(${r.left - s.left + r.width / 2}px, ${r.top - s.top - 30}px) translate(-50%, 0)`; }
   // scanning, then found
   if (mode === 'scan' && $('scanLine')) { const u = ((t - B2) * 1.6) % 1; $('scanLine').style.top = `${18 + u * 62}%`; $('scanOk').style.opacity = clamp01((t - FOUND + .35) / .1); }
   // taps on the big button, the stamp flying to the card, toasts
