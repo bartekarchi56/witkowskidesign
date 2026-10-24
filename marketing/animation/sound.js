@@ -11,6 +11,9 @@
 //   tre-clienti:   the café dropping in, a sweep and a ping for each group, a shimmer for the ghosts,
 //                  the phone with the dashboard, the message and the reminder, footsteps of the ones
 //                  coming back (timed from tre-clienti.json)
+//   barista:       the café dropping in, the turn behind the counter, the order, the phones, the scan
+//                  beep, a tap and a stamp for each stamp, the reward chime and confetti, the queue's
+//                  stamps (timed from barista.json)
 //   require('./sound.js').write(file, name)  → writes a 44.1 kHz stereo WAV
 const fs = require('fs');
 
@@ -19,8 +22,8 @@ const RATE = 44100;
 const T0 = 2.0, DAY = 1.7, DAYS = 7, T_CMP = T0 + DAYS * DAY + .4, T_END = T_CMP + 2.6;
 const COUNT_A = [3, 3, 2, 2, 2, 1, 1], COUNT_B = [2, 3, 4, 5, 6, 7, 8];
 const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, S6 = 22.0, END = 26.4;
-const TC = require('./tre-clienti.json');
-const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration };
+const TC = require('./tre-clienti.json'), BA = require('./barista.json');
+const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration, barista: BA.duration };
 
 function render(name) {
   const DURATION = DURATIONS[name];
@@ -149,6 +152,26 @@ function render(name) {
     [88, 84, 91].forEach((m, i) => beep(B7 + .05 + i * .12, m, .1, .09));        // the reminder
     for (let i = 0; i < 3; i++) { const s0 = B7 + 1.0 + i * .35; for (let k = 0; k < 14; k++) add(s0 + k * .17, .05, x => rnd() * Math.exp(-x * 90), .05, .5 - i * .3); blip(s0 + 2.4, 79 + i * 3, .09, -.2); }
     chime(B8 + .1, .1); blip(B8 + .9, 84, .1, 0);
+  } else if (name === 'barista') {
+    const [B0, B1, B2, B3, B4, B5, B6, B7] = BA.beats;
+    const pop = (t, f0, g, pan = 0) => add(t, .22, x => Math.exp(-x * 20) * Math.sin(2 * Math.PI * (f0 + 600 * x) * x), g, pan);
+    for (let i = 0; i < 16; i++) pop(.12 + i * .055 + hash(i) * .02, 260 + i * 22, .13, hash(i + 4) - .5);   // the café drops in
+    for (let i = 0; i < 8; i++) pop(1.05 + i * .1, 520 + i * 40, .1, (i - 3.5) * .12);                        // its people
+    for (const t of BA.beats.slice(1)) add(t, .1, x => Math.exp(-x * 40) * Math.sin(2 * Math.PI * 1100 * x), .07);
+    whoosh(2.3, 1.4, .26);                                                         // turning round behind the counter
+    pop(B1 + .4, 700, .1);                                                         // "A cappuccino, please!"
+    whoosh(B1 + 1.25, .5, .25); whoosh(B2 + .1, .5, .25);                           // the two phones
+    beep(B2 + 1.35, 88, .07, .12); beep(B2 + 1.45, 93, .1, .12);                   // QR recognised
+    const TAPS = [B3 + .55, B4 + .45, B4 + .95];
+    TAPS.forEach((t, i) => { click(t, .22); blip(t + .62, 79 + i * 2, .12, .3); });  // tap, the stamp lands
+    [88, 84, 91].forEach((m, i) => beep(B4 + 1.05 + i * .12, m, .1, .08));         // card full
+    click(B5 + .5, .22); thud(B5 + .6, .18); chime(B5 + .7, .1);                    // the reward
+    whoosh(B5 + 1.6, .6, .22);
+    add(B5 + 2.0, .6, x => { let v = 0; v = Math.sin(2 * Math.PI * 180 * x) * .2; return v * Math.exp(-x * 4) * (hash(Math.floor(x * 400)) - .5); }, .2);   // the cup slides
+    for (let i = 0; i < 26; i++) blip(B5 + 2.65 + hash(i + 70) * 1.3, 96 + Math.floor(hash(i + 29) * 10), .02, hash(i + 33) - .5);
+    whoosh(B6 - .05, 1.0, .24);
+    for (let i = 0; i < 3; i++) { const t = B6 + .6 + i * 1.15 + .5; beep(t - .1, 88, .06, .08); blip(t, 81 + i * 2, .11, 0); }
+    chime(B7 + .1, .1); blip(B7 + .9, 84, .1, 0);
   } else {
     // come-funziona
     const pop = (t, f0, g) => add(t, .25, x => Math.exp(-x * 18) * Math.sin(2 * Math.PI * (f0 + 500 * x) * x), g);

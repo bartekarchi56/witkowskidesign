@@ -84,7 +84,9 @@ export function buildIsoCafe(THREE, renderer, T) {
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(RW, RD), mat('#ffffff', { map: terrazzo })); floor.rotation.x = -Math.PI / 2; floor.position.y = .002; floor.receiveShadow = true; scene.add(floor);
   // the two tall walls, the two cut low (with the door gap at the front right)
   const clayM = mat('#ffffff', { map: plaster });
-  box(RW + .44, WH, .22, wallMat(clayM), 0, WH / 2, Z0 - .11);
+  // the back wall and what stands against it can be cut down, to look in from behind the counter (cut)
+  const CUT = { walls: [], decor: [] };
+  CUT.walls.push(box(RW + .44, WH, .22, wallMat(clayM), 0, WH / 2, Z0 - .11));
   box(.22, WH, RD, wallMat(clayM), X0 - .11, WH / 2, 0);
   box(.22, .2, RD + .22, mat(C.cut), X1 + .11, .1, .11);
   box(RW - 1.3 + .22, .2, .22, mat(C.cut), X0 - .11 + (RW - 1.3 + .22) / 2, .1, Z1 + .11);
@@ -100,14 +102,14 @@ export function buildIsoCafe(THREE, renderer, T) {
   // the navy block: a back room with a frosted glass panel and a door
   const navyM = mat(C.navy);
   const NB = { x0: -1.6, x1: .25, z0: Z0, z1: -1.35 };
-  box(NB.x1 - NB.x0, WH, NB.z1 - NB.z0, wallMat(navyM), (NB.x0 + NB.x1) / 2, WH / 2, (NB.z0 + NB.z1) / 2);
-  { const fp = new THREE.Mesh(new THREE.PlaneGeometry(.5, 2.55), new THREE.MeshLambertMaterial({ color: C.frost, emissive: '#7f97b8', emissiveIntensity: .35 })); fp.position.set(NB.x0 + .5, 1.3, NB.z1 + .006); add(fp);
-    for (let i = 1; i < 6; i++) box(.5, .006, .01, mat('#8ea4c4'), NB.x0 + .5, 1.3 - 1.275 + i * .425, NB.z1 + .01, scene, false);
-    const door = new THREE.Mesh(new THREE.PlaneGeometry(.6, 1.85), mat('#16202f')); door.position.set(NB.x1 - .45, .93, NB.z1 + .006); add(door);
-    box(.04, .04, .04, mat('#c9a255'), NB.x1 - .22, .95, NB.z1 + .03, scene, false);
+  CUT.walls.push(box(NB.x1 - NB.x0, WH, NB.z1 - NB.z0, wallMat(navyM), (NB.x0 + NB.x1) / 2, WH / 2, (NB.z0 + NB.z1) / 2));
+  { const fp = new THREE.Mesh(new THREE.PlaneGeometry(.5, 2.55), new THREE.MeshLambertMaterial({ color: C.frost, emissive: '#7f97b8', emissiveIntensity: .35 })); fp.position.set(NB.x0 + .5, 1.3, NB.z1 + .006); add(fp); CUT.decor.push(fp);
+    for (let i = 1; i < 6; i++) CUT.decor.push(box(.5, .006, .01, mat('#8ea4c4'), NB.x0 + .5, 1.3 - 1.275 + i * .425, NB.z1 + .01, scene, false));
+    const door = new THREE.Mesh(new THREE.PlaneGeometry(.6, 1.85), mat('#16202f')); door.position.set(NB.x1 - .45, .93, NB.z1 + .006); add(door); CUT.decor.push(door);
+    CUT.decor.push(box(.04, .04, .04, mat('#c9a255'), NB.x1 - .22, .95, NB.z1 + .03, scene, false));
     // a small shelf with glasses on the block
-    box(.5, .03, .14, mat(C.wood), NB.x0 + 1.1, 1.45, NB.z1 + .07);
-    for (let i = 0; i < 3; i++) cyl(.03, .025, .09, mat('#dfe7ef', { transparent: true, opacity: .8 }), NB.x0 + .95 + i * .12, 1.51, NB.z1 + .08, scene, 12);
+    CUT.decor.push(box(.5, .03, .14, mat(C.wood), NB.x0 + 1.1, 1.45, NB.z1 + .07));
+    for (let i = 0; i < 3; i++) CUT.decor.push(cyl(.03, .025, .09, mat('#dfe7ef', { transparent: true, opacity: .8 }), NB.x0 + .95 + i * .12, 1.51, NB.z1 + .08, scene, 12));
   }
 
   // the counter: curved at the left end, fluted pale wood, stone top
@@ -151,13 +153,13 @@ export function buildIsoCafe(THREE, renderer, T) {
   }
   // shelves with ceramics on the back wall and a linear pendant over the counter
   {
-    for (const y of [1.75, 2.2]) { box(1.3, .035, .2, mat(C.wood), 2.65, y, Z0 + .1); }
+    for (const y of [1.75, 2.2]) { CUT.decor.push(box(1.3, .035, .2, mat(C.wood), 2.65, y, Z0 + .1)); }
     const cer = ['#efe9df', '#c96f4a', '#2f3e57', '#efe9df', '#a8574a', '#d9a441'];
-    cer.forEach((c, i) => { const y = i < 3 ? 1.77 : 2.22, x = 2.15 + (i % 3) * .42; const v = lathe(i % 2 ? [[0, 0], [.05, 0], [.06, .08], [.03, .16], [0, .16]] : [[0, 0], [.07, 0], [.075, .06], [0, .06]], mat(c), 18); v.position.set(x, y + .018, Z0 + .1); add(v, scene, true); });
+    cer.forEach((c, i) => { const y = i < 3 ? 1.77 : 2.22, x = 2.15 + (i % 3) * .42; const v = lathe(i % 2 ? [[0, 0], [.05, 0], [.06, .08], [.03, .16], [0, .16]] : [[0, 0], [.07, 0], [.075, .06], [0, .06]], mat(c), 18); v.position.set(x, y + .018, Z0 + .1); add(v, scene, true); CUT.decor.push(v); });
     const brass = mat('#c9a255');
-    for (const x of [1.55, 3.0]) cyl(.004, .004, .9, mat('#3b2a24'), x, 2.55, -1.5, scene, 6, false);
-    box(1.6, .04, .05, brass, 2.28, 2.1, -1.5);
-    const glow = new THREE.Mesh(new THREE.BoxGeometry(1.5, .015, .03), new THREE.MeshBasicMaterial({ color: '#fff3d6' })); glow.position.set(2.28, 2.075, -1.5); scene.add(glow);
+    for (const x of [1.55, 3.0]) CUT.decor.push(cyl(.004, .004, .9, mat('#3b2a24'), x, 2.55, -1.5, scene, 6, false));
+    CUT.decor.push(box(1.6, .04, .05, brass, 2.28, 2.1, -1.5));
+    const glow = new THREE.Mesh(new THREE.BoxGeometry(1.5, .015, .03), new THREE.MeshBasicMaterial({ color: '#fff3d6' })); glow.position.set(2.28, 2.075, -1.5); scene.add(glow); CUT.decor.push(glow);
     // a fluted radiator on the left wall
     const rad = new THREE.Group(); rad.position.set(X0 + .08, 0, 1.75); scene.add(rad);
   }
@@ -282,6 +284,13 @@ export function buildIsoCafe(THREE, renderer, T) {
     door: [3.0, 0, 3.4]
   };
 
+  // k = 0: whole walls; k = 1: the back wall and the navy block cut down to a low white-topped
+  // stub (as in a section drawing) and what hangs on them gone
+  function cut(k) {
+    const s = lerp(1, .085, ease(k));
+    CUT.walls.forEach(w => { w.scale.y = s; w.position.y = WH * s / 2; });
+    CUT.decor.forEach(o => { const d = 1 - ease(k * 1.6); o.scale.setScalar(Math.max(.001, d)); o.visible = d > .01; });
+  }
   function drift(t) {
     steams.forEach(s => { const { x, y, z, i, n, size } = s.userData; const u = ((t * .45 + i / n) % 1); s.position.set(x + Math.sin(u * 6 + i) * .03, y + u * .35, z); s.scale.setScalar(size * (.6 + u * 1.4)); s.material.opacity = Math.sin(u * Math.PI) * .35; });
   }
@@ -294,5 +303,5 @@ export function buildIsoCafe(THREE, renderer, T) {
     } else if (!built) { BUILT.forEach(o => { o.position.y = o.userData.y0; o.visible = true; }); people.forEach(p => { p.g.visible = true; }); built = true; }
   }
 
-  return { BLUE, INK, C, clamp01, ease, easeOut, backOut, hash, lerp, V, mat, tex, canvas, rr, drawQR, roundedShape, steamTex, scene, sun, RW, RD, X0, Z0, X1, Z1, TOP, makeCup, person, SPOTS, drift, dropIn };
+  return { cut, BLUE, INK, C, clamp01, ease, easeOut, backOut, hash, lerp, V, mat, tex, canvas, rr, drawQR, roundedShape, steamTex, scene, sun, RW, RD, X0, Z0, X1, Z1, TOP, makeCup, person, SPOTS, drift, dropIn };
 }

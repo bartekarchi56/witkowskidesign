@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Behind the counter</title>
+<link rel="stylesheet" href="../../assets/css/base.css">
+<style>
+/* "From behind the counter": how stamping works for the barista, in English, timed to an
+   ElevenLabs voice-over (beats in barista.json). The isometric café (cafe-iso.js) turns round
+   behind the counter, its back wall cut down like a section drawing. Giulia orders and holds up her
+   card; the barista's phone runs the real Stamper screens (same texts and card renderer as
+   app/stamper.html): scan, "Add a stamp", "Stamp added (8/10)", "Card full. Give the reward!",
+   "Give the reward: a free coffee", "Reward given. The card starts again." Her Wallet card follows.
+   Then the queue, a stamp each. Vertical 540 x 960 (1080 x 1920 at 2x). make.js calls renderAt(t). */
+html,body{margin:0;background:#111}
+body{display:grid;place-items:center;min-height:100vh;font-family:var(--font)}
+.stage{width:540px;height:960px;position:relative;overflow:hidden;background:radial-gradient(120% 80% at 50% 50%,#f3efe9 0%,#ece7df 70%,#e2dbd0 100%)}
+canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
+.ov{position:absolute;left:0;right:0;pointer-events:none}
+.top{top:78px;text-align:center;padding:0 26px;z-index:5}
+.chip{display:inline-flex;align-items:center;gap:9px;font:500 12.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#fff;background:#16152b;padding:8px 13px 7px;border-radius:99px;margin-bottom:14px;box-shadow:0 6px 16px rgba(40,25,10,.18)}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--c,var(--pop));box-shadow:0 0 0 2px #fff}
+.cap{font-size:35px;line-height:1.12;font-weight:800;font-stretch:112%;letter-spacing:-.015em;color:#16152b;text-wrap:balance}
+.cap mark{background:var(--pop);color:#fff;padding:0 9px;border-radius:10px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.cap mark.y{background:#FFC24B;color:#16152b}
+.band{top:0;height:330px;background:linear-gradient(#f1ede7 0%,rgba(241,237,231,.92) 45%,rgba(241,237,231,0) 100%);z-index:4}
+.vig{inset:0;background:radial-gradient(140% 90% at 50% 45%,transparent 60%,rgba(80,60,40,.12) 100%)}
+.grain{inset:0;opacity:.09;mix-blend-mode:multiply;z-index:9}
+/* bubbles and pops pinned over people */
+.tag{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;will-change:transform}
+.tag .pill{display:inline-flex;align-items:center;gap:8px;background:#16152b;color:#fff;border-radius:12px;padding:8px 12px;box-shadow:0 10px 22px rgba(60,35,10,.22);position:relative;font-size:15px;font-weight:700}
+.tag .pill::after{content:'';position:absolute;left:50%;bottom:-5px;width:10px;height:10px;background:inherit;transform:translateX(-50%) rotate(45deg);border-radius:2px}
+.tag.plus .pill{background:var(--pop)}
+.tag.plus .pill i{width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 5px var(--pop)}
+/* the two phones, drawn at 390 x 844 and scaled down */
+.phone{position:absolute;left:0;top:0;width:390px;height:844px;border-radius:58px;background:#151517;padding:11px;box-sizing:border-box;box-shadow:0 30px 60px rgba(40,25,10,.35),inset 0 0 0 2px #2c2c30;transform-origin:0 0;opacity:0;z-index:6}
+.phone .scr{position:relative;width:100%;height:100%;border-radius:48px;overflow:hidden;background:var(--wash)}
+.phone .sbar{height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;font:600 16px var(--font);color:#111}
+.phone .sbar i{width:110px;height:32px;border-radius:20px;background:#000}
+.phone *,.phone *::before,.phone *::after{transition:none!important;animation:none!important}
+.phone .appbar{position:static;padding:10px 18px}
+.phone main{padding:18px 16px;display:grid;gap:14px}
+.phone h1{font-size:24px;font-stretch:112%;font-weight:800;margin:0}
+.cam{position:relative;aspect-ratio:1;border-radius:22px;background:#2a2622;overflow:hidden}
+.cam .view{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#5b524b,#24201d)}
+.cam .scrn{width:62%;aspect-ratio:1;background:#fff;border-radius:16px;padding:9%;box-sizing:border-box;transform:rotate(-4deg)}
+.cam .scrn svg{width:100%;height:100%;display:block}
+.cam .frame{position:absolute;inset:16%;border:3px solid #fff;border-radius:18px;box-shadow:0 0 0 999px rgba(0,0,0,.4)}
+.cam .line{position:absolute;left:18%;right:18%;height:3px;background:#7f86ff;box-shadow:0 0 14px #7f86ff;border-radius:2px}
+.cam .ok{position:absolute;inset:16%;border-radius:18px;border:4px solid #2EC46F;opacity:0}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px;margin:4px 0}
+.or::before,.or::after{content:"";flex:1;height:1.5px;background:var(--line)}
+.code{display:flex;gap:8px}
+.code input{flex:1;font:500 22px/1 var(--mono);letter-spacing:.24em;text-transform:uppercase;text-align:center;padding:14px;border-radius:14px;border:1.5px solid var(--line);background:#fff}
+.who{text-align:center}
+.who h2{font-size:28px;font-stretch:112%;font-weight:800;margin:6px 0 2px}
+.who p{color:var(--muted);margin:0}
+.found{display:grid;gap:14px;justify-items:center}
+.found .pass{max-width:340px}
+.big{font-size:19px;padding:20px;white-space:normal}
+.minor{display:flex;gap:8px;width:100%}
+.minor .btn{flex:1}
+.phone .toast{position:absolute;bottom:34px;transform:translate(-50%,20px)}
+.wal{background:#F2F2F7}
+.wal h3{font:800 34px var(--font);margin:6px 22px 16px;color:#111}
+.wal .pass{margin:0 auto;max-width:330px;border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.who-lab{position:absolute;left:0;top:0;font:500 12px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:#16152b;background:#fff;padding:7px 11px;border-radius:99px;box-shadow:0 6px 14px rgba(40,25,10,.16);opacity:0;z-index:7;white-space:nowrap}
+.tap{position:absolute;left:0;top:0;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:0 0 0 3px rgba(22,21,43,.35);opacity:0;z-index:8}
+.fly{position:absolute;left:0;top:0;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:var(--pop);box-shadow:0 0 0 3px #fff,0 8px 18px rgba(43,50,255,.45);opacity:0;z-index:8}
+.later{position:absolute;left:50%;top:172px;transform:translateX(-50%);font:500 12.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#fff;background:#16152b;padding:8px 13px 7px;border-radius:99px;opacity:0;z-index:7}
+.end{bottom:205px;text-align:center;opacity:0;z-index:5}
+.end span{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#16152b;font-size:19px;font-weight:700;padding:13px 18px;border-radius:16px;box-shadow:0 14px 30px rgba(60,35,10,.25)}
+.end span i{width:20px;height:20px;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 5px var(--pop),inset 0 0 0 7px #fff;flex:none}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="c"></canvas>
+  <div class="ov vig"></div>
+  <div class="ov band"></div>
+  <div id="pins"></div>
+  <div class="phone" id="pB"><div class="scr" id="sB"></div></div>
+  <div class="phone" id="pC"><div class="scr wal" id="sC"></div></div>
+  <div class="who-lab" id="labB">Barista’s phone</div>
+  <div class="who-lab" id="labC">Customer’s phone</div>
+  <div class="later" id="later">2 visits later</div>
+  <div class="tap" id="tap"></div>
+  <div class="fly" id="fly"></div>
+  <div class="ov top"><div class="chip" id="chip"><i></i><span id="chipT"></span></div><div class="cap" id="cap"></div></div>
+  <div class="ov end" id="end"><span><i></i><b>We’ll send you your card’s design ☕</b></span></div>
+  <div class="ov grain" id="grain"></div>
+</div>
+<script src="../../assets/vendor/qrcode.js"></script>
+<script src="../../assets/js/config.js"></script>
+<script src="../../assets/js/i18n.js"></script>
+<script src="../../assets/js/stamps.js"></script>
+<script src="../../assets/js/ui.js"></script>
+<script type="module">
+import * as THREE from '../../assets/vendor/three.module.min.js';
+import { buildIsoCafe } from './cafe-iso.js';
+
+const q = new URLSearchParams(location.search);
+const TIMING = await (await fetch('barista.json')).json();
+const [B0, B1, B2, B3, B4, B5, B6, B7] = TIMING.beats, DURATION = TIMING.duration;
+const T = {
+  qr: ['Scan', 'for your loyalty card'],
+  caps: [
+    [B0, '', 'What a loyalty card looks like <mark>from behind the counter.</mark>'],
+    [B1, 'The customer', 'They order, and hold up <mark>the card on their phone.</mark>'],
+    [B2, 'The barista', 'Scanned with <mark>the café’s phone.</mark> No app to install.'],
+    [B3, 'The barista', 'One tap on <mark>Add a stamp</mark>, and it lands on their card.'],
+    [B4, 'The barista', 'When the card is full, <mark class="y">the phone says so.</mark>'],
+    [B5, 'The barista', 'One more tap: <mark class="y">the coffee is on the house.</mark>'],
+    [B6, '', 'A few seconds per customer. <mark>No paper to lose.</mark>'],
+    [B7, '', 'Comment <mark>TIMBRO</mark> 👇']
+  ]
+};
+const $ = id => document.getElementById(id);
+await Promise.all(['800 40px Archivo', '700 40px Archivo', '600 40px Archivo', '500 40px Archivo', '500 20px "Spline Sans Mono"'].map(f => document.fonts.load(f)));
+
+const W = 540, H = 960, DPR = +(q.get('dpr') || 2);
+const renderer = new THREE.WebGLRenderer({ canvas: $('c'), antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(DPR); renderer.setSize(W, H, false); renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
+
+const K = buildIsoCafe(THREE, renderer, T);
+const { BLUE, clamp01, ease, easeOut, backOut, hash, lerp, V, canvas, scene, person, SPOTS, makeCup, TOP } = K;
+
+// ---------------- people ----------------
+const barista = person({ i: 6, apron: '#3b2a24', shirt: '#efe7da', hair: 1, phone: true });
+const giulia = person({ i: 7, phone: true, hair: 3, shirt: '#c96f4a' });
+const queue = [person({ i: 2, hair: 2, capColor: '#2f4a6b', shirt: '#4f6d7a', phone: true }), person({ i: 0, hair: 4, shirt: '#6b7f5a', phone: true }), person({ i: 5, hair: 0, shirt: '#8a3b33', phone: true })];
+const QPOS = [[2.6, -.28], [3.0, .32], [3.25, .95]], ASIDE = [[2.95, -1.0], [3.3, -.6], [3.35, -.2]];
+const sitters = [[person({ i: 3, cup: true, hair: 1, shirt: '#e8dccb' }), SPOTS.benchL[1]], [person({ i: 4, glasses: true, hair: 0, shirt: '#b7895f' }), SPOTS.chairF[0]], [person({ i: 1, cup: true, hair: 3, shirt: '#7d5a8c' }), SPOTS.stool[1]]];
+sitters.forEach(([p]) => p.sit());
+const cup = makeCup(1.6); scene.add(cup);
+const place3 = (p, sp, dy = 0) => { p.g.position.set(sp[0], sp[1] + dy, sp[2]); p.g.rotation.y = sp[3]; };
+// confetti for the free coffee
+const CONF = [BLUE, '#FFC24B', '#c96f4a', '#2EC4B6', '#ffffff'];
+const confetti = [...Array(50)].map((_, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.05, .085), new THREE.MeshBasicMaterial({ color: CONF[i % 5], side: THREE.DoubleSide })); m.visible = false; scene.add(m); return m; });
+
+// ---------------- pins over heads ----------------
+function pinEl(cls, html) { const e = document.createElement('div'); e.className = cls; e.innerHTML = html; $('pins').appendChild(e); return e; }
+const order = pinEl('tag', '<div class="pill">“A cappuccino, please!” ☕</div>');
+const plus = [0, 1, 2].map(() => pinEl('tag plus', '<div class="pill"><i></i>+1 stamp</div>'));
+const camera = new THREE.OrthographicCamera(-4.5, 4.5, 8, -8, .1, 100);
+const head = new THREE.Vector3();
+function pinAt(e, world, vis) {
+  if (vis <= .001) { e.style.opacity = 0; return; }
+  const v = world.clone().project(camera), x = (v.x * .5 + .5) * W, y = (-v.y * .5 + .5) * H, hw = (e.offsetWidth || 160) / 2 + 10;
+  e.style.opacity = clamp01(vis * 2.5); e.style.transform = `translate(${Math.min(W - hw, Math.max(hw, x))}px, ${y}px) translate(-50%, -100%) scale(${.65 + .35 * backOut(vis)})`;
+}
+const headOf = (p, lift = 0) => { p.g.updateMatrixWorld(); head.set(0, 1.15 + lift, 0); return p.g.localToWorld(head.clone()); };
+
+// ---------------- the phones: the real Stamper and the customer's Wallet card ----------------
+const CARD = { id: 'bar-aurora', business: 'Bar Aurora', title: 'Coffee card', titleEn: 'Coffee card', reward: 'a free coffee', rewardEn: 'a free coffee', stampsNeeded: 10, icon: 'cup', color: '#FFFFFF', ink: BLUE, style: 'minimal', stamp: 'punto', font: 'wide' };
+const GIULIA = { id: 'K7M2QX', name: 'Giulia R.', stamps: 7, redeemed: 0 };
+const sbar = '<div class="sbar"><span>9:41</span><i></i><span>●●● ▮</span></div>';
+let shownB = '', shownC = '';
+function stamperHtml(mode, n, rewards) {
+  if (mode === 'scan') return `${sbar}<header class="appbar"><span class="brand"><span class="brand-mark"></span><span>Stamper</span></span></header>
+    <main><h1>Scan the customer's card</h1><div class="cam"><div class="view"><div class="scrn">${UI.qrSvg(GIULIA.id)}</div></div><div class="frame"></div><div class="line" id="scanLine"></div><div class="ok" id="scanOk"></div></div>
+    <p class="or">or type the code</p><div class="code"><input value="" placeholder="K7M2QX"><button class="btn">Find</button></div></main>`;
+  const full = n >= 10;
+  return `${sbar}<header class="appbar"><span class="brand"><span class="brand-mark"></span><span>Stamper</span></span></header>
+    <main><div class="found"><div class="who"><h2>Giulia R.</h2><p>Coffee card · rewards received: ${rewards}</p></div>
+    <div style="width:100%;display:grid;justify-items:center" id="bPass">${UI.renderPass(CARD, { ...GIULIA, stamps: n, redeemed: rewards }, { compact: true, platform: 'apple' })}</div>
+    <button class="btn pop block big" id="mainBtn">${full ? 'Give the reward: a free coffee' : 'Add a stamp'}</button>
+    <div class="minor"><button class="btn line">Remove a stamp</button><button class="btn line">Next customer</button></div></div></main>
+    <div class="toast" id="toastB"></div>`;
+}
+function walletHtml(n, rewards) { return `${sbar}<h3>Wallet</h3><div id="cPass">${UI.renderPass(CARD, { ...GIULIA, stamps: n, redeemed: rewards }, { platform: 'apple' })}</div>`; }
+const PS = .585;   // phone scale: 390 x 844 → 228 x 494
+function setPhone(el, x, y, vis, tilt) { el.style.opacity = vis; el.style.transform = `translate(${x}px, ${y}px) scale(${PS * (.9 + .1 * backOut(vis))}) perspective(1200px) rotateY(${tilt}deg)`; }
+const center = el => { const r = el.getBoundingClientRect(), s = $('stage').getBoundingClientRect(); return [r.left + r.width / 2 - s.left, r.top + r.height / 2 - s.top]; };
+function popDot(passEl, idx, u) { const d = passEl && passEl.querySelectorAll('.wp-dot')[idx]; if (d) d.style.transform = `scale(${1 + .8 * (1 - backOut(u)) * (u < 1 ? 1 : 0)})`; }
+
+// ---------------- camera: isometric from the front, then from behind the counter ----------------
+const ISO = new THREE.Vector3(1, 1.05, 1), BACK = new THREE.Vector3(.55, 1.0, -1.0);
+function track(keys, t) {
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) { const [t0, a] = keys[i - 1], [t1, b] = keys[i]; const x = ease((t - t0) / (t1 - t0)); return a.map((v, k) => lerp(v, b[k], x)); }
+  return keys[keys.length - 1][1];
+}
+// [time, [target x, y, z, zoom, 0 = front | 1 = behind the counter]]
+const CAM = [
+  [0, [0, .5, .1, .8, 0]], [2.3, [0, .5, .1, .86, 0]],
+  [B1 - .1, [2.05, .8, -1.55, 2.3, 1]], [B1 + 1.5, [2.05, .8, -1.6, 2.6, 1]],
+  [B5 + 1.8, [2.05, .8, -1.6, 2.6, 1]], [B5 + 2.4, [2.05, .85, -1.4, 3.0, 1]],
+  [B6 - .1, [2.1, .85, -1.25, 3.1, 1]], [B6 + 1.2, [1.9, .7, -.4, 1.9, 0]],
+  [B7 - .1, [1.6, .7, -.3, 1.8, 0]], [B7 + 1.4, [0, .5, .1, .86, 0]], [DURATION, [0, .5, .1, .82, 0]]
+];
+
+{ const c = canvas(256, 256, (g, w, h) => { const d = g.createImageData(w, h); for (let i = 0; i < d.data.length; i += 4) { const v = 128 + (hash(i * .13) - .5) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } g.putImageData(d, 0, 0); }); $('grain').style.backgroundImage = `url(${c.toDataURL()})`; }
+const walk2 = (p, a, b, u) => { const k = ease(u); p.g.position.set(lerp(a[0], b[0], k), u > 0 && u < 1 ? Math.abs(Math.sin(u * 20)) * .03 : 0, lerp(a[1], b[1], k)); if (u > 0 && u < 1) p.g.rotation.y = Math.atan2(b[0] - a[0], b[1] - a[1]); p.walk(u * 12, u > 0 && u < 1); };
+
+function renderAt(t) {
+  const c = track(CAM, t), dir = ISO.clone().lerp(BACK, c[4]).normalize(), tgt = V(c[0] + Math.sin(t * .37) * .03, c[1], c[2] + Math.sin(t * .29) * .03);
+  camera.position.copy(tgt).addScaledVector(dir, 30); camera.lookAt(tgt); camera.zoom = c[3]; camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+  if (t > 2.25) K.cut(clamp01((c[4] - .1) / .5));
+
+  // captions
+  const ci = T.caps.findLastIndex(([s]) => t >= s), cap = T.caps[ci];
+  if (renderAt.ci !== ci) { $('cap').innerHTML = cap ? cap[2] : ''; if (cap) $('chipT').textContent = cap[1]; renderAt.ci = ci; }
+  const st = cap ? cap[0] : 0, k = backOut((t - st) / .35);
+  $('cap').style.transform = `translateY(${(1 - k) * 14}px)`; $('cap').style.opacity = cap ? clamp01((t - st) / .18) : 0;
+  $('chip').style.display = cap && cap[1] ? '' : 'none';
+
+  // people
+  place3(barista, SPOTS.barista); barista.g.position.x = 2.0 + Math.sin(t * .5) * .08; barista.g.rotation.y = Math.sin(t * .6) * .12;
+  barista.arms[0].rotation.x = -.6 + Math.sin(t * 2.6) * .15;
+  // Giulia at the till; aside with her coffee once the queue moves
+  const gA = (t - B6 - .1) / .9;
+  if (gA <= 0) { place3(giulia, SPOTS.till); giulia.walk(t, false); }
+  else walk2(giulia, [SPOTS.till[0], SPOTS.till[2]], [SPOTS.counterEnd[0], SPOTS.counterEnd[2]], gA), gA >= 1 && (giulia.g.rotation.y = SPOTS.counterEnd[3]);
+  const won = t - B5 - 2.6;
+  if (won > 0 && won < 1.2) giulia.g.position.y = Math.abs(Math.sin(won * Math.PI * 2.5)) * .12 * (1 - won / 1.2);
+  // the queue steps up, a stamp each
+  const s0 = B6 + .6;
+  queue.forEach((p, i) => {
+    const start = QPOS[i], upT = s0 + i * 1.15, asideT = upT + .75;
+    const toTill = (t - upT) / .45, toSide = (t - asideT) / .45;
+    if (toTill <= 0) { const prev = i ? QPOS[i - 1] : null; const shift = i && t > s0 + (i - 1) * 1.15 ? clamp01((t - s0 - (i - 1) * 1.15) / .45) : 0; p.g.position.set(lerp(start[0], prev ? prev[0] : start[0], shift * 0), 0, start[1]); p.g.rotation.y = Math.PI + .3; p.walk(t, false); }
+    else if (toSide <= 0) walk2(p, start, [SPOTS.till[0], SPOTS.till[2]], toTill), toTill >= 1 && (p.g.rotation.y = Math.PI);
+    else walk2(p, [SPOTS.till[0], SPOTS.till[2]], ASIDE[i], toSide), toSide >= 1 && (p.g.rotation.y = Math.PI - .4);
+  });
+  sitters.forEach(([p, sp], i) => { place3(p, sp); p.head.rotation.y = Math.sin(t * .9 + i * 2) * .3; p.arms[0].rotation.x = -.9 + Math.max(0, Math.sin(t * .8 + i * 3)) * -.5; });
+  // the free coffee slides across the counter, then goes with Giulia
+  const cs = ease((t - B5 - 2.0) / .6), cg = ease(gA);
+  cup.visible = t > B5 + 1.9; cup.position.set(lerp(lerp(1.85, 2.05, cs), 1.2, cg), TOP, lerp(-1.6, -1.3, cs));
+  confetti.forEach((m, i) => { const ct = won; m.visible = ct > 0 && ct < 2; if (!m.visible) return; const a = hash(i) * Math.PI * 2, sp = .6 + hash(i + 50); m.position.set(SPOTS.till[0] + Math.cos(a) * sp * ct * .6, 1.3 + 2.0 * ct - 2.4 * ct * ct + hash(i + 7) * .3, SPOTS.till[2] + Math.sin(a) * sp * ct * .6); m.rotation.set(ct * 8 + i, ct * 6 + i * 2, 0); });
+  K.drift(t);
+  K.dropIn(t, [barista, giulia, ...queue, ...sitters.map(x => x[0])]);
+  renderer.render(scene, camera);
+
+  pinAt(order, headOf(giulia), ease((t - B1 - .4) / .3) * (1 - ease((t - B2 + .3) / .3)));
+  plus.forEach((e, i) => { const u = t - s0 - i * 1.15 - .5; pinAt(e, headOf(barista, .3).lerp(headOf(queue[i]), .5), u > 0 && u < 1.0 ? ease(u / .2) * (1 - ease((u - .75) / .25)) : 0); });
+
+  // ---- the phones ----
+  const cVis = ease((t - B1 - 1.3) / .45) * (1 - ease((t - B5 - 1.7) / .4));
+  const bVis = ease((t - B2 - .15) / .45) * (1 - ease((t - B5 - 1.6) / .4));
+  const blur = Math.max(cVis * .6, bVis);
+  $('c').style.filter = blur > .02 ? `blur(${(blur * 6).toFixed(2)}px)` : 'none';
+  // state over time: stamps on Giulia's card and what the Stamper shows
+  const TAP1 = B3 + .55, TAP2 = B4 + .45, TAP3 = B4 + .95, TAPR = B5 + .5, FOUND = B2 + 1.7;
+  const n = t >= TAPR + .1 ? 0 : t >= TAP3 + .1 ? 10 : t >= TAP2 + .1 ? 9 : t >= TAP1 + .1 ? 8 : 7;
+  const nCard = t >= TAPR + .1 ? 0 : t >= TAP3 + .6 ? 10 : t >= TAP2 + .6 ? 9 : t >= TAP1 + .6 ? 8 : 7;   // the card a moment later, when the stamp lands
+  const rewards = t >= TAPR + .1 ? 1 : 0, mode = t < FOUND ? 'scan' : 'stamp';
+  const keyB = `${mode}|${n}|${rewards}`, keyC = `${nCard}|${rewards}`;
+  if (keyB !== shownB) { $('sB').innerHTML = stamperHtml(mode, n, rewards); shownB = keyB; }
+  if (keyC !== shownC) { $('sC').innerHTML = walletHtml(nCard, rewards); shownC = keyC; }
+  setPhone($('pB'), 22, 262 + (1 - bVis) * 40, bVis, 8);
+  setPhone($('pC'), 276, 262 + (1 - cVis) * 40, cVis, -8);
+  if (cVis > .01 && bVis < .01) setPhone($('pC'), 156, 262 + (1 - cVis) * 40, cVis, 0);
+  else if (cVis > .01) { const slide = ease((t - B2 - .15) / .5); setPhone($('pC'), lerp(156, 276, slide), 262, cVis, -8 * slide); }
+  for (const [lab, ph, v] of [['labB', 'pB', bVis], ['labC', 'pC', cVis]]) { const r = $(ph).getBoundingClientRect(), s = $('stage').getBoundingClientRect(); const e = $(lab); e.style.opacity = v; e.style.transform = `translate(${r.left - s.left + r.width / 2}px, ${r.top - s.top - 30}px) translate(-50%, 0)`; }
+  // scanning, then found
+  if (mode === 'scan' && $('scanLine')) { const u = ((t - B2) * 1.6) % 1; $('scanLine').style.top = `${18 + u * 62}%`; $('scanOk').style.opacity = clamp01((t - FOUND + .35) / .1); }
+  // taps on the big button, the stamp flying to the card, toasts
+  const tapAt = [TAP1, TAP2, TAP3, TAPR].find(x => t >= x && t < x + .45);
+  const btn = $('mainBtn');
+  if (tapAt !== undefined && btn) { const [x, y] = center(btn), u = (t - tapAt) / .45; $('tap').style.opacity = (1 - u) * .9; $('tap').style.transform = `translate(${x}px, ${y}px) scale(${.6 + u * .9})`; btn.style.filter = u < .4 ? 'brightness(.8)' : ''; }
+  else { $('tap').style.opacity = 0; if (btn) btn.style.filter = ''; }
+  const flyAt = [TAP1, TAP2, TAP3].find(x => t >= x + .1 && t < x + .6);
+  if (flyAt !== undefined && btn && $('cPass')) {
+    const u = (t - flyAt - .1) / .5, [x0, y0] = center(btn), dots = $('cPass').querySelectorAll('.wp-dot'), target = dots[Math.min(9, [TAP1, TAP2, TAP3].indexOf(flyAt) + 7)];
+    const [x1, y1] = target ? center(target) : [x0, y0];
+    $('fly').style.opacity = 1; $('fly').style.transform = `translate(${lerp(x0, x1, easeOut(u))}px, ${lerp(y0, y1, easeOut(u)) - Math.sin(u * Math.PI) * 70}px) scale(${1 - u * .3})`;
+  } else $('fly').style.opacity = 0;
+  [TAP1, TAP2, TAP3].forEach((x, i) => { if (t >= x + .6 && t < x + 1.2) popDot($('cPass'), i + 7, (t - x - .6) / .35); if (t >= x + .1 && t < x + .7) popDot($('bPass'), i + 7, (t - x - .1) / .35); });
+  const toastB = $('toastB');
+  if (toastB) {
+    const msgs = [[TAP1 + .1, 'Stamp added (8/10)'], [TAP2 + .1, 'Stamp added (9/10)'], [TAP3 + .1, 'Card full. Give the reward!'], [TAPR + .1, 'Reward given. The card starts again.']];
+    const m = msgs.filter(([s0]) => t >= s0).pop();
+    const v = m ? ease((t - m[0]) / .15) * (1 - ease((t - m[0] - (m === msgs[3] ? 1.6 : msgs[msgs.indexOf(m) + 1][0] - m[0] - .05)) / .1)) : 0;
+    if (m && toastB.textContent !== m[1]) toastB.textContent = m[1];
+    toastB.style.opacity = v; toastB.style.transform = `translate(-50%, ${(1 - v) * 16}px)`; toastB.style.left = '50%';
+  }
+  $('later').style.opacity = ease((t - B4 - .05) / .25) * (1 - ease((t - B4 - 1.6) / .3));
+
+  $('end').style.opacity = ease((t - B7 - .9) / .4);
+  $('end').style.transform = `translateY(${(1 - backOut((t - B7 - .9) / .5)) * 20}px)`;
+}
+window.renderAt = renderAt;
+window.DURATION = DURATION;
+renderAt(0);
+window.READY = true;
+if (!q.has('capture')) {
+  const t0 = performance.now() - (+(q.get('t') || 0)) * 1000;
+  const loop = () => { renderAt(((performance.now() - t0) / 1000) % (DURATION + .5)); requestAnimationFrame(loop); };
+  loop();
+}
+</script>
+</body>
+</html>
