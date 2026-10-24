@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../assets/css/base.css">
 <style>
 /* "Your café has 3 kinds of customers. You only see one.": a reel in English, timed to an
-   ElevenLabs voice-over (the beats are in tre-clienti.json). In the 3D café (cafe3d.js) a scan
+   ElevenLabs voice-over (the beats are in tre-clienti.json). In the isometric café (cafe-iso.js) a scan
    picks out the regulars (blue), the ones almost at their reward (yellow, their cards above their
    heads) and the ones who slipped away (ghosts, "last visit 34 days ago"). The dashboard shows the
    three groups, the card tells Giulia she is 1 stamp away, the reminder brings the ghosts back in.
@@ -16,7 +16,7 @@
    and the reminder after 21 days. Vertical 540 x 960 (1080 x 1920 at 2x). make.js calls renderAt(t). */
 html,body{margin:0;background:#111}
 body{display:grid;place-items:center;min-height:100vh;font-family:var(--font)}
-.stage{width:540px;height:960px;position:relative;overflow:hidden;background:radial-gradient(120% 75% at 50% 52%,#fbf4e8 0%,#f3e5d0 50%,#e3cdb0 100%)}
+.stage{width:540px;height:960px;position:relative;overflow:hidden;background:radial-gradient(120% 80% at 50% 50%,#f3efe9 0%,#ece7df 70%,#e2dbd0 100%)}
 canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
 .ov{position:absolute;left:0;right:0;pointer-events:none}
 .top{top:78px;text-align:center;padding:0 26px}
@@ -26,7 +26,7 @@ canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
 .cap mark{background:var(--pop);color:#fff;padding:0 9px;border-radius:10px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .cap mark.y{background:#FFC24B;color:#16152b}
 .cap mark.g{background:#8d93a8;color:#fff}
-.band{top:0;height:330px;background:linear-gradient(#f8efe2 0%,rgba(248,239,226,.92) 45%,rgba(248,239,226,0) 100%)}
+.band{top:0;height:330px;background:linear-gradient(#f1ede7 0%,rgba(241,237,231,.92) 45%,rgba(241,237,231,0) 100%)}
 .tag{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;will-change:transform}
 .tag .pill{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#16152b;border-radius:12px;padding:7px 11px 7px 9px;box-shadow:0 10px 22px rgba(60,35,10,.22);position:relative;font-size:14px}
 .tag .pill::after{content:'';position:absolute;left:50%;bottom:-5px;width:10px;height:10px;background:inherit;transform:translateX(-50%) rotate(45deg);border-radius:2px}
@@ -49,7 +49,7 @@ canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
 .end{bottom:205px;text-align:center;opacity:0}
 .end span{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#16152b;font-size:19px;font-weight:700;padding:13px 18px;border-radius:16px;box-shadow:0 14px 30px rgba(60,35,10,.25)}
 .end span i{width:20px;height:20px;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 5px var(--pop),inset 0 0 0 7px #fff;flex:none}
-.vig{inset:0;background:radial-gradient(140% 90% at 50% 45%,transparent 55%,rgba(90,55,20,.22) 100%)}
+.vig{inset:0;background:radial-gradient(140% 90% at 50% 45%,transparent 60%,rgba(80,60,40,.12) 100%)}
 .grain{inset:0;opacity:.09;mix-blend-mode:multiply}
 </style>
 </head>
@@ -66,7 +66,7 @@ canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
 </div>
 <script type="module">
 import * as THREE from '../../assets/vendor/three.module.min.js';
-import { buildCafe } from './cafe3d.js';
+import { buildIsoCafe } from './cafe-iso.js';
 
 const q = new URLSearchParams(location.search);
 const TIMING = await (await fetch('tre-clienti.json')).json();
@@ -97,36 +97,35 @@ const W = 540, H = 960, DPR = +(q.get('dpr') || 2);
 const renderer = new THREE.WebGLRenderer({ canvas: $('c'), antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(DPR); renderer.setSize(W, H, false); renderer.setClearColor(0x000000, 0);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.0;
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
 
-const K = buildCafe(THREE, renderer, T);
-const { BLUE, INK, clamp01, ease, easeOut, backOut, hash, lerp, V, tex, canvas, rr, drawQR, scene, TABLES, person, steamTex } = K;
+const K = buildIsoCafe(THREE, renderer, T);
+const { BLUE, INK, clamp01, ease, easeOut, backOut, hash, lerp, V, tex, canvas, rr, scene, person, SPOTS } = K;
 const YELLOW = '#FFC24B', GREY = '#8d93a8';
 
 // ---------------- the people ----------------
-const barista = person({ i: 6, apron: '#2f4a3a', shirt: '#f3efe6', hair: 1 });
-const seat = (k, side) => [TABLES[k][0] + side * .55, TABLES[k][1] + side * .05, side > 0 ? -Math.PI / 2 : Math.PI / 2];
+const barista = person({ i: 6, apron: '#3b2a24', shirt: '#efe7da', hair: 1 });
 // regulars
-const marco = person({ i: 2, phone: true, hair: 2, capColor: BLUE, shirt: '#3D5A80' });
-const sara = person({ i: 0, cup: true, hair: 3 }), tom = person({ i: 4, glasses: true, hair: 0, cup: true });
+const marco = person({ i: 2, phone: true, hair: 2, capColor: '#2f4a6b', shirt: '#4f6d7a' });
+const tom = person({ i: 4, glasses: true, hair: 0, cup: true, shirt: '#b7895f' });
+const sara = person({ i: 0, cup: true, hair: 3, shirt: '#e8dccb' });
 // almost at the reward
-const giulia = person({ i: 7, phone: true, hair: 3, shirt: '#FF8C42' });
-const ahmed = person({ i: 3, hair: 4, shirt: '#29BF12' });
-// slipped away: ghosts where they used to be, and the same people walking back in at the end
+const giulia = person({ i: 7, phone: true, hair: 3, shirt: '#c96f4a' });
+const ahmed = person({ i: 3, hair: 4, cup: true, shirt: '#6b7f5a' });
+// slipped away: ghosts where they used to sit, and the same people walking back in at the end
 const GHOSTS = [
-  { name: 'Luca', days: 34, o: { i: 5, hair: 0, shirt: '#E84A8A' }, at: seat(1, -1), sit: true, path: [[4.2, 2.5], [-2.6, 2.45]] },
-  { name: 'Elena', days: 41, o: { i: 1, hair: 1, shirt: '#6C4AB6' }, at: [-1.0, -1.2, Math.PI], path: [[4.2, 2.1]] },
-  { name: 'Paolo', days: 52, o: { i: 8, hair: 2, capColor: '#1B998B', shirt: '#F3A712' }, at: [-.2, .4, Math.PI - .5], path: [[4.3, 1.4]] }
+  { name: 'Luca', days: 34, o: { i: 5, hair: 0, shirt: '#8a3b33' }, at: SPOTS.benchL[2], near: [-1.95, 1.08] },
+  { name: 'Elena', days: 41, o: { i: 1, hair: 1, shirt: '#7d5a8c' }, at: SPOTS.chairL[1], near: [-1.3, .12] },
+  { name: 'Paolo', days: 52, o: { i: 8, hair: 2, capColor: '#d9a441', shirt: '#2f4a6b' }, at: SPOTS.benchF[1], near: [.2, 1.3] }
 ];
 GHOSTS.forEach(G => {
-  G.ghost = person(G.o); G.back = person(G.o);
-  G.ghost.g.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; m.material.depthWrite = false; m.material.color.lerp(new THREE.Color('#b9c2e6'), .7); if (m.material.isMeshStandardMaterial) { m.material.emissive = new THREE.Color('#9aa3c4'); m.material.emissiveIntensity = .25; } m.castShadow = false; } });
-  if (G.sit) { G.ghost.sit(); }
+  G.sit = true; G.ghost = person(G.o); G.back = person(G.o); G.ghost.sit();
+  G.ghost.g.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; m.material.depthWrite = false; m.material.color.lerp(new THREE.Color('#8f9cc8'), .75); if (m.material.isMeshStandardMaterial) { m.material.emissive = new THREE.Color('#9aa3c4'); m.material.emissiveIntensity = .25; } m.castShadow = false; } });
 });
-const seated = [[sara, ...seat(0, 1)]];
+const seated = [[sara, SPOTS.benchL[0]], [ahmed, SPOTS.stool[0]]];
 seated.forEach(([p]) => p.sit());
-const crowd = [barista, marco, giulia, sara, tom, ahmed];
+const place3 = (p, sp, dy = 0) => { p.g.position.set(sp[0], sp[1] + dy, sp[2]); p.g.rotation.y = sp[3]; };
 
 // a coloured ring under each one in a group
 function ring(color) { const r = new THREE.Mesh(new THREE.RingGeometry(.22, .29, 48), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false })); r.rotation.x = -Math.PI / 2; scene.add(r); return r; }
@@ -154,13 +153,15 @@ const TAGS = [
   { p: tom, el: pinEl('tag', `<div class="pill" style="--c:${BLUE}"><i></i><b>Tom</b><span>6 visits</span></div>`), from: B2 + .75, to: B3 },
   { p: giulia, el: pinEl('tag', `<div class="pill" style="--c:${YELLOW}"><i></i><b>Giulia</b>${dots(9)}<span>9/10</span></div>`), from: B3 + .45, to: B4 },
   { p: ahmed, el: pinEl('tag', `<div class="pill" style="--c:${YELLOW}"><i></i><b>Ahmed</b>${dots(8)}<span>8/10</span></div>`), from: B3 + .6, to: B4 },
-  ...GHOSTS.map((G, k) => ({ p: G.ghost, G, el: pinEl('tag ghost', `<div class="pill" style="--c:${GREY}"><i></i><b>${G.name}</b><span>last visit ${G.days} days ago</span></div>`), from: B4 + .45 + k * .15, to: B5, again: [B7 + .95, B8 - .2] }))
+  ...GHOSTS.map((G, k) => ({ p: G.ghost, G, el: pinEl('tag ghost', `<div class="pill" style="--c:${GREY}"><i></i><b>${G.name}</b><span>${G.days} days ago</span></div>`), from: B4 + .45 + k * .15, to: B5, again: [B7 + .95, B8 - .2] }))
 ];
 const usual = { p: barista, el: pinEl('tag say', `<div class="pill">“The usual, Marco?” ☕</div>`), from: B2 + 1.6, to: B3 - .2, lift: .5 };
 const nbHtml = (title, text) => `<div class="box"><div class="app"><i></i></div><div style="flex:1"><div class="tt"><b>${title}</b><span>now</span></div><p>${text}</p></div></div>`;
 const nbClose = pinEl('nb', nbHtml(T.bar, T.close)), nbRemind = pinEl('nb', nbHtml(T.bar, T.remind));
 
-const camera = new THREE.PerspectiveCamera(40, W / H, .1, 100);
+// an isometric camera (orthographic, looking down the diagonal); shots pan and zoom
+const ISO = new THREE.Vector3(1, 1.05, 1).normalize();
+const camera = new THREE.OrthographicCamera(-4.5, 4.5, 8, -8, .1, 100);
 const head = new THREE.Vector3();
 function project(p) { const v = p.clone().project(camera); return [(v.x * .5 + .5) * W, (-v.y * .5 + .5) * H]; }
 function place(e, p, vis, lift = 0) {
@@ -216,15 +217,16 @@ function track(keys, t) {
   for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) { const [t0, a] = keys[i - 1], [t1, b] = keys[i]; const x = ease((t - t0) / (t1 - t0)); return a.map((v, k) => lerp(v, b[k], x)); }
   return keys[keys.length - 1][1];
 }
+// [time, [target x, y, z, zoom]]
 const CAM = [
-  [0, [5.9, 9.0, 18.0, -.1, .45, .3]], [B1 - .1, [4.4, 8.2, 16.8, 0, .5, .3]],
-  [B1 + 1.2, [1.4, 5.0, 10.6, -.3, .6, -.2]], [B2 + .2, [1.2, 5.0, 10.4, -.3, .6, -.2]],
-  [B2 + 1.4, [-.4, 5.4, 11.0, -.3, .6, -.7]], [B3 - .1, [-.6, 5.3, 10.8, -.3, .6, -.7]],
-  [B3 + 1.2, [2.9, 5.4, 7.0, 2.2, .75, -.9]], [B4 - .1, [2.75, 5.3, 6.9, 2.2, .75, -.9]],
-  [B4 + 1.2, [-.4, 5.4, 10.8, -1.3, .55, .2]], [B5, [-.5, 5.3, 10.6, -1.3, .55, .2]],
-  [B6 - .2, [-.5, 5.3, 10.6, -1.3, .55, .2]], [B6 + 1.0, [3.6, 2.6, 4.2, 2.1, 1.05, -.95]], [B7 - .2, [3.4, 2.55, 4.0, 2.1, 1.05, -.95]],
-  [B7 + 1.1, [1.0, 7.0, 13.8, -.4, .4, .4]], [B8 - .1, [.8, 6.8, 13.4, -.4, .4, .4]],
-  [B8 + 1.6, [4.0, 8.0, 16.6, 0, .5, .3]], [DURATION, [5.0, 8.6, 17.6, 0, .5, .3]]
+  [0, [0, .5, .1, .8]], [B1 - .1, [0, .5, .1, .86]],
+  [B1 + 1.0, [.3, .7, 0, 1.25]], [B2 + .2, [.3, .7, 0, 1.28]],
+  [B2 + 1.3, [0, .75, -.2, 1.6]], [B3 - .1, [-.05, .75, -.2, 1.65]],
+  [B3 + 1.1, [1.6, .8, .15, 2.0]], [B4 - .1, [1.6, .8, .15, 2.05]],
+  [B4 + 1.1, [-2.2, .6, 1.3, 1.9]], [B5, [-2.2, .6, 1.3, 1.95]],
+  [B6 - .2, [-2.2, .6, 1.3, 1.95]], [B6 + .9, [2.75, .95, -.25, 2.9]], [B7 - .2, [2.75, .95, -.25, 3.0]],
+  [B7 + 1.0, [-.2, .7, .7, 1.1]], [B8 - .1, [-.2, .7, .7, 1.12]],
+  [B8 + 1.4, [0, .5, .1, .86]], [DURATION, [0, .5, .1, .82]]
 ];
 
 // grain, still
@@ -233,8 +235,8 @@ const CAM = [
 const walkAlong = (pts, u) => { const segs = []; let L = 0; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); segs.push(d); L += d; } let s = clamp01(u) * L; for (let i = 0; i < segs.length; i++) { if (s <= segs[i] || i === segs.length - 1) { const k = segs[i] ? clamp01(s / segs[i]) : 1; const a = pts[i], b = pts[i + 1]; return [lerp(a[0], b[0], k), lerp(a[1], b[1], k), Math.atan2(b[0] - a[0], b[1] - a[1])]; } s -= segs[i]; } };
 
 function renderAt(t) {
-  const c = track(CAM, t);
-  camera.position.set(c[0] + Math.sin(t * .37) * .06, c[1] + Math.sin(t * .29) * .04, c[2]); camera.lookAt(c[3], c[4], c[5]); camera.updateMatrixWorld();
+  const c = track(CAM, t), tgt = V(c[0] + Math.sin(t * .37) * .04, c[1] + Math.sin(t * .29) * .03, c[2]);
+  camera.position.copy(tgt).addScaledVector(ISO, 30); camera.lookAt(tgt); camera.zoom = c[3]; camera.updateProjectionMatrix(); camera.updateMatrixWorld();
 
   // captions
   const ci = T.caps.findLastIndex(([s]) => t >= s), cap = T.caps[ci];
@@ -244,13 +246,12 @@ function renderAt(t) {
   $('chip').style.display = cap && cap[1] ? '' : 'none'; $('chip').style.transform = `scale(${.7 + .3 * backOut((t - st) / .4)})`;
 
   // the café's life
-  barista.g.position.set(.5 + Math.sin(t * .45) * .25, 0, -2.55); barista.g.rotation.y = Math.sin(t * .7) * .35;
+  place3(barista, SPOTS.barista); barista.g.position.x += Math.sin(t * .45) * .3; barista.g.rotation.y = Math.sin(t * .7) * .35;
   barista.arms[0].rotation.x = -.9 + Math.sin(t * 3.1) * .25; barista.arms[1].rotation.x = -1.1 + Math.sin(t * 2.3 + 1) * .3;
-  marco.g.position.set(1.35, Math.abs(Math.sin(t * 1.6)) * .01, -1.38); marco.g.rotation.y = Math.PI + .15;
-  tom.g.position.set(.3, 0, -1.4); tom.g.rotation.y = Math.PI - .35 + Math.sin(t * .6) * .1;
-  giulia.g.position.set(2.15, 0, -.85); giulia.g.rotation.y = Math.PI + .45;
-  ahmed.g.position.set(2.75, 0, -1.35); ahmed.g.rotation.y = Math.PI - .15; ahmed.head.rotation.x = .25;
-  seated.forEach(([p, x, z, ry], i) => { p.g.position.set(x, .07, z); p.g.rotation.y = ry; p.head.rotation.y = Math.sin(t * .9 + i * 2) * .3; p.arms[0].rotation.x = -.9 + Math.max(0, Math.sin(t * .8 + i * 3)) * -.5; });
+  place3(marco, SPOTS.till, Math.abs(Math.sin(t * 1.6)) * .01);
+  place3(tom, SPOTS.counterEnd); tom.g.rotation.y += Math.sin(t * .6) * .1;
+  place3(giulia, SPOTS.queue);
+  seated.forEach(([p, sp], i) => { place3(p, sp); p.head.rotation.y = Math.sin(t * .9 + i * 2) * .3; p.arms[0].rotation.x = -.9 + Math.max(0, Math.sin(t * .8 + i * 3)) * -.5; });
   // Giulia's card tells her she's 1 stamp away: she lifts her phone and hops
   const gj = t - B6 - .7;
   if (gj > 0 && gj < 1.2) giulia.g.position.y = Math.abs(Math.sin(gj * Math.PI * 2.5)) * .12 * (1 - gj / 1.2);
@@ -258,15 +259,18 @@ function renderAt(t) {
 
   // ghosts: fade in at B4; the real people walk back in after the reminder
   GHOSTS.forEach((G, i) => {
-    const [x, z, ry] = G.at, back0 = B7 + 1.0 + i * .35, u = (t - back0) / 2.4;
-    const gv = ease((t - B4 - .3 - i * .15) / .6) * (1 - ease((u - .85) / .15));
-    G.ghost.g.visible = gv > .01; G.ghost.g.position.set(x, G.sit ? .07 : 0, z); G.ghost.g.rotation.y = ry;
-    G.ghost.g.traverse(m => { if (m.isMesh) m.material.opacity = .55 * gv * (.85 + .15 * Math.sin(t * 3 + i)); });
+    const [x, y, z, ry] = G.at, back0 = B7 + 1.0 + i * .35, u = (t - back0) / 2.4;
+    const gv = ease((t - B4 - .3 - i * .15) / .6) * (1 - ease((u - .9) / .12));
+    G.ghost.g.visible = gv > .01; G.ghost.g.position.set(x, y, z); G.ghost.g.rotation.y = ry;
+    G.ghost.g.traverse(m => { if (m.isMesh) m.material.opacity = .62 * gv * (.85 + .15 * Math.sin(t * 3 + i)); });
     G.back.g.visible = u > 0;
-    if (u > 0) {
-      const pts = [...G.path, [x, z]];
-      if (u < 1) { const [px, pz, a] = walkAlong(pts, ease(u)); G.back.g.position.set(px, Math.abs(Math.sin(t * 9)) * .03, pz); G.back.g.rotation.y = a; G.back.walk(t, true); }
-      else { G.back.walk(t, false); G.back.g.position.set(x, G.sit ? .07 : 0, z); G.back.g.rotation.y = ry; if (G.sit) G.back.sit(); }
+    if (u > 0 && u < 1) {
+      // in through the door to the table, then into the seat
+      const [px, pz, a] = walkAlong([[SPOTS.door[0], SPOTS.door[2]], [2.65, 2.25], G.near], ease(u));
+      G.back.g.position.set(px, Math.abs(Math.sin(t * 9)) * .03, pz); G.back.g.rotation.y = a; G.back.g.scale.setScalar(1.15); G.back.walk(t, true);
+    } else if (u >= 1) {
+      const pop = backOut((u - 1) * 2.4 / .35);
+      G.back.walk(t, false); G.back.sit(); G.back.g.position.set(x, y, z); G.back.g.rotation.y = ry; G.back.g.scale.setScalar(1.15 * (.8 + .2 * pop));
     }
   });
 
@@ -290,14 +294,14 @@ function renderAt(t) {
     if (again) {
       const [a, b] = again, returned = t > B7 + 1.0 + GHOSTS.indexOf(G) * .35 + 2.3;
       vis = Math.max(vis, ease((t - a) / .35) * (1 - ease((t - b) / .3)));
-      if (returned !== el._ret) { el._ret = returned; el.className = returned ? 'tag' : 'tag ghost'; el.innerHTML = returned ? `<div class="pill" style="--c:${BLUE}"><i></i><b>${G.name}</b><span>back today ☕</span></div>` : `<div class="pill" style="--c:${GREY}"><i></i><b>${G.name}</b><span>last visit ${G.days} days ago</span></div>`; }
-      place(el, returned ? G.back : p, vis, G.sit ? -.25 : 0);
-    } else place(el, p, vis, p === sara ? -.25 : p === tom || p === ahmed ? .3 : 0);
+      if (returned !== el._ret) { el._ret = returned; el.className = returned ? 'tag' : 'tag ghost'; el.innerHTML = returned ? `<div class="pill" style="--c:${BLUE}"><i></i><b>${G.name}</b><span>back today ☕</span></div>` : `<div class="pill" style="--c:${GREY}"><i></i><b>${G.name}</b><span>${G.days} days ago</span></div>`; }
+      place(el, returned ? G.back : p, vis, G.name === 'Elena' ? .2 : -.25);
+    } else place(el, p, vis, p === sara || p === ahmed ? -.25 : p === tom ? .35 : 0);
   });
   place(usual.el, usual.p, ease((t - usual.from) / .3) * (1 - ease((t - usual.to) / .3)), usual.lift);
   // Giulia's notification, then Luca's reminder
   { const v = ease((t - B6 - .35) / .35) * (1 - ease((t - B7 + .1) / .3)); nbClose.style.opacity = v; if (v > .001) { giulia.g.updateMatrixWorld(); head.set(0, 1.25, 0); giulia.g.localToWorld(head); const [x, y] = project(head); nbClose.style.transform = `translate(${Math.min(W - 372, Math.max(12, x - 180))}px, ${y - 150 - (1 - backOut((t - B6 - .35) / .5)) * 30}px)`; } }
-  { const v = ease((t - B7 + .05) / .35) * (1 - ease((t - B7 - 2.6) / .3)); nbRemind.style.opacity = v; nbRemind.style.transform = `translate(90px, ${560 - (1 - backOut((t - B7 + .05) / .5)) * 30}px)`; }
+  { const v = ease((t - B7 + .05) / .35) * (1 - ease((t - B7 - 2.6) / .3)); nbRemind.style.opacity = v; nbRemind.style.transform = `translate(90px, ${618 - (1 - backOut((t - B7 + .05) / .5)) * 30}px)`; }
 
   // the dashboard on the phone, the café blurred behind
   const pv = ease((t - B5 - .05) / .45) * (1 - ease((t - B6 + .25) / .35));
