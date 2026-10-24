@@ -422,6 +422,19 @@ Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9
 ### tre-fatti (3D reel: `marketing/animation/timbro-tre-fatti-it.mp4`, `-en.mp4`, 37 s, with sound)
 Three facts from published studies, each named on screen. The cover is `marketing/animation/timbro-tre-fatti-<lang>-cover.jpg`.
 
+Voice-over: `timbro-tre-fatti-en-voice.mp4` is the same video with a voice (ElevenLabs, Multilingual v2). To make another, generate the script below as one take with a pause between sentences, then `FFMPEG=/path/to/ffmpeg node marketing/animation/voice.js tre-fatti <it|en> voice.mp3`: it finds the 14 sentences, puts each at its moment and lowers the music under the voice.
+
+| Video | EN | IT |
+|---|---|---|
+| 0:00 | Three facts about regulars that most cafés don't know. | Tre fatti sui clienti abituali che quasi nessun bar conosce. |
+| 0:03.7 | Fact one. Two cards, both need eight stamps. But card B starts with two already in. | Primo fatto. Due carte, servono otto timbri. Ma la B parte con due già fatti. |
+| 0:09 | Nineteen percent finish card A. Thirty-four percent finish card B. Almost double, same reward. | La A la finisce il diciannove per cento. La B il trentaquattro. Quasi il doppio, stesso premio. |
+| 0:14.8 | Fact two. The closer they get to the free coffee, the more often they come back. | Secondo fatto. Più si avvicinano al caffè gratis, più spesso tornano. |
+| 0:19.5 | That's why Timbro reminds them when they're one stamp away. | Per questo Timbro li avvisa quando manca un timbro. |
+| 0:23 | Fact three. Winning a new customer costs five to twenty-five times more than keeping one. | Terzo fatto. Trovare un cliente nuovo costa da cinque a venticinque volte di più che tenerne uno. |
+| 0:29 | The easiest customer is the one you already have. | Il cliente più facile? Quello che hai già. |
+| 0:32.7 | Comment TIMBRO, and we'll send you the design of your card. | Commenta TIMBRO, e ti mandiamo il design della tua carta. |
+
 **IT**
 > 3 fatti sui clienti abituali che quasi nessun bar conosce 🧠☕
 > 1. Due carte, 8 timbri per tutte e due. Quella che parte con 2 timbri già fatti la completa il 34% dei clienti, l'altra il 19% (Nunes & Drèze, 2006).
