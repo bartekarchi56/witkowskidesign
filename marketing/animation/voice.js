@@ -44,8 +44,9 @@ if (sentences.length !== cues.length) {
   process.exit(1);
 }
 let prev = 0;
-const placed = sentences.map(([a, b], i) => { const at = Math.max(cues[i], prev + .12), len = (b - a) / tempo; prev = at + len; return { a, b, at, len }; });
-placed.forEach((p, i) => console.log(`${String(i + 1).padStart(2)}. voice ${p.a.toFixed(2)}–${p.b.toFixed(2)} s  →  video ${p.at.toFixed(2)}–${(p.at + p.len).toFixed(2)} s${p.at > cues[i] + .01 ? `  (pushed ${(p.at - cues[i]).toFixed(2)} s later)` : ''}`));
+// a null cue leaves that piece out (e.g. the time stamps of a script read aloud)
+const placed = sentences.map(([a, b], i) => { if (cues[i] == null) return null; const at = Math.max(cues[i], prev + .12), len = (b - a) / tempo; prev = at + len; return { a, b, at, len }; });
+placed.forEach((p, i) => console.log(p ? `${String(i + 1).padStart(2)}. voice ${p.a.toFixed(2)}–${p.b.toFixed(2)} s  →  video ${p.at.toFixed(2)}–${(p.at + p.len).toFixed(2)} s${p.at > cues[i] + .01 ? `  (pushed ${(p.at - cues[i]).toFixed(2)} s later)` : ''}` : `${String(i + 1).padStart(2)}. voice ${sentences[i][0].toFixed(2)}–${sentences[i][1].toFixed(2)} s  →  left out`));
 
 // Levels, measured: the voice (while speaking, after a gentle compressor) is set to about -15 dB,
 // the film's own sound (music and effects) to about -19 dB, ducking about 9 dB under the voice.
@@ -56,10 +57,11 @@ const bedGain = -19 - mean(video, 'anull');
 console.log(`levels: voice ${voiceGain >= 0 ? '+' : ''}${voiceGain.toFixed(1)} dB, music ${bedGain >= 0 ? '+' : ''}${bedGain.toFixed(1)} dB`);
 
 // The voice track: each sentence cut out, sped up and delayed to its moment.
-const parts = placed.map((p, i) => `[1:a]atrim=start=${p.a.toFixed(3)}:end=${p.b.toFixed(3)},asetpts=PTS-STARTPTS,atempo=${tempo},adelay=delays=${Math.round(p.at * 1000)}:all=1[v${i}]`);
+const kept = placed.filter(Boolean);
+const parts = kept.map((p, i) => `[1:a]atrim=start=${p.a.toFixed(3)}:end=${p.b.toFixed(3)},asetpts=PTS-STARTPTS,atempo=${tempo},adelay=delays=${Math.round(p.at * 1000)}:all=1[v${i}]`);
 const filter = [
   ...parts,
-  `${placed.map((_, i) => `[v${i}]`).join('')}amix=inputs=${placed.length}:normalize=0,${CLEAN},volume=${voiceGain.toFixed(2)}dB,aformat=channel_layouts=stereo,asplit[vo1][vo2]`,
+  `${kept.map((_, i) => `[v${i}]`).join('')}amix=inputs=${kept.length}:normalize=0,${CLEAN},volume=${voiceGain.toFixed(2)}dB,aformat=channel_layouts=stereo,asplit[vo1][vo2]`,
   `[0:a]volume=${bedGain.toFixed(2)}dB[bed0]`,
   `[bed0][vo1]sidechaincompress=threshold=0.06:ratio=3:attack=25:release=450[bed]`,
   `[bed][vo2]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.89:level=false[a]`
