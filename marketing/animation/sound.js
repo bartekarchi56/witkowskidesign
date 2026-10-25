@@ -153,7 +153,8 @@ function render(name) {
     for (let i = 0; i < 3; i++) { const s0 = B7 + 1.0 + i * .35; for (let k = 0; k < 14; k++) add(s0 + k * .17, .05, x => rnd() * Math.exp(-x * 90), .05, .5 - i * .3); blip(s0 + 2.4, 79 + i * 3, .09, -.2); }
     chime(B8 + .1, .1); blip(B8 + .9, 84, .1, 0);
   } else if (name === 'barista') {
-    const [B0, B1, B2, B3, B4, B5, B6, B7] = BA.beats;
+    const [B0, B1, B2, B3, B4, B5, B6, B7] = BA.beats, M = BA.marks || {};
+    const FOUND = M.found ?? B2 + 1.7, TAP1 = M.tap1 ?? B3 + .55, TAPR = M.tapR ?? B5 + .5, R5 = TAPR - .5;
     const pop = (t, f0, g, pan = 0) => add(t, .22, x => Math.exp(-x * 20) * Math.sin(2 * Math.PI * (f0 + 600 * x) * x), g, pan);
     for (let i = 0; i < 16; i++) pop(.12 + i * .055 + hash(i) * .02, 260 + i * 22, .13, hash(i + 4) - .5);   // the café drops in
     for (let i = 0; i < 8; i++) pop(1.05 + i * .1, 520 + i * 40, .1, (i - 3.5) * .12);                        // its people
@@ -161,14 +162,14 @@ function render(name) {
     whoosh(2.3, 1.4, .26);                                                         // turning round behind the counter
     pop(B1 + .4, 700, .1);                                                         // "A cappuccino, please!"
     whoosh(B1 + 1.25, .5, .25); whoosh(B2 + .1, .5, .25);                           // the two phones
-    beep(B2 + 1.35, 88, .07, .12); beep(B2 + 1.45, 93, .1, .12);                   // QR recognised
-    const TAPS = [B3 + .55, B4 + .45, B4 + .95];
+    beep(FOUND - .35, 88, .07, .12); beep(FOUND - .25, 93, .1, .12);               // QR recognised
+    const TAPS = [TAP1, B4 + .45, B4 + .95];
     TAPS.forEach((t, i) => { click(t, .22); blip(t + .62, 79 + i * 2, .12, .3); });  // tap, the stamp lands
     [88, 84, 91].forEach((m, i) => beep(B4 + 1.05 + i * .12, m, .1, .08));         // card full
-    click(B5 + .5, .22); thud(B5 + .6, .18); chime(B5 + .7, .1);                    // the reward
-    whoosh(B5 + 1.6, .6, .22);
-    add(B5 + 2.0, .6, x => { let v = 0; v = Math.sin(2 * Math.PI * 180 * x) * .2; return v * Math.exp(-x * 4) * (hash(Math.floor(x * 400)) - .5); }, .2);   // the cup slides
-    for (let i = 0; i < 26; i++) blip(B5 + 2.65 + hash(i + 70) * 1.3, 96 + Math.floor(hash(i + 29) * 10), .02, hash(i + 33) - .5);
+    click(TAPR, .22); thud(TAPR + .1, .18); chime(TAPR + .2, .1);                  // the reward
+    whoosh(R5 + 2.0, .6, .22);
+    add(R5 + 2.3, .6, x => { let v = 0; v = Math.sin(2 * Math.PI * 180 * x) * .2; return v * Math.exp(-x * 4) * (hash(Math.floor(x * 400)) - .5); }, .2);   // the cup slides
+    for (let i = 0; i < 26; i++) blip(R5 + 2.95 + hash(i + 70) * 1.3, 96 + Math.floor(hash(i + 29) * 10), .02, hash(i + 33) - .5);
     whoosh(B6 - .05, 1.0, .24);
     for (let i = 0; i < 3; i++) { const t = B6 + .6 + i * 1.15 + .5; beep(t - .1, 88, .06, .08); blip(t, 81 + i * 2, .11, 0); }
     chime(B7 + .1, .1); blip(B7 + .9, 84, .1, 0);

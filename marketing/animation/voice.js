@@ -27,7 +27,7 @@ const CUES = {
 
 const [anim, lang, voice, tempoArg] = process.argv.slice(2);
 if (!CUES[anim] || !['it', 'en'].includes(lang) || !voice) { console.error('usage: node marketing/animation/voice.js <' + Object.keys(CUES).join('|') + '> <it|en> <voice.mp3> [tempo]'); process.exit(1); }
-const tempo = +(tempoArg || { 'tre-clienti': 1, barista: 1 }[anim] || 1.08);
+const tempo = +(tempoArg || { 'tre-clienti': 1, barista: require('./barista.json').tempo || 1 }[anim] || 1.08);
 const video = path.join(__dirname, `timbro-${anim}-${lang}.mp4`), out = path.join(__dirname, `timbro-${anim}-${lang}-voice.mp4`);
 
 // The sentences: the sound between pauses of a quarter of a second or more.

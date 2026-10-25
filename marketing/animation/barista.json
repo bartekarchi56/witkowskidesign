@@ -1,5 +1,42 @@
 {
-  "about": "When each sentence of the voice-over starts (seconds), shared by barista.html, sound.js and voice.js. Estimates until the ElevenLabs take arrives.",
-  "beats": [0.2, 3.8, 7.9, 12.0, 15.8, 18.6, 23.0, 26.6],
-  "duration": 32.0
+  "about": "When each sentence of the voice-over starts (seconds), shared by barista.html, sound.js and voice.js. beats: the 8 lines of the script; voice: where voice.js puts each piece of the ElevenLabs take (Roger, 25 Oct), sped up by tempo, its long pauses shortened; marks: the scan and the two taps, on the words they go with.",
+  "beats": [
+    0.25,
+    5.25,
+    9.98,
+    14.86,
+    19.6,
+    23.09,
+    28.61,
+    33.15
+  ],
+  "duration": 40.3,
+  "voice": [
+    0.25,
+    2.3,
+    5.25,
+    6.45,
+    9.98,
+    11.15,
+    13.43,
+    14.86,
+    15.91,
+    17.73,
+    19.6,
+    20.74,
+    21.84,
+    23.09,
+    24.83,
+    25.78,
+    28.61,
+    29.86,
+    33.15,
+    34.9
+  ],
+  "tempo": 1.15,
+  "marks": {
+    "found": 11.7,
+    "tap1": 15.96,
+    "tapR": 24.15
+  }
 }

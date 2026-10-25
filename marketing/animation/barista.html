@@ -103,6 +103,8 @@ import { buildIsoCafe } from './cafe-iso.js';
 const q = new URLSearchParams(location.search);
 const TIMING = await (await fetch('barista.json')).json();
 const [B0, B1, B2, B3, B4, B5, B6, B7] = TIMING.beats, DURATION = TIMING.duration;
+// the scan and the two taps go with the words of the voice (barista.json marks); the reward scene follows the last tap
+const M = TIMING.marks || {}, FOUND = M.found ?? B2 + 1.7, TAP1 = M.tap1 ?? B3 + .55, TAPR = M.tapR ?? B5 + .5, R5 = TAPR - .5;
 const T = {
   qr: ['Scan', 'for your loyalty card'],
   caps: [
@@ -189,7 +191,7 @@ function track(keys, t) {
 const CAM = [
   [0, [0, .5, .1, .8, 0]], [2.3, [0, .5, .1, .86, 0]],
   [B1 - .1, [2.05, .8, -1.55, 2.3, 1]], [B1 + 1.5, [2.05, .8, -1.6, 2.6, 1]],
-  [B5 + 1.8, [2.05, .8, -1.6, 2.6, 1]], [B5 + 2.4, [2.05, .85, -1.4, 3.0, 1]],
+  [R5 + 2.1, [2.05, .8, -1.6, 2.6, 1]], [R5 + 2.7, [2.05, .85, -1.4, 3.0, 1]],
   [B6 - .1, [2.1, .85, -1.25, 3.1, 1]], [B6 + 1.2, [1.9, .7, -.4, 1.9, 0]],
   [B7 - .1, [1.6, .7, -.3, 1.8, 0]], [B7 + 1.4, [0, .5, .1, .86, 0]], [DURATION, [0, .5, .1, .82, 0]]
 ];
@@ -216,7 +218,7 @@ function renderAt(t) {
   const gA = (t - B6 - .1) / .9;
   if (gA <= 0) { place3(giulia, SPOTS.till); giulia.walk(t, false); }
   else walk2(giulia, [SPOTS.till[0], SPOTS.till[2]], [SPOTS.counterEnd[0], SPOTS.counterEnd[2]], gA), gA >= 1 && (giulia.g.rotation.y = SPOTS.counterEnd[3]);
-  const won = t - B5 - 2.6;
+  const won = t - R5 - 2.9;
   if (won > 0 && won < 1.2) giulia.g.position.y = Math.abs(Math.sin(won * Math.PI * 2.5)) * .12 * (1 - won / 1.2);
   // the queue steps up, a stamp each
   const s0 = B6 + .6;
@@ -229,8 +231,8 @@ function renderAt(t) {
   });
   sitters.forEach(([p, sp], i) => { place3(p, sp); p.head.rotation.y = Math.sin(t * .9 + i * 2) * .3; p.arms[0].rotation.x = -.9 + Math.max(0, Math.sin(t * .8 + i * 3)) * -.5; });
   // the free coffee slides across the counter, then goes with Giulia
-  const cs = ease((t - B5 - 2.0) / .6), cg = ease(gA);
-  cup.visible = t > B5 + 1.9; cup.position.set(lerp(lerp(1.85, 2.05, cs), 1.2, cg), TOP, lerp(-1.6, -1.3, cs));
+  const cs = ease((t - R5 - 2.3) / .6), cg = ease(gA);
+  cup.visible = t > R5 + 2.2; cup.position.set(lerp(lerp(1.85, 2.05, cs), 1.2, cg), TOP, lerp(-1.6, -1.3, cs));
   confetti.forEach((m, i) => { const ct = won; m.visible = ct > 0 && ct < 2; if (!m.visible) return; const a = hash(i) * Math.PI * 2, sp = .6 + hash(i + 50); m.position.set(SPOTS.till[0] + Math.cos(a) * sp * ct * .6, 1.3 + 2.0 * ct - 2.4 * ct * ct + hash(i + 7) * .3, SPOTS.till[2] + Math.sin(a) * sp * ct * .6); m.rotation.set(ct * 8 + i, ct * 6 + i * 2, 0); });
   K.drift(t);
   K.dropIn(t, [barista, giulia, ...queue, ...sitters.map(x => x[0])]);
@@ -240,12 +242,12 @@ function renderAt(t) {
   plus.forEach((e, i) => { const u = t - s0 - i * 1.15 - .5; pinAt(e, headOf(barista, .3).lerp(headOf(queue[i]), .5), u > 0 && u < 1.0 ? ease(u / .2) * (1 - ease((u - .75) / .25)) : 0); });
 
   // ---- the phones ----
-  const cVis = ease((t - B1 - 1.3) / .45) * (1 - ease((t - B5 - 1.7) / .4));
-  const bVis = ease((t - B2 - .15) / .45) * (1 - ease((t - B5 - 1.6) / .4));
+  const cVis = ease((t - B1 - 1.3) / .45) * (1 - ease((t - R5 - 2.1) / .4));
+  const bVis = ease((t - B2 - .15) / .45) * (1 - ease((t - R5 - 2.0) / .4));
   const blur = Math.max(cVis * .6, bVis);
   $('c').style.filter = blur > .02 ? `blur(${(blur * 6).toFixed(2)}px)` : 'none';
   // state over time: stamps on Giulia's card and what the Stamper shows
-  const TAP1 = B3 + .55, TAP2 = B4 + .45, TAP3 = B4 + .95, TAPR = B5 + .5, FOUND = B2 + 1.7;
+  const TAP2 = B4 + .45, TAP3 = B4 + .95;
   const n = t >= TAPR + .1 ? 0 : t >= TAP3 + .1 ? 10 : t >= TAP2 + .1 ? 9 : t >= TAP1 + .1 ? 8 : 7;
   const nCard = t >= TAPR + .1 ? 0 : t >= TAP3 + .6 ? 10 : t >= TAP2 + .6 ? 9 : t >= TAP1 + .6 ? 8 : 7;   // the card a moment later, when the stamp lands
   const rewards = t >= TAPR + .1 ? 1 : 0, mode = t < FOUND ? 'scan' : 'stamp';
