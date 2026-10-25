@@ -1,5 +1,31 @@
 {
-  "about": "When each sentence of the voice-over starts (seconds), shared by cinque.html, sound.js and voice.js. Estimates until the ElevenLabs take arrives.",
-  "beats": [0.2, 4.2, 8.3, 12.6, 16.7, 21.0, 25.5, 28.8],
-  "duration": 34.5
+  "about": "When each sentence of the voice-over starts (seconds), shared by cinque.html, sound.js and voice.js. beats: the 8 lines of the script; voice: where voice.js puts each piece of the ElevenLabs take (Roger, 25 Oct), as spoken, 0.2 s in.",
+  "beats": [
+    0.2,
+    4.92,
+    9.59,
+    13.9,
+    18.7,
+    23.33,
+    28.03,
+    31.14
+  ],
+  "duration": 37.9,
+  "voice": [
+    0.2,
+    3.24,
+    4.92,
+    7.41,
+    9.59,
+    13.9,
+    18.7,
+    21.05,
+    23.33,
+    28.03,
+    28.66,
+    29.86,
+    31.14,
+    32.26
+  ],
+  "tempo": 1
 }
