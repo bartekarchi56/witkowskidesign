@@ -471,6 +471,17 @@ The video is timed to that take (`tre-clienti.json`); a new take means setting t
 >
 > #loyaltycard #customerloyalty #coffeeshopowner #cafemarketing #smallbusiness #cafe #coffeeshop
 
+### reel-barista
+"From behind the counter": how stamping works for the barista, English only, 32 s: `marketing/animation/timbro-barista-en.mp4` (made by `barista.html`; the phones show the real Stamper screens and texts). Cover: `marketing/animation/timbro-barista-en-cover.jpg`. Voice script and timing: the table in `barista.json`'s beats (0:00, 0:04, 0:08, 0:12, 0:16, 0:18.5, 0:23, 0:26.5).
+
+**EN**
+> What a loyalty card looks like from behind the counter ☕
+> The customer holds up the card on their phone, the barista scans it with the café's phone and taps "Add a stamp". When the card is full, the phone says so. One more tap and the coffee is on the house.
+> No app to install, no paper cards to lose. A few seconds per customer.
+> Would your barista use it? 👇
+>
+> #loyaltycard #barista #coffeeshopowner #cafemarketing #smallbusiness #cafe #coffeeshop
+
 ## Keep it honest
 
 - The posts say "on the phone", not "in Apple Wallet": Wallet saving isn't switched on yet (`wallet/README.md`). Change the copy once it is.
