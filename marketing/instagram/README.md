@@ -482,6 +482,24 @@ The video is timed to that take (`tre-clienti.json`); a new take means setting t
 >
 > #loyaltycard #barista #coffeeshopowner #cafemarketing #smallbusiness #cafe #coffeeshop
 
+### reel-5-customers
+"Every café has these 5 customers. Which one are you?": a quiz reel in the isometric café, English only, with voice. Made by `marketing/animation/cinque.html` (beats in `cinque.json`). Cover: `marketing/animation/timbro-cinque-en-cover.jpg`. Built for the signals Instagram weighs most for Reels (watch time and rewatches, sends, likes) and for comments: a one-character answer (a number), a friend to tag, and TIMBRO for café owners.
+
+Voice (ElevenLabs, one take, only these lines): Every café has these five customers. Which one are you? / Number one forgets the loyalty card. Every single time. / Number two has nine stamps, and never claims the free coffee. / Number three carries twelve paper cards from twelve different cafés. / Number four just says "the usual", and the barista already knows. / Number five is one stamp away, and suddenly comes in every day. / So, which one are you? Comment the number. / Café owners: comment TIMBRO, and we'll send you the design of your card.
+
+Posting it for comments: post when the account's followers are most active; in the first hour reply to every comment with a question back; pin a first comment from the account ("I'm number 3, nine paper cards in my wallet 😅 Which one are you?"); share it to the story with a quiz sticker (1 to 5) linking to the reel; send it to a few cafés and friends right away (sends are what reach non-followers).
+
+**EN**
+> Every café has these 5 customers 😅 Which one are you? Comment the number 👇
+> 1️⃣ forgets the loyalty card, every single time
+> 2️⃣ nine stamps, never claims the free coffee
+> 3️⃣ twelve paper cards from twelve cafés
+> 4️⃣ "the usual", and the barista already knows
+> 5️⃣ one stamp away, and suddenly here every day
+> Tag the friend who's definitely number 3 📇
+>
+> #coffee #cafe #coffeelover #loyaltycard #barista #coffeeshop #cafeowner #smallbusiness
+
 ## Keep it honest
 
 - The posts say "on the phone", not "in Apple Wallet": Wallet saving isn't switched on yet (`wallet/README.md`). Change the copy once it is.
