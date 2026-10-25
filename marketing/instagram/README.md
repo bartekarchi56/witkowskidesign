@@ -472,7 +472,7 @@ The video is timed to that take (`tre-clienti.json`); a new take means setting t
 > #loyaltycard #customerloyalty #coffeeshopowner #cafemarketing #smallbusiness #cafe #coffeeshop
 
 ### reel-barista
-"From behind the counter": how stamping works for the barista, English only, 40 s with the ElevenLabs voice (Roger): `marketing/animation/timbro-barista-en-voice.mp4` (made by `barista.html`, timed to the take in `barista.json`; the phones show the real Stamper screens and texts). Cover: `marketing/animation/timbro-barista-en-cover.jpg`.
+"From behind the counter": how stamping works for the barista, English only, 33 s with the ElevenLabs voice (Roger; the time stamps the take also read aloud are left out): `marketing/animation/timbro-barista-en-voice.mp4` (made by `barista.html`, timed to the take in `barista.json`; the phones show the real Stamper screens and texts). Cover: `marketing/animation/timbro-barista-en-cover.jpg`.
 
 **EN**
 > What a loyalty card looks like from behind the counter ☕
