@@ -480,7 +480,7 @@ The video is timed to that take (`tre-clienti.json`); a new take means setting t
 > No app to install, no paper cards to lose. A few seconds per customer.
 > Would your barista use it? 👇
 >
-> #loyaltycard #barista #coffeeshopowner #cafemarketing #smallbusiness #cafe #coffeeshop
+> #loyaltycard #barista #coffeeshopowner #cafemarketing
 
 ### reel-5-customers
 "Every café has these 5 customers. Which one are you?": a quiz reel in the isometric café, English only, 38 s with the ElevenLabs voice (Roger): `marketing/animation/timbro-cinque-en-voice.mp4`. Made by `marketing/animation/cinque.html` (beats in `cinque.json`). Cover: `marketing/animation/timbro-cinque-en-cover.jpg`. Built for the signals Instagram weighs most for Reels (watch time and rewatches, sends, likes) and for comments: a one-character answer (a number), a friend to tag, and TIMBRO for café owners.

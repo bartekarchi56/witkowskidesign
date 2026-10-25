@@ -120,8 +120,9 @@
     },
     {
       "at": "2026-10-26 10:00",
-      "post": "post-not-just-coffee",
-      "type": "image"
+      "post": "reel-barista",
+      "type": "reel",
+      "note": "barista view, isometric café, with voice (marketing/animation/barista.html)"
     },
     {
       "at": "2026-10-26 18:00",
@@ -148,6 +149,12 @@
       "post": "carousel-tricks",
       "type": "carousel",
       "note": "moved from 25 Oct 10:00 for reel-3-kinds"
+    },
+    {
+      "at": "2026-10-29 10:00",
+      "post": "post-not-just-coffee",
+      "type": "image",
+      "note": "moved from 26 Oct 10:00 for reel-barista"
     }
   ]
 }
