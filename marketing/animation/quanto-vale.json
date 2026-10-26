@@ -1,0 +1,7 @@
+{
+  "note": "Timeline of quanto-vale.html, set to the ElevenLabs take (Roger): beats are where the scenes and captions change; voice is where each of the take's 11 sentences starts. Read by quanto-vale.html, sound.js and voice.js.",
+  "beats": { "hook2": 2.5, "F1": 4.7, "back": 7.4, "plus": 9.9, "F2": 12.4, "month": 14.6, "F3": 16.8, "F4": 21.2, "sales": 24.1, "END": 26.4, "once": 28.6, "cta": 31.7 },
+  "voice": [0.2, 3.65, 4.9, 7.4, 12.6, 17.0, 17.8, 21.4, 26.6, 30.7, 31.75],
+  "tempo": 1,
+  "duration": 36.4
+}

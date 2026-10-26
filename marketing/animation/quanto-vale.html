@@ -6,11 +6,12 @@
 <title>Quanto vale un caffè in più</title>
 <link rel="stylesheet" href="../../assets/css/base.css">
 <style>
-/* "How much is 1 extra coffee a month worth?": a 38-second reel in 3D (three.js), in the cut-away café
+/* "How much is 1 extra coffee a month worth?": a 36-second reel in 3D (three.js), in the cut-away café
    of tre-fatti.html and in the same style. The math, with example numbers that say so on screen:
    200 regulars come back once more a month (people come more often as the free coffee gets close:
    Kivetz, Urminsky & Zheng 2006), at €4 a visit: €800 more in sales a month, €9,600 a year, against
-   €19 a month for Timbro (the Start plan). Then the Wallet card and "Comment TIMBRO".
+   €19 a month for Timbro (the Start plan). Then the Wallet card and "Comment TIMBRO". Timed to the
+   ElevenLabs take: the beats are in quanto-vale.json.
    Vertical 540 x 960 (1080 x 1920 at 2x). ?lang=it|en. make.js calls window.renderAt(t). */
 html,body{margin:0;background:#111}
 body{display:grid;place-items:center;min-height:100vh;font-family:var(--font)}
@@ -69,25 +70,27 @@ import { buildCafe } from './cafe3d.js';
 const q = new URLSearchParams(location.search);
 const lang = q.get('lang') === 'en' ? 'en' : 'it';
 document.documentElement.lang = lang;
-// Timeline (seconds): the regulars, the coins of one month, the year, the balance, the card
-const F1 = 3.6, PLUS = 9.2, F2 = 13.0, F3 = 19.0, F4 = 24.4, END = 30.0, DURATION = 38.0;
+// Timeline (seconds), set to the voice in quanto-vale.json: the regulars, the coins of one month,
+// the year, the balance, the card
+const QV = await (await fetch('quanto-vale.json')).json(), B = QV.beats;
+const { F1, F2, F3, F4, END } = B, PLUS = B.plus, DURATION = QV.duration;
 const T = {
   it: {
     // [start, chip, caption, source or note]
     caps: [
       [0.3, '', 'Quanto vale <mark>1 caffè in più</mark> al mese?', ''],
-      [1.9, '', 'Per il tuo bar? <mark>Facciamo i conti.</mark>', ''],
+      [B.hook2, '', 'Per il tuo bar? <mark>Facciamo i conti.</mark>', ''],
       [F1 + .2, 'I conti', 'Prendi un bar con <mark>200 clienti abituali.</mark>', 'Numeri di esempio · i tuoi saranno diversi'],
-      [6.9, 'I conti', 'Se una carta fedeltà li fa tornare…', 'Numeri di esempio · i tuoi saranno diversi'],
+      [B.back, 'I conti', 'Se una carta fedeltà li fa tornare…', 'Numeri di esempio · i tuoi saranno diversi'],
       [PLUS - .2, 'I conti', '…solo <mark>una volta in più al mese</mark>…', 'Più il caffè gratis è vicino, più spesso tornano · Kivetz, Urminsky & Zheng, 2006'],
       [F2 + .2, 'I conti', 'A <mark>4 €</mark> a visita…', '200 visite in più × 4 €'],
-      [16.5, 'I conti', '…sono <mark class="y">800 € in più</mark> al mese.', '200 visite in più × 4 €'],
+      [B.month, 'I conti', '…sono <mark class="y">800 € in più</mark> al mese.', '200 visite in più × 4 €'],
       [F3 + .2, 'I conti', 'In un anno: <mark class="y">9.600 € in più.</mark>', '800 € × 12 mesi'],
       [F4 + .2, 'I conti', 'E Timbro costa <mark>19 €</mark> al mese.', 'Piano Start'],
-      [27.2, 'I conti', '19 € al mese. <mark class="y">800 € di incassi</mark> in più.', 'Piano Start'],
+      [B.sales, 'I conti', '19 € al mese. <mark class="y">800 € di incassi</mark> in più.', 'Piano Start'],
       [END + .2, '', 'Non servono clienti nuovi…', ''],
-      [32.0, '', '…basta che i tuoi <mark>tornino una volta in più.</mark>', ''],
-      [33.9, '', 'Commenta <mark>TIMBRO</mark> 👇', '']
+      [B.once, '', '…basta che i tuoi <mark>tornino una volta in più.</mark>', ''],
+      [B.cta, '', 'Commenta <mark>TIMBRO</mark> 👇', '']
     ],
     regulars: 'clienti abituali', visits: 'visite in più al mese', month: 'in più al mese', year: 'in più all’anno',
     sales: 'di incassi in più', price: 'Timbro al mese', months: 'GFMAMGLASOND',
@@ -99,18 +102,18 @@ const T = {
   en: {
     caps: [
       [0.3, '', 'How much is <mark>1 extra coffee</mark> a month worth?', ''],
-      [1.9, '', 'To your café? <mark>Let’s do the math.</mark>', ''],
+      [B.hook2, '', 'To your café? <mark>Let’s do the math.</mark>', ''],
       [F1 + .2, 'The math', 'Take a café with <mark>200 regulars.</mark>', 'Example numbers · yours will differ'],
-      [6.9, 'The math', 'If a loyalty card brings them back…', 'Example numbers · yours will differ'],
+      [B.back, 'The math', 'If a loyalty card brings them back…', 'Example numbers · yours will differ'],
       [PLUS - .2, 'The math', '…just <mark>once more a month</mark>…', 'The closer the free coffee, the more often they come · Kivetz, Urminsky & Zheng, 2006'],
       [F2 + .2, 'The math', 'At <mark>€4</mark> a visit…', '200 extra visits × €4'],
-      [16.5, 'The math', '…that’s <mark class="y">€800 more</mark> a month.', '200 extra visits × €4'],
+      [B.month, 'The math', '…that’s <mark class="y">€800 more</mark> a month.', '200 extra visits × €4'],
       [F3 + .2, 'The math', 'In a year: <mark class="y">€9,600 more.</mark>', '€800 × 12 months'],
       [F4 + .2, 'The math', 'And Timbro costs <mark>€19</mark> a month.', 'Start plan'],
-      [27.2, 'The math', '€19 a month. <mark class="y">€800 more in sales.</mark>', 'Start plan'],
+      [B.sales, 'The math', '€19 a month. <mark class="y">€800 more in sales.</mark>', 'Start plan'],
       [END + .2, '', 'You don’t need new customers…', ''],
-      [32.0, '', '…just your regulars, <mark>once more a month.</mark>', ''],
-      [33.9, '', 'Comment <mark>TIMBRO</mark> 👇', '']
+      [B.once, '', '…just your regulars, <mark>once more a month.</mark>', ''],
+      [B.cta, '', 'Comment <mark>TIMBRO</mark> 👇', '']
     ],
     regulars: 'regulars', visits: 'extra visits a month', month: 'more a month', year: 'more a year',
     sales: 'more in sales', price: 'Timbro a month', months: 'JFMAMJJASOND',
@@ -159,7 +162,7 @@ cyl(.16, .18, .05, mat('#16152b', .4), 0, .025, 0, tower, 40);
 cyl(.15, .15, .01, BRASS, 0, .055, 0, tower, 40);
 const N_TOWER = 20, TH = .03;
 const towerCoins = [...Array(N_TOWER)].map((_, k) => coin(tower));
-const flyAt = k => F2 + .8 + k * .11;           // coin k leaves regular k % 10
+const flyAt = k => F2 + .5 + k * .07;           // coin k leaves regular k % 10
 // the year: twelve towers in a row, one per month
 const year = new THREE.Group(); scene.add(year);
 const MONTHS = [...Array(12)].map((_, m) => {
@@ -371,7 +374,7 @@ function renderAt(t) {
   $('c').style.filter = blur > .05 ? `blur(${blur.toFixed(2)}px) saturate(${1 - pE * .2})` : 'none';
   pr.clear();
   if (pE > .001) {
-    const sts = [30.5, 30.8, 31.1, 31.35, 31.6, 31.82, 32.04], tenth = 32.3; let n = 3, pop = 1;
+    const sts = [.5, .8, 1.1, 1.35, 1.6, 1.82, 2.04].map(d => END + d), tenth = END + 2.3; let n = 3, pop = 1;
     sts.forEach((s, i) => { if (t >= s) { n = i + 4; pop = (t - s) / .3; } });
     if (t >= tenth) { n = 10; pop = (t - tenth) / .35; }
     drawWallet(n, pop);
@@ -381,8 +384,8 @@ function renderAt(t) {
     pconf.forEach((m, i) => { m.visible = ct > 0 && ct < 2.6; if (!m.visible) return; const a = hash(i) * Math.PI * 2, sp = 1.2 + hash(i + 50) * 1.4; m.position.set(Math.cos(a) * sp * ct * .8, .9 + Math.sin(a) * .3 + 2 * ct - 2.2 * ct * ct, .8 + Math.sin(a) * .4); m.rotation.set(ct * 8 + i, ct * 6 + i * 2, 0); });
     pr.render(phoneScene, phoneCam);
   }
-  $('end').style.opacity = ease((t - 34.6) / .4);
-  $('end').style.transform = `translateY(${(1 - backOut((t - 34.6) / .5)) * 20}px)`;
+  $('end').style.opacity = ease((t - B.cta - .7) / .4);
+  $('end').style.transform = `translateY(${(1 - backOut((t - B.cta - .7) / .5)) * 20}px)`;
 }
 window.renderAt = renderAt;
 window.DURATION = DURATION;
