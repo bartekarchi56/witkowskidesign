@@ -42,7 +42,7 @@ The account posts in English: the `en/` images with the English caption (`schedu
 | `brand/profile.png` | 1:1 | Profile picture (the Timbro stamp) |
 | `brand/highlight-*.png` | 9:16 | Highlight covers: how, prices, examples, faq, contact |
 
-The reels have no sound on purpose: add a trending sound or music from Instagram's library when you post. Upload the matching `-cover.png` as the reel cover. Story text can go on the reels too: they're 9:16.
+Every reel has music in the file (a synthesised lo-fi loop, nothing to license; `music.js`, run by `make.js`), because the bot can't add music from Instagram's library. When you post one by hand you can still swap it for a trending sound. Upload the matching `-cover.png` as the reel cover. Story text can go on the reels too: they're 9:16.
 
 ## Profile
 

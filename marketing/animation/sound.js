@@ -17,7 +17,9 @@
 //   cinque:        the five numbers popping up, a sweep to each customer, pocket pats, the reward
 //                  notification, paper cards fanning out, the cup sliding, running feet, the line-up
 //                  (timed from cinque.json)
-//   require('./sound.js').write(file, name)  → writes a 44.1 kHz stereo WAV
+//   bed:           the music alone, for any length: { duration, bpm, key } (key in semitones), used by
+//                  marketing/instagram/music.js for the reels that have no sound of their own
+//   require('./sound.js').write(file, name, opts)  → writes a 44.1 kHz stereo WAV
 const fs = require('fs');
 
 const RATE = 44100;
@@ -28,8 +30,8 @@ const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, S6 = 22.0, END = 26.4
 const TC = require('./tre-clienti.json'), BA = require('./barista.json'), CQ = require('./cinque.json');
 const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration, barista: BA.duration, cinque: CQ.duration };
 
-function render(name) {
-  const DURATION = DURATIONS[name];
+function render(name, opts = {}) {
+  const DURATION = opts.duration || DURATIONS[name], KEY = opts.key || 0;
   const n = Math.ceil(DURATION * RATE), L = new Float32Array(n), R = new Float32Array(n);
   const add = (t0, len, fn, gain = 1, pan = 0) => {
     const s0 = Math.floor(t0 * RATE), sl = Math.floor(len * RATE);
@@ -41,12 +43,12 @@ function render(name) {
   const hash = i => { const v = Math.sin(i * 127.1) * 43758.5453; return v - Math.floor(v); };
 
   // Music: 84 bpm, four chords of one bar each, looping. Warm pad, soft plucked arpeggio, light kick and shaker.
-  const BEAT = 60 / 84, BAR = BEAT * 4;
+  const BEAT = 60 / (opts.bpm || 84), BAR = BEAT * 4;
   const CHORDS = [[48, 55, 64, 71], [45, 52, 60, 67], [41, 48, 57, 64], [43, 50, 59, 65]];   // Cmaj7 Am7 Fmaj7 G7
   const musicEnd = DURATION - .2;
   for (let b = 0; b * BAR < musicEnd; b++) {
     const t = b * BAR, ch = CHORDS[b % 4], last = t + BAR > DURATION - 2.2;
-    const chord = last ? [48, 55, 64, 72] : ch;
+    const chord = (last ? [48, 55, 64, 72] : ch).map(m => m + KEY);
     const len = Math.min(BAR + .4, musicEnd - t);
     // pad
     for (const m of chord) {
@@ -220,8 +222,8 @@ function render(name) {
   return { L: L.map(v => v * k), R: R.map(v => v * k) };
 }
 
-function write(file, name = 'due-caffe') {
-  const { L, R } = render(name), n = L.length, buf = Buffer.alloc(44 + n * 4);
+function write(file, name = 'due-caffe', opts) {
+  const { L, R } = render(name, opts), n = L.length, buf = Buffer.alloc(44 + n * 4);
   buf.write('RIFF', 0); buf.writeUInt32LE(36 + n * 4, 4); buf.write('WAVE', 8); buf.write('fmt ', 12);
   buf.writeUInt32LE(16, 16); buf.writeUInt16LE(1, 20); buf.writeUInt16LE(2, 22); buf.writeUInt32LE(RATE, 24);
   buf.writeUInt32LE(RATE * 4, 28); buf.writeUInt16LE(4, 32); buf.writeUInt16LE(16, 34); buf.write('data', 36); buf.writeUInt32LE(n * 4, 40);

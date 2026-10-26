@@ -2,8 +2,9 @@
 //   node marketing/instagram/make.js            everything, both languages
 //   node marketing/instagram/make.js reel-how   only assets whose id contains "reel-how"
 // Needs Playwright with Chromium (npm i -g playwright) and ffmpeg for the reels
-// (on PATH, or FFMPEG=/path/to/ffmpeg).
+// (on PATH, or FFMPEG=/path/to/ffmpeg). Every reel gets its music from music.js.
 const http = require('http'), fs = require('fs'), path = require('path'), { spawn } = require('child_process');
+const { addMusic } = require('./music.js');
 let chromium;
 try { ({ chromium } = require('playwright')); } catch (e) { ({ chromium } = require('/opt/node22/lib/node_modules/playwright')); }
 
@@ -62,6 +63,7 @@ server.listen(0, async () => {
           await video.write(await stage.screenshot({ type: 'jpeg', quality: 94 }));
         }
         await video.end();
+        addMusic(out);
         await page.evaluate(t => window.seek(t), a.cover);
         await stage.screenshot({ path: path.join(dir, `${id}-cover.png`) });
         console.log('✓', path.relative(__dirname, out), `${a.duration}s`);
