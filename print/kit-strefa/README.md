@@ -20,4 +20,6 @@ Rebuild: `node print/make-example-cards.js strefa`.
 >
 > Działa to prosto: klient skanuje kod QR przy kasie, a pieczątkę dodajecie zwykłym telefonem. W nagrodę może dostać kawę, ale równie dobrze lunch czy koktajl. W panelu widać, ilu gości do Was wraca, kiedy jest największy ruch i komu brakuje już tylko jednej pieczątki. Możecie też wysłać wszystkim powiadomienie, na przykład o nowym menu lunchowym albo o wolnych terminach na wigilie firmowe.
 >
+> Więcej zobaczycie tutaj: https://timbro.witkowskidesign.com/?lang=pl
+>
 > Jeśli chcecie, chętnie wpadnę i pokażę wszystko na miejscu ☕

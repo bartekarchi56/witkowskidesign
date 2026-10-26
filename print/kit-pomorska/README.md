@@ -19,4 +19,6 @@ Rebuild: `node print/make-example-cards.js pomorska`.
 >
 > Działa to prosto: klient skanuje kod QR przy kasie, a pieczątkę dodajecie zwykłym telefonem. W panelu widać, ilu gości do Was wraca, kiedy jest największy ruch i komu brakuje już tylko jednej pieczątki. Możecie też wysłać wszystkim powiadomienie, na przykład o świeżych bajglach albo o kolejnym Bydgoskim dzierganiu.
 >
+> Więcej zobaczycie tutaj: https://timbro.witkowskidesign.com/?lang=pl
+>
 > Jeśli chcecie, chętnie wpadnę i pokażę wszystko na miejscu ☕
