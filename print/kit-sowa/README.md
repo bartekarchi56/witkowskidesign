@@ -22,9 +22,13 @@ The panel pictures in `sales/img/` are screenshots of the demo dashboard (`app/d
 Attach: `prezentacja-sowa.pdf`, `card-sowa-simple-iphone.png`, `card-sowa-80-iphone.png`,
 `../brochure-sowa-pl.pdf`, `../korzysci-dla-wlasciciela-pl.pdf`. Open the card link on your phone before sending.
 
+**Do:** bok@cukierniasowa.pl (customer service; it is the address in the Lodowy Fanklub rules). Not iod@, which is only for data protection.
+
 **Temat:** Lodowy Fanklub w telefonie: propozycja dla Cukierni Sowa
 
 > Dzień dobry,
+>
+> uprzejmie proszę o przekazanie tej wiadomości do działu marketingu.
 >
 > nazywam się Bartosz Witkowski i prowadzę Witkowski Design. Stworzyłem Timbro: karty lojalnościowe, które klienci trzymają w telefonie, w Apple Wallet lub Google Wallet, bez instalowania żadnej aplikacji.
 >
