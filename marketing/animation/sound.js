@@ -149,15 +149,15 @@ function render(name, opts = {}) {
     const clink = (t, g, pan) => { const k = .9 + hash(t * 100) * .25; add(t, .35, x => Math.exp(-x * 14) * (Math.sin(2 * Math.PI * 2350 * k * x) + .7 * Math.sin(2 * Math.PI * 3720 * k * x) * Math.exp(-x * 10) + .4 * Math.sin(2 * Math.PI * 5210 * k * x) * Math.exp(-x * 20)), g, pan); add(t, .02, x => rnd() * Math.exp(-x * 300), g * .6, pan); };
     for (let i = 0; i < 16; i++) pop(.12 + i * .055 + hash(i) * .02, 260 + i * 22, .13, hash(i + 4) - .5);   // the café drops in
     for (let i = 0; i < 4; i++) pop(1.05 + i * .1, 520 + i * 60, .12, (i - 1.5) * .2);                          // its people
-    for (const t of [.3, 1.9, F1 + .2, 6.9, PLUS - .2, F2 + .2, 16.1, F3 + .2, F4 + .2, 27.2, END + .2, 32.0, 33.9]) add(t, .1, x => Math.exp(-x * 40) * Math.sin(2 * Math.PI * 1100 * x), .08);
+    for (const t of [.3, 1.9, F1 + .2, 6.9, PLUS - .2, F2 + .2, 16.5, F3 + .2, F4 + .2, 27.2, END + .2, 32.0, 33.9]) add(t, .1, x => Math.exp(-x * 40) * Math.sin(2 * Math.PI * 1100 * x), .08);
     for (const t of [F1 - .1, F2 - .1, F3 - .1, F4 - .1, END - .1]) whoosh(t, .75, .3);
     for (let i = 0; i < 10; i++) pop(F1 + .45 + i * .1, 420 + i * 40, .1, (i % 4) / 3 - .5);                  // the regulars pop in
     for (let i = 0; i < 10; i++) blip(PLUS + .15 + i * .11, 76 + i * 1.5, .1, i % 2 ? .3 : -.3);               // "+1" each
     blip(PLUS + 1.4, 88, .1, 0);                                                                                  // +200
-    for (let k = 0; k < 20; k++) clink(F2 + 1.55 + k * .19, .05, (k % 10) / 9 - .5);                             // coins land on the tower
-    chime(16.15, .06);
-    for (let m = 0; m < 12; m++) { const t = F3 + .7 + m * .3; for (let j = 0; j < 3; j++) clink(t + j * .12, .035, m / 11 - .5); blip(t + .4, 74 + m, .05, m / 11 - .5); }
-    chime(F3 + .7 + 11 * .3 + .5, .08);
+    for (let k = 0; k < 20; k++) clink(F2 + 1.35 + k * .11, .05, (k % 10) / 9 - .5);                             // coins land on the tower
+    chime(16.5, .06);
+    for (let m = 0; m < 12; m++) { const t = F3 + .6 + m * .18; for (let j = 0; j < 3; j++) clink(t + j * .12, .035, m / 11 - .5); blip(t + .4, 74 + m, .05, m / 11 - .5); }
+    chime(F3 + .6 + 11 * .18 + .5, .08);
     clink(F4 + .97, .05, .35);                                                                                    // Timbro's one coin
     for (let k = 0; k < 25; k++) clink(F4 + 1.12 + k * .06, .04, -.35);                                          // the pile
     [30.5, 30.8, 31.1, 31.35, 31.6, 31.82, 32.04].forEach((t, i) => blip(t, 78 + i * 1.5, .1, i % 2 ? .3 : -.3));

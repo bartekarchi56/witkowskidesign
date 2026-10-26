@@ -81,7 +81,7 @@ const T = {
       [6.9, 'I conti', 'Se una carta fedeltà li fa tornare…', 'Numeri di esempio · i tuoi saranno diversi'],
       [PLUS - .2, 'I conti', '…solo <mark>una volta in più al mese</mark>…', 'Più il caffè gratis è vicino, più spesso tornano · Kivetz, Urminsky & Zheng, 2006'],
       [F2 + .2, 'I conti', 'A <mark>4 €</mark> a visita…', '200 visite in più × 4 €'],
-      [16.1, 'I conti', '…sono <mark class="y">800 € in più</mark> al mese.', '200 visite in più × 4 €'],
+      [16.5, 'I conti', '…sono <mark class="y">800 € in più</mark> al mese.', '200 visite in più × 4 €'],
       [F3 + .2, 'I conti', 'In un anno: <mark class="y">9.600 € in più.</mark>', '800 € × 12 mesi'],
       [F4 + .2, 'I conti', 'E Timbro costa <mark>19 €</mark> al mese.', 'Piano Start'],
       [27.2, 'I conti', '19 € al mese. <mark class="y">800 € di incassi</mark> in più.', 'Piano Start'],
@@ -104,7 +104,7 @@ const T = {
       [6.9, 'The math', 'If a loyalty card brings them back…', 'Example numbers · yours will differ'],
       [PLUS - .2, 'The math', '…just <mark>once more a month</mark>…', 'The closer the free coffee, the more often they come · Kivetz, Urminsky & Zheng, 2006'],
       [F2 + .2, 'The math', 'At <mark>€4</mark> a visit…', '200 extra visits × €4'],
-      [16.1, 'The math', '…that’s <mark class="y">€800 more</mark> a month.', '200 extra visits × €4'],
+      [16.5, 'The math', '…that’s <mark class="y">€800 more</mark> a month.', '200 extra visits × €4'],
       [F3 + .2, 'The math', 'In a year: <mark class="y">€9,600 more.</mark>', '€800 × 12 months'],
       [F4 + .2, 'The math', 'And Timbro costs <mark>€19</mark> a month.', 'Start plan'],
       [27.2, 'The math', '€19 a month. <mark class="y">€800 more in sales.</mark>', 'Start plan'],
@@ -159,14 +159,14 @@ cyl(.16, .18, .05, mat('#16152b', .4), 0, .025, 0, tower, 40);
 cyl(.15, .15, .01, BRASS, 0, .055, 0, tower, 40);
 const N_TOWER = 20, TH = .03;
 const towerCoins = [...Array(N_TOWER)].map((_, k) => coin(tower));
-const flyAt = k => F2 + 1.0 + k * .19;           // coin k leaves regular k % 10
+const flyAt = k => F2 + .8 + k * .11;           // coin k leaves regular k % 10
 // the year: twelve towers in a row, one per month
 const year = new THREE.Group(); scene.add(year);
 const MONTHS = [...Array(12)].map((_, m) => {
   const g = new THREE.Group(); g.position.set(-.48 + m * .26, 0, .5 + Math.sin(m / 11 * Math.PI) * .3); year.add(g);
   cyl(.115, .125, .04, mat('#16152b', .4), 0, .02, 0, g, 28);
   const coins = [...Array(18)].map(() => coin(g));
-  return { g, coins, t: F3 + .7 + m * .3 };
+  return { g, coins, t: F3 + .6 + m * .18 };
 });
 // the balance: a pile for the extra sales, one coin for Timbro
 const bal = new THREE.Group(); bal.position.set(.75, 0, .55); scene.add(bal);
@@ -337,7 +337,7 @@ function renderAt(t) {
     });
   } else MINIS.forEach(e => { e.style.opacity = 0; });
   const yv = ease((t - F3 - .8) / .35) * (1 - ease((t - F4 + .2) / .3));
-  const run = clamp01((t - F3 - .7) / (11 * .3 + .45));
+  const run = clamp01((t - F3 - .6) / (11 * .18 + .45));
   pin(LAB.yr, V(.95, 1.0, .75), yv, T.eur(Math.round(run * 12 * 800 / 100) * 100));
 
   // the balance: €800 of extra sales against €19 of Timbro
