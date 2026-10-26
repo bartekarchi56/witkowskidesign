@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quanto vale un caffè in più</title>
+<link rel="stylesheet" href="../../assets/css/base.css">
+<style>
+/* "How much is 1 extra coffee a month worth?": a 38-second reel in 3D (three.js), in the cut-away café
+   of tre-fatti.html and in the same style. The math, with example numbers that say so on screen:
+   200 regulars come back once more a month (people come more often as the free coffee gets close:
+   Kivetz, Urminsky & Zheng 2006), at €4 a visit: €800 more in sales a month, €9,600 a year, against
+   €19 a month for Timbro (the Start plan). Then the Wallet card and "Comment TIMBRO".
+   Vertical 540 x 960 (1080 x 1920 at 2x). ?lang=it|en. make.js calls window.renderAt(t). */
+html,body{margin:0;background:#111}
+body{display:grid;place-items:center;min-height:100vh;font-family:var(--font)}
+.stage{width:540px;height:960px;position:relative;overflow:hidden;background:radial-gradient(120% 75% at 50% 52%,#fbf4e8 0%,#f3e5d0 50%,#e3cdb0 100%)}
+canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
+.ov{position:absolute;left:0;right:0;pointer-events:none}
+.top{top:78px;text-align:center;padding:0 26px}
+.chip{display:inline-flex;align-items:center;gap:9px;font:500 12.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:#fff;background:#16152b;padding:8px 13px 7px;border-radius:99px;margin-bottom:14px;box-shadow:0 6px 16px rgba(40,25,10,.18)}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--pop);box-shadow:0 0 0 2px #fff}
+.cap{font-size:35px;line-height:1.12;font-weight:800;font-stretch:112%;letter-spacing:-.015em;color:#16152b;text-wrap:balance}
+.cap mark{background:var(--pop);color:#fff;padding:0 9px;border-radius:10px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.cap mark.y{background:#FFC24B;color:#16152b}
+.src{margin:14px auto 0;display:inline-flex;align-items:center;gap:8px;font:500 11px/1.35 var(--mono);color:#6d5c49;letter-spacing:.02em;background:rgba(255,255,255,.6);padding:6px 11px;border-radius:8px}
+.src svg{flex:none}
+.lab{position:absolute;left:0;top:0;transform:translate(-50%,-100%);text-align:center;white-space:nowrap;opacity:0;will-change:transform}
+.lab .pill{display:inline-block;background:#fff;color:#16152b;border-radius:14px;padding:9px 15px 10px;box-shadow:0 12px 26px rgba(60,35,10,.22);position:relative}
+.lab .pill::after{content:'';position:absolute;left:50%;bottom:-6px;width:12px;height:12px;background:inherit;transform:translateX(-50%) rotate(45deg);border-radius:2px}
+.lab b{display:block;font-size:36px;line-height:1;font-weight:800;font-stretch:110%;letter-spacing:-.02em}
+.lab span{display:block;font:500 10.5px/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#7a6a58;margin-top:5px}
+.lab.blue .pill{background:var(--pop);color:#fff}
+.lab.blue span{color:rgba(255,255,255,.82)}
+.lab.dark .pill{background:#16152b;color:#fff}
+.lab.dark span{color:rgba(255,255,255,.7)}
+.lab.gold .pill{background:#FFC24B;color:#16152b}
+.lab.gold span{color:#5d4a1c}
+.lab.plus .pill{background:var(--pop);color:#fff;padding:5px 9px 6px;border-radius:10px}
+.lab.plus .pill::after{width:8px;height:8px;bottom:-4px}
+.lab.plus b{font-size:19px}
+.lab.mini .pill{background:rgba(255,255,255,.85);padding:3px 6px 4px;border-radius:7px;box-shadow:none}
+.lab.mini .pill::after{display:none}
+.lab.mini b{font:600 11px/1 var(--mono);letter-spacing:.06em;color:#6d5c49}
+.end{bottom:205px;text-align:center;opacity:0}
+.end span{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#16152b;font-size:19px;font-weight:700;padding:13px 18px;border-radius:16px;box-shadow:0 14px 30px rgba(60,35,10,.25)}
+.end span i{width:20px;height:20px;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 5px var(--pop),inset 0 0 0 7px #fff;flex:none}
+.band{top:0;height:330px;background:linear-gradient(#f8efe2 0%,rgba(248,239,226,.92) 45%,rgba(248,239,226,0) 100%)}
+.vig{inset:0;background:radial-gradient(140% 90% at 50% 45%,transparent 55%,rgba(90,55,20,.22) 100%)}
+.grain{inset:0;opacity:.09;mix-blend-mode:multiply}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="c"></canvas>
+  <canvas id="p"></canvas>
+  <div class="ov vig"></div>
+  <div class="ov band"></div>
+  <div id="labs"></div>
+  <div class="ov top" id="top"><div class="chip" id="chip"><i></i><span id="chipT"></span></div><div class="cap" id="cap"></div><div><div class="src" id="src"></div></div></div>
+  <div class="ov end" id="end"><span><i></i><b id="endT"></b></span></div>
+  <div class="ov grain" id="grain"></div>
+</div>
+<script src="../../assets/js/config.js"></script>
+<script type="module">
+import * as THREE from '../../assets/vendor/three.module.min.js';
+import { buildCafe } from './cafe3d.js';
+
+const q = new URLSearchParams(location.search);
+const lang = q.get('lang') === 'en' ? 'en' : 'it';
+document.documentElement.lang = lang;
+// Timeline (seconds): the regulars, the coins of one month, the year, the balance, the card
+const F1 = 3.6, PLUS = 9.2, F2 = 13.0, F3 = 19.0, F4 = 24.4, END = 30.0, DURATION = 38.0;
+const T = {
+  it: {
+    // [start, chip, caption, source or note]
+    caps: [
+      [0.3, '', 'Quanto vale <mark>1 caffè in più</mark> al mese?', ''],
+      [1.9, '', 'Per il tuo bar? <mark>Facciamo i conti.</mark>', ''],
+      [F1 + .2, 'I conti', 'Prendi un bar con <mark>200 clienti abituali.</mark>', 'Numeri di esempio · i tuoi saranno diversi'],
+      [6.9, 'I conti', 'Se una carta fedeltà li fa tornare…', 'Numeri di esempio · i tuoi saranno diversi'],
+      [PLUS - .2, 'I conti', '…solo <mark>una volta in più al mese</mark>…', 'Più il caffè gratis è vicino, più spesso tornano · Kivetz, Urminsky & Zheng, 2006'],
+      [F2 + .2, 'I conti', 'A <mark>4 €</mark> a visita…', '200 visite in più × 4 €'],
+      [16.1, 'I conti', '…sono <mark class="y">800 € in più</mark> al mese.', '200 visite in più × 4 €'],
+      [F3 + .2, 'I conti', 'In un anno: <mark class="y">9.600 € in più.</mark>', '800 € × 12 mesi'],
+      [F4 + .2, 'I conti', 'E Timbro costa <mark>19 €</mark> al mese.', 'Piano Start'],
+      [27.2, 'I conti', '19 € al mese. <mark class="y">800 € di incassi</mark> in più.', 'Piano Start'],
+      [END + .2, '', 'Non servono clienti nuovi…', ''],
+      [32.0, '', '…basta che i tuoi <mark>tornino una volta in più.</mark>', ''],
+      [33.9, '', 'Commenta <mark>TIMBRO</mark> 👇', '']
+    ],
+    regulars: 'clienti abituali', visits: 'visite in più al mese', month: 'in più al mese', year: 'in più all’anno',
+    sales: 'di incassi in più', price: 'Timbro al mese', months: 'GFMAMGLASOND',
+    eur: n => n.toLocaleString('it-IT') + ' €',
+    menu: ['Espresso', '1,30', 'Cappuccino', '1,80', 'Cornetto', '1,50', 'Matcha latte', '3,50', 'Spremuta', '3,00'],
+    qr: ['Scansiona', 'per la carta fedeltà'], end: 'Ti mandiamo il design della tua carta ☕',
+    bar: 'Bar Aurora', stamps: 'TIMBRI', reward: 'PREMIO', rewardW: 'un caffè gratis', customer: 'CLIENTE', ready: 'Premio pronto: mostralo alla cassa'
+  },
+  en: {
+    caps: [
+      [0.3, '', 'How much is <mark>1 extra coffee</mark> a month worth?', ''],
+      [1.9, '', 'To your café? <mark>Let’s do the math.</mark>', ''],
+      [F1 + .2, 'The math', 'Take a café with <mark>200 regulars.</mark>', 'Example numbers · yours will differ'],
+      [6.9, 'The math', 'If a loyalty card brings them back…', 'Example numbers · yours will differ'],
+      [PLUS - .2, 'The math', '…just <mark>once more a month</mark>…', 'The closer the free coffee, the more often they come · Kivetz, Urminsky & Zheng, 2006'],
+      [F2 + .2, 'The math', 'At <mark>€4</mark> a visit…', '200 extra visits × €4'],
+      [16.1, 'The math', '…that’s <mark class="y">€800 more</mark> a month.', '200 extra visits × €4'],
+      [F3 + .2, 'The math', 'In a year: <mark class="y">€9,600 more.</mark>', '€800 × 12 months'],
+      [F4 + .2, 'The math', 'And Timbro costs <mark>€19</mark> a month.', 'Start plan'],
+      [27.2, 'The math', '€19 a month. <mark class="y">€800 more in sales.</mark>', 'Start plan'],
+      [END + .2, '', 'You don’t need new customers…', ''],
+      [32.0, '', '…just your regulars, <mark>once more a month.</mark>', ''],
+      [33.9, '', 'Comment <mark>TIMBRO</mark> 👇', '']
+    ],
+    regulars: 'regulars', visits: 'extra visits a month', month: 'more a month', year: 'more a year',
+    sales: 'more in sales', price: 'Timbro a month', months: 'JFMAMJJASOND',
+    eur: n => '€' + n.toLocaleString('en-GB'),
+    menu: ['Espresso', '1.30', 'Cappuccino', '1.80', 'Croissant', '1.50', 'Matcha latte', '3.50', 'Orange juice', '3.00'],
+    qr: ['Scan', 'for your loyalty card'], end: 'We’ll send you your card’s design ☕',
+    bar: 'Bar Aurora', stamps: 'STAMPS', reward: 'REWARD', rewardW: 'a free coffee', customer: 'MEMBER', ready: 'Reward ready: show it at the till'
+  }
+}[lang];
+const $ = id => document.getElementById(id);
+$('endT').textContent = T.end;
+await Promise.all(['800 40px Archivo', '700 40px Archivo', '600 40px Archivo', '500 40px Archivo', '500 20px "Spline Sans Mono"', '600 20px "Spline Sans Mono"'].map(f => document.fonts.load(f)));
+
+const BLUE = '#2B32FF';
+const W = 540, H = 960, DPR = +(q.get('dpr') || 2);
+const renderer = new THREE.WebGLRenderer({ canvas: $('c'), antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(DPR); renderer.setSize(W, H, false); renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
+
+const K = buildCafe(THREE, renderer, T);
+const { clamp01, ease, easeOut, backOut, hash, lerp, V, mat, tex, rr, BRASS, drawQR, scene, TABLES, box, cyl, sph, lathe, roundedShape, add, person } = K;
+
+// ---------------- the café's own people ----------------
+const barista = person({ i: 6, apron: '#2f4a3a', shirt: '#f3efe6', hair: 1 });
+barista.g.position.set(.5, 0, -2.55);
+const seated = [
+  [person({ i: 0, cup: true, hair: 3 }), TABLES[0][0] + .55, TABLES[0][1] + .05, -Math.PI / 2],
+  [person({ i: 4, glasses: true, hair: 0 }), TABLES[0][0] - .55, TABLES[0][1] - .05, Math.PI / 2],
+  [person({ i: 5, cup: true, hair: 4 }), TABLES[1][0] + .55, TABLES[1][1] + .05, -Math.PI / 2]
+];
+seated.forEach(([p, x, z, ry]) => { p.sit(); p.g.position.set(x, .07, z); p.g.rotation.y = ry; });
+
+// ---------------- the regulars: ten figures for 200 ----------------
+const CROWD = [[-.45, -.55], [.4, -.7], [1.25, -.6], [2.1, -.75], [-.15, .3], [.75, .2], [1.65, .25], [2.55, .1], [.3, 1.1], [1.25, 1.05]];
+const crowd = CROWD.map(([x, z], i) => { const p = person({ i: [1, 2, 3, 7, 8, 0, 4, 5, 6, 2][i], hair: i % 5, phone: i === 3, cup: i === 6, glasses: i === 5 }); p.x = x; p.z = z; p.ry = .25 + (hash(i + 3) - .5) * .5; return p; });
+const plusAt = i => PLUS + .15 + i * .11;
+
+// ---------------- coins ----------------
+const COIN = new THREE.CylinderGeometry(.095, .095, .028, 32), COINM = new THREE.MeshStandardMaterial({ color: '#f2c14e', roughness: .28, metalness: 1 });
+const coin = parent => { const c = new THREE.Mesh(COIN, COINM); c.castShadow = true; parent.add(c); return c; };
+// the month: a tower of 20 coins (€40 each) in front of the regulars
+const tower = new THREE.Group(); tower.position.set(.95, 0, 1.95); scene.add(tower);
+cyl(.16, .18, .05, mat('#16152b', .4), 0, .025, 0, tower, 40);
+cyl(.15, .15, .01, BRASS, 0, .055, 0, tower, 40);
+const N_TOWER = 20, TH = .03;
+const towerCoins = [...Array(N_TOWER)].map((_, k) => coin(tower));
+const flyAt = k => F2 + 1.0 + k * .19;           // coin k leaves regular k % 10
+// the year: twelve towers in a row, one per month
+const year = new THREE.Group(); scene.add(year);
+const MONTHS = [...Array(12)].map((_, m) => {
+  const g = new THREE.Group(); g.position.set(-.48 + m * .26, 0, .5 + Math.sin(m / 11 * Math.PI) * .3); year.add(g);
+  cyl(.115, .125, .04, mat('#16152b', .4), 0, .02, 0, g, 28);
+  const coins = [...Array(18)].map(() => coin(g));
+  return { g, coins, t: F3 + .7 + m * .3 };
+});
+// the balance: a pile for the extra sales, one coin for Timbro
+const bal = new THREE.Group(); bal.position.set(.75, 0, .55); scene.add(bal);
+const POLE = 1.3, ARM = .6, HANG = .52;
+cyl(.36, .4, .07, mat('#1f1e24', .4), 0, .035, 0, bal, 40);
+cyl(.33, .33, .012, BRASS, 0, .075, 0, bal, 40);
+cyl(.035, .045, POLE, BRASS, 0, POLE / 2 + .07, 0, bal, 16);
+sph(.065, BRASS, 0, POLE + .1, 0, bal);
+const beam = new THREE.Group(); beam.position.y = POLE + .1; bal.add(beam);
+{ box(ARM * 2 + .08, .04, .045, BRASS, 0, 0, 0, beam); for (const x of [-ARM, ARM]) sph(.035, BRASS, x, 0, 0, beam); box(.018, .26, .018, BRASS, 0, .13, 0, beam); }
+const pans = [-1, 1].map(sd => {
+  const g = new THREE.Group(); bal.add(g);
+  add(lathe([[0, 0], [.15, 0], [.25, .06], [.26, .075], [.245, .075], [.14, .013], [0, .013]], BRASS, 40), g);
+  const chains = [0, 1, 2].map(() => { const c = new THREE.Mesh(new THREE.CylinderGeometry(.005, .005, 1, 6), BRASS); bal.add(c); return c; });
+  const coins = new THREE.Group(); g.add(coins);
+  return { g, chains, sd, coins };
+});
+const STACKS = [[0, 0, 5], [.11, 0, 4], [-.11, 0, 4], [.055, .095, 3], [-.055, .095, 3], [.055, -.095, 3], [-.055, -.095, 3]];
+const spots = []; STACKS.forEach(([x, z, n]) => { for (let k = 0; k < n; k++) spots.push([x + (hash(spots.length) - .5) * .015, .025 + k * .019, z + (hash(spots.length + 9) - .5) * .02]); });
+spots.sort((a, b) => a[1] - b[1]);
+const pile = spots.map(([x, y, z], k) => { const c = coin(pans[0].coins); c.scale.set(.72, .68, .72); c.userData = { x, y, z, t: F4 + .7 + k * .06 }; return c; });
+const one = coin(pans[1].coins); one.scale.set(.72, .68, .72); one.userData = { x: 0, y: .03, z: 0, t: F4 + .55 };
+const between = (mesh, a, b) => { const d = b.clone().sub(a); mesh.position.copy(a).addScaledVector(d, .5); mesh.scale.set(1, d.length(), 1); mesh.quaternion.setFromUnitVectors(V(0, 1, 0), d.normalize()); };
+
+// ---------------- labels pinned to points in the scene ----------------
+function label(cls) { const e = document.createElement('div'); e.className = 'lab ' + cls; e.innerHTML = '<div class="pill"><b></b><span></span></div>'; $('labs').appendChild(e); return e; }
+const LAB = { reg: label('dark'), vis: label('blue'), mon: label('gold'), yr: label('gold'), sales: label('blue'), price: label('dark') };
+const PLUSES = crowd.map(() => { const e = label('plus'); e.querySelector('b').textContent = '+1'; return e; });
+const MINIS = MONTHS.map((_, m) => { const e = label('mini'); e.querySelector('b').textContent = T.months[m]; return e; });
+LAB.reg.querySelector('span').textContent = T.regulars; LAB.vis.querySelector('span').textContent = T.visits;
+LAB.mon.querySelector('span').textContent = T.month; LAB.yr.querySelector('span').textContent = T.year;
+LAB.sales.querySelector('span').textContent = T.sales; LAB.price.querySelector('span').textContent = T.price;
+const camera = new THREE.PerspectiveCamera(40, W / H, .1, 100);
+function pin(e, p, vis, txt, sc = 1) {
+  const v = p.clone().project(camera);
+  e.style.transform = `translate(${(v.x * .5 + .5) * W}px, ${(-v.y * .5 + .5) * H}px) translate(-50%,-100%) scale(${sc * (.6 + .4 * backOut(vis))})`;
+  e.style.opacity = clamp01(vis * 3); if (txt !== undefined && e._t !== txt) { e.querySelector('b').textContent = txt; e._t = txt; }
+}
+
+// ---------------- the phone with the Wallet card, drawn on its own canvas on top ----------------
+const pr = new THREE.WebGLRenderer({ canvas: $('p'), antialias: true, alpha: true, preserveDrawingBuffer: true });
+pr.setPixelRatio(DPR); pr.setSize(W, H, false); pr.setClearColor(0x000000, 0); pr.outputColorSpace = THREE.SRGBColorSpace;
+const phoneScene = new THREE.Scene();
+phoneScene.add(new THREE.HemisphereLight('#ffffff', '#6b5a4a', 1.5));
+{ const k = new THREE.DirectionalLight('#ffffff', 1.8); k.position.set(2, 3, 5); phoneScene.add(k); }
+const phone = new THREE.Group();
+{ const b = new THREE.Mesh(new THREE.ExtrudeGeometry(roundedShape(1, 2.05, .14), { depth: .08, bevelEnabled: true, bevelThickness: .02, bevelSize: .02, bevelSegments: 3 }), new THREE.MeshStandardMaterial({ color: '#1d1d1f', roughness: .35, metalness: .4 })); b.position.z = -.04; phone.add(b); }
+const scr = document.createElement('canvas'); scr.width = 540; scr.height = Math.round(540 * 1.98 / .93);
+const scrTex = tex(scr), sg = scr.getContext('2d');
+{ const s = new THREE.Mesh(new THREE.ShapeGeometry(roundedShape(.93, 1.98, .11)), new THREE.MeshBasicMaterial({ map: scrTex, toneMapped: false })); const uv = s.geometry.attributes.uv, pos = s.geometry.attributes.position; for (let i = 0; i < uv.count; i++) uv.setXY(i, pos.getX(i) / .93 + .5, pos.getY(i) / 1.98 + .5); s.position.z = .065; phone.add(s); }
+phoneScene.add(phone);
+const CONF = [BLUE, '#FFC24B', '#FF5C7A', '#2EC4B6', '#ffffff'];
+const pconf = [...Array(60)].map((_, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.06, .1), new THREE.MeshBasicMaterial({ color: CONF[i % 5], side: THREE.DoubleSide })); m.visible = false; phoneScene.add(m); return m; });
+const phoneCam = new THREE.PerspectiveCamera(30, W / H, .1, 50); phoneCam.position.set(0, 0, 6.2); phoneCam.lookAt(0, 0, 0);
+function drawWallet(n, pop) {
+  const g = sg, w = scr.width, h = scr.height;
+  g.fillStyle = '#F2F2F7'; g.fillRect(0, 0, w, h);
+  g.fillStyle = '#111'; g.font = '600 26px Archivo'; g.textAlign = 'left'; g.fillText('9:41', 44, 52); g.fillStyle = '#000'; rr(g, w / 2 - 80, 22, 160, 44, 22); g.fill();
+  g.fillStyle = '#111'; g.font = '800 46px Archivo'; g.textAlign = 'left'; g.fillText('Wallet', 40, 150);
+  const x = 36, y = 200, pw = w - 72;
+  g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.18)'; g.shadowBlur = 30; g.shadowOffsetY = 10; rr(g, x, y, pw, 560, 26); g.fill(); g.shadowColor = 'transparent'; g.shadowOffsetY = 0;
+  g.fillStyle = '#111'; g.font = '600 30px Archivo'; g.fillText(T.bar.toUpperCase().split('').join(' '), x + 30, y + 58);
+  g.textAlign = 'right'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.stamps, x + pw - 30, y + 44);
+  g.fillStyle = '#111'; g.font = '600 32px Archivo'; g.fillText(`${n}/10`, x + pw - 30, y + 80);
+  g.fillStyle = '#F1F1F4'; g.fillRect(x, y + 104, pw, 210);
+  for (let i = 0; i < 10; i++) { const cx = x + pw * (.14 + (i % 5) * .18), cy = y + 104 + (i < 5 ? 62 : 148), on = i < n; let r = 26; if (on && i === n - 1) r *= .6 + .4 * backOut(pop); g.fillStyle = on ? BLUE : '#D9D9DE'; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill(); }
+  g.textAlign = 'left'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.reward, x + 30, y + 352);
+  g.fillStyle = '#111'; g.font = '500 28px Archivo'; g.fillText(T.rewardW, x + 30, y + 388);
+  g.textAlign = 'right'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.customer, x + pw - 30, y + 352);
+  g.fillStyle = '#111'; g.font = '500 28px Archivo'; g.fillText('Giulia R.', x + pw - 30, y + 388);
+  if (n >= 10) { g.fillStyle = BLUE; rr(g, x + 24, y + 430, pw - 48, 74, 16); g.fill(); g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '700 23px Archivo'; g.fillText(T.ready, x + pw / 2, y + 476); }
+  else drawQR(g, x + pw / 2 - 70, y + 410, 140);
+  scrTex.needsUpdate = true;
+}
+
+// ---------------- camera path ----------------
+function track(keys, t) {
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) { const [t0, a] = keys[i - 1], [t1, b] = keys[i]; const x = ease((t - t0) / (t1 - t0)); return a.map((v, k) => lerp(v, b[k], x)); }
+  return keys[keys.length - 1][1];
+}
+// [time, [x, y, z, lookX, lookY, lookZ]]
+const CAM = [
+  [0, [5.9, 9.0, 18.0, -.1, .45, .3]], [3.2, [3.9, 7.9, 16.6, 0, .5, .3]],
+  [F1 + 1.1, [2.8, 4.0, 10.8, .95, 1.25, .2]], [F2 - .2, [2.5, 3.9, 10.4, .95, 1.25, .25]],
+  [F2 + 1.0, [2.2, 2.9, 8.6, .95, .95, 1.0]], [F3 - .2, [2.0, 2.8, 8.3, .95, .95, 1.05]],
+  [F3 + 1.0, [2.0, 2.8, 9.4, .95, .5, .6]], [F4 - .2, [1.8, 2.7, 9.1, .95, .5, .6]],
+  [F4 + 1.1, [1.2, 1.7, 5.9, .75, .88, .55]], [END - .1, [1.0, 1.65, 5.7, .75, .88, .55]],
+  [END + 1.6, [4.0, 8.4, 17.8, 0, .55, .3]], [DURATION, [5.2, 9.0, 18.8, 0, .55, .3]]
+];
+const appear = (t, a, b) => backOut((t - a) / .6) * (1 - ease((t - b) / .45));
+
+// grain, still (grain that moves every frame makes the video four times bigger)
+{ const c = K.canvas(256, 256, (g, w, h) => { const d = g.createImageData(w, h); for (let i = 0; i < d.data.length; i += 4) { const v = 128 + (hash(i * .13) - .5) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } g.putImageData(d, 0, 0); }); $('grain').style.backgroundImage = `url(${c.toDataURL()})`; }
+const SRC_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 19.5V5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2.5z"/><path d="M8 7h6"/></svg>';
+
+function renderAt(t) {
+  const c = track(CAM, t);
+  camera.position.set(c[0] + Math.sin(t * .37) * .06, c[1] + Math.sin(t * .29) * .04, c[2]); camera.lookAt(c[3], c[4], c[5]);
+  camera.updateMatrixWorld();
+  // captions: the latest one that has started; the chip and the source stay while they repeat
+  const ci = T.caps.findLastIndex(([s]) => t >= s), cap = T.caps[ci];
+  if (renderAt.ci !== ci) {
+    $('cap').innerHTML = cap ? cap[2] : '';
+    if (cap) { $('chipT').textContent = cap[1]; $('src').innerHTML = cap[3] ? SRC_ICON + cap[3] : ''; }
+    renderAt.ci = ci;
+  }
+  const st = cap ? cap[0] : 0, k = backOut((t - st) / .35);
+  $('cap').style.transform = `translateY(${(1 - k) * 14}px)`; $('cap').style.opacity = clamp01((t - st) / .18);
+  const chipStart = cap ? T.caps[T.caps.findIndex(c => c[1] === cap[1])][0] : 0;
+  $('chip').style.display = cap && cap[1] ? '' : 'none';
+  $('chip').style.transform = `scale(${.7 + .3 * backOut((t - chipStart) / .4)})`;
+  const srcStart = cap && cap[3] ? T.caps.find(c => c[3] === cap[3])[0] : 0;
+  $('src').style.display = cap && cap[3] ? '' : 'none'; $('src').style.opacity = clamp01((t - srcStart - .3) / .3);
+
+  // the café's life
+  barista.arms[0].rotation.x = -.9 + Math.sin(t * 3.1) * .25; barista.arms[1].rotation.x = -1.1 + Math.sin(t * 2.3 + 1) * .3;
+  barista.g.rotation.y = Math.sin(t * .7) * .35; barista.g.position.set(.5 + Math.sin(t * .45) * .25, 0, -2.55);
+  seated.forEach(([p, x, z], i) => { p.g.position.y = .07; p.head.rotation.y = Math.sin(t * .9 + i * 2) * .3; p.head.rotation.x = Math.sin(t * 1.3 + i) * .06; if (p.arms) p.arms[0].rotation.x = -.9 + Math.max(0, Math.sin(t * .8 + i * 3)) * -.5; });
+  K.drift(t);
+
+  // the regulars drop in, one after another; each gets a "+1" and hops; each sends two coins to the tower
+  const crowdOut = 1 - ease((t - F3 + .3) / .45);
+  crowd.forEach((p, i) => {
+    const s = backOut((t - F1 - .3 - i * .1) / .5) * crowdOut;
+    p.g.visible = s > .001; if (!p.g.visible) { PLUSES[i].style.opacity = 0; return; }
+    const hu = (t - plusAt(i)) / .38, hop = hu > 0 && hu < 1 ? Math.sin(Math.PI * hu) * .16 : 0;
+    p.g.position.set(p.x, hop + (1 - clamp01((t - F1 - .3 - i * .1) / .35)) * 1.2, p.z);
+    p.g.rotation.y = p.ry + Math.sin(t * .8 + i) * .08; p.g.scale.setScalar(1.15 * Math.max(.001, s));
+    p.head.rotation.y = Math.sin(t * 1.1 + i * 1.7) * .25;
+    if (!p.phone && hu > 0 && hu < 1.6) p.arms[1].rotation.set(0, 0, 2.6 - Math.abs(Math.sin(hu * 4)) * .3); else if (!p.phone) p.arms[1].rotation.set(0, 0, .12);
+    const pv = ease((t - plusAt(i)) / .25) * (1 - ease((t - F2 - .1) / .3));
+    pin(PLUSES[i], V(p.x, 1.55 + hop, p.z), pv);
+  });
+  pin(LAB.reg, V(1.05, 1.95, -.15), ease((t - F1 - 1.2) / .35) * (1 - ease((t - PLUS + .1) / .25)), '200');
+  pin(LAB.vis, V(1.05, 1.95, -.15), ease((t - PLUS - 1.4) / .35) * (1 - ease((t - F2 + .1) / .3)), '+200');
+
+  // the month: €40 coins fly from the regulars onto the tower
+  const ta = appear(t, F2 + .2, F3 - .1);
+  tower.visible = ta > .001;
+  let landed = 0;
+  if (tower.visible) {
+    tower.scale.setScalar(Math.max(.001, ta));
+    towerCoins.forEach((c, k) => {
+      const u = (t - flyAt(k)) / .55, from = crowd[k % 10];
+      c.visible = u > 0; if (!c.visible) return;
+      const top = V(0, .075 + k * TH, 0);
+      if (u >= 1) { landed++; c.position.copy(top); c.rotation.set(0, k * .7, 0); return; }
+      tower.updateMatrixWorld();
+      const a = tower.worldToLocal(V(from.x, 1.3, from.z)), e = ease(u);
+      c.position.set(lerp(a.x, top.x, e), lerp(a.y, top.y, e) + Math.sin(Math.PI * u) * .6, lerp(a.z, top.z, e)); c.rotation.set(u * 9, u * 5, 0);
+    });
+  }
+  const mv = ease((t - F2 - 1.2) / .35) * (1 - ease((t - F3 + .2) / .3));
+  pin(LAB.mon, V(.95, .2 + .075 + Math.max(1, landed) * TH + .12, 1.95), mv, T.eur(landed * 40));
+
+  // the year: twelve towers grow, one a month; the total climbs to €9,600
+  const ya = appear(t, F3 + .1, F4 - .1);
+  year.visible = ya > .001;
+  let full = 0;
+  if (year.visible) {
+    MONTHS.forEach((m, j) => {
+      const u = clamp01((t - m.t) / .45), n = Math.round(u * m.coins.length);
+      if (u >= 1) full++;
+      m.g.scale.setScalar(Math.max(.001, backOut((t - F3 - .1 - j * .04) / .5) * (1 - ease((t - F4 + .1) / .45))));
+      m.coins.forEach((c, k) => { c.visible = k < n; c.position.set(0, .055 + k * .03, 0); c.rotation.y = k * .9 + j; });
+      pin(MINIS[j], V(m.g.position.x, -.02, m.g.position.z + .2), ease((t - F3 - .5) / .4) * (1 - ease((t - F4 + .2) / .3)));
+    });
+  } else MINIS.forEach(e => { e.style.opacity = 0; });
+  const yv = ease((t - F3 - .8) / .35) * (1 - ease((t - F4 + .2) / .3));
+  const run = clamp01((t - F3 - .7) / (11 * .3 + .45));
+  pin(LAB.yr, V(.95, 1.0, .75), yv, T.eur(Math.round(run * 12 * 800 / 100) * 100));
+
+  // the balance: €800 of extra sales against €19 of Timbro
+  const ba = appear(t, F4 + .1, END - .1);
+  bal.visible = ba > .001;
+  if (bal.visible) {
+    bal.scale.setScalar(Math.max(.001, ba));
+    let n = 0, wob = 0;
+    pile.forEach(c => { const { x, y, z, t: ct } = c.userData, u = (t - ct) / .42; c.visible = u > 0; if (!c.visible) return; if (u >= 1) { n++; c.position.set(x, y, z); wob += Math.exp(-(t - ct - .42) * 6) * Math.sin((t - ct - .42) * 22) * .012; } else c.position.set(x, y + (1 - u * u) * 1.4, z); c.rotation.set(0, (1 - clamp01(u)) * 6 + x * 9, (1 - clamp01(u)) * 3); });
+    { const { y, t: ct } = one.userData, u = (t - ct) / .42; one.visible = u > 0; one.position.set(0, u >= 1 ? y : y + (1 - u * u) * 1.4, 0); }
+    const tilt = .32 * ease(n / pile.length) + wob;
+    beam.rotation.z = tilt;
+    pans.forEach(p => {
+      const end = V(p.sd * ARM * Math.cos(tilt), POLE + .1 + p.sd * ARM * Math.sin(tilt), 0);
+      p.g.position.set(end.x, end.y - HANG, end.z);
+      p.chains.forEach((c, k) => { const a = k / 3 * Math.PI * 2 + .5, rim = V(end.x + Math.cos(a) * .24, end.y - HANG + .075, Math.sin(a) * .24); between(c, end, rim); });
+    });
+    const lv = ease((t - F4 - 1.3) / .4) * (1 - ease((t - END + .3) / .3));
+    bal.updateMatrixWorld();
+    pin(LAB.sales, bal.localToWorld(pans[0].g.position.clone().add(V(0, .62, 0))), lv, T.eur(800));
+    pin(LAB.price, bal.localToWorld(pans[1].g.position.clone().add(V(0, .5, 0))), lv, T.eur(19));
+  } else { LAB.sales.style.opacity = LAB.price.style.opacity = 0; }
+
+  // the opening: the café builds itself, then its people drop in
+  K.dropIn(t, [barista, ...seated.map(x => x[0])]);
+  renderer.render(scene, camera);
+
+  // the end: the regular's card fills up in Wallet
+  const pE = ease((t - END) / .5);
+  const blur = pE * 7;
+  $('c').style.filter = blur > .05 ? `blur(${blur.toFixed(2)}px) saturate(${1 - pE * .2})` : 'none';
+  pr.clear();
+  if (pE > .001) {
+    const sts = [30.5, 30.8, 31.1, 31.35, 31.6, 31.82, 32.04], tenth = 32.3; let n = 3, pop = 1;
+    sts.forEach((s, i) => { if (t >= s) { n = i + 4; pop = (t - s) / .3; } });
+    if (t >= tenth) { n = 10; pop = (t - tenth) / .35; }
+    drawWallet(n, pop);
+    const u = t - END;
+    phone.position.set(0, -.25 - (1 - backOut(u / .7)) * 2.2 + Math.sin(u * 1.4) * .04, 0); phone.rotation.set(-.08 + Math.sin(u * .9) * .04, Math.sin(u * .7) * .2, 0); phone.scale.setScalar(.92);
+    const ct = t - tenth;
+    pconf.forEach((m, i) => { m.visible = ct > 0 && ct < 2.6; if (!m.visible) return; const a = hash(i) * Math.PI * 2, sp = 1.2 + hash(i + 50) * 1.4; m.position.set(Math.cos(a) * sp * ct * .8, .9 + Math.sin(a) * .3 + 2 * ct - 2.2 * ct * ct, .8 + Math.sin(a) * .4); m.rotation.set(ct * 8 + i, ct * 6 + i * 2, 0); });
+    pr.render(phoneScene, phoneCam);
+  }
+  $('end').style.opacity = ease((t - 34.6) / .4);
+  $('end').style.transform = `translateY(${(1 - backOut((t - 34.6) / .5)) * 20}px)`;
+}
+window.renderAt = renderAt;
+window.DURATION = DURATION;
+renderAt(0);
+window.READY = true;
+if (!q.has('capture')) {
+  const t0 = performance.now() - (+(q.get('t') || 0)) * 1000;
+  const loop = () => { renderAt(((performance.now() - t0) / 1000) % (DURATION + .5)); requestAnimationFrame(loop); };
+  loop();
+}
+</script>
+</body>
+</html>

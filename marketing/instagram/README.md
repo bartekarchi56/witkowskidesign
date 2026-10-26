@@ -500,9 +500,23 @@ Posting it for comments: post when the account's followers are most active; in t
 >
 > #coffee #cafe #coffeelover #loyaltycard #barista #coffeeshop #cafeowner #smallbusiness
 
+### reel-1-extra-coffee
+"How much is 1 extra coffee a month worth?": the math in the 3D café of tre-fatti, English (an Italian version renders from the same page with `it`), 38 s with music: `marketing/animation/timbro-quanto-vale-en.mp4`, made by `marketing/animation/quanto-vale.html` (`node marketing/animation/make.js quanto-vale en`). Cover: `marketing/animation/timbro-quanto-vale-en-cover.jpg`. 200 regulars come back once more a month, at €4 a visit: €800 more in sales a month, €9,600 a year, against €19 a month for Timbro. On screen the numbers are marked as an example.
+
+Voice (ElevenLabs, one take, only these lines, no times or headings): How much is one extra coffee a month worth to your café? Let's do the math. / Take a café with two hundred regulars. / If a loyalty card brings each of them back just once more a month… / …at four euros a visit, that's eight hundred euros more a month. / In a year: nine thousand six hundred euros. / And Timbro costs nineteen euros a month. / You don't need new customers. Just your regulars, once more a month. / Café owners: comment TIMBRO, and we'll send you the design of your card.
+
+**EN**
+> How much is 1 extra coffee a month worth to a café? ☕
+> The math, with example numbers: 200 regulars × 1 more visit a month × €4 = €800 more in sales a month. That's €9,600 a year, and Timbro costs €19 a month.
+> People come back more often as the free coffee gets closer (Kivetz, Urminsky & Zheng, 2006). A loyalty card on the phone that reminds them when they're one stamp away does exactly that.
+> How many regulars does your café have? 👇
+>
+> #cafeowner #coffeeshopowner #smallbusiness #loyaltyprogram #cafemarketing #coffeeshop #barista
+
 ## Keep it honest
 
 - The posts say "on the phone", not "in Apple Wallet": Wallet saving isn't switched on yet (`wallet/README.md`). Change the copy once it is.
 - `reel-results` shows example data, and says so on screen.
 - `tre-fatti`: fact 1 comes from a car wash's loyalty cards and the video says so; the two cards are generic, not coffee cards. The "×5–25" range is HBR's; the coins are a picture of it, not a measurement.
+- `quanto-vale` (reel-1-extra-coffee): the numbers are an example and the video says so. €800 is sales, not profit. "Once more a month" is an assumption, not a study's result: Kivetz et al. is cited only for "they come more often as the free coffee gets closer".
 - No real café's name or logo appears. When a café agrees, make a post about them with their own numbers, as an Instagram Collab post.
