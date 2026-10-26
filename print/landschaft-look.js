@@ -1,7 +1,6 @@
 // Landschaft (ul. Gimnazjalna 6, Bydgoszcz): quiet and Scandinavian like their café. At the top, their
-// name as it is on the sign over the door (thin, round, geometric letters in bronze; the first "l"
-// hooks left at the foot), redrawn as lines; the spindle-back chair from their Instagram picture is
-// the stamp. Used by print/example-cards.html.
+// name as it is on the sign over the door (thin, round, geometric letters in bronze), redrawn as
+// lines; the spindle-back chair from their Instagram picture is the stamp. Used by print/example-cards.html.
 //   LANDSCHAFT_LOOK.white, LANDSCHAFT_LOOK.dark: the two cards, for UI.renderPass
 (function () {
   const svgUrl = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
@@ -13,7 +12,7 @@
   const bowl = x => `M${x + 39} 60.5 A19.5 19.5 0 1 1 ${x} 60.5 A19.5 19.5 0 1 1 ${x + 39} 60.5`;
   const arch = x => `M${x} 57 A16 16 0 0 1 ${x + 32} 57 V80`;
   const GLYPHS = {
-    l: [16, x => `M${x + 14} 10 V72 Q${x + 14} 80 ${x + 6} 80 H${x}`],
+    l: [4, x => `M${x + 2} 10 V80`],
     a: [39, x => `${bowl(x)} M${x + 39} 41 V80`],
     n: [32, x => `M${x} 41 V80 ${arch(x)}`],
     d: [39, x => `${bowl(x)} M${x + 39} 10 V80`],
