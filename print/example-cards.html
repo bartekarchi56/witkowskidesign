@@ -38,6 +38,7 @@ h1{font-size:28px;margin:0 0 6px}
 <script src="theseed-look.js"></script>
 <script src="sarpi-look.js"></script>
 <script src="coffeedesk-look.js"></script>
+<script src="pomorska-look.js"></script>
 <script>
 (async () => {
   const svgUrl = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
@@ -69,6 +70,10 @@ h1{font-size:28px;margin:0 0 6px}
   const SOWA = { id: 'sowa', business: 'Cukiernia Sowa', title: 'Lodowy Fanklub', reward: '1 gałka lodów gratis', titleEn: 'Ice cream fan club', rewardEn: 'a free scoop', stampsNeeded: 10, lang: 'pl', tagline: '80 lat tradycji' };
   const ORSO = { id: 'orsonero', business: 'Orsonero Coffee', title: 'Carta Orsonero', reward: 'un caffè a scelta', titleEn: 'Orsonero card', rewardEn: 'any coffee, on us', stampsNeeded: 8, tagline: 'Specialty coffee' };
   const SETS = [
+    { id: 'pomorska', lang: 'pl', title: 'Pomorska 15, Bydgoszcz', note: 'Czarno-biała jak ich logo: kubek na wynos jako pieczątka.', cards: [
+      { name: 'pomorska-white', label: 'Biała: czarne pieczątki z kubkiem', stamps: 4, card: POMORSKA_LOOK.white },
+      { name: 'pomorska-black', label: 'Czarna: białe pieczątki z kubkiem', stamps: 4, card: POMORSKA_LOOK.black }
+    ] },
     { id: 'coffeedesk', lang: 'pl', title: 'Kawiarnia Coffeedesk, Warszawa (6 kawiarni)', note: 'Ich granat, róż i krem; ich znak (różowa filiżanka) jako pieczątka.', cards: [
       { name: 'coffeedesk-indigo', label: 'Granatowa: kłęby pary w tle, pieczątki z ich znakiem', stamps: 4, card: COFFEEDESK_LOOK.indigo },
       { name: 'coffeedesk-pink', label: 'Różowa: granatowe pieczątki z ich znakiem', stamps: 4, card: COFFEEDESK_LOOK.pink }
