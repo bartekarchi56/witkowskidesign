@@ -27,6 +27,7 @@ const FILES = [
   ['sales/sisu.html', 'kit-sisu/proposta-sisu.pdf'],
   ['sales/qr.html?card=sisu', 'kit-sisu/qr-sisu.pdf'],
   ['sales/parzymy.html', 'kit-parzymy/propozycja-parzymy.pdf'],
+  ['sales/coffeedesk.html', 'kit-coffeedesk/propozycja-coffeedesk.pdf'],
   ['sales/younique.html', 'kit-younique/proposta-younique.pdf'],
   ['sales/panfuwa.html', 'kit-panfuwa/proposta-panfuwa.pdf'],
   ['sales/matchamo.html', 'kit-matchamo/proposta-matchamo.pdf'],

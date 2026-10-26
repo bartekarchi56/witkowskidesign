@@ -37,6 +37,7 @@ h1{font-size:28px;margin:0 0 6px}
 <script src="luceferma-look.js"></script>
 <script src="theseed-look.js"></script>
 <script src="sarpi-look.js"></script>
+<script src="coffeedesk-look.js"></script>
 <script>
 (async () => {
   const svgUrl = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
@@ -68,6 +69,10 @@ h1{font-size:28px;margin:0 0 6px}
   const SOWA = { id: 'sowa', business: 'Cukiernia Sowa', title: 'Lodowy Fanklub', reward: '1 gałka lodów gratis', titleEn: 'Ice cream fan club', rewardEn: 'a free scoop', stampsNeeded: 10, lang: 'pl', tagline: '80 lat tradycji' };
   const ORSO = { id: 'orsonero', business: 'Orsonero Coffee', title: 'Carta Orsonero', reward: 'un caffè a scelta', titleEn: 'Orsonero card', rewardEn: 'any coffee, on us', stampsNeeded: 8, tagline: 'Specialty coffee' };
   const SETS = [
+    { id: 'coffeedesk', lang: 'pl', title: 'Kawiarnia Coffeedesk, Warszawa (6 kawiarni)', note: 'Ich granat, róż i krem; ich znak (różowa filiżanka) jako pieczątka.', cards: [
+      { name: 'coffeedesk-indigo', label: 'Granatowa: kłęby pary w tle, pieczątki z ich znakiem', stamps: 4, card: COFFEEDESK_LOOK.indigo },
+      { name: 'coffeedesk-pink', label: 'Różowa: granatowe pieczątki z ich znakiem', stamps: 4, card: COFFEEDESK_LOOK.pink }
+    ] },
     { id: 'qqtea', lang: 'it', title: 'QQTEA, Via Paolo Sarpi 47', note: 'Tè al latte e taro, un bicchiere di bubble tea con le perle come timbro.', cards: [
       { name: 'qqtea-latte', label: 'Tè al latte: perle sullo sfondo, bicchieri marroni', stamps: 4, card: SARPI_LOOK.qqtea.latte },
       { name: 'qqtea-taro', label: 'Taro: bicchieri viola chiaro', stamps: 4, card: SARPI_LOOK.qqtea.taro }
