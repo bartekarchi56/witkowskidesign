@@ -24,7 +24,7 @@ Attach: `prezentacja-sowa.pdf`, `card-sowa-simple-iphone.png`, `card-sowa-80-iph
 
 **Do:** bok@cukierniasowa.pl (customer service; it is the address in the Lodowy Fanklub rules). Not iod@, which is only for data protection.
 
-**Temat:** Lodowy Fanklub w telefonie: propozycja dla Cukierni Sowa
+**Temat:** Karta lojalnościowa Cukierni Sowa w telefonie: propozycja spotkania
 
 > Dzień dobry,
 >
