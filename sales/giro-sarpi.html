@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sarpi walk · five cafés</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* Bartek's plan for visiting five cafés on Via Paolo Sarpi, in English, two A4 pages.
+   print/make-pdfs.js saves print/giro-sarpi-en.pdf. The proposals are sales/sarpi.html?p=…,
+   the card pictures print/kit-<p>/card-*.png (node print/make-example-cards.js qqtea,slab,coracao,oops,otto). */
+@page{size:A4;margin:0}
+html,body{margin:0;background:#DCD6CC}
+body{font-family:var(--font);color:#222}
+.page{width:210mm;height:297mm;box-sizing:border-box;padding:14mm 15mm 12mm;background:#FBF8F3;margin:0 auto 20px;position:relative;overflow:hidden;page-break-after:always;break-after:page}
+@media print{html,body{background:none}.page{margin:0}}
+.kicker{font:500 8.5pt/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#8A3A33;margin:0 0 3mm}
+h1{font-family:"EB Garamond",Georgia,serif;font-weight:600;font-size:30pt;line-height:1.05;margin:0 0 3mm}
+h2{font-family:"EB Garamond",Georgia,serif;font-weight:600;font-size:17pt;margin:0 0 2mm}
+p{font-size:10pt;line-height:1.45;margin:0 0 2.5mm}
+.lede{font-size:11pt;opacity:.85;max-width:165mm}
+.stop{display:grid;grid-template-columns:28mm 1fr;gap:5mm;padding:3.5mm 0;border-top:1px solid #E4DCD0}
+.stop img{width:28mm;height:21mm;object-fit:cover;object-position:top;border-radius:2mm;display:block}
+.stop h2 b{display:inline-grid;place-items:center;width:7mm;height:7mm;border-radius:50%;background:#262422;color:#FBF8F3;font:600 10pt/1 var(--font);margin-right:2mm;vertical-align:3px}
+.stop h2 small{font:500 8pt/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.6;margin-left:2mm}
+.stop p{font-size:9.5pt;margin:0 0 1.2mm}
+.stop p em{font-style:normal;font-weight:600}
+.box{background:#F1ECE3;border-radius:4mm;padding:4mm 5mm;margin:0 0 4mm}
+.box p{font-size:9.5pt}
+.it{font-family:"EB Garamond",Georgia,serif;font-style:italic;font-size:12pt}
+ul{margin:0 0 3mm;padding-left:5mm}
+li{font-size:9.5pt;line-height:1.45;margin:0 0 1.2mm}
+.foot{position:absolute;left:15mm;right:15mm;bottom:7mm;display:flex;justify-content:space-between;font:500 7.5pt/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;opacity:.5}
+</style>
+</head>
+<body>
+
+<section class="page">
+  <p class="kicker">Via Paolo Sarpi · five cafés · one afternoon</p>
+  <h1>The Sarpi walk</h1>
+  <p class="lede">Five independent places where customers come back every week and live on their phones. Walk them in this order (house numbers go up), on a weekday between 15:00 and 17:00: not at lunch, not at the weekend. About 15 minutes of walking in all.</p>
+
+  <div class="stop"><img src="../print/kit-slab/card-slab-sesame-iphone.png" alt="">
+    <div><h2><b>1</b>S'Lab <small>Via Paolo Sarpi 1 · Plus €39</small></h2>
+      <p>Chinese bakery with French pastry and Japanese milk bread (azuki and black sesame buns, a rice-flour canelé). There's often a queue and a young crowd.</p>
+      <p><em>Why they'd say yes:</em> they don't need more people at rush hour; they want the regulars back on quiet afternoons. That's what the messages are for.</p>
+      <p><em>Ask:</em> The Infatuation says the owner also runs Parigi Dolci (Via Messina). If so, offer one card for both shops; Plus covers up to 3.</p></div></div>
+
+  <div class="stop"><img src="../print/kit-oops/card-oops-pink-iphone.png" alt="">
+    <div><h2><b>2</b>O:ops Cafè <small>Via Paolo Sarpi (listed at 1) · Plus €39</small></h2>
+      <p>Opened in 2023: brunch, coffee, bubble tea, dalgona. Young, Instagram crowd.</p>
+      <p><em>Why they'd say yes:</em> still building their regulars, and new places are the most open to new tools. Show them a reel and the launch post they would get.</p></div></div>
+
+  <div class="stop"><img src="../print/kit-coracao/card-coracao-green-iphone.png" alt="">
+    <div><h2><b>3</b>Coraçao do Brasil <small>Via Paolo Sarpi 6 · Start €19</small></h2>
+      <p>Coffee shop and roastery since the 1970s, espresso from about €1, beans to take home. Now run by Chinese owners. Open 7:00 to 19:30, closed Sunday.</p>
+      <p><em>Why they'd say yes:</em> daily espresso regulars fill a card fastest. Look for paper stamp cards at the till: "your paper card, on the phone" is the easiest pitch. A second card for bags of beans is an extra.</p></div></div>
+
+  <div class="stop"><img src="../print/kit-otto/card-otto-green-iphone.png" alt="">
+    <div><h2><b>4</b>oTTo <small>Via Paolo Sarpi 8 · Plus €39</small></h2>
+      <p>Bar, restaurant and coworking: big shared tables, a wall of plants, weekend brunch, aperitivo. Older listings say it opens at 10:00 and on Monday only in the evening: check first.</p>
+      <p><em>Why they'd say yes:</em> people work there all day. A coffee card with 8 stamps (oTTo, number 8) and maybe a second card for coworking days.</p></div></div>
+
+  <div class="stop"><img src="../print/kit-qqtea/card-qqtea-latte-iphone.png" alt="">
+    <div><h2><b>5</b>QQTEA <small>Via Paolo Sarpi 47 · Start €19</small></h2>
+      <p>Taiwanese bubble tea, many locals' favourite in Milan. Bubble tea people come back every week, and "10th drink free" is normal there.</p>
+      <p><em>Why they'd say yes:</em> CoCo, The Alley and Chabaidao on the same street are chains with their own apps. Timbro gives QQTEA the same thing for €19.</p></div></div>
+
+  <div class="foot"><span>Timbro · Witkowski Design</span><span>Sarpi walk · 1 / 2</span></div>
+</section>
+
+<section class="page">
+  <p class="kicker">At the counter</p>
+  <h2 style="font-size:22pt">What to say</h2>
+  <div class="box">
+    <p class="it">"Buongiorno! Abito qui in Sarpi. Ho creato Timbro, la carta fedeltà nel Wallet del telefono, senza app. Ho già preparato una proposta per voi: posso mostrarvela? Ci vuole un minuto."</p>
+    <p>(Good afternoon! I live here in Sarpi. I made Timbro, the loyalty card in the phone's Wallet, no app. I've already made a proposal for you: can I show you? It takes a minute.)</p>
+  </div>
+  <ul>
+    <li>If the person at the till isn't the owner: <span class="it">"Chi è il titolare? Quando lo trovo?"</span> (Who's the owner? When can I find them?) Leave the printed proposal and get a name and a WhatsApp number.</li>
+    <li>Show their card on your phone (the PNG in Photos), then the proposal. Let them tap through it.</li>
+    <li>Ask: <span class="it">"Usate già una carta fedeltà?"</span> (Do you already have a loyalty card?) A pile of paper cards at the till is the best sign.</li>
+    <li>The colours and stamps are my first guess from what they sell. Take a photo of their logo, menu and sign: I'll redo the card in their real colours for the second visit.</li>
+    <li>If they take Start, set the card up for them on the spot anyway: ten minutes, and it's live.</li>
+  </ul>
+
+  <h2 style="margin-top:6mm">Bring</h2>
+  <ul>
+    <li>The five proposals, printed (A4, 3 pages each) or as PDFs on your phone: <b>print/kit-&lt;name&gt;/proposta-&lt;name&gt;.pdf</b>.</li>
+    <li>The card pictures in your phone's Photos: <b>print/kit-&lt;name&gt;/card-*-iphone.png</b>.</li>
+    <li>A few printed brochures and business cards (print/stampa/).</li>
+  </ul>
+
+  <h2 style="margin-top:6mm">After</h2>
+  <ul>
+    <li>Same evening: a WhatsApp or Instagram message with their card picture: <span class="it">"Piacere di avervi conosciuto! Ecco la vostra carta."</span> (Nice to meet you! Here's your card.)</li>
+    <li>After 4 to 5 days with no answer: one more message with the notifications picture and the 30 free days.</li>
+  </ul>
+
+  <h2 style="margin-top:6mm">Also nearby</h2>
+  <ul>
+    <li><b>Orsonero</b> (already in your kit) reportedly opened a second café at Via Paolo Lomazzo 20, five minutes from Sarpi. Two places make your pitch stronger: check it.</li>
+    <li><b>Backups:</b> Mini Konbini (Sarpi 30, Japanese snacks and drinks) and Matchatelier (matcha dessert bar on Sarpi).</li>
+    <li><b>Chains plan:</b> Pasticceria Martesana (Sarpi 62) has several shops.</li>
+    <li><b>Skip:</b> the bubble tea chains (CoCo, The Alley, Chabaidao, Arteags) and Ravioleria Sarpi, whose queue is already long.</li>
+  </ul>
+  <p style="font-size:8.5pt;opacity:.65;margin-top:5mm">From web guides (Milano Segreta, The Infatuation, Scatti di Gusto, ZERO, Time Out, Mapstr, Corner, CiboToday). Hours, addresses and owners were not confirmed with the places: check before you go.</p>
+
+  <div class="foot"><span>Timbro · Witkowski Design</span><span>Sarpi walk · 2 / 2</span></div>
+</section>
+</body>
+</html>

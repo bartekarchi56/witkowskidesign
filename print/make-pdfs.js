@@ -1,5 +1,6 @@
 // Regenerates every PDF in print/ from the live pages, e.g. after changing
 // siteUrl or contact in assets/js/config.js:   node print/make-pdfs.js
+// Only the pages whose path contains a word:   node print/make-pdfs.js sarpi
 // Needs Playwright with Chromium (npm i -g playwright).
 const http = require('http'), fs = require('fs'), path = require('path');
 let chromium;
@@ -34,6 +35,12 @@ const FILES = [
   ['sales/labruma.html', 'kit-labruma/proposta-labruma.pdf'],
   ['sales/luceferma.html', 'kit-luceferma/proposta-luceferma.pdf'],
   ['sales/theseed.html', 'kit-theseed/proposta-theseed.pdf'],
+  ['sales/sarpi.html?p=qqtea', 'kit-qqtea/proposta-qqtea.pdf'],
+  ['sales/sarpi.html?p=slab', 'kit-slab/proposta-slab.pdf'],
+  ['sales/sarpi.html?p=coracao', 'kit-coracao/proposta-coracao.pdf'],
+  ['sales/sarpi.html?p=oops', 'kit-oops/proposta-oops.pdf'],
+  ['sales/sarpi.html?p=otto', 'kit-otto/proposta-otto.pdf'],
+  ['sales/giro-sarpi.html', 'giro-sarpi-en.pdf'],
   ['sales/flyer.html?lang=it', 'stampa/volantino-timbro-it-a5.pdf'],
   ['sales/flyer.html?lang=it&format=a4', 'stampa/volantino-timbro-it-a4-casa.pdf'],
   ['sales/flyer.html?lang=en', 'stampa/flyer-timbro-en-a5.pdf'],
@@ -63,7 +70,7 @@ server.listen(0, async () => {
   const base = `http://localhost:${server.address().port}/`;
   const browser = await chromium.launch();
   let failed = false;
-  for (const [page, name] of FILES) {
+  for (const [page, name] of FILES.filter(([page]) => !process.argv[2] || page.includes(process.argv[2]))) {
     const ctx = await browser.newContext({ locale: 'it-IT', viewport: { width: 1400, height: 1000 } });
     const p = await ctx.newPage();
     const errors = []; p.on('pageerror', e => errors.push(e.message));

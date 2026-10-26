@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timbro per Paolo Sarpi</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* Short proposals for five cafés on Via Paolo Sarpi (Chinatown, Milano), in Italian: three A4 pages
+   each, the same layout as sales/matchamo.html. sarpi.html?p=qqtea|slab|coracao|oops|otto;
+   print/make-pdfs.js saves print/kit-<p>/proposta-<p>.pdf. The cards come from print/sarpi-look.js;
+   the panel pictures in img/ are screenshots of the demo dashboard. */
+@page{size:A4;margin:0}
+html,body{margin:0;background:var(--bg)}
+body{font-family:var(--font);color:var(--text)}
+.page{width:210mm;height:297mm;box-sizing:border-box;padding:18mm 17mm 15mm;background:var(--cream);margin:0 auto 20px;position:relative;overflow:hidden;page-break-after:always;break-after:page;display:flex;flex-direction:column}
+.page.dark{background:var(--main);color:var(--cream)}
+@media print{html,body{background:none}.page{margin:0}}
+.kicker{font:500 9pt/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--main);margin:0 0 4mm}
+.dark .kicker{color:var(--accent)}
+h1,h2{font-family:"EB Garamond",Georgia,serif;font-weight:600;letter-spacing:-.01em;margin:0}
+h1{font-size:40pt;line-height:1.02;margin-bottom:5mm}
+h2{font-size:26pt;line-height:1.08;margin-bottom:4mm}
+h3{font-size:12pt;margin:0 0 1.5mm}
+p{font-size:11pt;line-height:1.5;margin:0 0 3mm}
+.lede{font-size:13pt;max-width:150mm;opacity:.9}
+.cards{display:flex;gap:9mm;justify-content:center;align-items:flex-start;margin:auto 0}
+.cards .pass{width:84mm;max-width:84mm}
+.cards .pass.apple{border-radius:12px;box-shadow:0 2px 4px rgba(0,0,0,.1),0 24px 40px -22px rgba(40,45,35,.6)}
+.cap{font:500 8pt/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;text-align:center;opacity:.65;margin-top:3mm}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm;margin:5mm 0 2mm}
+.step{background:var(--cream-2);border-radius:5mm;padding:5mm}
+.step b{display:inline-grid;place-items:center;width:8mm;height:8mm;border-radius:50%;background:var(--main);color:var(--cream);font-size:10.5pt;margin-bottom:3mm}
+.step p{font-size:10pt;margin:0;opacity:.85}
+.dark .step{color:var(--text)}
+img.shot{display:block;width:100%;border-radius:3mm;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:3mm;align-items:start}
+.note{font-size:8.5pt;opacity:.7;line-height:1.4}
+.plans{display:grid;gap:4mm;margin:4mm 0}
+.plan{display:grid;grid-template-columns:1fr auto;gap:1mm 6mm;align-items:center;background:var(--cream-2);border-radius:5mm;padding:5mm 6mm;color:var(--text)}
+.plan.hl{background:#fff;box-shadow:0 0 0 2px var(--accent)}
+.plan h3{font-size:15pt;display:flex;gap:3mm;align-items:center}
+.plan .tag{font:600 7.5pt/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;background:var(--main);color:var(--cream);padding:1.5mm 2.5mm;border-radius:99px}
+.plan p{grid-column:1;margin:0;font-size:10pt;opacity:.8}
+.plan .pr{grid-row:1/3;grid-column:2;text-align:right;font-family:"EB Garamond",Georgia,serif;font-size:26pt;font-weight:600;line-height:1}
+.plan .pr small{display:block;font:500 8pt/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase;opacity:.7}
+ul.ticks{list-style:none;padding:0;margin:3mm 0;display:grid;gap:2.5mm}
+ul.ticks li{font-size:11pt;line-height:1.4;padding-left:7mm;position:relative}
+ul.ticks li::before{content:"";position:absolute;left:0;top:1.6mm;width:3.2mm;height:3.2mm;border-radius:50%;background:currentColor;opacity:.75}
+.contact{margin-top:auto;display:flex;gap:7mm;align-items:center;background:var(--cream);color:var(--text);border-radius:5mm;padding:6mm}
+.contact .qr{width:30mm;height:30mm;flex:0 0 30mm;background:#fff;padding:2.5mm;border-radius:3mm;box-sizing:border-box}
+.contact .qr svg{width:100%;height:100%;display:block}
+.contact b{font-size:14pt;display:block;margin-bottom:1mm}
+.contact span{font:500 9.5pt/1.6 var(--mono);display:block}
+.foot{position:absolute;left:17mm;right:17mm;bottom:8mm;display:flex;justify-content:space-between;font:500 7.5pt/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;opacity:.55}
+
+/* PDF viewers (iPhone) draw soft shadows as grey boxes: none in print, a thin edge instead */
+@media print{*{box-shadow:none!important;filter:none!important;text-shadow:none!important}.pass{outline:1px solid rgba(0,0,0,.12);outline-offset:-1px}}
+</style>
+</head>
+<body>
+<div id="doc"></div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../print/sarpi-look.js"></script>
+<script>
+window.WAIT_READY = true;
+// Each café: its page colours, the two cards (A on iPhone, B on Android), the copy that is
+// theirs, and the plan to recommend.
+const SARPI = {
+  qqtea: { name: 'QQTEA', address: 'Via Paolo Sarpi 47', plan: 'start',
+    colors: { main: '#4A2E1F', accent: '#C08A5B', cream: '#F3EADB', cream2: '#FAF5EC', bg: '#E2D4BE', text: '#3A241A' },
+    a: ['latte', 'Tè al latte'], b: ['taro', 'Taro'],
+    lede: 'Ogni bubble tea un timbro, con un bicchiere con le perle come timbro. Al decimo, il prossimo lo offrite voi. Per chi passa da voi ogni settimana.',
+    ticks: ['Le grandi catene di bubble tea hanno la loro app. Con Timbro avete lo stesso, senza app da scaricare.'] },
+  slab: { name: "S'Lab", address: 'Via Paolo Sarpi 1', plan: 'plus',
+    colors: { main: '#262422', accent: '#B0645A', cream: '#F2ECE3', cream2: '#F9F6F0', bg: '#DCD3C7', text: '#262422' },
+    a: ['sesame', 'Sesamo nero'], b: ['azuki', 'Azuki'],
+    lede: 'Nei colori del sesamo nero e dell\'azuki, con un canelé come timbro. Per chi torna ogni settimana per i vostri dolci, anche nei pomeriggi più tranquilli.',
+    ticks: ['Più sedi, una sola carta: fino a 3 negozi con il piano Plus.'] },
+  coracao: { name: 'Coraçao do Brasil', address: 'Via Paolo Sarpi 6', plan: 'start',
+    colors: { main: '#17473A', accent: '#E0B12A', cream: '#F1EBDC', cream2: '#F8F4EA', bg: '#D8D3C2', text: '#1F2E28' },
+    a: ['green', 'Verde Brasile'], b: ['kraft', 'Kraft'],
+    lede: 'Per chi prende il caffè da voi ogni mattina. Come timbro, un cuore con un chicco di caffè: il coração del vostro nome. Al decimo caffè, il prossimo è offerto.',
+    ticks: ['Anche per il caffè in grani: una seconda carta, un timbro per ogni sacchetto.'] },
+  oops: { name: 'O:ops Cafè', address: 'Via Paolo Sarpi', plan: 'plus',
+    colors: { main: '#3B2626', accent: '#E2604A', cream: '#FBEDE8', cream2: '#FDF6F3', bg: '#EBD3CC', text: '#3B2626' },
+    a: ['pink', 'Rosa'], b: ['dalgona', 'Dalgona'],
+    lede: 'Colorata come il vostro locale, con una faccina stupita come timbro: O:ops! Per chi torna per il brunch, il bubble tea e il dalgona.',
+    ticks: ['Un post pronto per Instagram per lanciare la carta.'] },
+  otto: { name: 'oTTo', address: 'Via Paolo Sarpi 8', plan: 'plus',
+    colors: { main: '#2D4A3B', accent: '#8DB07A', cream: '#EEF0E6', cream2: '#F7F8F2', bg: '#D2D8C8', text: '#22302A' },
+    a: ['green', 'Verde'], b: ['cream', 'Crema'],
+    lede: 'Otto timbri, come il vostro nome e il vostro civico, con un 8 come timbro e le foglie della vostra parete verde. Per chi lavora da voi tutto il giorno e per chi torna per il brunch.',
+    ticks: ['Una seconda carta per chi lavora da voi: per esempio, 8 giornate e la nona è offerta.'] }
+};
+
+(async () => {
+  I18N.lang = 'it';
+  const id = new URLSearchParams(location.search).get('p') || 'qqtea';
+  const P = SARPI[id], L = SARPI_LOOK[id];
+  const A = L[P.a[0]], B = L[P.b[0]];
+  const k = P.colors;
+  document.documentElement.style.cssText = `--main:${k.main};--accent:${k.accent};--cream:${k.cream};--cream-2:${k.cream2};--bg:${k.bg};--text:${k.text}`;
+  document.title = 'Timbro per ' + P.name;
+  const esc = UI.esc, c = CONFIG.contact;
+  const plan = pid => CONFIG.plans.find(p => p.id === pid);
+  const other = P.plan === 'plus' ? 'start' : 'plus';
+  const site = CONFIG.siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const foot = n => `<div class="foot"><span>Timbro · Witkowski Design</span><span>${esc(P.name)} · ${n} / 3</span></div>`;
+  const pass = (card, platform, cap) => `<div>${UI.renderPass(card, { id: 'K7M2QX', name: 'Giulia R.', stamps: 4 }, { stamps: 4, platform, compact: true })}<p class="cap">${cap}</p></div>`;
+  const PLAN_TEXT = {
+    plus: 'Disegno io la vostra carta e vi spedisco il kit stampato: poster per la cassa, adesivo per la vetrina, cartoncini per i tavoli.',
+    start: 'Impostate voi logo, colori e timbro; poster e QR da stampare.'
+  };
+  const planBox = (pid, hl) => `<div class="plan${hl ? ' hl' : ''}"><h3>${esc(I18N.pick(plan(pid)).name)}${hl ? ' <span class="tag">Consigliato per voi</span>' : ''}</h3>
+        <p>${PLAN_TEXT[pid]}</p>
+        <div class="pr">${plan(pid).month} €<small>al mese</small></div></div>`;
+
+  document.getElementById('doc').innerHTML = `
+  <section class="page">
+    <p class="kicker">Proposta per ${esc(P.name)} · ${esc(P.address)}, Milano</p>
+    <h1>La carta fedeltà di ${esc(P.name)}, sul telefono.</h1>
+    <p class="lede">I vostri clienti raccolgono i timbri in Apple Wallet o Google Wallet. Niente app da scaricare, niente cartoncini da perdere. ${esc(P.lede)}</p>
+    <div class="cards">
+      ${pass(A, 'apple', P.a[1] + ' · iPhone')}
+      ${pass(B, 'google', P.b[1] + ' · Android')}
+    </div>
+    <p class="note" style="text-align:center">Due proposte da scegliere e rifinire insieme: il vostro logo, i vostri colori, il premio che preferite.</p>
+    ${foot(1)}
+  </section>
+
+  <section class="page">
+    <p class="kicker">Come funziona</p>
+    <h2>Tre passi. Dieci secondi alla cassa.</h2>
+    <div class="steps">
+      <div class="step"><b>1</b><h3>Il cliente inquadra il QR</h3><p>Dal poster alla cassa. La carta va nel Wallet del telefono, su iPhone e Android.</p></div>
+      <div class="step"><b>2</b><h3>Lo staff timbra</h3><p>Con il telefono che avete già: inquadra la carta e aggiunge il timbro con un tocco.</p></div>
+      <div class="step"><b>3</b><h3>Carta piena: ${esc(A.reward)}</h3><p>Il cliente riceve "Il tuo premio è pronto" e la carta riparte da capo.</p></div>
+    </div>
+    <h2 style="margin-top:7mm;font-size:21pt">Cosa vedete nel vostro pannello</h2>
+    <img class="shot" src="img/it-panel-kpi.png" alt="">
+    <div class="pair">
+      <img class="shot" src="img/it-panel-giorni.png" alt="">
+      <img class="shot" src="img/it-panel-quasi.png" alt="">
+    </div>
+    <ul class="ticks" style="margin-top:5mm">
+      <li>Quanti clienti tornano, in quali giorni e orari c'è più movimento.</li>
+      <li>Chi è a un timbro dal premio e chi non passa da 30 giorni.</li>
+      <li>Promemoria automatici sul telefono, con il nome di ${esc(P.name)} e il testo che scegliete voi.</li>
+      ${P.ticks.map(t => `<li>${esc(t)}</li>`).join('')}
+    </ul>
+    <p class="note">Nelle immagini, dati di esempio.</p>
+    ${foot(2)}
+  </section>
+
+  <section class="page dark">
+    <p class="kicker">Prezzi</p>
+    <h2>Un abbonamento, tutto incluso.</h2>
+    <div class="plans">
+      ${planBox(P.plan, true)}
+      ${planBox(other, false)}
+    </div>
+    <ul class="ticks">
+      <li>I primi ${CONFIG.trialDays} giorni sono gratuiti.</li>
+      <li>Disdite quando volete. Annuale: 2 mesi in regalo.</li>
+      <li>Prezzi IVA esclusa. Clienti e timbri illimitati.</li>
+    </ul>
+    <p class="kicker" style="margin-top:8mm">Come iniziamo</p>
+    <div class="steps" style="margin-top:0">
+      <div class="step"><b>1</b><h3>Scegliete il design</h3><p>${esc(P.a[1])} o ${esc(P.b[1].toLowerCase())}, con il vostro logo e il premio che volete.</p></div>
+      <div class="step"><b>2</b><h3>Preparo la carta</h3><p>Pronta in pochi giorni, con il poster per la cassa.</p></div>
+      <div class="step"><b>3</b><h3>Primo timbro</h3><p>Appendete il poster e i clienti iniziano a raccogliere.</p></div>
+    </div>
+    <div class="contact">
+      <div class="qr">${UI.qrSvg(CONFIG.siteUrl + '?lang=it')}</div>
+      <div><b>${esc(c.name)} · Witkowski Design</b><span>${esc(c.phone)} (anche WhatsApp)</span><span>${esc(CONFIG.legal.email)}</span><span>${esc(site)}</span></div>
+    </div>
+    ${foot(3)}
+  </section>`;
+  await Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(ok => { i.onload = i.onerror = ok; })));
+  await document.fonts.ready;
+  window.READY = true;
+})();
+</script>
+</body>
+</html>

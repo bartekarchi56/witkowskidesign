@@ -36,6 +36,7 @@ h1{font-size:28px;margin:0 0 6px}
 <script src="labruma-look.js"></script>
 <script src="luceferma-look.js"></script>
 <script src="theseed-look.js"></script>
+<script src="sarpi-look.js"></script>
 <script>
 (async () => {
   const svgUrl = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
@@ -67,6 +68,26 @@ h1{font-size:28px;margin:0 0 6px}
   const SOWA = { id: 'sowa', business: 'Cukiernia Sowa', title: 'Lodowy Fanklub', reward: '1 gałka lodów gratis', titleEn: 'Ice cream fan club', rewardEn: 'a free scoop', stampsNeeded: 10, lang: 'pl', tagline: '80 lat tradycji' };
   const ORSO = { id: 'orsonero', business: 'Orsonero Coffee', title: 'Carta Orsonero', reward: 'un caffè a scelta', titleEn: 'Orsonero card', rewardEn: 'any coffee, on us', stampsNeeded: 8, tagline: 'Specialty coffee' };
   const SETS = [
+    { id: 'qqtea', lang: 'it', title: 'QQTEA, Via Paolo Sarpi 47', note: 'Tè al latte e taro, un bicchiere di bubble tea con le perle come timbro.', cards: [
+      { name: 'qqtea-latte', label: 'Tè al latte: perle sullo sfondo, bicchieri marroni', stamps: 4, card: SARPI_LOOK.qqtea.latte },
+      { name: 'qqtea-taro', label: 'Taro: bicchieri viola chiaro', stamps: 4, card: SARPI_LOOK.qqtea.taro }
+    ] },
+    { id: 'slab', lang: 'it', title: "S'Lab, Via Paolo Sarpi 1", note: 'Sesamo nero e azuki, un canelé come timbro.', cards: [
+      { name: 'slab-sesame', label: 'Sesamo nero: semi sullo sfondo, canelé caramello', stamps: 4, card: SARPI_LOOK.slab.sesame },
+      { name: 'slab-azuki', label: 'Azuki: crema, canelé rosso azuki', stamps: 4, card: SARPI_LOOK.slab.azuki }
+    ] },
+    { id: 'coracao', lang: 'it', title: 'Coraçao do Brasil, Via Paolo Sarpi 6', note: 'Un cuore (coração) con un chicco di caffè come timbro.', cards: [
+      { name: 'coracao-green', label: 'Verde Brasile: chicchi su timbri gialli', stamps: 4, card: SARPI_LOOK.coracao.green },
+      { name: 'coracao-kraft', label: 'Kraft: come un sacchetto di caffè', stamps: 4, card: SARPI_LOOK.coracao.kraft }
+    ] },
+    { id: 'oops', lang: 'it', title: 'O:ops Cafè, Via Paolo Sarpi', note: 'Una faccina stupita come timbro: O:ops!', cards: [
+      { name: 'oops-pink', label: 'Rosa: faccine su timbri corallo', stamps: 3, card: SARPI_LOOK.oops.pink },
+      { name: 'oops-dalgona', label: 'Dalgona: caramello e crema', stamps: 3, card: SARPI_LOOK.oops.dalgona }
+    ] },
+    { id: 'otto', lang: 'it', title: 'oTTo, Via Paolo Sarpi 8', note: 'Otto timbri, un 8 come timbro, le foglie della loro parete verde.', cards: [
+      { name: 'otto-green', label: 'Verde: foglie sullo sfondo, 8 verde chiaro', stamps: 3, card: SARPI_LOOK.otto.green },
+      { name: 'otto-cream', label: 'Crema: 8 verde scuro', stamps: 3, card: SARPI_LOOK.otto.cream }
+    ] },
     { id: 'theseed', lang: 'it', title: 'The Seed, Viale Monte Nero 78', note: 'I loro colori, il germoglio del logo come timbro.', cards: [
       { name: 'theseed-cream', label: 'Crema con il loro logo', stamps: 4, card: SEED_LOOK.cream },
       { name: 'theseed-soil', label: 'Terra: timbri crema', stamps: 4, card: SEED_LOOK.soil }
@@ -124,7 +145,7 @@ h1{font-size:28px;margin:0 0 6px}
   const only = new URLSearchParams(location.search).get('set');
   let html = '';
   for (const set of SETS) {
-    if (only && only !== set.id) continue;
+    if (only && !only.split(',').includes(set.id)) continue;
     I18N.lang = set.lang;
     html += `<section class="set"><h1>${UI.esc(set.title)}</h1><p>${UI.esc(set.note)}</p>`;
     for (const c of set.cards) {
