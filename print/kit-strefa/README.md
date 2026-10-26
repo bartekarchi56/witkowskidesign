@@ -14,8 +14,10 @@ Rebuild: `node print/make-example-cards.js strefa`.
 
 ## Instagram DM (Polish): send the two iPhone pictures first, then the text
 
-> Cześć! Jestem Bartek z Osielska i robię Timbro: karty lojalnościowe w Apple Wallet i Google Wallet, bez aplikacji i bez papierowych kartoników. Zaprojektowałem kartę dla Strefy, w Waszych kolorach, z Waszą filiżanką jako pieczątką 👆
+> Cześć! Mam na imię Bartek i tworzę Timbro, czyli karty lojalnościowe w telefonie (Apple Wallet i Google Wallet). Klient nie musi instalować żadnej aplikacji ani nosić papierowych kartoników.
 >
-> Gość skanuje kod QR przy kasie, a obsługa przybija pieczątkę telefonem, który już macie. Nagrodą może być kawa, ale też np. lunch albo koktajl. W panelu widzicie, ilu gości wraca, w które dni i godziny jest największy ruch i komu brakuje jednej pieczątki do nagrody. Możecie też wysłać wszystkim powiadomienie, np. o nowym menu lunchowym albo o wolnych terminach na wigilie firmowe.
+> Przygotowałem przykładową kartę dla Strefy: w Waszych kolorach, a każda pieczątka to Wasza filiżanka z logo 👆
 >
-> Chętnie wpadnę i pokażę, jak to działa na żywo ☕
+> Działa to prosto: klient skanuje kod QR przy kasie, a pieczątkę dodajecie zwykłym telefonem. W nagrodę może dostać kawę, ale równie dobrze lunch czy koktajl. W panelu widać, ilu gości do Was wraca, kiedy jest największy ruch i komu brakuje już tylko jednej pieczątki. Możecie też wysłać wszystkim powiadomienie, na przykład o nowym menu lunchowym albo o wolnych terminach na wigilie firmowe.
+>
+> Jeśli chcecie, chętnie wpadnę i pokażę wszystko na miejscu ☕

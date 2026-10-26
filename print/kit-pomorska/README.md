@@ -13,8 +13,10 @@ Rebuild: `node print/make-example-cards.js pomorska`.
 
 ## Instagram DM (Polish): send the two iPhone pictures first, then the text
 
-> Cześć! Jestem Bartek z Osielska i robię Timbro: karty lojalnościowe w Apple Wallet i Google Wallet, bez aplikacji i bez papierowych kartoników. Zaprojektowałem kartę dla Pomorskiej 15, czarno-białą jak Wasze logo, z Waszym kubkiem jako pieczątką 👆
+> Cześć! Mam na imię Bartek i tworzę Timbro, czyli karty lojalnościowe w telefonie (Apple Wallet i Google Wallet). Klient nie musi instalować żadnej aplikacji ani nosić papierowych kartoników.
 >
-> Gość skanuje kod QR przy kasie, a barista przybija pieczątkę telefonem, który już macie. W panelu widzicie, ilu gości wraca, w które dni i godziny jest największy ruch i komu brakuje jednej pieczątki do nagrody. Możecie też wysłać wszystkim powiadomienie, np. o świeżych bajglach albo o kolejnym Bydgoskim dzierganiu.
+> Przygotowałem przykładową kartę dla Pomorskiej 15: czarno-białą jak Wasze logo, a każda pieczątka to Wasz kubek 👆
 >
-> Chętnie wpadnę i pokażę, jak to działa na żywo ☕
+> Działa to prosto: klient skanuje kod QR przy kasie, a pieczątkę dodajecie zwykłym telefonem. W panelu widać, ilu gości do Was wraca, kiedy jest największy ruch i komu brakuje już tylko jednej pieczątki. Możecie też wysłać wszystkim powiadomienie, na przykład o świeżych bajglach albo o kolejnym Bydgoskim dzierganiu.
+>
+> Jeśli chcecie, chętnie wpadnę i pokażę wszystko na miejscu ☕
