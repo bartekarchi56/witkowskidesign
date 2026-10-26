@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../assets/css/base.css">
 <style>
 /* Short proposals for five cafés on Via Paolo Sarpi (Chinatown, Milano), in Italian: three A4 pages
-   each, the same layout as sales/matchamo.html. sarpi.html?p=qqtea|slab|coracao|oops|otto;
+   each, the same layout as sales/matchamo.html. sarpi.html?p=qqtea|slab|coracao|oops|otto|matchatelier;
    print/make-pdfs.js saves print/kit-<p>/proposta-<p>.pdf. The cards come from print/sarpi-look.js;
    the panel pictures in img/ are screenshots of the demo dashboard. */
 @page{size:A4;margin:0}
@@ -91,6 +91,11 @@ const SARPI = {
     a: ['pink', 'Rosa'], b: ['dalgona', 'Dalgona'],
     lede: 'Colorata come il vostro locale, con una faccina stupita come timbro: O:ops! Per chi torna per il brunch, il bubble tea e il dalgona.',
     ticks: ['Un post pronto per Instagram per lanciare la carta.'] },
+  matchatelier: { name: 'Matchatelier', address: 'Via Paolo Sarpi 50', plan: 'plus',
+    colors: { main: '#2C4426', accent: '#A9C18F', cream: '#EEF2E6', cream2: '#F7F9F2', bg: '#D3DCC6', text: '#22301E' },
+    a: ['sage', 'Salvia'], b: ['matcha', 'Matcha'],
+    lede: 'Nel vostro verde salvia, con il vostro bicchiere di bubble tea come timbro, oppure un choux al matcha. Per chi torna per il matcha, il taro e la vostra pasticceria.',
+    ticks: ['Un messaggio a tutti i clienti quando esce un nuovo gusto o un nuovo choux.'] },
   otto: { name: 'oTTo', address: 'Via Paolo Sarpi 8', plan: 'plus',
     colors: { main: '#2D4A3B', accent: '#8DB07A', cream: '#EEF0E6', cream2: '#F7F8F2', bg: '#D2D8C8', text: '#22302A' },
     a: ['green', 'Verde'], b: ['cream', 'Crema'],

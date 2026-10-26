@@ -41,6 +41,7 @@ const FILES = [
   ['sales/sarpi.html?p=coracao', 'kit-coracao/proposta-coracao.pdf'],
   ['sales/sarpi.html?p=oops', 'kit-oops/proposta-oops.pdf'],
   ['sales/sarpi.html?p=otto', 'kit-otto/proposta-otto.pdf'],
+  ['sales/sarpi.html?p=matchatelier', 'kit-matchatelier/proposta-matchatelier.pdf'],
   ['sales/giro-sarpi.html', 'giro-sarpi-en.pdf'],
   ['sales/flyer.html?lang=it', 'stampa/volantino-timbro-it-a5.pdf'],
   ['sales/flyer.html?lang=it&format=a4', 'stampa/volantino-timbro-it-a4-casa.pdf'],

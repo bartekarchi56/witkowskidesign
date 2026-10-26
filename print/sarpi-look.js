@@ -5,6 +5,7 @@
 //   Coraçao do Brasil (n. 6): Brazil green and kraft, a heart (coração) with a coffee bean in it
 //   O:ops Cafè (n. 1): pink and dalgona, a surprised face
 //   oTTo (n. 8): plant green and cream, an 8 (otto), eight stamps
+//   Matchatelier (n. 50): their sage green and matcha green, the bubble tea cup and a matcha choux
 // Used by print/example-cards.html and sales/sarpi.html.
 //   SARPI_LOOK.<id>.<variant>: the cards, for UI.renderPass
 (function () {
@@ -18,6 +19,8 @@
     canele: (ink, bg) => `<path d="M31 85 C29 67 30 49 34 37 Q50 27 66 37 C70 49 71 67 69 85 Q50 89 31 85 Z" fill="${ink}"/><ellipse cx="50" cy="36" rx="9" ry="3.4" fill="${bg}" opacity=".45"/><g fill="none" stroke="${bg}" stroke-width="2.4" stroke-linecap="round" opacity=".8"><path d="M41 42 C39 56 39 70 40 83"/><path d="M50 42 V85"/><path d="M59 42 C61 56 61 70 60 83"/></g>`,
     bean: (ink, bg) => `<path d="M50 85 C21 66 14 46 23 33 C32 21 46 24 50 36 C54 24 68 21 77 33 C86 46 79 66 50 85 Z" fill="${ink}"/><g transform="rotate(-28 50 52)"><ellipse cx="50" cy="52" rx="10.5" ry="15" fill="${bg}"/><path d="M50 39 C45 47 55 57 50 65" fill="none" stroke="${ink}" stroke-width="3.2" stroke-linecap="round"/></g>`,
     face: (ink) => `<circle cx="38" cy="42" r="5.5" fill="${ink}"/><circle cx="62" cy="42" r="5.5" fill="${ink}"/><circle cx="50" cy="65" r="8.5" fill="none" stroke="${ink}" stroke-width="5.5"/>`,
+    // A choux with a cracked (craquelin) top and a line of cream at the bottom.
+    choux: (ink, bg) => `<path d="M17 70 C17 47 32 31 50 31 C68 31 83 47 83 70 Q50 79 17 70 Z" fill="${ink}"/><g fill="none" stroke="${bg}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity=".85"><path d="M29 51 L37 45 L45 49 L53 42 L61 48 L70 44"/><path d="M24 61 L32 56 L41 60 L50 54 L59 60 L68 55 L76 60"/><path d="M37 45 L41 60"/><path d="M53 42 L50 54"/><path d="M61 48 L68 55"/></g><path d="M22 70 Q50 63 78 70" fill="none" stroke="${bg}" stroke-width="3.4" stroke-linecap="round"/>`,
     eight: (ink) => `<g fill="none" stroke="${ink}" stroke-width="8"><circle cx="50" cy="34" r="12"/><circle cx="50" cy="64.5" r="15.5"/></g>`
   };
   // A stamp: the drawing on a round disc (for the face and the 8, the disc is the drawing's background).
@@ -52,6 +55,7 @@
   const SL = { id: 'slab', business: "S'Lab", tagline: 'Pasticceria · Paolo Sarpi', title: "Carta S'Lab", reward: 'un dolce a scelta', titleEn: "S'Lab card", rewardEn: 'any pastry, on us', stampsNeeded: 10, lang: 'it', font: 'serif' };
   const CB = { id: 'coracao', business: 'Coraçao do Brasil', tagline: 'Torrefazione · Paolo Sarpi 6', title: 'Carta caffè', reward: 'un caffè gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee', stampsNeeded: 10, lang: 'it', font: 'serif' };
   const OO = { id: 'oops', business: 'O:ops Cafè', tagline: 'Brunch · bubble tea', title: 'Carta O:ops', reward: 'un drink a scelta', titleEn: 'O:ops card', rewardEn: 'any drink, on us', stampsNeeded: 8, lang: 'it', font: 'sans' };
+  const MA = { id: 'matchatelier', business: 'MATCHATELIER', tagline: 'Pastry & Beverage', title: 'Carta Matchatelier', reward: 'un drink a scelta', titleEn: 'Matchatelier card', rewardEn: 'any drink, on us', stampsNeeded: 10, lang: 'it', font: 'sans' };
   const OT = { id: 'otto', business: 'oTTo', tagline: 'Bar · Paolo Sarpi 8', title: 'Carta oTTo', reward: 'un caffè gratis', titleEn: 'oTTo card', rewardEn: 'a free coffee', stampsNeeded: 8, lang: 'it', font: 'sans' };
 
   window.SARPI_LOOK = {
@@ -70,6 +74,10 @@
     oops: {
       pink: { ...OO, color: '#F7DCD6', ink: '#3B2626', strip: '#F2CEC6', iconLogo: mark('face', '#F7DCD6', '#3B2626'), stampImage: stamp('face', '#E2604A', '#FBEDE8', .8) },
       dalgona: { ...OO, color: '#B5763F', ink: '#FFF4E6', strip: '#AA6C38', iconLogo: mark('face', '#B5763F', '#FFF4E6'), stampImage: stamp('face', '#FFF1DD', '#8B5530', .8) }
+    },
+    matchatelier: {
+      sage: { ...MA, color: '#B3C89B', ink: '#1F2C1B', strip: '#A9BF90', iconLogo: mark('cup', '#B3C89B', '#24361F'), stampImage: stamp('cup', '#2C4426', '#B3C89B') },
+      matcha: { ...MA, color: '#34502D', ink: '#EEF3E4', strip: '#2E4828', iconLogo: mark('choux', '#34502D', '#C9DAB2'), stampImage: stamp('choux', '#C9DAB2', '#34502D', .74) }
     },
     otto: {
       green: { ...OT, color: '#2D4A3B', ink: '#F1EDE3', strip: '#284234', stripImage: leaves('#284234', '#30503F', 8), iconLogo: mark('eight', '#2D4A3B', '#F1EDE3'), stampImage: stamp('eight', '#CFE3B4', '#2D4A3B', .82) },
