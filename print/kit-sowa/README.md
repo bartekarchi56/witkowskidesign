@@ -16,3 +16,34 @@ so the simple example turns that card into a phone card; the 80th-anniversary on
 `art/` holds their logo (`sowa-80-logo.svg`, `sowa-owl-*.png`), used only for this proposal.
 Rebuild the images: `node print/make-example-cards.js` (designs in `print/example-cards.html`); the PDFs: `node print/make-pdfs.js`.
 The panel pictures in `sales/img/` are screenshots of the demo dashboard (`app/dashboard.html?demo&card=sowa&lang=pl`).
+
+## Email: first contact, asking for a meeting (Polish)
+
+Attach: `prezentacja-sowa.pdf`, `card-sowa-simple-iphone.png`, `card-sowa-80-iphone.png`,
+`../brochure-sowa-pl.pdf`, `../korzysci-dla-wlasciciela-pl.pdf`. Open the card link on your phone before sending.
+
+**Temat:** Lodowy Fanklub w telefonie: propozycja dla Cukierni Sowa
+
+> Dzień dobry,
+>
+> nazywam się Bartosz Witkowski i prowadzę Witkowski Design. Stworzyłem Timbro: karty lojalnościowe, które klienci trzymają w telefonie, w Apple Wallet lub Google Wallet, bez instalowania żadnej aplikacji.
+>
+> Przygotowałem propozycję specjalnie dla Cukierni Sowa. Lodowy Fanklub (10 naklejek, gałka lodów gratis) świetnie działa na papierze. W telefonie klient go nie zgubi, karta sama przypomni mu o Sowie, a Państwo zobaczą, kto wraca i do którego lokalu.
+>
+> W załącznikach przesyłam:
+> - prezentację dla Cukierni Sowa: obsługa przy kasie, powiadomienia, panel z wynikami każdego lokalu, koszty papierowej karty w 175 lokalach, RODO i pilotaż,
+> - dwa projekty karty: Lodowy Fanklub w telefonie oraz kartę kawową na 80-lecie (8 pieczątek, kawa gratis),
+> - broszurę Timbro i krótkie zestawienie korzyści dla właściciela lokalu.
+>
+> Kartę jubileuszową można zobaczyć na żywo i dodać do Apple Wallet: https://timbro.witkowskidesign.com/app/card.html?card=sowa
+>
+> Proponuję zacząć od pilotażu w 3 do 5 lokalach, żeby sprawdzić kartę w praktyce, zanim zdecydują Państwo o całej sieci.
+>
+> Bardzo chciałbym się spotkać i pokazać wszystko na żywo, razem z nabijaniem pieczątki telefonem przy kasie. Wystarczy około 30 minut. Chętnie przyjadę do Bydgoszczy, mogę też połączyć się online, w dogodnym dla Państwa terminie. Czy znajdzie się chwila w najbliższych tygodniach?
+>
+> Z poważaniem
+> Bartosz Witkowski
+> Witkowski Design
+> +48 530 340 988 (także WhatsApp)
+> bartek.archi56@gmail.com
+> timbro.witkowskidesign.com
