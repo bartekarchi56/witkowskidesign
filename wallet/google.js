@@ -28,7 +28,7 @@ function passParts({ card, customer, lang }, live) {
   const loyaltyClass = {
     id: classId,
     issuerName: card.business,
-    programName: title,
+    programName: card.hideFields ? card.business : title,   // hideFields: no card name on the front
     programLogo: img('/img/icon', look),
     hexBackgroundColor: bg,
     reviewStatus: 'UNDER_REVIEW',

@@ -50,6 +50,16 @@ assert.equal(pass.barcodes[0].message, 'K7M2QX');
 assert.equal(pass.logoText, 'The Coffee');
 console.log('apple ok:', list.join(', '));
 
+// hideFields: only the stamps on the front; the reward and the name on the back, the café's name as Google's program
+const bare = readPassRequest({ lang: 'en', card: { ...req.card, hideFields: true }, customer: { id: 'K7M2QX', name: 'Giulia', stamps: 3 } });
+const bareOut = path.join(dir, 'bare.pkpass');
+fs.writeFileSync(bareOut, await buildApplePass(bare));
+const barePass = JSON.parse(execSync(`unzip -p ${bareOut} pass.json`).toString());
+assert.deepEqual(barePass.storeCard.secondaryFields, []);
+assert.equal(barePass.storeCard.backFields[0].key, 'reward');
+assert.equal(jwt.decode(buildGoogleSaveUrl(bare, 'https://timbro.example').split('/').pop()).payload.loyaltyClasses[0].programName, 'The Coffee');
+console.log('hideFields ok: front without reward or name');
+
 // Google
 const url = buildGoogleSaveUrl(req, 'https://timbro.example');
 assert.ok(url.startsWith('https://pay.google.com/gp/v/save/'));

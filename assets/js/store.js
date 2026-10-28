@@ -128,7 +128,7 @@
   }
 
   // Everything about how a card looks (as opposed to its text and rules).
-  const DESIGN_KEYS = ['style', 'color', 'ink', 'stamp', 'shape', 'mark', 'markText', 'empty', 'font', 'strip', 'tagline', 'icon', 'logo', 'stampImage', 'stripImage'];
+  const DESIGN_KEYS = ['style', 'color', 'ink', 'stamp', 'shape', 'mark', 'markText', 'empty', 'font', 'strip', 'tagline', 'icon', 'logo', 'stampImage', 'stripImage', 'hideFields'];
 
   // Short, unambiguous codes staff can read out or type (no 0/O, 1/I).
   function code(len) {

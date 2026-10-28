@@ -190,7 +190,7 @@ language sql immutable
 as $$
   select coalesce(jsonb_object_agg(key, value), '{}'::jsonb)
   from jsonb_each(coalesce(d, '{}'::jsonb))
-  where key in ('style','color','ink','stamp','shape','mark','markText','empty','font','strip','tagline','icon','logo','stampImage','stripImage')
+  where key in ('style','color','ink','stamp','shape','mark','markText','empty','font','strip','tagline','icon','logo','stampImage','stripImage','hideFields')
     and octet_length(value::text) < 1200000
 $$;
 

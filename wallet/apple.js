@@ -29,11 +29,13 @@ export async function buildApplePass({ card, customer, lang, notice }) {
     labelColor: rgb(fg),
     storeCard: {
       headerFields: [{ key: 'stamps', label: L.stamps, value: `${customer.stamps}/${card.stampsNeeded}`, ...(news ? {} : { changeMessage: L.change }) }],
-      secondaryFields: [
+      // hideFields: only the stamps on the front; the reward and the name go on the back.
+      secondaryFields: card.hideFields ? [] : [
         { key: 'reward', label: L.reward, value: reward },
         { key: 'member', label: L.member, value: customer.name, textAlignment: 'PKTextAlignmentRight' }
       ],
       backFields: [
+        ...(card.hideFields ? [{ key: 'reward', label: L.reward, value: reward }, { key: 'member', label: L.member, value: customer.name }] : []),
         { key: 'news', label: L.news, value: news || L.quiet, changeMessage: '%@' },
         { key: 'how', label: L.how, value: L.howText(card.stampsNeeded) },
         { key: 'code', label: 'Code', value: customer.id },
