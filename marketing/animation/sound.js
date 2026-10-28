@@ -20,6 +20,9 @@
 //   quanto-vale:   the café dropping in, the ten regulars popping in, a rising blip for each "+1", a clink
 //                  for every coin that lands on the month's tower, the twelve months filling up, coins on
 //                  the balance, the Wallet card's last stamps and a chime (timed from quanto-vale.json)
+//   vicino:        the map's pin and the walker's steps, the circle's hum, the phone's buzz and the notice,
+//                  three strikes, the radar's sweep pings and the ring, the eye's slash, the card dropping
+//                  into Wallet, a notice each day, the stack of cafés, the Timbro mark (timed from vicino.json)
 //   bed:           the music alone, for any length: { duration, bpm, key } (key in semitones), used by
 //                  marketing/instagram/music.js for the reels that have no sound of their own
 //   require('./sound.js').write(file, name, opts)  → writes a 44.1 kHz stereo WAV
@@ -30,9 +33,10 @@ const RATE = 44100;
 const T0 = 2.0, DAY = 1.7, DAYS = 7, T_CMP = T0 + DAYS * DAY + .4, T_END = T_CMP + 2.6;
 const COUNT_A = [3, 3, 2, 2, 2, 1, 1], COUNT_B = [2, 3, 4, 5, 6, 7, 8];
 const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, S6 = 22.0, END = 26.4;
-const TC = require('./tre-clienti.json'), BA = require('./barista.json'), CQ = require('./cinque.json'), QV = require('./quanto-vale.json');
-const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration, barista: BA.duration, cinque: CQ.duration, 'quanto-vale': QV.duration };
+const TC = require('./tre-clienti.json'), BA = require('./barista.json'), CQ = require('./cinque.json'), QV = require('./quanto-vale.json'), VC = require('./vicino.json');
+const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration, barista: BA.duration, cinque: CQ.duration, 'quanto-vale': QV.duration, vicino: VC.duration };
 
+const T_CAPS = B => [.3, B.this, B.B + .2, B.C + .2, B.wake, B.D + .2, B.phone, B.E + .2, B.grid, B.cta];
 function render(name, opts = {}) {
   const DURATION = opts.duration || DURATIONS[name], KEY = opts.key || 0;
   const n = Math.ceil(DURATION * RATE), L = new Float32Array(n), R = new Float32Array(n);
@@ -163,6 +167,29 @@ function render(name, opts = {}) {
     thud(END + 2.3, .22); chime(END + 2.42, .12);
     for (let i = 0; i < 30; i++) blip(END + 2.35 + hash(i + 40) * 1.5, 96 + Math.floor(hash(i + 19) * 10), .02, hash(i + 13) - .5);
     blip(B.cta + .7, 84, .12, 0);
+  } else if (name === 'vicino') {
+    const B = VC.beats;
+    const pop = (t, f0, g, pan = 0) => add(t, .22, x => Math.exp(-x * 20) * Math.sin(2 * Math.PI * (f0 + 600 * x) * x), g, pan);
+    const ding = t => [88, 84, 91].forEach((m, i) => beep(t + i * .12, m, .1, .09));   // the notice
+    const buzz = (t, len = .35) => add(t, len, x => Math.sin(2 * Math.PI * 170 * x) * (Math.sin(2 * Math.PI * 28 * x) > 0 ? 1 : .2) * Math.min(1, (len - x) / .05), .12);
+    const ping = (t, g = .07) => add(t, 1.2, x => Math.exp(-x * 3.5) * Math.sin(2 * Math.PI * 1320 * x) * (1 + .3 * Math.sin(2 * Math.PI * 6 * x)), g);
+    for (const t of T_CAPS(B)) add(t, .1, x => Math.exp(-x * 40) * Math.sin(2 * Math.PI * 1100 * x), .07);
+    pop(.15, 420, .16);                                                              // the pin
+    for (let k = 0; k < 12; k++) add(.3 + k * .19, .05, x => rnd() * Math.exp(-x * 110), .045, -.2);   // steps
+    whoosh(2.3, .6, .25); buzz(2.9); ding(2.95);                                      // the phone, the notice
+    for (const b of [B.B, B.C, B.D, B.E, B.F]) whoosh(b - .2, .7, .3);
+    for (let i = 0; i < 3; i++) { const a = B.B + .3 + i * .55; pop(a, 520 + i * 80, .12); whoosh(a + .45, .25, .22); thud(a + .7, .1); }   // strikes
+    for (let k = 0; k * 2.62 < B.D - B.C; k++) ping(B.C + .1 + k * 2.62, .05);       // the sweep
+    add(B.C + .7, 1.4, x => Math.sin(2 * Math.PI * (220 + 180 * x) * x) * Math.sin(Math.PI * x / 1.4), .06);   // the ring grows
+    blip(B.C + 1.6, 86, .1, 0);                                                      // 100 m
+    ping(B.wake + .45, .1); ding(B.wake + .5);                                       // in the circle
+    pop(B.D + .5, 600, .12); whoosh(B.D + 1.2, .3, .25); thud(B.D + 1.45, .14);      // the eye, the slash
+    whoosh(B.phone, .5, .25); thud(B.phone + 1.0, .16); blip(B.phone + 1.35, 84, .1, 0); chime(B.phone + 1.4, .07);   // into Wallet
+    for (let i = 0; i < 3; i++) { const a = B.E + .3 + i * 1.05; whoosh(a, .4, .2); buzz(a + .45, .22); ding(a + .5); }
+    for (let i = 0; i < 5; i++) blip(B.grid + .5 + i * .28, 79 + i * 2, .09, (i - 2) * .2);
+    for (let i = 0; i < 14; i++) blip(B.F + hash(i) * 1.2, 90 + Math.floor(hash(i + 3) * 8), .025, hash(i + 7) - .5);   // particles
+    thud(B.F + 1.3, .2); chime(B.F + 1.4, .12);
+    blip(B.cta + .6, 84, .12, 0);
   } else if (name === 'tre-clienti') {
     const [B0, B1, B2, B3, B4, B5, B6, B7, B8] = TC.beats;
     const pop = (t, f0, g, pan = 0) => add(t, .22, x => Math.exp(-x * 20) * Math.sin(2 * Math.PI * (f0 + 600 * x) * x), g, pan);

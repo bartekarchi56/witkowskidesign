@@ -1,0 +1,7 @@
+{
+  "note": "Timeline of vicino.html (the card that wakes up near the café): beats are where the scenes and captions change; voice is where each sentence of the voice-over should start. Read by vicino.html, sound.js and voice.js. After recording, set these to the take.",
+  "beats": { "this": 2.6, "B": 5.2, "C": 9.4, "wake": 13.0, "D": 16.2, "phone": 19.4, "E": 23.0, "grid": 26.8, "F": 29.6, "cta": 31.2 },
+  "voice": [0.3, 2.6, 5.4, 9.6, 13.0, 16.4, 19.4, 23.2, 26.8, 31.2],
+  "tempo": 1,
+  "duration": 35.5
+}

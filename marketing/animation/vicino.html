@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La carta che si sveglia vicino al bar</title>
+<link rel="stylesheet" href="../../assets/css/base.css">
+<style>
+/* "Your phone knows when you walk past the café": a 35-second reel about the Wallet card's location
+   notice (dashboard → Notifications → "Near the café"; wallet/apple.js puts the café's place in the
+   pass with maxDistance 100). In the style of the tech explainers: a map with a glowing circle and a
+   lock-screen notice, "not a text, not an email, no app", a green radar with the 100 m ring, the twist
+   (the café doesn't watch you, the phone does the matching), Monday / Wednesday in the rain / Friday
+   night, a stack of cafés, the Timbro mark and "Comment TIMBRO". Drawn in 2D on one canvas.
+   Vertical 540 x 960 (1080 x 1920 at 2x). ?lang=it|en. make.js calls window.renderAt(t). */
+html,body{margin:0;background:#111}
+body{display:grid;place-items:center;min-height:100vh;font-family:var(--font)}
+.stage{width:540px;height:960px;position:relative;overflow:hidden;background:#f3e8d6}
+canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
+.ov{position:absolute;left:0;right:0;pointer-events:none}
+.top{top:74px;text-align:center;padding:0 26px}
+.chip{display:inline-flex;align-items:center;gap:9px;font:500 12.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:#fff;background:#16152b;padding:8px 13px 7px;border-radius:99px;margin-bottom:14px;box-shadow:0 6px 16px rgba(40,25,10,.18)}
+.chip i{width:9px;height:9px;border-radius:50%;background:#FF3B30;box-shadow:0 0 0 2px #fff}
+.cap{font-size:36px;line-height:1.12;font-weight:800;font-stretch:112%;letter-spacing:-.015em;color:#16152b;text-wrap:balance}
+.cap mark{background:var(--pop);color:#fff;padding:0 9px;border-radius:10px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.cap mark.y{background:#FFC24B;color:#16152b}
+.cap mark.g{background:#3BFF8A;color:#04170b}
+.dark .cap{color:#fff}
+.dark .chip{background:#3BFF8A;color:#04170b}
+.src{margin:14px auto 0;display:inline-flex;align-items:center;gap:8px;font:500 11px/1.35 var(--mono);color:#6d5c49;letter-spacing:.02em;background:rgba(255,255,255,.6);padding:6px 11px;border-radius:8px}
+.dark .src{color:#bfe9cf;background:rgba(0,0,0,.35)}
+.end{bottom:150px;text-align:center;opacity:0}
+.end span{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#16152b;font-size:20px;font-weight:700;padding:14px 20px;border-radius:16px;box-shadow:0 14px 30px rgba(0,0,0,.35)}
+.end span i{width:20px;height:20px;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 5px var(--pop),inset 0 0 0 7px #fff;flex:none}
+.grain{inset:0;opacity:.07;mix-blend-mode:multiply}
+.dark .grain{mix-blend-mode:screen;opacity:.05}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="c"></canvas>
+  <div class="ov top" id="top"><div class="chip" id="chip"><i></i><span id="chipT"></span></div><div class="cap" id="cap"></div><div><div class="src" id="src"></div></div></div>
+  <div class="ov end" id="end"><span><i></i><b id="endT"></b></span></div>
+  <div class="ov grain" id="grain"></div>
+</div>
+<script>
+(async () => {
+const q = new URLSearchParams(location.search);
+const lang = q.get('lang') === 'en' ? 'en' : 'it';
+document.documentElement.lang = lang;
+const VJ = await (await fetch('vicino.json')).json(), B = VJ.beats, DURATION = VJ.duration;
+const T = {
+  it: {
+    // [start, chip, caption, note]
+    caps: [
+      [0.3, '', 'Passi davanti a un bar…', ''],
+      [B.this, '', '…e il telefono <mark>fa questo.</mark>', ''],
+      [B.B + .2, '', 'Non è un SMS. Non è una mail. <mark>Nessuna app.</mark>', ''],
+      [B.C + .2, 'Rec', 'Intorno al bar c’è un <mark class="g">cerchio invisibile.</mark>', ''],
+      [B.wake, 'Rec', 'Ci entri e la carta <mark class="g">si sveglia.</mark>', 'Apple Wallet · iPhone'],
+      [B.D + .2, '', 'Ma il bar <mark>non ti sta guardando.</mark>', ''],
+      [B.phone, '', 'È la carta nel tuo Wallet, <mark>sul tuo telefono.</mark>', 'La posizione non lascia mai il telefono'],
+      [B.E + .2, '', 'Lunedì. Mercoledì sotto la pioggia. Venerdì sera.', ''],
+      [B.grid, '', 'Ogni passaggio è <mark class="y">un motivo per entrare.</mark>', ''],
+      [B.cta, '', 'Commenta <mark>TIMBRO</mark> 👇', '']
+    ],
+    end: 'e ti disegniamo la tua carta ☕',
+    bar: 'Bar Aurora', now: 'adesso', date: 'lunedì 28 ottobre',
+    near: 'Sei vicino a Bar Aurora: ancora 2 timbri per un caffè gratis.',
+    sms: 'SMS', mail: 'Email', app: 'App', radius: '100 m', scan: 'SCANSIONE', you: 'TU',
+    wallet: 'Wallet', added: 'Aggiunta al Wallet', stamps: 'TIMBRI', reward: 'un caffè gratis',
+    days: [['LUNEDÌ', '8:12'], ['MERCOLEDÌ', '13:40'], ['VENERDÌ', '21:05']],
+    dayText: ['Sei vicino a Bar Aurora: ancora 3 timbri per un caffè gratis.', 'Sei vicino a Bar Aurora: ancora 2 timbri per un caffè gratis.', 'Sei vicino a Bar Aurora: il tuo caffè gratis ti aspetta!'],
+    others: [['Forno Sarpi', 'Sei vicino: ancora 1 timbro per un cornetto gratis.', '#C9572B'], ['Matcha Lab', 'Il tuo matcha gratis è a 2 timbri.', '#5B7F3A'], ['Pasticceria Rosa', 'Passa a prendere il tuo premio!', '#D9668A'], ['Bar Aurora', 'Ancora 2 timbri per un caffè gratis.', '#2B32FF'], ['Bubble Tea 88', 'Sei vicino: ancora 3 timbri.', '#8A5CF6']]
+  },
+  en: {
+    caps: [
+      [0.3, '', 'You walk past a café…', ''],
+      [B.this, '', '…and your phone <mark>does this.</mark>', ''],
+      [B.B + .2, '', 'Not a text. Not an email. <mark>No app.</mark>', ''],
+      [B.C + .2, 'Rec', 'There’s an <mark class="g">invisible circle</mark> around the café.', ''],
+      [B.wake, 'Rec', 'Step inside it and the card <mark class="g">wakes up.</mark>', 'Apple Wallet · iPhone'],
+      [B.D + .2, '', 'But the café <mark>isn’t watching you.</mark>', ''],
+      [B.phone, '', 'It’s the card in your Wallet, <mark>on your phone.</mark>', 'Your location never leaves your phone'],
+      [B.E + .2, '', 'Monday. Wednesday in the rain. Friday night.', ''],
+      [B.grid, '', 'Every walk past is <mark class="y">a reason to come in.</mark>', ''],
+      [B.cta, '', 'Comment <mark>TIMBRO</mark> 👇', '']
+    ],
+    end: 'to get your own card designed ☕',
+    bar: 'Bar Aurora', now: 'now', date: 'Monday 28 October',
+    near: 'You are near Bar Aurora: 2 stamps to go for a free coffee.',
+    sms: 'Text', mail: 'Email', app: 'App', radius: '100 m', scan: 'SCANNING', you: 'YOU',
+    wallet: 'Wallet', added: 'Added to Wallet', stamps: 'STAMPS', reward: 'a free coffee',
+    days: [['MONDAY', '8:12'], ['WEDNESDAY', '13:40'], ['FRIDAY', '21:05']],
+    dayText: ['You are near Bar Aurora: 3 stamps to go for a free coffee.', 'You are near Bar Aurora: 2 stamps to go for a free coffee.', 'You are near Bar Aurora: your free coffee is waiting!'],
+    others: [['Forno Sarpi', 'You are near: 1 stamp to go for a free croissant.', '#C9572B'], ['Matcha Lab', 'Your free matcha is 2 stamps away.', '#5B7F3A'], ['Pasticceria Rosa', 'Come and pick up your reward!', '#D9668A'], ['Bar Aurora', '2 stamps to go for a free coffee.', '#2B32FF'], ['Bubble Tea 88', 'You are near: 3 stamps to go.', '#8A5CF6']]
+  }
+}[lang];
+const $ = id => document.getElementById(id);
+$('endT').textContent = T.end;
+await Promise.all(['800 40px Archivo', '700 40px Archivo', '600 40px Archivo', '500 40px Archivo', '500 20px "Spline Sans Mono"', '600 20px "Spline Sans Mono"'].map(f => document.fonts.load(f)));
+
+const W = 540, H = 960, DPR = +(q.get('dpr') || 2), BLUE = '#2B32FF', INK = '#16152b', GREEN = '#3BFF8A';
+const cv = $('c'); cv.width = W * DPR; cv.height = H * DPR;
+const g = cv.getContext('2d');
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const ease = x => { x = clamp01(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const easeOut = x => 1 - Math.pow(1 - clamp01(x), 3);
+const backOut = x => { x = clamp01(x); const c = 1.7; return Math.max(0, 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2)); };
+const hash = i => { const v = Math.sin(i * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
+const lerp = (a, b, x) => a + (b - a) * x;
+// on screen from a to b: pops in, fades out
+const win = (t, a, b, i = .45, o = .35) => clamp01((t - a) / i) * (1 - clamp01((t - b) / o));
+function rr(x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+function wrap(text, x, y, maxW, lh) { const words = text.split(' '); let line = ''; for (const w of words) { const tl = line ? line + ' ' + w : w; if (g.measureText(tl).width > maxW && line) { g.fillText(line, x, y); line = w; y += lh; } else line = tl; } g.fillText(line, x, y); return y; }
+
+// ---------------- the city map: blocks between streets, a park, the café on a corner ----------------
+const CAFE = { x: 270, y: 560 };
+const BLOCKS = [];
+{ const xs = [-60, 40, 150, 290, 400, 520, 640], ys = [180, 300, 420, 590, 720, 860, 1000, 1140];
+  for (let i = 0; i < xs.length - 1; i++) for (let j = 0; j < ys.length - 1; j++) BLOCKS.push([xs[i] + 13, ys[j] + 13, xs[i + 1] - xs[i] - 26, ys[j + 1] - ys[j] - 26, hash(i * 9 + j)]); }
+// the walker: up the street on the left of the café's block, then along its street
+const PATH = [[118, 1100], [118, 650], [118, 576], [230, 576]];
+function along(u) { const segs = []; let L = 0; for (let i = 1; i < PATH.length; i++) { const d = Math.hypot(PATH[i][0] - PATH[i - 1][0], PATH[i][1] - PATH[i - 1][1]); segs.push(d); L += d; } let s = clamp01(u) * L; for (let i = 0; i < segs.length; i++) { if (s <= segs[i]) { const k = s / segs[i]; return [lerp(PATH[i][0], PATH[i + 1][0], k), lerp(PATH[i][1], PATH[i + 1][1], k)]; } s -= segs[i]; } return PATH[PATH.length - 1]; }
+const RADIUS = 150;   // 100 m on this map
+
+function drawMap(t, dark) {
+  g.fillStyle = dark ? '#03100a' : '#efe3cf'; g.fillRect(-200, -200, W + 400, H + 400);
+  BLOCKS.forEach(([x, y, w, h, r]) => {
+    if (dark) { g.strokeStyle = 'rgba(59,255,138,.28)'; g.lineWidth = 1.2; rr(x, y, w, h, 6); g.stroke(); }
+    else { g.fillStyle = r > .82 ? '#cfe0b0' : '#e2d2b9'; rr(x, y, w, h, 8); g.fill(); if (r <= .82) { g.fillStyle = 'rgba(255,255,255,.35)'; for (let k = 0; k < 3; k++) { rr(x + 8 + k * (w - 16) / 3, y + 8, (w - 16) / 3 - 6, h * .3, 4); g.fill(); } } }
+  });
+  if (dark) {
+    g.strokeStyle = 'rgba(59,255,138,.08)'; g.lineWidth = 1;
+    for (let x = -200; x < W + 200; x += 30) { g.beginPath(); g.moveTo(x, -200); g.lineTo(x, H + 200); g.stroke(); }
+    for (let y = -200; y < H + 400; y += 30) { g.beginPath(); g.moveTo(-200, y); g.lineTo(W + 200, y); g.stroke(); }
+  } else {
+    // street names, small
+    g.fillStyle = 'rgba(110,90,60,.45)'; g.font = '600 9px "Spline Sans Mono"'; g.textAlign = 'center';
+    g.save(); g.translate(118, 820); g.rotate(-Math.PI / 2); g.fillText('VIA PAOLO SARPI', 0, 3); g.restore();
+    g.fillText('VIA CANONICA', 400, 579);
+  }
+}
+function pin(x, y, s, dark) {
+  g.save(); g.translate(x, y); g.scale(s, s);
+  g.fillStyle = 'rgba(0,0,0,.25)'; g.beginPath(); g.ellipse(0, 2, 12, 4, 0, 0, 7); g.fill();
+  g.fillStyle = dark ? GREEN : BLUE; g.beginPath(); g.moveTo(0, 0); g.bezierCurveTo(-6, -12, -22, -22, -22, -40); g.arc(0, -40, 22, Math.PI, 0); g.bezierCurveTo(22, -22, 6, -12, 0, 0); g.fill();
+  g.fillStyle = dark ? '#03100a' : '#fff'; g.beginPath(); g.arc(0, -40, 14, 0, 7); g.fill();
+  // a cup
+  g.fillStyle = dark ? GREEN : BLUE; rr(-7, -46, 12, 11, 3); g.fill(); g.strokeStyle = dark ? GREEN : BLUE; g.lineWidth = 2; g.beginPath(); g.arc(6, -41, 3, -1.4, 1.4); g.stroke(); g.fillRect(-9, -34, 16, 2);
+  g.restore();
+}
+function walker(x, y, dark, t) {
+  const r = 9 + Math.sin(t * 6) * .6;
+  g.fillStyle = dark ? 'rgba(59,255,138,.25)' : 'rgba(255,59,48,.22)'; g.beginPath(); g.arc(x, y, r + 8, 0, 7); g.fill();
+  g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y, r + 2.5, 0, 7); g.fill();
+  g.fillStyle = dark ? GREEN : '#FF3B30'; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
+}
+
+// ---------------- the phone and the iOS lock screen ----------------
+function phoneFrame(cx, cy, s, rot, drawScreen) {
+  const w = 280, h = 590;
+  g.save(); g.translate(cx, cy); g.rotate(rot); g.scale(s, s);
+  g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 40; g.shadowOffsetY = 18;
+  g.fillStyle = '#1b1b1e'; rr(-w / 2 - 9, -h / 2 - 9, w + 18, h + 18, 52); g.fill();
+  g.shadowColor = 'transparent';
+  g.save(); rr(-w / 2, -h / 2, w, h, 44); g.clip(); g.translate(-w / 2, -h / 2); drawScreen(w, h); g.restore();
+  g.fillStyle = '#000'; rr(-46, -h / 2 + 12, 92, 26, 13); g.fill();
+  g.restore();
+}
+function wallpaper(w, h, kind = 0) {
+  const gr = g.createLinearGradient(0, 0, w * .4, h);
+  const P = [['#7f86ff', '#2B32FF', '#120f4a'], ['#9fc3e8', '#5e86b3', '#2a3b57'], ['#4a5a6b', '#2f3b47', '#151b22'], ['#1b1846', '#0d0b29', '#04030f']][kind];
+  gr.addColorStop(0, P[0]); gr.addColorStop(.55, P[1]); gr.addColorStop(1, P[2]); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+}
+function lockClock(w, time, date) {
+  g.fillStyle = 'rgba(255,255,255,.9)'; g.textAlign = 'center';
+  g.font = '600 15px Archivo'; g.fillText(date, w / 2, 92);
+  g.font = '700 84px Archivo'; g.fillText(time, w / 2, 172);
+}
+// the notification: the card's icon, the café, "now", the text; k = 0..1 for the drop-in
+function notice(x, y, w, k, title, text, color, small) {
+  if (k <= 0) return;
+  const s = .8 + .2 * backOut(k);
+  g.save(); g.globalAlpha *= clamp01(k * 2.5); g.translate(x + w / 2, y); g.scale(s, s); g.translate(-w / 2, (1 - easeOut(k)) * -30);
+  g.font = (small ? '400 11.5px' : '400 13px') + ' Archivo';
+  const lines = []; { let line = ''; for (const wd of text.split(' ')) { const tl = line ? line + ' ' + wd : wd; if (g.measureText(tl).width > w - 70 && line) { lines.push(line); line = wd; } else line = tl; } lines.push(line); }
+  const lh = small ? 14 : 16, h = (small ? 36 : 42) + lines.length * lh;
+  g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 20; g.shadowOffsetY = 6;
+  g.fillStyle = 'rgba(245,245,250,.93)'; rr(0, 0, w, h, small ? 16 : 20); g.fill(); g.shadowColor = 'transparent';
+  // the card's icon: Wallet pass in the café's colour
+  g.fillStyle = color; rr(12, 12, small ? 30 : 34, small ? 30 : 34, 8); g.fill();
+  g.strokeStyle = 'rgba(255,255,255,.8)'; g.lineWidth = 2; g.beginPath(); g.arc(12 + (small ? 15 : 17), 12 + (small ? 15 : 17), small ? 7 : 8, 0, 7); g.stroke();
+  g.textAlign = 'left'; g.fillStyle = '#111'; g.font = (small ? '700 12.5px' : '700 14px') + ' Archivo'; g.fillText(title, small ? 52 : 56, small ? 26 : 28);
+  g.textAlign = 'right'; g.fillStyle = '#8a8a90'; g.font = '400 11px Archivo'; g.fillText(T.now, w - 14, small ? 26 : 28);
+  g.textAlign = 'left'; g.fillStyle = '#222'; g.font = (small ? '400 11.5px' : '400 13px') + ' Archivo';
+  lines.forEach((l, i) => g.fillText(l, small ? 52 : 56, (small ? 42 : 46) + i * lh));
+  g.restore();
+  return h;
+}
+
+// ---------------- the café front (the twist) ----------------
+function storefront(cx, cy, s) {
+  g.save(); g.translate(cx, cy); g.scale(s, s);
+  g.fillStyle = 'rgba(80,50,20,.18)'; g.beginPath(); g.ellipse(0, 170, 210, 16, 0, 0, 7); g.fill();
+  g.fillStyle = '#f7efe3'; rr(-190, -150, 380, 320, 10); g.fill();
+  g.fillStyle = '#e7d9c4'; g.fillRect(-190, 150, 380, 20);
+  // the sign
+  g.fillStyle = INK; rr(-150, -138, 300, 52, 10); g.fill();
+  g.fillStyle = '#fff'; g.font = '800 26px Archivo'; g.textAlign = 'center'; g.fillText(T.bar.toUpperCase(), 0, -102);
+  // the awning, scalloped, blue and white
+  for (let i = 0; i < 10; i++) { g.fillStyle = i % 2 ? '#fff' : BLUE; g.fillRect(-190 + i * 38, -78, 38, 46); g.beginPath(); g.arc(-171 + i * 38, -32, 19, 0, Math.PI); g.fill(); }
+  // the window and the door
+  g.fillStyle = '#bcd6e6'; rr(-165, -2, 210, 140, 6); g.fill(); g.fillStyle = 'rgba(255,255,255,.5)'; g.beginPath(); g.moveTo(-150, 130); g.lineTo(-90, 6); g.lineTo(-60, 6); g.lineTo(-120, 130); g.fill();
+  g.fillStyle = '#7a4b2a'; rr(-120, 92, 120, 10, 3); g.fill();
+  for (let i = 0; i < 3; i++) { g.fillStyle = '#fff'; rr(-112 + i * 38, 70, 22, 22, 4); g.fill(); }
+  g.fillStyle = INK; rr(70, -2, 95, 152, 6); g.fill(); g.fillStyle = '#bcd6e6'; rr(82, 10, 71, 80, 4); g.fill(); g.fillStyle = '#FFC24B'; g.beginPath(); g.arc(150, 100, 5, 0, 7); g.fill();
+  // a sticker on the door: the Timbro mark
+  g.fillStyle = BLUE; g.beginPath(); g.arc(117, 118, 13, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,255,255,.8)'; g.lineWidth = 2; g.beginPath(); g.arc(117, 118, 8, 0, 7); g.stroke();
+  g.restore();
+}
+function eye(cx, cy, s, cross) {
+  g.save(); g.translate(cx, cy); g.scale(s, s);
+  g.shadowColor = 'rgba(0,0,0,.2)'; g.shadowBlur = 20; g.shadowOffsetY = 8; g.fillStyle = '#fff'; g.beginPath(); g.arc(0, 0, 54, 0, 7); g.fill(); g.shadowColor = 'transparent';
+  g.fillStyle = INK; g.beginPath(); g.moveTo(-34, 0); g.quadraticCurveTo(0, -36, 34, 0); g.quadraticCurveTo(0, 36, -34, 0); g.fill();
+  g.fillStyle = '#fff'; g.beginPath(); g.arc(0, 0, 13, 0, 7); g.fill(); g.fillStyle = INK; g.beginPath(); g.arc(0, 0, 7, 0, 7); g.fill();
+  if (cross > 0) { g.strokeStyle = '#FF3B30'; g.lineWidth = 9; g.lineCap = 'round'; g.beginPath(); g.moveTo(-36, -36); g.lineTo(lerp(-36, 36, ease(cross)), lerp(-36, 36, ease(cross))); g.stroke(); }
+  g.restore();
+}
+// the Wallet pass in the phone
+function pass(x, y, w, n) {
+  g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 18; g.shadowOffsetY = 8;
+  g.fillStyle = BLUE; rr(x, y, w, 170, 14); g.fill(); g.shadowColor = 'transparent';
+  g.fillStyle = '#fff'; g.textAlign = 'left'; g.font = '700 14px Archivo'; g.fillText(T.bar.toUpperCase(), x + 16, y + 26);
+  g.textAlign = 'right'; g.font = '600 9px Archivo'; g.globalAlpha *= .8; g.fillText(T.stamps, x + w - 16, y + 20); g.globalAlpha /= .8; g.font = '700 15px Archivo'; g.fillText(`${n}/10`, x + w - 16, y + 37);
+  g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(x, y + 50, w, 76);
+  for (let i = 0; i < 10; i++) { const cx = x + w * (.14 + (i % 5) * .18), cy = y + 50 + (i < 5 ? 21 : 55); g.fillStyle = i < n ? '#fff' : 'rgba(255,255,255,.28)'; g.beginPath(); g.arc(cx, cy, 11, 0, 7); g.fill(); if (i < n) { g.strokeStyle = BLUE; g.lineWidth = 1.5; g.beginPath(); g.arc(cx, cy, 6.5, 0, 7); g.stroke(); } }
+  g.fillStyle = '#fff'; g.textAlign = 'left'; g.font = '500 12px Archivo'; g.fillText(T.reward, x + 16, y + 152);
+}
+
+// ---------------- the end: particles that make the Timbro mark ----------------
+const DOTS = [...Array(140)].map((_, i) => { const a = hash(i) * Math.PI * 2, r = 220 + hash(i + 7) * 260, ring = i % 3 === 0; const ta = (i / 140) * Math.PI * 2; return { sx: 270 + Math.cos(a) * r, sy: 470 + Math.sin(a) * r, tx: 270 + Math.cos(ta) * (ring ? 46 : hash(i + 3) * 70), ty: 470 + Math.sin(ta) * (ring ? 46 : hash(i + 3) * 70), d: hash(i + 11) * .5 }; });
+
+// grain, still
+{ const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'), d = x.createImageData(256, 256); for (let i = 0; i < d.data.length; i += 4) { const v = 128 + (hash(i * .13) - .5) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } x.putImageData(d, 0, 0); $('grain').style.backgroundImage = `url(${c.toDataURL()})`; }
+const SRC_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/></svg>';
+
+function renderAt(t) {
+  g.setTransform(DPR, 0, 0, DPR, 0, 0); g.clearRect(0, 0, W, H); g.globalAlpha = 1;
+  const dark = (t >= B.C && t < B.D) || t >= B.F;
+  $('stage').classList.toggle('dark', dark);
+
+  // --- A: the map, the walker, the circle, the phone with the notice ---
+  if (t < B.B + .3) {
+    const z = 1 + ease(t / 5) * .18, k = 1 - clamp01((t - B.B) / .3);
+    g.save(); g.globalAlpha = k; g.translate(270, 560); g.scale(z, z); g.translate(-CAFE.x, -CAFE.y + 40 * ease(t / 5));
+    drawMap(t, false);
+    const u = ease((t - .2) / 2.3), [wx, wy] = along(u), inside = Math.hypot(wx - CAFE.x, wy - CAFE.y) < RADIUS;
+    // the dome: soft blue glow, breathing; brighter once the walker is in
+    const pulse = .5 + .5 * Math.sin(t * 4), on = inside ? 1 : 0;
+    const rg = g.createRadialGradient(CAFE.x, CAFE.y, 10, CAFE.x, CAFE.y, RADIUS);
+    rg.addColorStop(0, `rgba(43,50,255,${.1 + on * .14})`); rg.addColorStop(.85, `rgba(43,50,255,${.16 + on * .14})`); rg.addColorStop(1, 'rgba(43,50,255,0)');
+    g.fillStyle = rg; g.beginPath(); g.arc(CAFE.x, CAFE.y, RADIUS * backOut((t - .1) / .7), 0, 7); g.fill();
+    g.strokeStyle = `rgba(43,50,255,${.5 + pulse * .3})`; g.lineWidth = 2.5; g.setLineDash([8, 7]); g.lineDashOffset = -t * 20; g.beginPath(); g.arc(CAFE.x, CAFE.y, RADIUS * backOut((t - .1) / .7), 0, 7); g.stroke(); g.setLineDash([]);
+    for (let r = 0; r < 2; r++) { const p = ((t * .7 + r * .5) % 1); g.strokeStyle = `rgba(43,50,255,${(1 - p) * .35})`; g.lineWidth = 2; g.beginPath(); g.arc(CAFE.x, CAFE.y, 20 + p * RADIUS, 0, 7); g.stroke(); }
+    // the trail and the walker
+    g.strokeStyle = 'rgba(255,59,48,.45)'; g.lineWidth = 3; g.setLineDash([2, 7]); g.lineCap = 'round'; g.beginPath(); for (let s = 0; s <= 40; s++) { const [x, y] = along(u * s / 40); s ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); g.setLineDash([]);
+    pin(CAFE.x, CAFE.y, backOut((t - .15) / .5), false);
+    if (t > .2) walker(wx, wy, false, t);
+    g.restore();
+    // the phone rises with the notice
+    const pu = (t - 2.35) / .6;
+    if (pu > 0) {
+      const py = lerp(1300, 700, backOut(pu)) - Math.sin(t * 1.3) * 4, buzz = t > 2.9 && t < 3.3 ? Math.sin(t * 90) * .02 : 0;
+      g.save(); g.globalAlpha = k;
+      phoneFrame(270, py, 1, -.05 + buzz + Math.sin(t * .9) * .015, (w, h) => { wallpaper(w, h, 0); lockClock(w, '9:41', T.date); notice(12, 210, w - 24, (t - 2.9) / .45, T.bar, T.near, BLUE); });
+      g.restore();
+    }
+  }
+
+  // --- B: not a text, not an email, no app ---
+  if (t >= B.B - .05 && t < B.C + .3) {
+    const k = clamp01((t - B.B + .05) / .25) * (1 - clamp01((t - B.C) / .3));
+    g.save(); g.globalAlpha = k;
+    g.fillStyle = '#f3e8d6'; g.fillRect(0, 0, W, H);
+    const items = [[T.sms, '#34C759', 'sms'], [T.mail, '#1E8BFF', 'mail'], [T.app, '#16152b', 'app']];
+    items.forEach(([label, col, kind], i) => {
+      const a = B.B + .3 + i * .55, s = backOut((t - a) / .45), cx = 270, cy = 380 + i * 175;
+      if (s <= 0) return;
+      g.save(); g.translate(cx + Math.sin(t * 2 + i) * 3, cy); g.scale(s, s); g.rotate((i - 1) * .04);
+      g.shadowColor = 'rgba(60,35,10,.22)'; g.shadowBlur = 24; g.shadowOffsetY = 10; g.fillStyle = '#fff'; rr(-170, -64, 340, 128, 28); g.fill(); g.shadowColor = 'transparent';
+      g.fillStyle = col; rr(-150, -44, 88, 88, 22); g.fill();
+      g.fillStyle = '#fff'; g.strokeStyle = '#fff'; g.lineWidth = 6; g.lineJoin = 'round';
+      if (kind === 'sms') { g.beginPath(); g.ellipse(-106, -4, 28, 22, 0, 0, 7); g.fill(); g.beginPath(); g.moveTo(-122, 10); g.lineTo(-132, 26); g.lineTo(-110, 16); g.fill(); }
+      if (kind === 'mail') { rr(-134, -22, 56, 42, 6); g.stroke(); g.beginPath(); g.moveTo(-132, -18); g.lineTo(-106, 4); g.lineTo(-80, -18); g.stroke(); }
+      if (kind === 'app') { for (let r = 0; r < 2; r++) for (let c = 0; c < 2; c++) { rr(-130 + c * 26, -24 + r * 26, 20, 20, 5); g.fill(); } }
+      g.fillStyle = INK; g.textAlign = 'left'; g.font = '800 40px Archivo'; g.fillText(label, -40, 14);
+      // the red line through it
+      const x = ease((t - a - .45) / .3);
+      if (x > 0) { g.strokeStyle = '#FF3B30'; g.lineWidth = 10; g.lineCap = 'round'; g.beginPath(); g.moveTo(-185, 8); g.lineTo(lerp(-185, 185, x), lerp(8, -14, x)); g.stroke(); }
+      g.restore();
+    });
+    g.restore();
+  }
+
+  // --- C: the radar ---
+  if (t >= B.C - .05 && t < B.D + .3) {
+    const k = clamp01((t - B.C + .05) / .25) * (1 - clamp01((t - B.D) / .3)), lt = t - B.C;
+    g.save(); g.globalAlpha = k;
+    const z = 1.25 - ease(lt / 2.2) * .25;
+    g.save(); g.translate(270, 600); g.scale(z, z); g.translate(-CAFE.x, -CAFE.y);
+    drawMap(t, true);
+    // the sweep
+    const ang = lt * 2.4;
+    g.save(); g.translate(CAFE.x, CAFE.y);
+    for (let i = 0; i < 24; i++) { g.fillStyle = `rgba(59,255,138,${.13 * (1 - i / 24)})`; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, 420, ang - (i + 1) * .035, ang - i * .035); g.fill(); }
+    g.strokeStyle = 'rgba(59,255,138,.8)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(ang) * 420, Math.sin(ang) * 420); g.stroke();
+    for (const r of [100, 200, 300, 400]) { g.strokeStyle = 'rgba(59,255,138,.15)'; g.lineWidth = 1; g.beginPath(); g.arc(0, 0, r, 0, 7); g.stroke(); }
+    g.restore();
+    // the ring grows out to 100 m
+    const grow = easeOut((lt - .7) / 1.4), R = RADIUS * grow;
+    if (grow > 0) {
+      g.fillStyle = 'rgba(59,255,138,.07)'; g.beginPath(); g.arc(CAFE.x, CAFE.y, R, 0, 7); g.fill();
+      g.strokeStyle = GREEN; g.lineWidth = 3; g.shadowColor = GREEN; g.shadowBlur = 16; g.beginPath(); g.arc(CAFE.x, CAFE.y, R, 0, 7); g.stroke(); g.shadowBlur = 0;
+      // the measure
+      const mx = CAFE.x + R * Math.cos(-.5), my = CAFE.y + R * Math.sin(-.5);
+      g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(CAFE.x, CAFE.y); g.lineTo(mx, my); g.stroke(); g.setLineDash([]);
+      const lv = ease((lt - 1.6) / .4);
+      if (lv > 0) { g.save(); g.globalAlpha *= lv; g.translate((CAFE.x + mx) / 2 + 8, (CAFE.y + my) / 2 - 18); g.scale(.8 + .2 * backOut(lv), .8 + .2 * backOut(lv)); g.fillStyle = GREEN; rr(-38, -16, 76, 32, 9); g.fill(); g.fillStyle = '#04170b'; g.font = '700 17px "Spline Sans Mono"'; g.textAlign = 'center'; g.fillText(T.radius, 0, 6); g.restore(); }
+    }
+    // a walker crosses into the ring: it flashes
+    const wu = ease((t - B.wake + .9) / 1.6), wx = lerp(-40, CAFE.x - 70, wu), wy = CAFE.y + 85;
+    const inside = Math.hypot(wx - CAFE.x, wy - CAFE.y) < RADIUS && grow > .98;
+    if (t > B.wake - .9) {
+      walker(wx, wy, true, t);
+      g.fillStyle = GREEN; g.font = '700 10px "Spline Sans Mono"'; g.textAlign = 'center'; g.fillText(T.you, wx, wy - 18);
+      if (inside) { const since = t - (inside && (renderAt.inC ??= t)); for (let r = 0; r < 3; r++) { const p = clamp01((since - r * .18) / .9); g.strokeStyle = `rgba(59,255,138,${(1 - p) * .9})`; g.lineWidth = 3; g.beginPath(); g.arc(CAFE.x, CAFE.y, RADIUS * (.95 + p * .35), 0, 7); g.stroke(); } }
+      else renderAt.inC = undefined;
+    }
+    pin(CAFE.x, CAFE.y, 1, true);
+    g.restore();
+    // HUD: REC, SCANNING, coordinates, corners
+    g.strokeStyle = 'rgba(59,255,138,.7)'; g.lineWidth = 2;
+    for (const [x, y, sx, sy] of [[22, 250, 1, 1], [518, 250, -1, 1], [22, 930, 1, -1], [518, 930, -1, -1]]) { g.beginPath(); g.moveTo(x, y + sy * 28); g.lineTo(x, y); g.lineTo(x + sx * 28, y); g.stroke(); }
+    g.font = '600 12px "Spline Sans Mono"'; g.textAlign = 'left'; g.fillStyle = GREEN;
+    g.fillText(`${T.scan}${'.'.repeat(1 + Math.floor(lt * 3) % 3)}`, 38, 912);
+    g.textAlign = 'right'; g.fillText(`45.4812°N  9.1781°E`, 502, 912);
+    if (Math.floor(lt * 2) % 2 === 0) { g.fillStyle = '#FF3B30'; g.beginPath(); g.arc(470, 272, 6, 0, 7); g.fill(); }
+    g.fillStyle = '#fff'; g.textAlign = 'right'; g.fillText('REC', 458, 277);
+    // scanlines
+    g.fillStyle = 'rgba(0,0,0,.18)'; for (let y = 0; y < H; y += 4) g.fillRect(0, y, W, 1);
+    g.restore();
+  }
+
+  // --- D: the café isn't watching you; the card in your Wallet is ---
+  if (t >= B.D - .05 && t < B.E + .3) {
+    const k = clamp01((t - B.D + .05) / .25) * (1 - clamp01((t - B.E) / .3)), lt = t - B.D;
+    g.save(); g.globalAlpha = k;
+    const bg = g.createRadialGradient(270, 560, 50, 270, 560, 600); bg.addColorStop(0, '#fbf4e8'); bg.addColorStop(1, '#e3cdb0'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    const away = ease((t - B.phone + .2) / .6);
+    storefront(270, lerp(600, 520, away), (.92 + .04 * backOut(lt / .6)) * (1 - away * .45));
+    const es = backOut((lt - .5) / .45) * (1 - away);
+    if (es > 0) eye(270, lerp(330, 300, away), es, clamp01((lt - 1.2) / .35));
+    // the phone: the Bar Aurora card drops into the Wallet, a pin turns green inside the phone
+    const pu = (t - B.phone) / .6;
+    if (pu > 0) {
+      phoneFrame(270, lerp(1250, 600, backOut(pu)) - Math.sin(t * 1.2) * 4, .98, Math.sin(t * .8) * .02, (w, h) => {
+        g.fillStyle = '#F2F2F7'; g.fillRect(0, 0, w, h);
+        g.fillStyle = '#111'; g.textAlign = 'left'; g.font = '800 30px Archivo'; g.fillText(T.wallet, 20, 98);
+        // two other passes behind
+        g.fillStyle = '#d6573a'; rr(14, 120, w - 28, 120, 14); g.fill(); g.fillStyle = '#3a3a3c'; rr(14, 152, w - 28, 120, 14); g.fill();
+        const drop = easeOut((t - B.phone - .45) / .55);
+        g.save(); g.globalAlpha *= clamp01(drop * 3); pass(14, lerp(-200, 186, drop), w - 28, 8); g.restore();
+        // the place, matched on the phone
+        const m = ease((t - B.phone - 1.3) / .4);
+        if (m > 0) {
+          g.save(); g.globalAlpha *= m; g.translate(w / 2, 440); g.scale(.85 + .15 * backOut(m), .85 + .15 * backOut(m));
+          g.fillStyle = '#fff'; rr(-120, -50, 240, 100, 18); g.fill();
+          g.fillStyle = BLUE; g.beginPath(); g.arc(-70, 0, 26, 0, 7); g.fill(); g.fillStyle = '#fff'; g.beginPath(); g.arc(-70, -4, 8, 0, 7); g.fill(); g.beginPath(); g.moveTo(-78, 0); g.lineTo(-70, 14); g.lineTo(-62, 0); g.fill();
+          g.fillStyle = '#111'; g.textAlign = 'left'; g.font = '700 14px Archivo'; g.fillText(T.bar, -34, -6); g.fillStyle = '#34C759'; g.font = '700 13px "Spline Sans Mono"'; g.fillText('✓ ≤ 100 m', -34, 16);
+          g.restore();
+        }
+        const ad = ease((t - B.phone + -.3 - .9) / .3) * (1 - ease((t - B.phone - 2.4) / .3));
+        if (ad > 0) { g.save(); g.globalAlpha *= ad; g.fillStyle = 'rgba(20,20,22,.88)'; rr(w / 2 - 90, 530, 180, 34, 17); g.fill(); g.fillStyle = '#fff'; g.font = '600 13px Archivo'; g.textAlign = 'center'; g.fillText('✓ ' + T.added, w / 2, 552); g.restore(); }
+      });
+    }
+    g.restore();
+  }
+
+  // --- E: Monday, Wednesday in the rain, Friday night; then the cafés stack up ---
+  if (t >= B.E - .05 && t < B.F + .3) {
+    const k = clamp01((t - B.E + .05) / .25) * (1 - clamp01((t - B.F) / .3)), lt = t - B.E;
+    g.save(); g.globalAlpha = k;
+    g.fillStyle = '#f3e8d6'; g.fillRect(0, 0, W, H);
+    const out = ease((t - B.grid + .1) / .45);
+    T.days.forEach(([day, time], i) => {
+      const a = B.E + .3 + i * 1.05, s = easeOut((t - a) / .5), y = 265 + i * 205;
+      if (s <= 0) return;
+      g.save(); g.globalAlpha *= s * (1 - out); g.translate((1 - s) * (i % 2 ? 300 : -300) - out * (i % 2 ? -200 : 200), 0);
+      g.save(); rr(26, y, 488, 190, 24); g.clip();
+      // sky and street
+      const sky = g.createLinearGradient(0, y, 0, y + 190);
+      if (i === 0) { sky.addColorStop(0, '#ffd89a'); sky.addColorStop(1, '#ffb27a'); } else if (i === 1) { sky.addColorStop(0, '#8aa0b4'); sky.addColorStop(1, '#5e7183'); } else { sky.addColorStop(0, '#1b1846'); sky.addColorStop(1, '#3a2a63'); }
+      g.fillStyle = sky; g.fillRect(26, y, 488, 190);
+      if (i === 0) { g.fillStyle = '#fff3c4'; g.beginPath(); g.arc(440, y + 50, 26, 0, 7); g.fill(); }
+      if (i === 2) { g.fillStyle = '#fff6d8'; g.beginPath(); g.arc(450, y + 44, 18, 0, 7); g.fill(); g.fillStyle = '#2a2356'; g.beginPath(); g.arc(458, y + 38, 16, 0, 7); g.fill(); for (let s2 = 0; s2 < 14; s2++) { g.fillStyle = `rgba(255,255,255,${.4 + .4 * Math.sin(t * 3 + s2)})`; g.fillRect(40 + hash(s2) * 460, y + 10 + hash(s2 + 5) * 80, 2, 2); } }
+      // houses
+      for (let hh = 0; hh < 6; hh++) { g.fillStyle = i === 2 ? '#14112f' : i === 1 ? '#475766' : '#e9a46b'; const hx = 26 + hh * 84, hy = y + 100 + hash(hh + i * 7) * 30; g.fillRect(hx, hy, 80, 190); if (i === 2) { g.fillStyle = '#ffd36b'; for (let wv = 0; wv < 3; wv++) if (hash(hh * 3 + wv) > .4) g.fillRect(hx + 12 + wv * 22, hy + 16, 10, 12); } }
+      if (i === 1) { g.strokeStyle = 'rgba(220,235,255,.55)'; g.lineWidth = 1.5; for (let r = 0; r < 60; r++) { const rx = 26 + hash(r) * 520, ry = y + ((hash(r + 9) * 190 + t * 420) % 210) - 10; g.beginPath(); g.moveTo(rx, ry); g.lineTo(rx - 5, ry + 14); g.stroke(); } }
+      g.restore();
+      // the day
+      g.fillStyle = i === 0 ? INK : '#fff'; g.textAlign = 'left'; g.font = '700 13px "Spline Sans Mono"'; g.fillText(`${day} · ${time}`, 46, y + 30);
+      notice(46, y + 60, 448, (t - a - .45) / .45, T.bar, T.dayText[i], BLUE, true);
+      g.restore();
+    });
+    // the stack: other cafés, on one lock screen
+    if (out > 0) {
+      phoneFrame(270, lerp(1250, 600, backOut((t - B.grid) / .6)), .98, 0, (w, h) => {
+        wallpaper(w, h, 3); lockClock(w, '18:30', T.date);
+        let y = 200;
+        T.others.forEach(([name, txt, col], i) => { const hh = notice(10, y, w - 20, (t - B.grid - .5 - i * .28) / .4, name, txt, col, true); y += (hh || 60) + 8; });
+      });
+    }
+    g.restore();
+  }
+
+  // --- F: the Timbro mark ---
+  if (t >= B.F - .05) {
+    const k = clamp01((t - B.F + .05) / .3), lt = t - B.F;
+    g.save(); g.globalAlpha = k;
+    const bg = g.createRadialGradient(270, 470, 20, 270, 470, 620); bg.addColorStop(0, '#1c1f6e'); bg.addColorStop(.5, '#0d0c2b'); bg.addColorStop(1, '#05050f'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    DOTS.forEach((d, i) => { const u = ease((lt - d.d) / 1.1); const x = lerp(d.sx, d.tx, u), y = lerp(d.sy, d.ty, u); g.fillStyle = i % 4 ? 'rgba(140,150,255,.9)' : '#fff'; g.globalAlpha = k * (1 - ease((lt - 1.5) / .4)) * clamp01(lt * 3); g.beginPath(); g.arc(x, y, 2.2, 0, 7); g.fill(); });
+    g.globalAlpha = k;
+    const m = backOut((lt - 1.3) / .6);
+    if (m > 0) {
+      const glow = .6 + .4 * Math.sin(lt * 2.5);
+      g.save(); g.translate(270, 470); g.scale(m, m);
+      g.shadowColor = '#6f76ff'; g.shadowBlur = 50 * glow; g.fillStyle = BLUE; g.beginPath(); g.arc(0, 0, 70, 0, 7); g.fill(); g.shadowBlur = 0;
+      g.strokeStyle = 'rgba(255,255,255,.85)'; g.lineWidth = 9; g.beginPath(); g.arc(0, 0, 44, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * ease((lt - 1.4) / .7)); g.stroke();
+      g.restore();
+      // ripples, like the circle round the café
+      for (let r = 0; r < 3; r++) { const p = ((lt - 1.6) * .5 + r / 3) % 1; if (lt > 1.6) { g.strokeStyle = `rgba(111,118,255,${(1 - p) * .4})`; g.lineWidth = 2; g.beginPath(); g.arc(270, 470, 80 + p * 200, 0, 7); g.stroke(); } }
+    }
+    const wv = ease((lt - 1.8) / .5);
+    if (wv > 0) { g.save(); g.globalAlpha = k * wv; g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '800 62px Archivo'; g.fillText('Timbro', 270, 618 + (1 - wv) * 16); g.font = '500 13px "Spline Sans Mono"'; g.fillStyle = 'rgba(255,255,255,.65)'; g.fillText('timbro.witkowskidesign.com', 270, 650 + (1 - wv) * 16); g.restore(); }
+    g.restore();
+  }
+
+  // captions: the latest one that has started
+  const ci = T.caps.findLastIndex(([s]) => t >= s), cap = T.caps[ci];
+  if (renderAt.ci !== ci) {
+    $('cap').innerHTML = cap ? cap[2] : '';
+    if (cap) { $('chipT').textContent = cap[1]; $('src').innerHTML = cap[3] ? SRC_ICON + cap[3] : ''; }
+    renderAt.ci = ci;
+  }
+  const st = cap ? cap[0] : 0, kk = backOut((t - st) / .35);
+  // the scene changes take the caption with them
+  const cut = [B.B, B.C, B.D, B.E, B.F].some(b => t > b - .3 && t < b && (!cap || cap[0] < b - .3)) ? 0 : 1;
+  $('cap').style.transform = `translateY(${(1 - kk) * 14}px) scale(${.96 + .04 * kk})`; $('cap').style.opacity = clamp01((t - st) / .18) * cut;
+  $('chip').style.display = cap && cap[1] ? '' : 'none';
+  $('src').style.display = cap && cap[3] ? '' : 'none'; $('src').style.opacity = clamp01((t - st - .3) / .3) * cut;
+  // the hook's caption sits low on the map, over the phone it moves up
+  $('top').style.top = (t < B.F ? 74 : 150) + 'px';
+  $('end').style.opacity = ease((t - B.cta - .6) / .4);
+  $('end').style.transform = `translateY(${(1 - backOut((t - B.cta - .6) / .5)) * 20}px)`;
+}
+window.renderAt = renderAt;
+window.DURATION = DURATION;
+renderAt(0);
+window.READY = true;
+if (!q.has('capture')) {
+  const t0 = performance.now() - (+(q.get('t') || 0)) * 1000;
+  const loop = () => { renderAt(((performance.now() - t0) / 1000) % (DURATION + .5)); requestAnimationFrame(loop); };
+  loop();
+}
+})();
+</script>
+</body>
+</html>

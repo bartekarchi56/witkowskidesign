@@ -513,10 +513,24 @@ Voice (ElevenLabs, one take, only these lines, no times or headings): How much i
 >
 > #cafeowner #coffeeshopowner #smallbusiness #loyaltyprogram #cafemarketing #coffeeshop #barista
 
+### reel-near-the-cafe
+"Your phone knows when you walk past the café": the Wallet card's location notice, as a tech explainer, English (Italian renders from the same page with `it`), 35 s, with music: `marketing/animation/timbro-vicino-en.mp4` and `-it.mp4`. Made by `marketing/animation/vicino.html` (`node marketing/animation/make.js vicino en`), beats in `vicino.json`. A map with the 100 m circle and the lock-screen notice, "not a text, not an email, no app", a green radar, the twist (the café doesn't watch you, the phone does the matching), Monday / Wednesday in the rain / Friday night, a stack of cafés, the Timbro mark and "Comment TIMBRO to get your own card designed". After recording the voice, set `beats` and `voice` in `vicino.json` to the take, render again, then `node marketing/animation/voice.js vicino en voice.mp3 1`.
+
+Voice (ElevenLabs, one take, only these lines, no times or headings): You walk past a café… / …and your phone does this. / It's not a text. Not an email. And you never downloaded an app. / There's an invisible circle around the café: a hundred metres all around. / Step inside it, and the loyalty card in your phone wakes up. / But here's the twist: the café isn't watching you. / Your phone does the matching. Your location never leaves it. / Monday morning. Wednesday in the rain. Friday night. / Every time you walk past, it's a reason to come in. / Café owners: comment TIMBRO, and we'll design your own card.
+
+**EN**
+> Ever walked past a café and your phone reminded you of your free coffee? 📍☕
+> That's a loyalty card in Apple Wallet. The café sets its address once, and when a customer walks within about 100 m, the card shows up on their lock screen: "2 stamps to go for a free coffee".
+> No app, no texts, no emails. And the café never sees where anyone is: the phone does the matching.
+> Comment TIMBRO and we'll design your café's card 👇
+>
+> #cafeowner #coffeeshopowner #smallbusiness #loyaltyprogram #cafemarketing #applewallet #coffeeshop
+
 ## Keep it honest
 
 - The posts say "on the phone", not "in Apple Wallet": Wallet saving isn't switched on yet (`wallet/README.md`). Change the copy once it is.
 - `reel-results` shows example data, and says so on screen.
 - `tre-fatti`: fact 1 comes from a car wash's loyalty cards and the video says so; the two cards are generic, not coffee cards. The "×5–25" range is HBR's; the coins are a picture of it, not a measurement.
 - `quanto-vale` (reel-1-extra-coffee): the numbers are an example and the video says so. €800 is sales, not profit. "Once more a month" is an assumption, not a study's result: Kivetz et al. is cited only for "they come more often as the free coffee gets closer".
+- `vicino` (reel-near-the-cafe): the location notice works on iPhone (Apple Wallet) only; Google Wallet has no location notices for loyalty cards. iOS decides when to show it (a lock-screen suggestion near the place, about 100 m: `maxDistance` in `wallet/apple.js`), so the video says "wakes up", not "pushes". The café must switch on "Near the café" in the dashboard and save its location there. The other cafés in the stack are made up.
 - No real café's name or logo appears. When a café agrees, make a post about them with their own numbers, as an Instagram Collab post.
