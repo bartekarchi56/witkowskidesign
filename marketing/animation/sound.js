@@ -23,6 +23,9 @@
 //   vicino:        the map's pin and the walker's steps, the circle's hum, the phone's buzz and the notice,
 //                  three strikes, the radar's sweep pings and the ring, the eye's slash, the card dropping
 //                  into Wallet, a notice each day, the stack of cafés, the Timbro mark (timed from vicino.json)
+//   catene:        eleven domes popping up, a riser into the total, sparks flying to the cafés, the tills'
+//                  pings, the columns rising, the best and the weakest, the phone, the tap, €8 and the row
+//                  of locations, the pilot, the Timbro mark (timed from catene.json)
 //   bed:           the music alone, for any length: { duration, bpm, key } (key in semitones), used by
 //                  marketing/instagram/music.js for the reels that have no sound of their own
 //   require('./sound.js').write(file, name, opts)  → writes a 44.1 kHz stereo WAV
@@ -33,8 +36,8 @@ const RATE = 44100;
 const T0 = 2.0, DAY = 1.7, DAYS = 7, T_CMP = T0 + DAYS * DAY + .4, T_END = T_CMP + 2.6;
 const COUNT_A = [3, 3, 2, 2, 2, 1, 1], COUNT_B = [2, 3, 4, 5, 6, 7, 8];
 const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, S6 = 22.0, END = 26.4;
-const TC = require('./tre-clienti.json'), BA = require('./barista.json'), CQ = require('./cinque.json'), QV = require('./quanto-vale.json'), VC = require('./vicino.json');
-const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration, barista: BA.duration, cinque: CQ.duration, 'quanto-vale': QV.duration, vicino: VC.duration };
+const TC = require('./tre-clienti.json'), BA = require('./barista.json'), CQ = require('./cinque.json'), QV = require('./quanto-vale.json'), VC = require('./vicino.json'), CT = require('./catene.json');
+const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration, barista: BA.duration, cinque: CQ.duration, 'quanto-vale': QV.duration, vicino: VC.duration, catene: CT.duration };
 
 const T_CAPS = B => [.3, B.this, B.B + .2, B.C + .2, B.wake, B.D + .2, B.phone, B.E + .2, B.grid, B.cta];
 function render(name, opts = {}) {
@@ -167,6 +170,25 @@ function render(name, opts = {}) {
     thud(END + 2.3, .22); chime(END + 2.42, .12);
     for (let i = 0; i < 30; i++) blip(END + 2.35 + hash(i + 40) * 1.5, 96 + Math.floor(hash(i + 19) * 10), .02, hash(i + 13) - .5);
     blip(B.cta + .7, 84, .12, 0);
+  } else if (name === 'catene') {
+    const B = CT.beats;
+    const pop = (t, f0, g, pan = 0) => add(t, .22, x => Math.exp(-x * 20) * Math.sin(2 * Math.PI * (f0 + 600 * x) * x), g, pan);
+    const ping = (t, g = .05, f = 1320, pan = 0) => add(t, 1.0, x => Math.exp(-x * 4) * Math.sin(2 * Math.PI * f * x), g, pan);
+    for (const [t] of [[.2], ...Object.values(B).map(v => [v])]) add(t, .1, x => Math.exp(-x * 40) * Math.sin(2 * Math.PI * 1100 * x), .06);
+    for (let n = 0; n < 11; n++) pop(.25 + n * .16, 300 + n * 40, .12, (n % 5) / 4 - .5);                       // the domes
+    for (const b of [B.which, B.one, B.split, B.till, B.bars, B.best, B.phone, B.price, B.F]) whoosh(b - .2, .7, .22);
+    add(B.one, 1.2, x => Math.sin(2 * Math.PI * (200 + 300 * x) * x) * Math.sin(Math.PI * x / 1.2), .06);     // the total counts up
+    thud(B.split + .05, .16); for (let n = 0; n < 11; n++) blip(B.split + .8 + n * .03, 79 + n, .05, (n % 5) / 4 - .5);   // it splits
+    for (let n = 0; n < 11; n++) ping(B.till + .2 + n * .1, .04, 1100 + n * 60, (n % 5) / 4 - .5);             // the tills
+    for (let n = 0; n < 11; n++) add(B.bars + .1 + n * .07, .9, x => Math.sin(2 * Math.PI * (180 + 260 * x + n * 12) * x) * Math.exp(-x * 2.5), .025, (n % 5) / 4 - .5);   // columns rise
+    chime(B.best + .3, .08); add(B.best + 1.6, .5, x => Math.sin(2 * Math.PI * (330 - 120 * x) * x) * Math.exp(-x * 4), .08);   // best, weakest
+    pop(B.phone + .3, 600, .1); for (let r = 0; r < 11; r++) blip(B.phone + .4 + r * .07, 76 + r, .04, .2);
+    click(B.tap + .25, .22); whoosh(B.tap + .55, .4, .2); for (let i = 0; i < 4; i++) blip(B.tap + .9 + i * .08, 84 + i * 2, .07, 0);
+    thud(B.price + .05, .2); blip(B.price + .2, 88, .1, 0);
+    for (let i = 0; i < 11; i++) pop(B.min + .1 + i * .05, 500 + i * 30, .07, (i % 6) / 5 - .5);
+    for (let i = 0; i < 3; i++) blip(B.pilot + .2 + i * .12, 86 + i * 3, .1, (i - 1) * .3);
+    for (let i = 0; i < 14; i++) blip(B.F + hash(i) * 1.1, 90 + Math.floor(hash(i + 3) * 8), .025, hash(i + 7) - .5);
+    thud(B.F + 1.1, .2); chime(B.F + 1.2, .12); blip(B.cta + .6, 84, .12, 0);
   } else if (name === 'vicino') {
     const B = VC.beats;
     const pop = (t, f0, g, pan = 0) => add(t, .22, x => Math.exp(-x * 20) * Math.sin(2 * Math.PI * (f0 + 600 * x) * x), g, pan);

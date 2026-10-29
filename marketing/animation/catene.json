@@ -1,0 +1,7 @@
+{
+  "note": "Timeline of catene.html (chains: every location's numbers): beats are where the scenes and captions change; voice is where each sentence of the voice-over should start. Read by catene.html, sound.js and voice.js. After recording, set these to the take.",
+  "beats": { "which": 2.6, "one": 5.0, "split": 7.6, "till": 10.4, "bars": 12.8, "best": 15.6, "phone": 18.6, "tap": 21.4, "price": 24.8, "min": 27.6, "pilot": 30.0, "F": 32.2, "cta": 33.6 },
+  "voice": [0.2, 2.6, 5.0, 7.6, 10.4, 12.8, 15.6, 18.6, 21.4, 24.8, 27.6, 30.0, 33.6],
+  "tempo": 1,
+  "duration": 37.5
+}

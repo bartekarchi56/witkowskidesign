@@ -526,6 +526,19 @@ Voice (ElevenLabs, one take, only these lines, no times or headings): You walk p
 >
 > #cafeowner #coffeeshopowner #smallbusiness #loyaltyprogram #cafemarketing #applewallet #coffeeshop
 
+### reel-chains
+"You run 11 cafés. Which one is really working?": the Chains plan and per-location numbers, a night map in 3D in the style of `vicino`, English (Italian from the same page with `it`), 37 s, with music: `marketing/animation/timbro-catene-en.mp4`. Made by `marketing/animation/catene.html` (`node marketing/animation/make.js catene en`), beats in `catene.json`. Eleven cafés under glowing domes, one total that splits into the eleven shops, a column of visits over each, the best and the weakest, the phone with "Locations compared" and one shop's own numbers, then from €8 per location a month, 11 locations or more, a pilot first, and "Comment TIMBRO". After recording the voice, set `beats` and `voice` in `catene.json` to the take, render again, then `node marketing/animation/voice.js catene en voice.mp3 1`.
+
+Voice (ElevenLabs, one take, only these lines, no times or headings): You run eleven cafés. / Which one is really working? / Most chains only see one number. / Timbro splits it, shop by shop. / Every till knows which café it's in. / So every visit lands in the right place. / Your best café. And the one that needs your help. / All on your phone, side by side. / Tap one, and see only its numbers: visits, customers, rewards. / From eight euros per location, a month. / For chains of eleven locations or more. / And we start with a pilot in a few of them. / Chain owners: comment TIMBRO, and we'll design your card.
+
+**EN**
+> You run 11 cafés. Which one is really working? 🏙️☕
+> With Timbro every till knows which shop it's in, so every stamp lands in the right place. You see all your locations side by side: visits, customers, rewards and new members, and tap one to see only its numbers.
+> Chains: from €8 per location a month, for 11 locations or more. We start with a pilot in a few of them, with setup, training and a kit for every location.
+> Comment TIMBRO and we'll design your card 👇
+>
+> #coffeechain #franchise #multiunit #cafeowner #loyaltyprogram #retailanalytics #cafemarketing
+
 ## Keep it honest
 
 - The posts say "on the phone", not "in Apple Wallet": Wallet saving isn't switched on yet (`wallet/README.md`). Change the copy once it is.
@@ -533,4 +546,5 @@ Voice (ElevenLabs, one take, only these lines, no times or headings): You walk p
 - `tre-fatti`: fact 1 comes from a car wash's loyalty cards and the video says so; the two cards are generic, not coffee cards. The "×5–25" range is HBR's; the coins are a picture of it, not a measurement.
 - `quanto-vale` (reel-1-extra-coffee): the numbers are an example and the video says so. €800 is sales, not profit. "Once more a month" is an assumption, not a study's result: Kivetz et al. is cited only for "they come more often as the free coffee gets closer".
 - `vicino` (reel-near-the-cafe): the location notice works on iPhone (Apple Wallet) only; Google Wallet has no location notices for loyalty cards. iOS decides when to show it (a lock-screen suggestion near the place, about 100 m: `maxDistance` in `wallet/apple.js`), so the video says "wakes up", not "pushes". The café must switch on "Near the café" in the dashboard and save its location there. The other cafés in the stack are made up.
+- `catene` (reel-chains): the eleven cafés and their numbers are made up (the neighbourhoods are Milan's). The price is "from €8" because Chains is quoted per chain with volume discounts.
 - No real café's name or logo appears. When a café agrees, make a post about them with their own numbers, as an Instagram Collab post.

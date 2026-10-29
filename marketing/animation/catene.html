@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ogni sede, i suoi numeri</title>
+<link rel="stylesheet" href="../../assets/css/base.css">
+<style>
+/* Chains: "You run 11 cafés. Which one is really working?" A 37-second reel in 3D (three.js) in the
+   style of the night-map explainers: a dark city seen from above, a glowing dome over each of eleven
+   cafés, one total that splits into the eleven shops (each till phone knows its shop: update 11), a
+   column of visits over each, the best and the weakest, the phone with "Locations compared" and one
+   shop's own numbers (app/dashboard.html, ANALYTICS.byLocation), then the Chains plan: from €8 per
+   location a month, 11 locations or more, a pilot first. Captions come in word by word.
+   Vertical 540 x 960 (1080 x 1920 at 2x). ?lang=it|en. make.js calls window.renderAt(t). */
+html,body{margin:0;background:#000}
+body{display:grid;place-items:center;min-height:100vh;font-family:var(--font)}
+.stage{width:540px;height:960px;position:relative;overflow:hidden;background:#06080d}
+canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
+.ov{position:absolute;left:0;right:0;pointer-events:none}
+.top{top:84px;text-align:center;padding:0 30px}
+.cap{font-size:37px;line-height:1.13;font-weight:800;font-stretch:112%;letter-spacing:-.015em;color:#fff;text-wrap:balance;text-shadow:0 4px 24px rgba(0,0,0,.6)}
+.cap span{display:inline-block;opacity:0;transform:translateY(12px);margin:0 .12em}
+.cap span.k{color:#fff;background:var(--pop);padding:0 8px;border-radius:9px;text-shadow:none}
+.cap span.y{color:#16152b;background:#FFC24B;padding:0 8px;border-radius:9px;text-shadow:none}
+.cap span.r{color:#fff;background:#FF4D5E;padding:0 8px;border-radius:9px;text-shadow:none}
+.lab{position:absolute;left:0;top:0;transform:translate(-50%,-100%);text-align:center;white-space:nowrap;opacity:0;will-change:transform}
+.lab .pill{display:inline-block;background:rgba(14,17,27,.82);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:5px 9px 6px;backdrop-filter:blur(4px)}
+.lab b{display:block;font-size:17px;line-height:1;font-weight:800;font-stretch:110%}
+.lab span{display:block;font:500 9px/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:3px}
+.lab.gold .pill{background:#FFC24B;color:#16152b;border-color:transparent}
+.lab.gold span{color:#5d4a1c}
+.lab.red .pill{background:#FF4D5E;border-color:transparent}
+.lab.red span{color:rgba(255,255,255,.85)}
+.lab.big .pill{padding:12px 20px 13px;border-radius:16px}
+.lab.big b{font-size:46px}
+.lab.big span{font-size:11px}
+.price{top:330px;text-align:center;color:#fff;opacity:0}
+.price .eur{font-size:150px;line-height:1;font-weight:800;font-stretch:115%;letter-spacing:-.04em;background:linear-gradient(180deg,#fff 30%,#9ea4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.price .per{font:600 15px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-top:6px}
+.price .from{font:600 15px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:#FFC24B;margin-bottom:8px}
+.end{bottom:150px;text-align:center;opacity:0}
+.end span{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#16152b;font-size:20px;font-weight:700;padding:14px 20px;border-radius:16px;box-shadow:0 14px 30px rgba(0,0,0,.45)}
+.end span i{width:20px;height:20px;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 5px var(--pop),inset 0 0 0 7px #fff;flex:none}
+.vig{inset:0;background:radial-gradient(120% 80% at 50% 50%,transparent 50%,rgba(0,0,0,.65) 100%)}
+.band{top:0;height:300px;background:linear-gradient(rgba(6,8,13,.9),rgba(6,8,13,0))}
+.grain{inset:0;opacity:.05;mix-blend-mode:screen}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="c"></canvas>
+  <div class="ov vig"></div>
+  <div class="ov band"></div>
+  <div id="labs"></div>
+  <canvas id="p"></canvas>
+  <canvas id="o"></canvas>
+  <div class="ov price" id="price"><div class="from" id="from"></div><div class="eur">€8</div><div class="per" id="per"></div></div>
+  <div class="ov top"><div class="cap" id="cap"></div></div>
+  <div class="ov end" id="end"><span><i></i><b id="endT"></b></span></div>
+  <div class="ov grain" id="grain"></div>
+</div>
+<script type="module">
+import * as THREE from '../../assets/vendor/three.module.min.js';
+const q = new URLSearchParams(location.search);
+const lang = q.get('lang') === 'en' ? 'en' : 'it';
+document.documentElement.lang = lang;
+const CJ = await (await fetch('catene.json')).json(), B = CJ.beats, DURATION = CJ.duration;
+// Captions: [start, text]; *word* is marked blue, _word_ gold, ~word~ red
+const T = {
+  it: {
+    caps: [[.2, 'Hai *11* bar.'], [B.which, 'Quale funziona *davvero?*'], [B.one, 'Di solito vedi *un numero solo.*'], [B.split, 'Timbro lo divide, *sede per sede.*'],
+      [B.till, 'Ogni cassa sa *in che bar è.*'], [B.bars, 'Ogni visita, *al posto giusto.*'], [B.best, 'Il bar _migliore._ E quello che ha ~bisogno~ di te.'],
+      [B.phone, 'Tutto sul telefono, *uno accanto all’altro.*'], [B.tap, 'Ne tocchi uno: *solo i suoi numeri.*'], [B.price, 'Da *8 €* a sede al mese.'],
+      [B.min, 'Per catene da *11 sedi* in su.'], [B.pilot, 'E si parte con un _pilota._'], [B.cta, 'Commenta *TIMBRO* 👇']],
+    end: 'e ti disegniamo la tua carta ☕', total: 'visite questo mese', visits: 'visite', best: 'la migliore', weak: 'da aiutare',
+    compared: 'Sedi a confronto', month: 'Ultimi 30 giorni', back: '‹ Tutte le sedi', st: [['Visite', 812], ['Clienti', 344], ['Premi', 61], ['Nuovi', 97]],
+    from: 'da', per: 'a sede · al mese', pilot: 'PILOTA', plus: '11+ sedi', eur: n => n.toLocaleString('it-IT')
+  },
+  en: {
+    caps: [[.2, 'You run *11* cafés.'], [B.which, 'Which one is *really working?*'], [B.one, 'Most chains see *one number.*'], [B.split, 'Timbro splits it, *shop by shop.*'],
+      [B.till, 'Every till knows *which café it’s in.*'], [B.bars, 'So every visit lands *in the right place.*'], [B.best, 'Your _best_ café. And the one that ~needs~ help.'],
+      [B.phone, 'All on your phone, *side by side.*'], [B.tap, 'Tap one: *only its numbers.*'], [B.price, 'From *€8* per location a month.'],
+      [B.min, 'For chains of *11 locations* or more.'], [B.pilot, 'And we start with a _pilot._'], [B.cta, 'Comment *TIMBRO* 👇']],
+    end: 'to get your own card designed ☕', total: 'visits this month', visits: 'visits', best: 'best', weak: 'needs help',
+    compared: 'Locations compared', month: 'Last 30 days', back: '‹ All locations', st: [['Visits', 812], ['Customers', 344], ['Rewards', 61], ['New', 97]],
+    from: 'from', per: 'per location · a month', pilot: 'PILOT', plus: '11+ locations', eur: n => n.toLocaleString('en-GB')
+  }
+}[lang];
+const $ = id => document.getElementById(id);
+$('endT').textContent = T.end; $('from').textContent = T.from; $('per').textContent = T.per;
+await Promise.all(['800 40px Archivo', '700 40px Archivo', '600 40px Archivo', '500 40px Archivo', '500 20px "Spline Sans Mono"', '600 20px "Spline Sans Mono"'].map(f => document.fonts.load(f)));
+
+const W = 540, H = 960, DPR = +(q.get('dpr') || 2), BLUE = '#2B32FF', GOLD = '#FFC24B', RED = '#FF4D5E';
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const ease = x => { x = clamp01(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const easeOut = x => 1 - Math.pow(1 - clamp01(x), 3);
+const backOut = x => { x = clamp01(x); const c = 1.7; return Math.max(0, 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2)); };
+const hash = i => { const v = Math.sin(i * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
+const lerp = (a, b, x) => a + (b - a) * x;
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+
+const renderer = new THREE.WebGLRenderer({ canvas: $('c'), antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(DPR); renderer.setSize(W, H, false); renderer.setClearColor('#06080d');
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping;
+const scene = new THREE.Scene(); scene.fog = new THREE.Fog('#06080d', 22, 48);
+scene.add(new THREE.HemisphereLight('#8ea0ff', '#0a0c12', .55));
+{ const d = new THREE.DirectionalLight('#c9d2ff', .9); d.position.set(-4, 10, 6); scene.add(d); }
+
+// ---------------- the city: dark blocks with faint edges ----------------
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: '#0a0d14', roughness: 1 })); ground.rotation.x = -Math.PI / 2; scene.add(ground);
+const BLK = new THREE.MeshStandardMaterial({ color: '#151b28', roughness: .9 }), EDGE = new THREE.LineBasicMaterial({ color: '#3a4766', transparent: true, opacity: .55 });
+const STEP = 1.25, NX = 9, NZ = 15;
+const blocks = [];
+for (let i = 0; i < NX; i++) for (let j = 0; j < NZ; j++) {
+  const x = (i - (NX - 1) / 2) * STEP, z = (j - (NZ - 1) / 2) * STEP, h = .08 + hash(i * 31 + j) * .45;
+  const sub = hash(i * 7 + j * 3) > .5 ? 2 : 1;
+  for (let s = 0; s < sub; s++) {
+    const w = sub === 2 ? .44 : .96, ox = sub === 2 ? (s ? .25 : -.25) : 0, hh = h * (s ? .7 : 1);
+    const g = new THREE.BoxGeometry(w, hh, .96), m = new THREE.Mesh(g, BLK); m.position.set(x + ox, hh / 2, z); scene.add(m);
+    const e = new THREE.LineSegments(new THREE.EdgesGeometry(g), EDGE); e.position.copy(m.position); scene.add(e);
+  }
+  blocks.push([x, z]);
+}
+// street lights: tiny warm dots along the streets
+{ const pts = []; for (let k = 0; k < 260; k++) { const alongX = hash(k) > .5, a = (Math.floor(hash(k + 1) * NX) - (NX - 2) / 2) * STEP, b = (hash(k + 2) - .5) * NZ * STEP; pts.push(alongX ? b * .6 : a - STEP / 2, .03, alongX ? a * 1.2 - STEP / 2 : b); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: '#ffcf7a', size: .05, transparent: true, opacity: .55 }))); }
+
+// ---------------- eleven cafés, each under a dome ----------------
+const NAMES = ['Navigli', 'Brera', 'Duomo', 'Isola', 'Sarpi', 'Porta Romana', 'Tortona', 'Centrale', 'NoLo', 'Città Studi', 'Lambrate'];
+const VISITS = [812, 640, 598, 214, 455, 503, 388, 571, 296, 347, 412];   // example numbers, Navigli best, Isola weakest
+const SPOTS = [[-3, -5], [2, -4], [0, -1], [-3, 1], [3, 0], [-1, 4], [2, 5], [-2, -2], [4, -6], [3, 3], [-4, 6]];
+const glowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); const r = g.createRadialGradient(64, 64, 0, 64, 64, 64); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.25, 'rgba(255,255,255,.45)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+const R_DOME = .85;
+function domeWire(color) {
+  const g = new THREE.Group(), mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: .75, blending: THREE.AdditiveBlending, depthWrite: false });
+  for (let k = 1; k <= 4; k++) { const a = k / 5 * Math.PI / 2, r = R_DOME * Math.cos(a), y = R_DOME * Math.sin(a); const pts = []; for (let s = 0; s <= 48; s++) pts.push(V(Math.cos(s / 48 * Math.PI * 2) * r, y, Math.sin(s / 48 * Math.PI * 2) * r)); g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat)); }
+  { const pts = []; for (let s = 0; s <= 64; s++) pts.push(V(Math.cos(s / 64 * Math.PI * 2) * R_DOME, .01, Math.sin(s / 64 * Math.PI * 2) * R_DOME)); g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat)); }
+  for (let m = 0; m < 8; m++) { const pts = []; for (let s = 0; s <= 16; s++) { const a = s / 16 * Math.PI / 2; pts.push(V(Math.cos(m / 8 * Math.PI * 2) * R_DOME * Math.cos(a), R_DOME * Math.sin(a), Math.sin(m / 8 * Math.PI * 2) * R_DOME * Math.cos(a))); } g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat)); }
+  return { g, mat };
+}
+const shops = SPOTS.map(([i, j], n) => {
+  const x = i * STEP, z = j * STEP, root = new THREE.Group(); root.position.set(x, 0, z); scene.add(root);
+  // the café: a low box, a warm window, a striped awning
+  const body = new THREE.Mesh(new THREE.BoxGeometry(.5, .32, .38), new THREE.MeshStandardMaterial({ color: '#2a2230', roughness: .8 })); body.position.y = .16; root.add(body);
+  const win = new THREE.Mesh(new THREE.PlaneGeometry(.38, .14), new THREE.MeshBasicMaterial({ color: '#ffb35c' })); win.position.set(0, .14, .191); root.add(win);
+  for (let s = 0; s < 6; s++) { const st = new THREE.Mesh(new THREE.BoxGeometry(.085, .02, .12), new THREE.MeshBasicMaterial({ color: s % 2 ? '#ffffff' : '#ff5a4f' })); st.position.set(-.21 + s * .084, .27, .23); st.rotation.x = .35; root.add(st); }
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(.54, .04, .42), new THREE.MeshStandardMaterial({ color: '#3a3142' })); roof.position.y = .34; root.add(roof);
+  // the dome, its glass shell, the glow under it
+  const dome = domeWire('#ffc96b'); root.add(dome.g);
+  const shell = new THREE.Mesh(new THREE.SphereGeometry(R_DOME, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#ffb84a', transparent: true, opacity: .07, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); root.add(shell);
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: '#ffb84a', transparent: true, opacity: .5, blending: THREE.AdditiveBlending, depthWrite: false })); glow.scale.set(2.2, 2.2, 1); glow.position.y = .15; root.add(glow);
+  // the till's ping: a ring on the ground
+  const ring = new THREE.Mesh(new THREE.RingGeometry(.9, 1, 64), new THREE.MeshBasicMaterial({ color: '#8f96ff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.y = .02; root.add(ring);
+  // the column of visits
+  const colM = new THREE.MeshBasicMaterial({ color: '#4b52ff', transparent: true, opacity: .85, blending: THREE.AdditiveBlending, depthWrite: false });
+  const col = new THREE.Mesh(new THREE.CylinderGeometry(.16, .16, 1, 32, 1, true), colM); col.position.y = .5; root.add(col);
+  const cap = new THREE.Mesh(new THREE.CircleGeometry(.16, 32), new THREE.MeshBasicMaterial({ color: '#c9ccff', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); cap.rotation.x = -Math.PI / 2; root.add(cap);
+  const appear = .25 + n * .16;
+  return { n, x, z, root, dome, shell, glow, ring, col, colM, cap, appear, name: NAMES[n], v: VISITS[n], h: VISITS[n] / 812 * 3.2 };
+});
+const BEST = 0, WEAK = 3;
+// the total that splits: a stream of light from the middle to each café
+const centre = V(0, 2.4, 0);
+const sparks = shops.map(s => [...Array(9)].map((_, k) => { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: '#a8adff', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); m.scale.set(.35, .35, 1); m.visible = false; scene.add(m); return { m, d: k * .045 + s.n * .03 }; }));
+
+// ---------------- labels pinned to the scene ----------------
+function label(cls) { const e = document.createElement('div'); e.className = 'lab ' + cls; e.innerHTML = '<div class="pill"><b></b><span></span></div>'; $('labs').appendChild(e); return e; }
+const camera = new THREE.PerspectiveCamera(38, W / H, .1, 100);
+function pin(e, p, vis, txt, sub) {
+  const v = p.clone().project(camera);
+  e.style.transform = `translate(${(v.x * .5 + .5) * W}px, ${(-v.y * .5 + .5) * H}px) translate(-50%,-100%) scale(${.6 + .4 * backOut(vis)})`;
+  e.style.opacity = clamp01(vis * 3);
+  if (txt !== undefined && e._t !== txt) { e.querySelector('b').textContent = txt; e._t = txt; }
+  if (sub !== undefined && e._s !== sub) { e.querySelector('span').textContent = sub; e._s = sub; }
+}
+const NAME_LAB = shops.map(() => label(''));
+const TOTAL = label('big');
+
+// ---------------- the phone with the dashboard, on its own canvas ----------------
+const pr = new THREE.WebGLRenderer({ canvas: $('p'), antialias: true, alpha: true, preserveDrawingBuffer: true });
+pr.setPixelRatio(DPR); pr.setSize(W, H, false); pr.setClearColor(0x000000, 0); pr.outputColorSpace = THREE.SRGBColorSpace;
+const phoneScene = new THREE.Scene();
+phoneScene.add(new THREE.HemisphereLight('#ffffff', '#3a3f60', 1.6));
+{ const k = new THREE.DirectionalLight('#ffffff', 1.6); k.position.set(2, 3, 5); phoneScene.add(k); }
+function roundedShape(w, h, r) { const s = new THREE.Shape(), x = -w / 2, y = -h / 2; s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r); s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h); s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r); s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y); return s; }
+const phone = new THREE.Group();
+{ const b = new THREE.Mesh(new THREE.ExtrudeGeometry(roundedShape(1, 2.05, .14), { depth: .08, bevelEnabled: true, bevelThickness: .02, bevelSize: .02, bevelSegments: 3 }), new THREE.MeshStandardMaterial({ color: '#2a2a30', roughness: .3, metalness: .6 })); b.position.z = -.04; phone.add(b); }
+const scr = document.createElement('canvas'); scr.width = 540; scr.height = Math.round(540 * 1.98 / .93);
+const scrTex = new THREE.CanvasTexture(scr); scrTex.colorSpace = THREE.SRGBColorSpace; const sg = scr.getContext('2d');
+{ const s = new THREE.Mesh(new THREE.ShapeGeometry(roundedShape(.93, 1.98, .11)), new THREE.MeshBasicMaterial({ map: scrTex, toneMapped: false })); const uv = s.geometry.attributes.uv, pos = s.geometry.attributes.position; for (let i = 0; i < uv.count; i++) uv.setXY(i, pos.getX(i) / .93 + .5, pos.getY(i) / 1.98 + .5); s.position.z = .065; phone.add(s); }
+phoneScene.add(phone);
+const phoneCam = new THREE.PerspectiveCamera(30, W / H, .1, 50); phoneCam.position.set(0, 0, 6.2); phoneCam.lookAt(0, 0, 0);
+function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+const ORDER = shops.map(s => s.n).sort((a, b) => VISITS[b] - VISITS[a]);
+// u: the bars growing; sel: 0..1 into Navigli's own page; tap: 0..1 the finger
+function drawDash(u, sel, tap) {
+  const g = sg, w = scr.width, h = scr.height;
+  g.fillStyle = '#0f1220'; g.fillRect(0, 0, w, h);
+  g.fillStyle = '#fff'; g.font = '600 24px Archivo'; g.textAlign = 'left'; g.fillText('9:41', 44, 52); g.fillStyle = '#000'; rr(g, w / 2 - 80, 22, 160, 44, 22); g.fill();
+  const off = ease(sel) * w;
+  // the list
+  g.save(); g.translate(-off, 0);
+  g.fillStyle = '#fff'; g.font = '800 40px Archivo'; g.fillText(T.compared, 36, 140);
+  g.fillStyle = 'rgba(255,255,255,.5)'; g.font = '500 20px "Spline Sans Mono"'; g.fillText(T.month, 36, 176);
+  ORDER.forEach((n, r) => {
+    const y = 220 + r * 78, k = easeOut((u - r * .05) / .5), bw = (w - 72 - 150) * VISITS[n] / 812 * k;
+    const col = n === BEST ? GOLD : n === WEAK ? RED : '#4b52ff';
+    if (r === 0 && tap > 0) { g.fillStyle = `rgba(255,255,255,${.1 * Math.sin(Math.PI * clamp01(tap))})`; rr(g, 20, y - 10, w - 40, 72, 14); g.fill(); }
+    g.fillStyle = '#fff'; g.font = '600 22px Archivo'; g.textAlign = 'left'; g.fillText(NAMES[n], 36, y + 20);
+    g.fillStyle = 'rgba(255,255,255,.08)'; rr(g, 36, y + 32, w - 72 - 150, 18, 9); g.fill();
+    g.fillStyle = col; rr(g, 36, y + 32, Math.max(18, bw), 18, 9); g.fill();
+    g.textAlign = 'right'; g.fillStyle = '#fff'; g.font = '700 24px Archivo'; g.fillText(T.eur(Math.round(VISITS[n] * k)), w - 36, y + 48);
+  });
+  g.restore();
+  // one shop's page
+  if (sel > 0) {
+    g.save(); g.translate(w - off, 0);
+    g.fillStyle = '#7f86ff'; g.font = '600 20px Archivo'; g.textAlign = 'left'; g.fillText(T.back, 36, 110);
+    g.fillStyle = '#fff'; g.font = '800 46px Archivo'; g.fillText(NAMES[BEST], 36, 168);
+    g.fillStyle = GOLD; rr(g, 36, 186, 150, 34, 17); g.fill(); g.fillStyle = '#16152b'; g.font = '700 16px "Spline Sans Mono"'; g.textAlign = 'center'; g.fillText('★ ' + T.best.toUpperCase(), 111, 209);
+    const cu = clamp01((sel - .4) / .6);
+    T.st.forEach(([lab, v], i) => {
+      const x = 36 + (i % 2) * ((w - 84) / 2 + 12), y = 250 + Math.floor(i / 2) * 150, bw = (w - 84) / 2;
+      g.fillStyle = 'rgba(255,255,255,.07)'; rr(g, x, y, bw, 132, 18); g.fill();
+      g.textAlign = 'left'; g.fillStyle = 'rgba(255,255,255,.6)'; g.font = '600 18px "Spline Sans Mono"'; g.fillText(lab.toUpperCase(), x + 20, y + 40);
+      g.fillStyle = '#fff'; g.font = '800 54px Archivo'; g.fillText(T.eur(Math.round(v * easeOut((cu - i * .08) / .7))), x + 20, y + 104);
+    });
+    // a line of visits over 30 days
+    const y0 = 590, ch = 200;
+    g.fillStyle = 'rgba(255,255,255,.05)'; rr(g, 36, y0, w - 72, ch + 40, 18); g.fill();
+    g.strokeStyle = GOLD; g.lineWidth = 5; g.lineJoin = 'round'; g.beginPath();
+    const N = 30, shown = Math.floor(N * clamp01((sel - .5) / .5));
+    for (let d = 0; d <= shown; d++) { const x = 56 + d / N * (w - 112), y = y0 + 20 + ch - (.3 + .5 * d / N + .15 * Math.sin(d * .9) + .1 * hash(d)) * ch * .9; d ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.stroke();
+    g.restore();
+  }
+  // the finger
+  if (tap > 0 && tap < 1.3) { const a = Math.sin(Math.PI * clamp01(tap)); g.fillStyle = `rgba(255,255,255,${.5 * a})`; g.beginPath(); g.arc(w * .4, 250, 34 + (1 - a) * 18, 0, 7); g.fill(); g.strokeStyle = `rgba(255,255,255,${.8 * a})`; g.lineWidth = 3; g.beginPath(); g.arc(w * .4, 250, 46 + clamp01(tap) * 30, 0, 7); g.stroke(); }
+  scrTex.needsUpdate = true;
+}
+
+// ---------------- 2D overlay: the price row, the end ----------------
+const oc = $('o'); oc.width = W * DPR; oc.height = H * DPR; const og = oc.getContext('2d');
+const DOTS = [...Array(160)].map((_, i) => { const a = hash(i) * Math.PI * 2, r = 230 + hash(i + 7) * 260, ring = i % 3 === 0, ta = (i / 160) * Math.PI * 2; return { sx: 270 + Math.cos(a) * r, sy: 470 + Math.sin(a) * r, tx: 270 + Math.cos(ta) * (ring ? 46 : hash(i + 3) * 70), ty: 470 + Math.sin(ta) * (ring ? 46 : hash(i + 3) * 70), d: hash(i + 11) * .5 }; });
+function miniDome(g, x, y, s, on, gold) {
+  g.save(); g.translate(x, y); g.scale(s, s);
+  const c = gold ? '255,201,107' : '143,150,255';
+  if (on > 0) { const r = g.createRadialGradient(0, 0, 0, 0, 0, 30); r.addColorStop(0, `rgba(${c},${.5 * on})`); r.addColorStop(1, `rgba(${c},0)`); g.fillStyle = r; g.beginPath(); g.arc(0, -4, 30, 0, 7); g.fill(); }
+  g.strokeStyle = `rgba(${c},${.35 + .65 * on})`; g.lineWidth = 1.6; g.beginPath(); g.arc(0, 0, 16, Math.PI, 0); g.stroke(); g.beginPath(); g.ellipse(0, 0, 16, 4, 0, 0, 7); g.stroke(); g.beginPath(); g.ellipse(0, -8, 13.8, 3, 0, 0, 7); g.stroke();
+  g.fillStyle = `rgba(255,179,92,${.4 + .6 * on})`; g.fillRect(-5, -6, 10, 6);
+  g.restore();
+}
+
+// grain, still
+{ const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'), d = x.createImageData(256, 256); for (let i = 0; i < d.data.length; i += 4) { const v = 128 + (hash(i * .13) - .5) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } x.putImageData(d, 0, 0); $('grain').style.backgroundImage = `url(${c.toDataURL()})`; }
+
+// ---------------- camera ----------------
+function track(keys, t) {
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) { const [t0, a] = keys[i - 1], [t1, b] = keys[i]; const x = ease((t - t0) / (t1 - t0)); return a.map((v, k) => lerp(v, b[k], x)); }
+  return keys[keys.length - 1][1];
+}
+const W0 = shops[BEST], W3 = shops[WEAK];
+const CAM = [
+  [0, [0, 30, 13, 0, 0, -2.5]], [B.which, [4, 24, 14, 0, 0, -1.5]],
+  [B.one, [0, 22, 14, 0, .6, -1.5]], [B.split - .1, [0, 21, 13.5, 0, .8, -1.5]],
+  [B.till, [-5, 19, 14, 0, 0, -1.5]], [B.bars, [-7, 17, 14, 0, 1, -1.5]],
+  [B.best - .2, [-6, 16, 15, 0, 1.2, -1.5]], [B.best + 1.2, [W0.x + 5, 9, W0.z + 9, W0.x, 1.6, W0.z - 1]],
+  [B.phone - .3, [W3.x - 5, 7, W3.z + 8, W3.x, .9, W3.z - 1]], [B.phone + 1, [0, 24, 12, 0, 0, -1.5]],
+  [B.F, [2, 26, 9, 0, 0, -1.5]], [DURATION, [0, 28, 6, 0, 0, -1.5]]
+];
+
+function caption(t) {
+  const ci = T.caps.findLastIndex(([s]) => t >= s), cap = T.caps[ci];
+  if (renderAt.ci !== ci) {
+    renderAt.ci = ci;
+    // one span per word (a marked phrase stays one span)
+    const html = cap ? cap[1].replace(/([*_~])([^*_~]+)\1/g, (_, k, x) => `\u0001${k}${x.replace(/ /g, '\u0002')}\u0001`) : '';
+    $('cap').innerHTML = html.split(' ').filter(Boolean).map(w => { const mk = w.match(/\u0001([*_~])(.+)\u0001(.*)/); if (mk) return `<span class="${{ '*': 'k', '_': 'y', '~': 'r' }[mk[1]]}">${mk[2].replace(/\u0002/g, ' ')}</span>${mk[3] ? `<span>${mk[3]}</span>` : ''}`; return `<span>${w}</span>`; }).join('');
+  }
+  if (!cap) return;
+  const next = T.caps[ci + 1], out = next ? clamp01((t - next[0] + .12) / .12) : 0;
+  [...$('cap').children].forEach((s, i) => { const k = backOut((t - cap[0] - i * .09) / .32); s.style.opacity = clamp01((t - cap[0] - i * .09) / .12) * (1 - out); s.style.transform = `translateY(${(1 - k) * 14}px) scale(${.9 + .1 * k})`; });
+}
+
+function renderAt(t) {
+  const c = track(CAM, t);
+  camera.position.set(c[0] + Math.sin(t * .31) * .15, c[1], c[2] + Math.sin(t * .23) * .15); camera.lookAt(c[3], c[4], c[5]); camera.updateMatrixWorld();
+  caption(t);
+  const priceOn = ease((t - B.price + .1) / .4) * (1 - ease((t - B.F) / .35));
+  const cityDim = 1 - priceOn * .75;
+  shops.forEach(s => {
+    const a = backOut((t - s.appear) / .5), pulse = .5 + .5 * Math.sin(t * 2.5 + s.n);
+    // before the split the cafés are grey, one blur in the total
+    const grey = ease((t - B.one) / .4) * (1 - ease((t - B.split - .3 - s.n * .04) / .4));
+    const hl = t > B.best + .2 && t < B.phone + .5 ? (s.n === BEST ? 1 : s.n === WEAK ? 2 : 0) : 0, dim = t > B.best && t < B.phone + .3 && !hl ? .35 : 1;
+    s.root.scale.setScalar(Math.max(.001, a));
+    const col = hl === 1 ? '#ffc96b' : hl === 2 ? RED : grey > .5 ? '#6c7388' : '#ffc96b';
+    s.dome.mat.color.set(col); s.dome.mat.opacity = (.55 + .25 * pulse) * dim * cityDim * (1 - grey * .5);
+    s.shell.material.color.set(col); s.shell.material.opacity = (.05 + .04 * pulse) * dim * cityDim;
+    s.glow.material.color.set(col); s.glow.material.opacity = (.35 + .2 * pulse) * dim * cityDim * (1 - grey * .7);
+    s.dome.g.rotation.y = t * .2;
+    // the till pings: rings go out once, one café after another
+    const ru = (t - B.till - .2 - s.n * .1) / 1.1;
+    s.ring.material.opacity = ru > 0 && ru < 1 ? (1 - ru) * .9 : 0; s.ring.scale.setScalar(.2 + easeOut(ru) * 1.3);
+    // the column
+    const cu = easeOut((t - B.bars - .1 - s.n * .07) / .9), ch = Math.max(.001, s.h * cu) * (1 - priceOn);
+    s.col.visible = s.cap.visible = cu > 0 && priceOn < .99; s.col.scale.y = ch; s.col.position.y = ch / 2; s.cap.position.y = ch + .002;
+    s.colM.color.set(hl === 1 ? GOLD : hl === 2 ? RED : '#4b52ff'); s.colM.opacity = .8 * dim;
+    // name and number over the café
+    const nv = ease((t - s.appear - .3) / .3) * (1 - ease((t - B.one + .2) / .3)) + ease((t - B.split - .4 - s.n * .05) / .3) * (1 - ease((t - B.phone + .2) / .3));
+    const showNum = t > B.bars + .3;
+    pin(NAME_LAB[s.n], V(s.x, (showNum ? ch : .9) + .25, s.z), clamp01(nv) * (t > B.best && !hl && t < B.phone ? .55 : 1),
+      showNum ? T.eur(Math.round(s.v * cu)) : s.name, showNum ? (hl === 1 ? `${s.name} · ${T.best}` : hl === 2 ? `${s.name} · ${T.weak}` : s.name) : (t > B.split ? '' : ''));
+    NAME_LAB[s.n].className = 'lab ' + (hl === 1 ? 'gold' : hl === 2 ? 'red' : '');
+  });
+  // the total, then the split: sparks fly out to the cafés
+  const tv = ease((t - B.one - .1) / .35) * (1 - ease((t - B.split - .1) / .25));
+  const sum = VISITS.reduce((a, b) => a + b, 0);
+  pin(TOTAL, centre, tv, T.eur(Math.round(sum * easeOut((t - B.one) / 1.2))), T.total);
+  sparks.forEach((list, n) => list.forEach(({ m, d }) => {
+    const u = (t - B.split - .1 - d) / .8; m.visible = u > 0 && u < 1; if (!m.visible) return;
+    const s = shops[n], e = ease(u); m.position.set(lerp(centre.x, s.x, e), lerp(centre.y, .4, e) + Math.sin(Math.PI * u) * 1.2, lerp(centre.z, s.z, e)); m.material.opacity = 1 - u * .5;
+  }));
+  ground.material.color.set('#0a0d14');
+  renderer.render(scene, camera);
+  $('c').style.filter = priceOn > .02 ? `blur(${(priceOn * 6).toFixed(2)}px) brightness(${1 - priceOn * .35})` : 'none';
+  $('labs').style.opacity = 1 - priceOn;
+
+  // the phone
+  pr.clear();
+  const pin1 = (t - B.phone) / .7, pout = ease((t - B.price + .3) / .5);
+  if (pin1 > 0 && pout < 1) {
+    drawDash(clamp01((t - B.phone - .3) / 1.4), clamp01((t - B.tap - .55) / .7), clamp01((t - B.tap) / .55) + (t > B.tap + .55 ? 1 : 0) * 0);
+    const u = t - B.phone;
+    phone.position.set(lerp(0, 3, pout), -.2 - (1 - backOut(pin1)) * 2.6 + Math.sin(u * 1.3) * .04, 0);
+    phone.rotation.set(-.1 + Math.sin(u * .8) * .04, lerp(-.5, 0, easeOut(pin1)) + Math.sin(u * .6) * .12 + pout * .8, lerp(.15, 0, easeOut(pin1)));
+    phone.scale.setScalar(.96);
+    pr.render(phoneScene, phoneCam);
+  }
+
+  // the price and the row of locations
+  og.setTransform(DPR, 0, 0, DPR, 0, 0); og.clearRect(0, 0, W, H);
+  $('price').style.opacity = priceOn; $('price').style.transform = `translateY(${(1 - backOut((t - B.price) / .6)) * 30}px) scale(${.85 + .15 * backOut((t - B.price) / .6)})`;
+  if (priceOn > 0) {
+    og.globalAlpha = priceOn;
+    const rowOn = (t - B.min) / .9;
+    for (let i = 0; i < 12; i++) {
+      const x = 60 + (i % 6) * 84, y = 660 + Math.floor(i / 6) * 74, s = backOut(rowOn * 1.6 - i * .08);
+      if (s <= 0) continue;
+      if (i === 11) { og.save(); og.globalAlpha = priceOn * clamp01(rowOn * 1.6 - i * .08); og.fillStyle = '#fff'; og.font = '800 24px Archivo'; og.textAlign = 'center'; og.fillText('+', x, y + 2); og.restore(); continue; }
+      const pilot = i < 3 ? ease((t - B.pilot - .2 - i * .12) / .35) : 0;
+      miniDome(og, x, y, s * (1 + pilot * .25), .4 + .6 * clamp01(rowOn - .3) * (t > B.pilot ? (i < 3 ? 1 : .35) : 1), pilot > .5);
+      if (pilot > 0) { og.save(); og.globalAlpha = priceOn * pilot; og.fillStyle = GOLD; rr(og, x - 30, y + 12, 60, 20, 10); og.fill(); og.fillStyle = '#16152b'; og.font = '700 10px "Spline Sans Mono"'; og.textAlign = 'center'; og.fillText(T.pilot, x, y + 26); og.restore(); }
+    }
+    const pv = ease((t - B.min - .6) / .4);
+    if (pv > 0) { og.globalAlpha = priceOn * pv; og.fillStyle = '#fff'; og.font = '700 22px Archivo'; og.textAlign = 'center'; og.fillText(T.plus, 270, 840); }
+    og.globalAlpha = 1;
+  }
+  // the end: the Timbro mark forms
+  if (t >= B.F - .1) {
+    const k = clamp01((t - B.F + .1) / .35), lt = t - B.F;
+    og.globalAlpha = k;
+    const bg = og.createRadialGradient(270, 470, 20, 270, 470, 620); bg.addColorStop(0, '#1c1f6e'); bg.addColorStop(.5, '#0d0c2b'); bg.addColorStop(1, '#05050f'); og.fillStyle = bg; og.fillRect(0, 0, W, H);
+    DOTS.forEach((d, i) => { const u = ease((lt - d.d) / 1.0); og.globalAlpha = k * (1 - ease((lt - 1.3) / .4)) * clamp01(lt * 3); og.fillStyle = i % 4 ? 'rgba(140,150,255,.9)' : '#fff'; og.beginPath(); og.arc(lerp(d.sx, d.tx, u), lerp(d.sy, d.ty, u), 2.2, 0, 7); og.fill(); });
+    og.globalAlpha = k;
+    const m = backOut((lt - 1.1) / .6);
+    if (m > 0) {
+      og.save(); og.translate(270, 470); og.scale(m, m); og.shadowColor = '#6f76ff'; og.shadowBlur = 40 + 20 * Math.sin(lt * 2.5); og.fillStyle = BLUE; og.beginPath(); og.arc(0, 0, 70, 0, 7); og.fill(); og.shadowBlur = 0;
+      og.strokeStyle = 'rgba(255,255,255,.85)'; og.lineWidth = 9; og.beginPath(); og.arc(0, 0, 44, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * ease((lt - 1.2) / .7)); og.stroke(); og.restore();
+      for (let r = 0; r < 3; r++) { const p = ((lt - 1.4) * .5 + r / 3) % 1; if (lt > 1.4) { og.strokeStyle = `rgba(111,118,255,${(1 - p) * .4})`; og.lineWidth = 2; og.beginPath(); og.arc(270, 470, 80 + p * 200, 0, 7); og.stroke(); } }
+    }
+    const wv = ease((lt - 1.5) / .5);
+    if (wv > 0) { og.globalAlpha = k * wv; og.fillStyle = '#fff'; og.textAlign = 'center'; og.font = '800 62px Archivo'; og.fillText('Timbro', 270, 618 + (1 - wv) * 16); og.font = '500 13px "Spline Sans Mono"'; og.fillStyle = 'rgba(255,255,255,.65)'; og.fillText('timbro.witkowskidesign.com', 270, 650 + (1 - wv) * 16); }
+    og.globalAlpha = 1;
+  }
+  $('end').style.opacity = ease((t - B.cta - .6) / .4);
+  $('end').style.transform = `translateY(${(1 - backOut((t - B.cta - .6) / .5)) * 20}px)`;
+}
+window.renderAt = renderAt;
+window.DURATION = DURATION;
+renderAt(0);
+window.READY = true;
+if (!q.has('capture')) {
+  const t0 = performance.now() - (+(q.get('t') || 0)) * 1000;
+  const loop = () => { renderAt(((performance.now() - t0) / 1000) % (DURATION + .5)); requestAnimationFrame(loop); };
+  loop();
+}
+</script>
+</body>
+</html>
