@@ -1,7 +1,7 @@
 {
-  "note": "Timeline of vicino.html (the card that wakes up near the café): beats are where the scenes and captions change; voice is where each sentence of the voice-over should start. Read by vicino.html, sound.js and voice.js. After recording, set these to the take.",
-  "beats": { "this": 2.6, "B": 5.2, "C": 9.4, "wake": 13.0, "D": 16.2, "phone": 19.4, "E": 23.0, "grid": 26.8, "F": 29.6, "cta": 31.2 },
-  "voice": [0.3, 2.6, 5.4, 9.6, 13.0, 16.4, 19.4, 23.2, 26.8, 31.2],
+  "note": "Timeline of vicino.html (the card that wakes up near the café), set to the ElevenLabs take (Roger): beats are where the scenes and captions change; voice is where each of the take's 18 phrases starts. Read by vicino.html, sound.js and voice.js.",
+  "beats": { "this": 1.96, "B": 3.9, "C": 8.6, "wake": 13.5, "D": 17.3, "phone": 20.8, "E": 24.8, "grid": 28.7, "F": 31.8, "cta": 33.2 },
+  "voice": [0.03, 1.96, 4.04, 5.26, 6.46, 8.74, 11.39, 13.58, 17.45, 18.88, 20.87, 22.76, 24.94, 26.06, 27.58, 28.82, 32.16, 33.26],
   "tempo": 1,
-  "duration": 35.5
+  "duration": 38.5
 }

@@ -176,16 +176,16 @@ function render(name, opts = {}) {
     for (const t of T_CAPS(B)) add(t, .1, x => Math.exp(-x * 40) * Math.sin(2 * Math.PI * 1100 * x), .07);
     pop(.15, 420, .16);                                                              // the pin
     for (let k = 0; k < 12; k++) add(.3 + k * .19, .05, x => rnd() * Math.exp(-x * 110), .045, -.2);   // steps
-    whoosh(2.3, .6, .25); buzz(2.9); ding(2.95);                                      // the phone, the notice
+    whoosh(B.this - .3, .6, .25); buzz(B.this + .3); ding(B.this + .35);                                      // the phone, the notice
     for (const b of [B.B, B.C, B.D, B.E, B.F]) whoosh(b - .2, .7, .3);
-    for (let i = 0; i < 3; i++) { const a = B.B + .3 + i * .55; pop(a, 520 + i * 80, .12); whoosh(a + .45, .25, .22); thud(a + .7, .1); }   // strikes
+    for (let i = 0; i < 3; i++) { const a = B.B + [.1, 1.0, 3.2][i]; pop(a, 520 + i * 80, .12); whoosh(a + .45, .25, .22); thud(a + .7, .1); }   // strikes
     for (let k = 0; k * 2.62 < B.D - B.C; k++) ping(B.C + .1 + k * 2.62, .05);       // the sweep
     add(B.C + .7, 1.4, x => Math.sin(2 * Math.PI * (220 + 180 * x) * x) * Math.sin(Math.PI * x / 1.4), .06);   // the ring grows
     blip(B.C + 1.6, 86, .1, 0);                                                      // 100 m
     ping(B.wake + .45, .1); ding(B.wake + .5);                                       // in the circle
-    pop(B.D + .5, 600, .12); whoosh(B.D + 1.2, .3, .25); thud(B.D + 1.45, .14);      // the eye, the slash
+    pop(B.D + .5, 600, .12); whoosh(B.D + 2.1, .3, .25); thud(B.D + 2.35, .14);      // the eye, the slash
     whoosh(B.phone, .5, .25); thud(B.phone + 1.0, .16); blip(B.phone + 1.35, 84, .1, 0); chime(B.phone + 1.4, .07);   // into Wallet
-    for (let i = 0; i < 3; i++) { const a = B.E + .3 + i * 1.05; whoosh(a, .4, .2); buzz(a + .45, .22); ding(a + .5); }
+    for (let i = 0; i < 3; i++) { const a = B.E + [.1, 1.2, 2.7][i]; whoosh(a, .4, .2); buzz(a + .45, .22); ding(a + .5); }
     for (let i = 0; i < 5; i++) blip(B.grid + .5 + i * .28, 79 + i * 2, .09, (i - 2) * .2);
     for (let i = 0; i < 14; i++) blip(B.F + hash(i) * 1.2, 90 + Math.floor(hash(i + 3) * 8), .025, hash(i + 7) - .5);   // particles
     thud(B.F + 1.3, .2); chime(B.F + 1.4, .12);
