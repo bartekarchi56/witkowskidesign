@@ -1,7 +1,7 @@
 {
-  "note": "Timeline of catene.html (chains: every location's numbers): beats are where the scenes and captions change; voice is where each sentence of the voice-over should start. Read by catene.html, sound.js and voice.js. After recording, set these to the take.",
-  "beats": { "which": 2.6, "one": 5.0, "split": 7.6, "till": 10.4, "bars": 12.8, "best": 15.6, "phone": 18.6, "tap": 21.4, "price": 24.8, "min": 27.6, "pilot": 30.0, "F": 32.2, "cta": 33.6 },
-  "voice": [0.2, 2.6, 5.0, 7.6, 10.4, 12.8, 15.6, 18.6, 21.4, 24.8, 27.6, 30.0, 33.6],
+  "note": "Timeline of catene.html (chains: every location's numbers), set to the ElevenLabs take (Adam Stone): beats are where the scenes and captions change; voice is where each of the take's 16 phrases starts. Read by catene.html, sound.js and voice.js.",
+  "beats": { "which": 2.14, "one": 4.22, "split": 7.0, "till": 10.0, "bars": 12.67, "best": 15.6, "phone": 19.1, "tap": 21.6, "price": 27.0, "min": 29.7, "pilot": 32.3, "F": 34.5, "cta": 35.8 },
+  "voice": [0.03, 2.14, 4.22, 7.0, 8.44, 10.03, 12.67, 17.19, 19.19, 21.69, 24.49, 27.03, 29.74, 32.32, 34.78, 35.83],
   "tempo": 1,
-  "duration": 37.5
+  "duration": 40.5
 }
