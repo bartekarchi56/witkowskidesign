@@ -15,7 +15,9 @@ const server = http.createServer((req, res) => {
   fs.readFile(file, (err, data) => { if (err) { res.writeHead(404); return res.end(); } res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream' }); res.end(data); });
 }).listen(0, async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), `${anim}-`));
-  const browser = await chromium.launch({ executablePath: fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  // Software WebGL only for the three.js pages: on a page without it, SwiftShader can leave parts of a frame unpainted.
+  const webgl = fs.readFileSync(path.join(__dirname, `${anim}.html`), 'utf8').includes('three.module');
+  const browser = await chromium.launch({ executablePath: fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined, args: webgl ? ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : [] });
   const page = await browser.newPage({ viewport: { width: 540, height: 960 }, deviceScaleFactor: 2 });
   page.on('pageerror', e => console.error('page error:', e.message));
   await page.goto(`http://localhost:${server.address().port}/marketing/animation/${anim}.html?capture&lang=${lang}`);
