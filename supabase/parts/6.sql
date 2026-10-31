@@ -1,5 +1,60 @@
--- Timbro database, part 6 of 8. Run the parts in order.
+-- Timbro database, part 6 of 9. Run the parts in order.
 set search_path = timbro, extensions;
+
+create or replace function owner_send_design(p_card_id text, p_kind text, p_design jsonb, p_note text, p_images jsonb, p_links jsonb) returns jsonb
+language plpgsql security definer set search_path = timbro
+as $$
+declare c cards;
+begin
+  select * into c from cards where id = lower(p_card_id) and business_id = _my_business();
+  if not found then raise exception 'Card not found.' using errcode = 'P0002'; end if;
+  if jsonb_array_length(coalesce(p_images, '[]')) > 8 then raise exception 'Up to 8 images.'; end if;
+  update cards set review = jsonb_build_object(
+    'status', 'pending',
+    'kind', case when p_kind = 'request' then 'request' else 'proposal' end,
+    'design', case when p_kind = 'request' then '{}'::jsonb else _clean_design(p_design) end,
+    'note', left(coalesce(p_note, ''), 2000),
+    'images', coalesce(p_images, '[]'::jsonb),
+    'links', coalesce(p_links, '[]'::jsonb),
+    'sentAt', (extract(epoch from now()) * 1000)::bigint,
+    'reply', '')
+  where id = c.id returning * into c;
+  return _card_json(c, true);
+end $$;
+
+create or replace function owner_link_code() returns jsonb
+language plpgsql security definer set search_path = timbro
+as $$
+declare v_biz uuid := _my_business(); v_code text;
+begin
+  if v_biz is null then raise exception 'Create your card first.' using errcode = 'P0002'; end if;
+  delete from link_codes where business_id = v_biz or expires_at < now();
+  v_code := _code(8);
+  insert into link_codes (code, business_id, expires_at) values (v_code, v_biz, now() + interval '15 minutes');
+  return jsonb_build_object('code', v_code, 'expiresAt', (extract(epoch from now() + interval '15 minutes') * 1000)::bigint);
+end $$;
+
+create or replace function owner_remove_device(p_device_id uuid) returns void
+language sql security definer set search_path = timbro
+as $$ delete from devices where id = p_device_id and business_id = _my_business() $$;
+
+create or replace function owner_set_device_location(p_device_id uuid, p_location text) returns void
+language sql security definer set search_path = timbro
+as $$ update devices set location = left(trim(regexp_replace(coalesce(p_location, ''), '[[:cntrl:]]', ' ', 'g')), 60)
+      where id = p_device_id and business_id = _my_business() $$;
+
+create or replace function admin_cards() returns jsonb
+language plpgsql stable security definer set search_path = timbro
+as $$
+begin
+  if not _is_admin() then raise exception 'Only Witkowski Design can open the Studio.' using errcode = '42501'; end if;
+  -- Each card comes with its owner's contact details, so you can get in touch.
+  return coalesce((select jsonb_agg(_card_json(c, true) || jsonb_build_object('contact', jsonb_build_object(
+      'name', b.contact_name, 'email', u.email, 'phone', b.phone, 'city', b.city, 'address', b.address, 'instagram', b.instagram),
+      'billing', _billing_json(b))
+    order by c.created_at)
+    from cards c join businesses b on b.id = c.business_id left join auth.users u on u.id = b.owner_id), '[]'::jsonb);
+end $$;
 
 create or replace function admin_publish(p_card_id text, p_design jsonb) returns jsonb
 language plpgsql security definer set search_path = timbro
@@ -34,64 +89,3 @@ begin
   update cards set plan = p_plan where id = lower(p_card_id) returning * into c;
   return _card_json(c, true);
 end $$;
-
-create or replace function _clean_messages(m jsonb) returns jsonb
-language sql immutable
-as $$
-  select coalesce(jsonb_object_agg(k, jsonb_strip_nulls(jsonb_build_object(
-    'on', coalesce(m->k->>'on', '') = 'true',
-    'it', left(m->k->>'it', 140),
-    'en', left(m->k->>'en', 140),
-    'pl', left(m->k->>'pl', 140),
-    'left', case when k = 'close' then greatest(1, least(3, coalesce(nullif(regexp_replace(m->k->>'left', '[^0-9]', '', 'g'), '')::int, 1))) end,
-    'days', case when k = 'remind' then greatest(7, least(90, coalesce(nullif(regexp_replace(m->k->>'days', '[^0-9]', '', 'g'), '')::int, 21))) end,
-    'lat', case when k = 'near' and m->k->>'lat' ~ '^-?[0-9]{1,2}(\.[0-9]{1,7})?$' and abs((m->k->>'lat')::numeric) <= 90 then (m->k->>'lat')::numeric end,
-    'lng', case when k = 'near' and m->k->>'lng' ~ '^-?[0-9]{1,3}(\.[0-9]{1,7})?$' and abs((m->k->>'lng')::numeric) <= 180 then (m->k->>'lng')::numeric end
-  ))), '{}'::jsonb)
-  from unnest(array['close', 'ready', 'remind', 'near']) k
-  where jsonb_typeof(m->k) = 'object'
-$$;
-
-create or replace function owner_save_messages(p_card_id text, p_messages jsonb) returns jsonb
-language plpgsql security definer set search_path = timbro
-as $$
-declare c cards;
-begin
-  if auth.uid() is null then raise exception 'Not logged in.' using errcode = '28000'; end if;
-  update cards set messages = _clean_messages(p_messages), updated_at = now()
-  where id = lower(p_card_id) and business_id = _my_business() returning * into c;
-  if not found then raise exception 'This card belongs to another café.' using errcode = '42501'; end if;
-  return _card_json(c, true);
-end $$;
-
-create or replace function owner_send_news(p_card_id text, p_text text) returns jsonb
-language plpgsql security definer set search_path = timbro
-as $$
-declare c cards; v_text text := left(trim(regexp_replace(coalesce(p_text, ''), '[[:cntrl:]]', ' ', 'g')), 140);
-begin
-  if auth.uid() is null then raise exception 'Not logged in.' using errcode = '28000'; end if;
-  if v_text = '' then raise exception 'Write a message first.' using errcode = '22023'; end if;
-  select * into c from cards where id = lower(p_card_id) and business_id = _my_business();
-  if not found then raise exception 'This card belongs to another café.' using errcode = '42501'; end if;
-  if c.news_at > now() - interval '20 hours' then raise exception 'One message a day: you can send the next one tomorrow.' using errcode = 'P0001'; end if;
-  update cards set news = v_text, news_at = now(), updated_at = now() where id = c.id returning * into c;
-  return _card_json(c, true);
-end $$;
-
-create or replace function owner_news_targets(p_card_id text) returns jsonb
-language plpgsql security definer set search_path = timbro
-as $$
-declare c cards;
-begin
-  select * into c from cards where id = lower(p_card_id) and business_id = _my_business() and news_at > now() - interval '15 minutes';
-  if not found then return null; end if;
-  return jsonb_build_object('card', _card_json(c), 'customers', coalesce((select jsonb_agg(jsonb_build_object('customer', _customer_json(m, 0),
-      'pushTokens', coalesce((select jsonb_agg(w.push_token) from wallet_devices w where w.customer_id = m.id), '[]'::jsonb)))
-    from (select * from customers where card_id = c.id order by last_visit desc nulls last limit 5000) m), '[]'::jsonb));
-end $$;
-
-alter table businesses add column if not exists stripe_customer     text;
-
-alter table businesses add column if not exists stripe_subscription text;
-
-alter table businesses add column if not exists billing_status      text not null default '';  -- trialing, active, past_due, canceled...

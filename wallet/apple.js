@@ -3,7 +3,7 @@ import { PKPass } from 'passkit-generator';
 import { settings } from './settings.js';
 import { colours, rgb, strip, icon, logo } from './images.js';
 import { LABELS } from './input.js';
-import { currentMessage, nearLocation } from './messages.js';
+import { currentMessage, nearLocation, doubleWhen, reviewUrl } from './messages.js';
 
 // notice: an extra message from the server (e.g. a reminder) shown as the news.
 export async function buildApplePass({ card, customer, lang, notice }) {
@@ -37,6 +37,8 @@ export async function buildApplePass({ card, customer, lang, notice }) {
       backFields: [
         ...(card.hideFields ? [{ key: 'reward', label: L.reward, value: reward }, { key: 'member', label: L.member, value: customer.name }] : []),
         { key: 'news', label: L.news, value: news || L.quiet, changeMessage: '%@' },
+        ...(doubleWhen(card, lang) ? [{ key: 'double', label: L.double, value: doubleWhen(card, lang) }] : []),
+        ...(reviewUrl(card) ? [{ key: 'review', label: L.review, value: reviewUrl(card), attributedValue: `<a href="${reviewUrl(card)}">${L.review}</a>` }] : []),
         { key: 'how', label: L.how, value: L.howText(card.stampsNeeded) },
         { key: 'code', label: 'Code', value: customer.id },
         { key: 'by', label: L.by, value: settings.brand }

@@ -57,7 +57,18 @@ window.CONFIG = {
     remind: { on: true, days: 21, it: 'Ciao {name}! Ancora {left} per {reward}. Passa a trovarci da {business}.', en: 'Hi {name}! Just {left} to go for {reward}. Come and see us at {business}.',
               pl: 'Cześć {name}! Jeszcze {left} i odbierasz nagrodę: {reward}. Wpadnij, {business} czeka na Ciebie.' },
     near:   { on: false, it: 'Sei vicino a {business}: ancora {left} per {reward}.', en: 'You are near {business}: {left} to go for {reward}.',
-              pl: '{business} jest tuż obok! Jeszcze {left} i odbierasz nagrodę: {reward}.' }
+              pl: '{business} jest tuż obok! Jeszcze {left} i odbierasz nagrodę: {reward}.' },
+    // Extras, off until the café switches them on. friend: Bring a friend (the friend's first stamp gives
+    // them and whoever invited them one more; this text goes to the inviter). double: double-stamp hours
+    // (week: 1 = Monday … 7 = Sunday; from, to: hours, café time). birthday: a gift in the week from the
+    // customer's birthday, given at the till. review: a Google review link for 3 days after each reward.
+    friend: { on: false, it: 'Grazie {name}! Un amico si è unito con il tuo invito: un timbro in regalo per te.', en: 'Thanks {name}! A friend joined with your invite: a free stamp for you.',
+              pl: 'Dziękujemy, {name}! Znajomy dołączył z Twojego zaproszenia: pieczątka w prezencie dla Ciebie.' },
+    double: { on: false, week: [2, 3], from: 15, to: 17 },
+    birthday: { on: false, it: 'Buon compleanno {name}! Questa settimana {reward} te lo offriamo noi 🎂', en: 'Happy birthday {name}! This week {reward} is on us 🎂',
+              pl: 'Wszystkiego najlepszego, {name}! W tym tygodniu {reward} na nasz koszt 🎂' },
+    review: { on: false, url: '', it: 'Ti è piaciuto? Lasciaci una recensione su Google: ci aiuta tantissimo.', en: 'Enjoyed it? Leave us a Google review: it helps us a lot.',
+              pl: 'Smakowało? Zostaw nam opinię w Google: bardzo nam to pomoże.' }
   },
 
   // A message to all customers (dashboard → Notifications): one a day, on the cards for 3 days.

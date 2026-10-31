@@ -49,8 +49,8 @@
 
     // ---- customers ----
     getCard: id => rpc('get_card', { p_card_id: id }),
-    // who = { name, email, phone, birthDate: 'YYYY-MM-DD', marketing }
-    joinCard: (id, who) => rpc('join_card', { p_card_id: id, p_name: who.name, p_email: who.email, p_phone: who.phone, p_birth: who.birthDate, p_marketing: !!who.marketing }),
+    // who = { name, email, phone, birthDate: 'YYYY-MM-DD', marketing, ref (the code of the friend who invited them) }
+    joinCard: (id, who) => rpc('join_card', { p_card_id: id, p_name: who.name, p_email: who.email, p_phone: who.phone, p_birth: who.birthDate, p_marketing: !!who.marketing, p_ref: who.ref || null }),
     getMyCard: (code, secret) => rpc('get_my_card', { p_code: code, p_secret: secret }),
 
     // ---- the cashier's phone ----
@@ -62,7 +62,9 @@
     },
     unlinkDevice() { localStorage.removeItem(DEVICE); },
     lookup: code => rpc('stamper_lookup', { p_token: device().token, p_code: code }),
-    stamp: (code, delta) => rpc('stamper_stamp', { p_token: device().token, p_code: code, p_delta: delta }).then(r => (wakeWallet(code), r)),
+    // A friend's first stamp also gives whoever invited them one (r.extra.friend): their Wallet card wakes too.
+    stamp: (code, delta) => rpc('stamper_stamp', { p_token: device().token, p_code: code, p_delta: delta }).then(r => (wakeWallet(code), r.extra && r.extra.friend && wakeWallet(r.extra.friend), r)),
+    gift: code => rpc('stamper_gift', { p_token: device().token, p_code: code }).then(r => (wakeWallet(code), r)),
     redeem: code => rpc('stamper_redeem', { p_token: device().token, p_code: code }).then(r => (wakeWallet(code), r)),
 
     // ---- owner login ----

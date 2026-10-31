@@ -73,6 +73,13 @@ details.en[open]{padding-bottom:4px}
 .rule-head small{display:block;color:var(--ink-2);font-size:14px;margin-top:2px}
 .rule-body{margin-top:14px;display:grid;gap:10px}
 .rule-opts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--ink-2)}
+.nt-extras{margin:10px 0 -4px}
+.nt-extras h3{font-size:19px;font-stretch:112%;font-weight:800}
+.nt-extras p{color:var(--ink-2);font-size:14px;margin-top:2px}
+.week{display:flex;flex-wrap:wrap;gap:6px}
+.week label{display:flex;align-items:center;gap:5px;border:1.5px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer}
+.week input{accent-color:var(--pop);margin:0}
+.rule-opts .field{flex:1 1 100%;margin:0}
 .rule-opts select{width:auto;min-height:40px;padding:6px 10px}
 .rule .field{margin:0}
 .rule .field > span{display:flex;justify-content:space-between;font-size:14px}
@@ -564,6 +571,11 @@ I18N.add({
     'd.newsLabel': 'Il messaggio', 'd.newsIdeas': 'Idee:', 'd.newsIdea1': 'Cornetti appena sfornati: vi aspettiamo!', 'd.newsIdea2': 'Novità: Matcha Maple Apple. Venite a provarla!', 'd.newsIdea3': 'Oggi doppio timbro su ogni caffè ☕',
     'd.newsSend': 'Invia a tutti', 'd.newsConfirm': 'Inviare questo messaggio a tutti i clienti con la carta ({n})? Puoi inviarne uno al giorno.', 'd.newsSent': 'Messaggio inviato a tutti.',
     'd.newsLast': 'Ultimo invio {when}: “{text}”', 'd.newsDaily': 'Hai già inviato un messaggio oggi: il prossimo domani.', 'd.newsTag': 'Messaggio a tutti', 'd.newsEmpty': 'Scrivi un messaggio.',
+    'd.nExtras': 'Extra', 'd.nExtrasP': 'Funzioni in più per far tornare i clienti e portarne di nuovi. Sono spente: accendi quelle che vuoi.',
+    'd.nFriend': 'Porta un amico', 'd.nFriendW': 'Ogni cliente ha un link da mandare agli amici. Al primo timbro dell\'amico, un timbro in più a lui e a chi l\'ha invitato. Il messaggio va a chi ha invitato.',
+    'd.nDouble': 'Doppio timbro', 'd.nDoubleW': 'Nelle ore più tranquille ogni visita vale due timbri. Lo vedono sulla carta.', 'd.nFrom': 'Dalle', 'd.nTo': 'alle', 'd.nDoubleLine': 'Doppio timbro: {when}', 'd.nDoubleBad': 'Doppio timbro: scegli almeno un giorno, e un orario di fine dopo quello di inizio.',
+    'd.nBirthday': 'Regalo di compleanno', 'd.nBirthdayW': 'Nella settimana del compleanno il cliente riceve il messaggio e alla cassa il timbratore mostra il pulsante del regalo (il premio della carta). Una volta l\'anno.',
+    'd.nReview': 'Recensione su Google', 'd.nReviewW': 'Per 3 giorni dopo ogni premio, la carta chiede una recensione con il link alla tua scheda Google.', 'd.nReviewUrl': 'Link per le recensioni', 'd.nReviewHint': 'Su Google Maps: la tua attività → Chiedi recensioni → copia il link.', 'd.nReviewBad': 'Recensione su Google: incolla il link alla tua scheda (inizia con https://).',
     'd.nSave': 'Salva le notifiche', 'd.nSavedOk': 'Notifiche salvate.', 'd.nNow': 'ora', 'd.nNone': 'Accendi una notifica per vedere l\'anteprima.', 'd.nExample': 'Giulia',
     'd.tResults': 'Risultati', 'd.resT': 'Cosa fa la carta per il tuo locale', 'd.resP': 'I numeri delle visite timbrate: chi si iscrive, chi torna, quando e quanto spende.',
     'd.r30': '30 giorni', 'd.r90': '90 giorni', 'd.rAll': 'Sempre',
@@ -664,6 +676,11 @@ I18N.add({
     'd.newsLabel': 'Your message', 'd.newsIdeas': 'Ideas:', 'd.newsIdea1': 'Fresh pastries just out of the oven: come and see us!', 'd.newsIdea2': 'New: Matcha Maple Apple. Come and try it!', 'd.newsIdea3': 'Double stamps on every coffee today ☕',
     'd.newsSend': 'Send to all', 'd.newsConfirm': 'Send this message to all customers with your card ({n})? You can send one a day.', 'd.newsSent': 'Message sent to everyone.',
     'd.newsLast': 'Last sent {when}: “{text}”', 'd.newsDaily': 'You already sent a message today: you can send the next one tomorrow.', 'd.newsTag': 'Message to all', 'd.newsEmpty': 'Write a message first.',
+    'd.nExtras': 'Extras', 'd.nExtrasP': 'More ways to bring customers back and bring new ones in. They are off: switch on the ones you want.',
+    'd.nFriend': 'Bring a friend', 'd.nFriendW': 'Every customer gets a link to send to friends. On the friend\'s first stamp, one more for them and one for whoever invited them. This message goes to the one who invited.',
+    'd.nDouble': 'Double stamps', 'd.nDoubleW': 'In your quiet hours every visit counts as two stamps. Customers see it on their card.', 'd.nFrom': 'From', 'd.nTo': 'to', 'd.nDoubleLine': 'Double stamps: {when}', 'd.nDoubleBad': 'Double stamps: pick at least one day, and an end time after the start.',
+    'd.nBirthday': 'Birthday gift', 'd.nBirthdayW': 'In their birthday week customers get this message, and at the till the stamper shows a gift button (the card\'s reward). Once a year.',
+    'd.nReview': 'Google review', 'd.nReviewW': 'For 3 days after each reward, the card asks for a review with a link to your Google profile.', 'd.nReviewUrl': 'Review link', 'd.nReviewHint': 'On Google Maps: your business → Ask for reviews → copy the link.', 'd.nReviewBad': 'Google review: paste the link to your profile (it starts with https://).',
     'd.nSave': 'Save notifications', 'd.nSavedOk': 'Notifications saved.', 'd.nNow': 'now', 'd.nNone': 'Switch a notification on to see the preview.', 'd.nExample': 'Emma',
     'd.tResults': 'Results', 'd.resT': 'What the card does for your café', 'd.resP': 'The numbers behind the stamped visits: who joins, who comes back, when, and what they spend.',
     'd.r30': '30 days', 'd.r90': '90 days', 'd.rAll': 'All time',
@@ -765,6 +782,11 @@ I18N.add({
     'd.newsLabel': 'Wiadomość', 'd.newsIdeas': 'Pomysły:', 'd.newsIdea1': 'Świeże wypieki prosto z pieca: zapraszamy!', 'd.newsIdea2': 'Nowość: Matcha Maple Apple. Wpadnij spróbować!', 'd.newsIdea3': 'Dziś podwójna pieczątka za każdą kawę ☕',
     'd.newsSend': 'Wyślij do wszystkich', 'd.newsConfirm': 'Wysłać tę wiadomość do wszystkich klientów z kartą ({n})? Możesz wysłać jedną dziennie.', 'd.newsSent': 'Wiadomość wysłana do wszystkich.',
     'd.newsLast': 'Ostatnio wysłana {when}: „{text}”', 'd.newsDaily': 'Dziś wysłano już wiadomość: następną wyślesz jutro.', 'd.newsTag': 'Wiadomość do wszystkich', 'd.newsEmpty': 'Najpierw napisz wiadomość.',
+    'd.nExtras': 'Dodatki', 'd.nExtrasP': 'Więcej sposobów, żeby klienci wracali i przyprowadzali nowych. Są wyłączone: włącz te, które chcesz.',
+    'd.nFriend': 'Poleć znajomym', 'd.nFriendW': 'Każdy klient ma link, który może wysłać znajomym. Przy pierwszej pieczątce znajomej osoby jedna więcej dla niej i dla osoby, która zaprosiła. Ta wiadomość trafia do osoby, która zaprosiła.',
+    'd.nDouble': 'Podwójne pieczątki', 'd.nDoubleW': 'W spokojniejszych godzinach każda wizyta to dwie pieczątki. Klienci widzą to na karcie.', 'd.nFrom': 'Od', 'd.nTo': 'do', 'd.nDoubleLine': 'Podwójne pieczątki: {when}', 'd.nDoubleBad': 'Podwójne pieczątki: wybierz co najmniej jeden dzień i godzinę końca późniejszą niż początek.',
+    'd.nBirthday': 'Prezent urodzinowy', 'd.nBirthdayW': 'W tygodniu urodzin klient dostaje tę wiadomość, a przy kasie skaner pokazuje przycisk prezentu (nagroda z karty). Raz w roku.',
+    'd.nReview': 'Opinia w Google', 'd.nReviewW': 'Przez 3 dni po każdej nagrodzie karta prosi o opinię i podaje link do Twojej wizytówki Google.', 'd.nReviewUrl': 'Link do opinii', 'd.nReviewHint': 'W Mapach Google: Twoja firma → Poproś o opinie → skopiuj link.', 'd.nReviewBad': 'Opinia w Google: wklej link do wizytówki (zaczyna się od https://).',
     'd.nSave': 'Zapisz powiadomienia', 'd.nSavedOk': 'Powiadomienia zapisane.', 'd.nNow': 'teraz', 'd.nNone': 'Włącz powiadomienie, aby zobaczyć podgląd.', 'd.nExample': 'Ania',
     'd.tResults': 'Wyniki', 'd.resT': 'Co karta daje Twojemu lokalowi', 'd.resP': 'Dane z wizyt z pieczątką: kto dołącza, kto wraca, kiedy przychodzi i ile wydaje.',
     'd.r30': '30 dni', 'd.r90': '90 dni', 'd.rAll': 'Od początku',
@@ -1181,8 +1203,10 @@ I18N.add({
   Store.onChange(() => { current = Store.getCard(current.id) || current; renderCustomers(); renderReview(); setView(view); if (!$('tab-results').hidden) renderResults(); });
 
   // ---------- notifications: the café's own messages (UI.messagesOf / UI.fillMessage) ----------
-  const NT = ['close', 'ready', 'remind', 'near'];
-  const NT_NAMES = { close: ['d.nClose', 'd.nCloseW'], ready: ['d.nReady', 'd.nReadyW'], remind: ['d.nRemind', 'd.nRemindW'], near: ['d.nNear', 'd.nNearW'] };
+  const NT = ['close', 'ready', 'remind', 'near', 'friend', 'double', 'birthday', 'review'];
+  const NT_NAMES = { close: ['d.nClose', 'd.nCloseW'], ready: ['d.nReady', 'd.nReadyW'], remind: ['d.nRemind', 'd.nRemindW'], near: ['d.nNear', 'd.nNearW'],
+    friend: ['d.nFriend', 'd.nFriendW'], double: ['d.nDouble', 'd.nDoubleW'], birthday: ['d.nBirthday', 'd.nBirthdayW'], review: ['d.nReview', 'd.nReviewW'] };
+  const NT_EXTRAS = 'friend';   // the extras start here (supabase/updates/14a-c), all off until switched on
   let ntDraft = null, ntField = null, ntCard = null;   // ntField: the last text box used, for the insert buttons
   const ntBox = k => $('nt-form').querySelector(`[data-k="${k}"]`);
   // A message to all customers (Store.sendNews): one a day, shown on their cards for 3 days.
@@ -1219,27 +1243,33 @@ I18N.add({
     const opts = {
       close: `<label>${t('d.nCloseOpt')} <select data-f="left">${[1, 2, 3].map(n => `<option value="${n}">${n === 1 ? t('d.nStamps1') : I18N.t('d.nStampsN', { n })}</option>`).join('')}</select></label>`,
       remind: `<label>${t('d.nRemindOpt')} <select data-f="days">${[14, 21, 30, 45, 60].map(n => `<option value="${n}">${I18N.t('d.nDays', { n })}</option>`).join('')}</select></label>`,
-      near: `<button class="btn line small" type="button" data-geo>${t('d.nUseHere')}</button><span data-place></span><button class="link" type="button" data-noplace hidden>${t('d.nRemovePlace')}</button>`
+      near: `<button class="btn line small" type="button" data-geo>${t('d.nUseHere')}</button><span data-place></span><button class="link" type="button" data-noplace hidden>${t('d.nRemovePlace')}</button>`,
+      double: `<span class="week">${[1, 2, 3, 4, 5, 6, 7].map(n => `<label><input type="checkbox" data-w="${n}">${new Date(Date.UTC(2024, 0, n)).toLocaleDateString(I18N.locale(), { weekday: 'short', timeZone: 'UTC' })}</label>`).join('')}</span>
+        <label>${t('d.nFrom')} <select data-f="from">${Array.from({ length: 24 }, (_, h) => `<option value="${h}">${String(h).padStart(2, '0')}:00</option>`).join('')}</select></label>
+        <label>${t('d.nTo')} <select data-f="to">${Array.from({ length: 24 }, (_, h) => `<option value="${h + 1}">${String(h + 1).padStart(2, '0')}:00</option>`).join('')}</select></label>`,
+      review: `<label class="field"><span>${t('d.nReviewUrl')}</span><input type="url" data-f="url" maxlength="300" placeholder="https://g.page/r/…/review"><small class="muted">${t('d.nReviewHint')}</small></label>`
     };
-    $('nt-form').innerHTML = NT.map(k => `
+    $('nt-form').innerHTML = NT.map(k => `${k === NT_EXTRAS ? `<div class="nt-extras"><h3>${t('d.nExtras')}</h3><p>${t('d.nExtrasP')}</p></div>` : ''}
       <fieldset class="rule" data-k="${k}">
         <label class="rule-head"><input type="checkbox" data-f="on"><span><b>${t(NT_NAMES[k][0])}</b><small>${t(NT_NAMES[k][1])}</small></span></label>
         <div class="rule-body">
           ${opts[k] ? `<div class="rule-opts">${opts[k]}</div>` : ''}
-          ${[...new Set([UI.cardLang(current), 'en'])].map(l => `<label class="field"><span>${t({ it: 'd.nIt', pl: 'd.nPl', en: UI.cardLang(current) === 'en' ? 'd.nEnOnly' : 'd.nEn' }[l])} <em data-count="${l}"></em></span><textarea data-f="${l}" maxlength="140" rows="2"></textarea></label>`).join('')}
-          <div class="vars"><span>${t('d.nInsert')}</span>${[['name', 'd.vName'], ['left', 'd.vLeft'], ['reward', 'd.vReward'], ['business', 'd.vBusiness']].map(([v, l]) => `<button type="button" data-var="{${v}}">${t(l)}</button>`).join('')}</div>
+          ${k === 'double' ? '' : [...new Set([UI.cardLang(current), 'en'])].map(l => `<label class="field"><span>${t({ it: 'd.nIt', pl: 'd.nPl', en: UI.cardLang(current) === 'en' ? 'd.nEnOnly' : 'd.nEn' }[l])} <em data-count="${l}"></em></span><textarea data-f="${l}" maxlength="140" rows="2"></textarea></label>`).join('')}
+          ${k === 'double' ? '' : `<div class="vars"><span>${t('d.nInsert')}</span>${[['name', 'd.vName'], ['left', 'd.vLeft'], ['reward', 'd.vReward'], ['business', 'd.vBusiness']].map(([v, l]) => `<button type="button" data-var="{${v}}">${t(l)}</button>`).join('')}</div>`}
         </div>
       </fieldset>`).join('') + `<div class="nt-save"><button class="btn pop" type="button" id="nt-save">${t('d.nSave')}</button></div>`;
     NT.forEach(k => ntBox(k).querySelectorAll('[data-f]').forEach(f => {
       const v = ntDraft[k][f.dataset.f];
       if (f.type === 'checkbox') f.checked = !!v; else if (v != null) f.value = v;
     }));
+    ntBox('double').querySelectorAll('[data-w]').forEach(w => { w.checked = (ntDraft.double.week || []).includes(+w.dataset.w); });
     ntSync();
   }
   function ntRead() {
     NT.forEach(k => {
       const box = ntBox(k), m = ntDraft[k];
-      box.querySelectorAll('[data-f]').forEach(f => { m[f.dataset.f] = f.type === 'checkbox' ? f.checked : f.tagName === 'SELECT' ? Number(f.value) : f.value; });
+      box.querySelectorAll('[data-f]').forEach(f => { m[f.dataset.f] = f.type === 'checkbox' ? f.checked : f.tagName === 'SELECT' ? Number(f.value) : f.type === 'url' ? f.value.trim() : f.value; });
+      if (k === 'double') m.week = [...box.querySelectorAll('[data-w]')].filter(w => w.checked).map(w => +w.dataset.w);
       box.classList.toggle('off', !m.on);
       box.querySelectorAll('[data-count]').forEach(e => { e.textContent = `${(m[e.dataset.count] || '').length}/140`; });
     });
@@ -1251,11 +1281,12 @@ I18N.add({
   function ntPreview() {
     const lang = UI.msgLang(current), google = UI.getPlatform() === 'google', loc = I18N.locale();
     const name = (Store.listCustomers(current.id)[0] || {}).name || I18N.t('d.nExample');
-    const left = { close: ntDraft.close.left || 1, ready: 0, remind: 3, near: 2 };
+    const left = { close: ntDraft.close.left || 1, ready: 0, remind: 3, near: 2, friend: 2, birthday: 2, review: 0 };
+    const doubleLine = () => I18N.t('d.nDoubleLine', { when: UI.doubleWhen({ ...current, messages: ntDraft }) || '-' });
     const now = new Date(), ink = UI.esc(current.ink || '#2B32FF'), bg = UI.esc(current.color || '#FFFFFF'), biz = UI.esc(current.business || '');
     // The message to all customers being written (or the last one, while fresh) comes first.
     const news = $('news-text').value.trim() || UI.newsOf(current);
-    const rows = (news ? [['news', news]] : []).concat(NT.filter(k => ntDraft[k].on).map(k => [k, UI.fillMessage(ntDraft[k][lang], current, { name: name.split(' ')[0], left: left[k], lang })]));
+    const rows = (news ? [['news', news]] : []).concat(NT.filter(k => ntDraft[k].on).map(k => [k, k === 'double' ? doubleLine() : UI.fillMessage(ntDraft[k][lang], current, { name: name.split(' ')[0], left: left[k], lang })]));
     const items = rows.map(([k, msg]) => {
       const text = UI.esc(msg);
       return `<p class="tag">${UI.esc(I18N.t(k === 'news' ? 'd.newsTag' : NT_NAMES[k][0]))}</p><div class="ntf">${google
@@ -1290,7 +1321,11 @@ I18N.add({
     if (e.target.closest('[data-noplace]')) { delete ntDraft.near.lat; delete ntDraft.near.lng; ntSync(); return; }
     if (e.target.closest('#nt-save')) {
       ntRead();
-      const L = ['it', 'en', 'pl'], keep = { close: ['on', 'left', ...L], ready: ['on', ...L], remind: ['on', 'days', ...L], near: ['on', ...L, 'lat', 'lng'] };
+      const L = ['it', 'en', 'pl'], keep = { close: ['on', 'left', ...L], ready: ['on', ...L], remind: ['on', 'days', ...L], near: ['on', ...L, 'lat', 'lng'],
+        friend: ['on', ...L], double: ['on', 'week', 'from', 'to'], birthday: ['on', ...L], review: ['on', 'url', ...L] };
+      const d = ntDraft.double, rv = ntDraft.review;
+      if (d.on && (!(d.week || []).length || d.to <= d.from)) { UI.toast(I18N.t('d.nDoubleBad')); return; }
+      if (rv.on && !/^https:\/\/\S{4,}$/.test(rv.url || '')) { UI.toast(I18N.t('d.nReviewBad')); ntBox('review').querySelector('[data-f="url"]').focus(); return; }
       const out = {};
       NT.forEach(k => { out[k] = {}; keep[k].forEach(f => { if (ntDraft[k][f] != null && ntDraft[k][f] !== '') out[k][f] = ntDraft[k][f]; }); });
       current = Store.saveMessages(current.id, out) || current;

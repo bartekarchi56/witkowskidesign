@@ -85,6 +85,10 @@ alter table customers add column if not exists phone      text not null default 
 alter table customers add column if not exists birth_date date;
 alter table customers add column if not exists marketing  boolean not null default false;   -- agreed to news and offers
 alter table customers add column if not exists reminded_at timestamptz;                     -- last "we miss you" reminder
+-- Extras (dashboard → Notifications): who invited them (Bring a friend), and the last birthday gift.
+alter table customers add column if not exists referred_by text references customers(id) on delete set null;
+alter table customers add column if not exists ref_paid    boolean not null default false;  -- the friend bonus was given
+alter table customers add column if not exists gift_at     timestamptz;                     -- last birthday gift
 
 create table if not exists devices (                           -- cashiers' phones
   id           uuid primary key default gen_random_uuid(),
@@ -112,6 +116,10 @@ create table if not exists events (
   created_at   timestamptz not null default now()
 );
 create index if not exists events_customer on events(customer_id, created_at);
+-- bonus: extra stamps on a visit (double-stamp hours, a friend's first stamp); friend: the stamp an inviter
+-- gets when their friend's first stamp lands; gift: the birthday gift. A visit is still one 'stamp'.
+alter table events drop constraint if exists events_type_check;
+alter table events add constraint events_type_check check (type in ('joined','stamp','unstamp','redeem','bonus','friend','gift'));
 
 create table if not exists admins (user_id uuid primary key);   -- Witkowski Design accounts
 
@@ -208,6 +216,25 @@ as $$
   ) || case when with_review and c.review is not null then jsonb_build_object('review', c.review) else '{}'::jsonb end
 $$;
 
+-- Double-stamp hours (messages.double): on, the weekdays (1 = Monday) and the hours [from, to), café time.
+create or replace function _double_now(c cards) returns boolean
+language sql stable set search_path = timbro
+as $$
+  select coalesce((c.messages->'double'->>'on')::boolean, false)
+    and coalesce(c.messages->'double'->'week', '[]'::jsonb) @> to_jsonb(extract(isodow from l)::int)
+    and extract(hour from l) >= coalesce((c.messages->'double'->>'from')::int, 15)
+    and extract(hour from l) < coalesce((c.messages->'double'->>'to')::int, 17)
+  from (select now() at time zone case c.lang when 'pl' then 'Europe/Warsaw' else 'Europe/Rome' end as l) t
+$$;
+
+-- In the week from their birthday (0-6 days after) and no birthday gift since then.
+create or replace function _birthday_now(m customers) returns boolean
+language sql stable set search_path = timbro
+as $$
+  select m.birth_date is not null and current_date - b between 0 and 6 and (m.gift_at is null or m.gift_at::date < b)
+  from (select (m.birth_date + make_interval(years => date_part('year', age(current_date, m.birth_date))::int))::date as b) t
+$$;
+
 create or replace function _customer_json(m customers, history_limit int default 5) returns jsonb
 language sql stable
 as $$
@@ -216,6 +243,11 @@ as $$
     'joinedAt', (extract(epoch from m.joined_at) * 1000)::bigint,
     'lastVisit', (extract(epoch from m.last_visit) * 1000)::bigint,
     'remindedAt', (extract(epoch from m.reminded_at) * 1000)::bigint,
+    -- Extras: birthday gift due now; when a friend's bonus and the last reward came (ms); friends who joined with their invite.
+    'birthday', _birthday_now(m),
+    'lastFriend', (select (extract(epoch from max(created_at)) * 1000)::bigint from events where customer_id = m.id and type = 'friend'),
+    'lastRedeem', (select (extract(epoch from max(created_at)) * 1000)::bigint from events where customer_id = m.id and type = 'redeem'),
+    'friends', (select count(*) from customers f where f.referred_by = m.id and f.ref_paid),
     'history', coalesce((
       select jsonb_agg(jsonb_build_object('t', (extract(epoch from e.created_at) * 1000)::bigint, 'type', e.type, 'n', e.n)
         || case when dv.location <> '' then jsonb_build_object('at', dv.location) else '{}'::jsonb end order by e.created_at)
@@ -250,9 +282,11 @@ language sql stable security definer set search_path = timbro
 as $$ select _card_json(c) from cards c where c.id = lower(p_card_id) $$;
 
 -- A customer joins with full name, email, mobile number and date of birth.
+-- p_ref: the code of the customer who invited them (Bring a friend), from the invite link.
 drop function if exists join_card(text, text);
+drop function if exists join_card(text, text, text, text, date, boolean);
 create or replace function join_card(p_card_id text, p_name text, p_email text default '', p_phone text default '',
-  p_birth date default null, p_marketing boolean default false) returns jsonb
+  p_birth date default null, p_marketing boolean default false, p_ref text default null) returns jsonb
 language plpgsql security definer set search_path = timbro
 as $$
 declare
@@ -275,9 +309,10 @@ begin
     exit when not exists (select 1 from customers where id = v_code);
   end loop;
   -- Offers by email or SMS need consent, and in Poland that means 16 or older.
-  insert into customers (id, card_id, name, secret_hash, email, phone, birth_date, marketing)
+  insert into customers (id, card_id, name, secret_hash, email, phone, birth_date, marketing, referred_by)
   values (v_code, lower(p_card_id), v_name, _hash(v_secret), v_email, v_phone, p_birth,
-    coalesce(p_marketing, false) and p_birth <= current_date - interval '16 years');
+    coalesce(p_marketing, false) and p_birth <= current_date - interval '16 years',
+    (select id from customers where id = upper(trim(coalesce(p_ref, ''))) and card_id = lower(p_card_id)));
   insert into events (customer_id, type) values (v_code, 'joined');
   return jsonb_build_object('id', v_code, 'secret', v_secret);
 end $$;
@@ -317,20 +352,53 @@ begin
   return r;   -- null: no card with this code at this café
 end $$;
 
+-- A visit adds one stamp ('stamp' event). Extras add more, as a 'bonus' event: one more in the
+-- café's double-stamp hours, and on a friend's first stamp one more for them and one for whoever
+-- invited them. Returns extra: { double, friend: the inviter's code (their Wallet card is woken too) }.
 create or replace function stamper_stamp(p_token text, p_code text, p_delta int) returns jsonb
 language plpgsql security definer set search_path = timbro
 as $$
-declare d devices := _device(p_token); m customers; c cards; v_next int;
+declare d devices := _device(p_token); m customers; c cards; v_next int; v_extra int := 0; v_double boolean := false; v_friend text;
 begin
   select m2.* into m from customers m2 join cards c2 on c2.id = m2.card_id
   where m2.id = upper(trim(p_code)) and c2.business_id = d.business_id for update of m2;
   if not found then raise exception 'No customer with that code.' using errcode = 'P0002'; end if;
   select * into c from cards where id = m.card_id;
-  v_next := greatest(0, least(c.stamps_needed, m.stamps + sign(p_delta)::int));
-  if v_next <> m.stamps then
-    update customers set stamps = v_next, last_visit = now() where id = m.id returning * into m;
-    insert into events (customer_id, device_id, type, n) values (m.id, d.id, case when p_delta > 0 then 'stamp' else 'unstamp' end, 1);
+  if p_delta > 0 and m.stamps < c.stamps_needed then
+    v_double := _double_now(c);
+    if v_double then v_extra := 1; end if;
+    if m.referred_by is not null and not m.ref_paid and coalesce((c.messages->'friend'->>'on')::boolean, false)
+       and not exists (select 1 from events where customer_id = m.id and type = 'stamp') then   -- their very first stamp only
+      v_extra := v_extra + 1;
+      update customers set ref_paid = true where id = m.id;
+      update customers set stamps = stamps + 1 where id = m.referred_by and card_id = m.card_id and stamps < c.stamps_needed returning id into v_friend;
+      if v_friend is not null then insert into events (customer_id, device_id, type, n) values (v_friend, d.id, 'friend', 1); end if;
+    end if;
   end if;
+  v_next := greatest(0, least(c.stamps_needed, m.stamps + case when p_delta > 0 then 1 + v_extra else -1 end));
+  if v_next <> m.stamps then
+    insert into events (customer_id, device_id, type, n) values (m.id, d.id, case when p_delta > 0 then 'stamp' else 'unstamp' end, 1);
+    if v_next - m.stamps > 1 then insert into events (customer_id, device_id, type, n) values (m.id, d.id, 'bonus', v_next - m.stamps - 1); end if;
+    update customers set stamps = v_next, last_visit = now() where id = m.id returning * into m;
+  end if;
+  return jsonb_build_object('customer', _customer_json(m), 'card', _card_json(c), 'extra', jsonb_build_object('double', v_double, 'friend', v_friend));
+end $$;
+
+-- The birthday gift (messages.birthday on): once a year, in the week from the customer's birthday.
+create or replace function stamper_gift(p_token text, p_code text) returns jsonb
+language plpgsql security definer set search_path = timbro
+as $$
+declare d devices := _device(p_token); m customers; c cards;
+begin
+  select m2.* into m from customers m2 join cards c2 on c2.id = m2.card_id
+  where m2.id = upper(trim(p_code)) and c2.business_id = d.business_id for update of m2;
+  if not found then raise exception 'No customer with that code.' using errcode = 'P0002'; end if;
+  select * into c from cards where id = m.card_id;
+  if not coalesce((c.messages->'birthday'->>'on')::boolean, false) or not _birthday_now(m) then
+    raise exception 'No birthday gift due for this customer.' using errcode = 'P0001';
+  end if;
+  update customers set gift_at = now(), last_visit = now() where id = m.id returning * into m;
+  insert into events (customer_id, device_id, type) values (m.id, d.id, 'gift');
   return jsonb_build_object('customer', _customer_json(m), 'card', _card_json(c));
 end $$;
 
@@ -500,6 +568,8 @@ end $$;
 -- The café's own notification texts (Wallet passes and the web card):
 -- close (1-3 stamps to go), ready (reward ready), remind (no visit for N
 -- days) and near (lock screen near the café). Each has on, it, en, pl.
+-- Extras, all off until the café switches them on: friend (Bring a friend), double
+-- (double-stamp hours: week, from, to), birthday (gift in the birthday week), review (Google link).
 -- (The column itself is added with the tables, above.)
 create or replace function _clean_messages(m jsonb) returns jsonb
 language sql immutable
@@ -512,9 +582,14 @@ as $$
     'left', case when k = 'close' then greatest(1, least(3, coalesce(nullif(regexp_replace(m->k->>'left', '[^0-9]', '', 'g'), '')::int, 1))) end,
     'days', case when k = 'remind' then greatest(7, least(90, coalesce(nullif(regexp_replace(m->k->>'days', '[^0-9]', '', 'g'), '')::int, 21))) end,
     'lat', case when k = 'near' and m->k->>'lat' ~ '^-?[0-9]{1,2}(\.[0-9]{1,7})?$' and abs((m->k->>'lat')::numeric) <= 90 then (m->k->>'lat')::numeric end,
-    'lng', case when k = 'near' and m->k->>'lng' ~ '^-?[0-9]{1,3}(\.[0-9]{1,7})?$' and abs((m->k->>'lng')::numeric) <= 180 then (m->k->>'lng')::numeric end
+    'lng', case when k = 'near' and m->k->>'lng' ~ '^-?[0-9]{1,3}(\.[0-9]{1,7})?$' and abs((m->k->>'lng')::numeric) <= 180 then (m->k->>'lng')::numeric end,
+    'week', case when k = 'double' then (select jsonb_agg(x order by x) from (select distinct (v #>> '{}')::int x
+      from jsonb_array_elements(case when jsonb_typeof(m->k->'week') = 'array' then m->k->'week' else '[]'::jsonb end) v where v #>> '{}' ~ '^[1-7]$') w) end,
+    'from', case when k = 'double' then greatest(0, least(23, coalesce(nullif(regexp_replace(m->k->>'from', '[^0-9]', '', 'g'), '')::int, 15))) end,
+    'to', case when k = 'double' then greatest(1, least(24, coalesce(nullif(regexp_replace(m->k->>'to', '[^0-9]', '', 'g'), '')::int, 17))) end,
+    'url', case when k = 'review' and m->k->>'url' ~ '^https://[^[:space:]<>"]{4,}$' and length(m->k->>'url') <= 300 then m->k->>'url' end
   ))), '{}'::jsonb)
-  from unnest(array['close', 'ready', 'remind', 'near']) k
+  from unnest(array['close', 'ready', 'remind', 'near', 'friend', 'double', 'birthday', 'review']) k
   where jsonb_typeof(m->k) = 'object'
 $$;
 
@@ -728,8 +803,8 @@ grant usage on schema timbro to anon, authenticated;
 revoke all on all tables in schema timbro from anon, authenticated;
 revoke execute on all functions in schema timbro from public, anon, authenticated;
 
-grant execute on function get_card(text), join_card(text, text, text, text, date, boolean), get_my_card(text, text),
-  device_link(text, text), stamper_lookup(text, text), stamper_stamp(text, text, int), stamper_redeem(text, text),
+grant execute on function get_card(text), join_card(text, text, text, text, date, boolean, text), get_my_card(text, text),
+  device_link(text, text), stamper_lookup(text, text), stamper_stamp(text, text, int), stamper_redeem(text, text), stamper_gift(text, text),
   wallet_register(text, text, text, text), wallet_unregister(text, text, text), wallet_updated(text, bigint), wallet_targets(text, text), reminders_due(text)
   to anon, authenticated;
 

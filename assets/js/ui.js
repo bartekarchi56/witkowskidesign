@@ -288,5 +288,37 @@
       .replace(/^\s*[,!]\s*/, '').replace(/\s+([!?,.])/g, '$1').replace(/\s{2,}/g, ' ').trim().replace(/^./, c => c.toUpperCase());
   }
 
-  window.UI = { messagesOf, newsOf, fillMessage, cardLang, msgLang, stampsWord, walletAssets, lookOf, stampArt, stampEmpty, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
+  // ---- extras (CONFIG.messages friend, double, birthday, review; supabase/updates/14a-c) ----
+  // The café's time zone, as in the database's _double_now.
+  const cafeZone = card => card && card.lang === 'pl' ? 'Europe/Warsaw' : 'Europe/Rome';
+  // Double-stamp hours are on right now (weekday 1 = Monday, hours [from, to), café time).
+  function doubleNow(card, now = new Date()) {
+    const d = messagesOf(card).double;
+    if (!d.on) return false;
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: cafeZone(card), weekday: 'short', hour: 'numeric', hourCycle: 'h23' }).formatToParts(now).map(x => [x.type, x.value]));
+    const day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(p.weekday) + 1, hour = +p.hour;
+    return (d.week || []).includes(day) && hour >= d.from && hour < d.to;
+  }
+  // When the double-stamp hours are, in the page's language: "mar, mer · 15:00-17:00".
+  function doubleWhen(card, lang = window.I18N ? I18N.lang : 'it') {
+    const d = messagesOf(card).double, loc = window.I18N ? I18N.locale(lang) : 'it-IT';
+    const days = (d.week || []).map(n => new Date(Date.UTC(2024, 0, n)).toLocaleDateString(loc, { weekday: 'short', timeZone: 'UTC' }));   // 1 Jan 2024 was a Monday
+    const h = x => String(x).padStart(2, '0') + ':00';
+    return days.length ? `${days.join(', ')} · ${h(d.from)}-${h(d.to)}` : '';
+  }
+  // The extras' message for a customer right now, if any: the birthday gift (their birthday week),
+  // a friend's bonus (3 days), or the review link (3 days after a reward). { k, rule, url }.
+  const EXTRA_MS = 72 * 3600000;
+  function extraOf(card, customer, now = Date.now()) {
+    if (!customer) return null;
+    const m = messagesOf(card), recent = t => t && now - t < EXTRA_MS;
+    if (m.birthday.on && customer.birthday) return { k: 'birthday', rule: m.birthday };
+    if (m.friend.on && recent(customer.lastFriend)) return { k: 'friend', rule: m.friend };
+    if (m.review.on && /^https:\/\//.test(m.review.url || '') && recent(customer.lastRedeem)) return { k: 'review', rule: m.review, url: m.review.url };
+    return null;
+  }
+  // The link a customer shares to invite a friend (Bring a friend).
+  const inviteUrl = (card, customer) => publicJoinUrl(card.id) + '&ref=' + encodeURIComponent(customer.id);
+
+  window.UI = { messagesOf, newsOf, fillMessage, doubleNow, doubleWhen, extraOf, inviteUrl, cardLang, msgLang, stampsWord, walletAssets, lookOf, stampArt, stampEmpty, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
 })();

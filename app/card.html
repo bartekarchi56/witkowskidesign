@@ -38,6 +38,14 @@ main{max-width:420px;margin:0 auto;padding:16px 16px 48px;display:grid;gap:18px;
 .box h2{font-size:16px;margin-bottom:6px}
 .by{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
 .by i{width:10px;height:10px;border-radius:50%;background:var(--pop)}
+/* extras: Bring a friend, double-stamp hours, birthday, review */
+.invited{width:100%;background:var(--pop-wash);border-radius:14px;padding:12px 16px;font-size:15px;font-weight:600;text-align:center}
+.double{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;font-size:15px;color:var(--ink-2)}
+.double b{background:var(--pop);color:#fff;border-radius:999px;padding:4px 10px;font-size:13px}
+.left.mine .review{display:inline-block;margin-top:10px}
+.friend p{margin-bottom:14px}
+.friend .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.friend small{display:block;margin-top:10px;color:var(--muted);font-size:14px}
 </style>
 <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../assets/icons/favicon-32.png" sizes="32x32" type="image/png">
@@ -69,6 +77,13 @@ I18N.add({
     'c.apple': 'Aggiungi a Apple Wallet', 'c.google': 'Aggiungi a Google Wallet',
     'c.walletNote': 'Il salvataggio nel Wallet arriva presto. Intanto aggiungi questa pagina alla schermata Home.',
     'c.activity': 'Ultime visite', 'c.joined': 'Iscrizione', 'c.stamp': '+{n} timbro', 'c.unstamp': '−{n} timbro', 'c.redeem': 'Premio ricevuto',
+    'c.invited': 'Ti ha invitato un amico: al tuo primo timbro ne ricevi uno in più.',
+    'c.friendT': 'Porta un amico', 'c.friendP': 'Manda il tuo invito: quando un amico prende il primo timbro, ne ricevete uno in più tutti e due.',
+    'c.share': 'Invita un amico', 'c.copyLink': 'Copia il link', 'c.copied': 'Link copiato',
+    'c.shareText': 'Prendi anche tu la carta fedeltà di {business}: al primo timbro te ne regalano uno in più.',
+    'c.friends': ({ n }) => +n === 1 ? '1 amico si è unito con il tuo invito.' : `${n} amici si sono uniti con il tuo invito.`,
+    'c.double': 'Doppio timbro: {when}', 'c.doubleNow': 'Adesso!', 'c.review': 'Lascia una recensione', 'c.giftTill': 'Mostra la carta alla cassa per il tuo regalo.',
+    'c.bonus': ({ n }) => +n === 1 ? '+1 timbro in regalo' : `+${n} timbri in regalo`, 'c.friendEv': '+1 timbro: un amico si è unito', 'c.gift': 'Regalo di compleanno',
     'c.tStamp': 'Timbro aggiunto', 'c.tFull': 'Carta piena! Il premio è pronto.', 'c.tRedeem': 'Buon premio!', 'c.by': 'Carta fedeltà con'
   },
   en: {
@@ -83,6 +98,13 @@ I18N.add({
     'c.apple': 'Add to Apple Wallet', 'c.google': 'Add to Google Wallet',
     'c.walletNote': 'Wallet saving is coming soon. For now, add this page to your home screen.',
     'c.activity': 'Recent visits', 'c.joined': 'Joined', 'c.stamp': '+{n} stamp', 'c.unstamp': '−{n} stamp', 'c.redeem': 'Reward received',
+    'c.invited': 'A friend invited you: your first stamp comes with one more.',
+    'c.friendT': 'Bring a friend', 'c.friendP': 'Send your invite: when a friend gets their first stamp, you both get one more.',
+    'c.share': 'Invite a friend', 'c.copyLink': 'Copy the link', 'c.copied': 'Link copied',
+    'c.shareText': 'Get the {business} loyalty card too: your first stamp comes with one more.',
+    'c.friends': ({ n }) => +n === 1 ? '1 friend has joined with your invite.' : `${n} friends have joined with your invite.`,
+    'c.double': 'Double stamps: {when}', 'c.doubleNow': 'Right now!', 'c.review': 'Leave a review', 'c.giftTill': 'Show your card at the till for your gift.',
+    'c.bonus': ({ n }) => +n === 1 ? '+1 bonus stamp' : `+${n} bonus stamps`, 'c.friendEv': '+1 stamp: a friend joined', 'c.gift': 'Birthday gift',
     'c.tStamp': 'Stamp added', 'c.tFull': 'Card full! Your reward is ready.', 'c.tRedeem': 'Enjoy your reward!', 'c.by': 'Loyalty card by'
   },
   pl: {
@@ -97,6 +119,13 @@ I18N.add({
     'c.apple': 'Dodaj do Apple Wallet', 'c.google': 'Dodaj do Google Wallet',
     'c.walletNote': 'Zapisywanie w Portfelu już wkrótce. Na razie dodaj tę stronę do ekranu głównego.',
     'c.activity': 'Ostatnie wizyty', 'c.joined': 'Dołączenie do programu', 'c.stamp': ({ n }) => `+${n} ${I18N.plural(+n, ['pieczątka', 'pieczątki', 'pieczątek'])}`, 'c.unstamp': ({ n }) => `−${n} ${I18N.plural(+n, ['pieczątka', 'pieczątki', 'pieczątek'])}`, 'c.redeem': 'Nagroda odebrana',
+    'c.invited': 'Masz zaproszenie od znajomej osoby: przy pierwszej pieczątce dostaniesz jeszcze jedną.',
+    'c.friendT': 'Poleć znajomym', 'c.friendP': 'Wyślij zaproszenie: gdy znajoma osoba dostanie pierwszą pieczątkę, każde z Was dostanie jeszcze jedną.',
+    'c.share': 'Wyślij zaproszenie', 'c.copyLink': 'Skopiuj link', 'c.copied': 'Link skopiowany',
+    'c.shareText': 'Odbierz kartę lojalnościową {business}: przy pierwszej pieczątce dostaniesz jeszcze jedną.',
+    'c.friends': ({ n }) => `Z Twojego zaproszenia ${I18N.plural(+n, ['dołączyła 1 osoba', `dołączyły ${n} osoby`, `dołączyło ${n} osób`])}.`,
+    'c.double': 'Podwójne pieczątki: {when}', 'c.doubleNow': 'Teraz!', 'c.review': 'Wystaw opinię', 'c.giftTill': 'Pokaż kartę przy kasie i odbierz prezent.',
+    'c.bonus': ({ n }) => `+${n} ${I18N.plural(+n, ['pieczątka', 'pieczątki', 'pieczątek'])} w prezencie`, 'c.friendEv': '+1 pieczątka za zaproszenie', 'c.gift': 'Prezent urodzinowy',
     'c.tStamp': 'Pieczątka dodana', 'c.tFull': 'Karta pełna! Nagroda czeka.', 'c.tRedeem': 'Smacznego!', 'c.by': 'Karta lojalnościowa od'
   }
 });
@@ -104,6 +133,8 @@ I18N.add({
 (() => {
   const app = document.getElementById('app');
   const cardId = new URLSearchParams(location.search).get('card') || '';
+  // Bring a friend: the code of the customer whose invite link this is.
+  const ref = (new URLSearchParams(location.search).get('ref') || '').trim().toUpperCase().slice(0, 6);
   // Which customer card belongs to this phone, per café card. In connected
   // mode it also keeps the secret that proves it to the database.
   const MINE = 'timbro:mine';
@@ -162,6 +193,7 @@ I18N.add({
         <div class="box">
           <h1>${UI.esc(t('c.join', { business: card.business }))}</h1>
           <p>${UI.esc(t('c.joinP', { n: card.stampsNeeded, reward: w.reward }))}</p>
+          ${ref && UI.messagesOf(card).friend.on ? `<p class="invited" style="margin-top:14px">${t('c.invited')}</p>` : ''}
           <form id="join" novalidate>
             <label class="field"><span>${t('c.name')}</span>
               <input type="text" name="name" maxlength="60" autocomplete="name" required placeholder="${t('c.namePh')}">
@@ -185,7 +217,7 @@ I18N.add({
         e.preventDefault();
         const btn = e.target.querySelector('button'); btn.disabled = true;
         try {
-          const f = e.target, who = { name: f.name.value.trim().replace(/\s+/g, ' '), email: f.email.value.trim(), phone: f.phone.value.trim(), birthDate: f.birth.value, marketing: f.marketing.checked };
+          const f = e.target, who = { name: f.name.value.trim().replace(/\s+/g, ' '), email: f.email.value.trim(), phone: f.phone.value.trim(), birthDate: f.birth.value, marketing: f.marketing.checked, ref };
           // The same checks as the database, in the customer's language.
           const age = (Date.now() - new Date(who.birthDate)) / (365.25 * 864e5);
           const bad = !/\S+\s+\S+/.test(who.name) ? ['name', 'c.errName'] : !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(who.email) ? ['email', 'c.errEmail']
@@ -214,17 +246,30 @@ I18N.add({
     // The café's own "almost there" / "reward ready" message (dashboard → Notifications), if switched on.
     const msgs = UI.messagesOf(card), lang = UI.msgLang(card);
     const own = left <= 0 ? (msgs.ready.on && msgs.ready) : left <= (msgs.close.left || 1) ? (msgs.close.on && msgs.close) : null;
-    // The café's message to all customers comes first while it is fresh.
-    const ownText = UI.newsOf(card) || (own ? UI.fillMessage(own[lang], card, { name: me.name, left, lang }) : '');
+    // The café's message to all customers comes first while it is fresh, then the extras (birthday
+    // gift, a friend's bonus, the review link after a reward), then "almost there" / "reward ready".
+    const extra = UI.newsOf(card) ? null : UI.extraOf(card, me);
+    const ownText = UI.newsOf(card) || (extra ? UI.fillMessage(extra.rule[lang], card, { name: me.name, left, lang }) : own ? UI.fillMessage(own[lang], card, { name: me.name, left, lang }) : '');
+    const extraLink = extra && extra.k === 'review' ? `<br><a class="btn pop small review" href="${UI.esc(extra.url)}" target="_blank" rel="noopener">${t('c.review')}</a>`
+      : extra && extra.k === 'birthday' ? `<br><small>${t('c.giftTill')}</small>` : '';
+    const msgs2 = UI.messagesOf(card), when = msgs2.double.on && UI.doubleWhen(card);
+    const double = when ? `<p class="double">${UI.esc(t('c.double', { when }))}${UI.doubleNow(card) ? `<b>${t('c.doubleNow')}</b>` : ''}</p>` : '';
+    const friend = msgs2.friend.on ? `<div class="box friend"><h2>${t('c.friendT')}</h2><p>${t('c.friendP')}</p>
+      <div class="row"><button class="btn pop" type="button" data-invite>${t('c.share')}</button><button class="btn line" type="button" data-copy>${t('c.copyLink')}</button></div>
+      ${me.friends ? `<small>${UI.esc(t('c.friends', { n: me.friends }))}</small>` : ''}</div>` : '';
+    const label = { joined: () => t('c.joined'), redeem: () => t('c.redeem'), stamp: h => t('c.stamp', { n: h.n }), unstamp: h => t('c.unstamp', { n: h.n }),
+      bonus: h => t('c.bonus', { n: h.n }), friend: () => t('c.friendEv'), gift: () => t('c.gift') };
     const events = me.history.slice(-5).reverse().map(h => {
-      const what = h.type === 'joined' ? t('c.joined') : h.type === 'redeem' ? t('c.redeem') : t(h.type === 'stamp' ? 'c.stamp' : 'c.unstamp', { n: h.n });
+      const what = (label[h.type] || label.stamp)(h);
       return `<li><span>${what}</span><span>${new Date(h.t).toLocaleDateString(I18N.locale(), { day: 'numeric', month: 'short' })}</span></li>`;
     }).join('');
 
     app.innerHTML = `${UI.renderPass(card, me, { pop })}
-      ${ownText ? `<p class="left mine">${UI.esc(ownText)}</p>` : `<p class="left">${left > 0 ? t('c.left', { n: left, reward: UI.esc(w.reward) }) : t('c.claim')}</p>`}
+      ${ownText ? `<p class="left mine">${UI.esc(ownText)}${extraLink}</p>` : `<p class="left">${left > 0 ? t('c.left', { n: left, reward: UI.esc(w.reward) }) : t('c.claim')}</p>`}
+      ${double}
       <div class="wallet">${walletButtons(card, me)}
       </div>
+      ${friend}
       ${CONFIG.walletApi && (CONFIG.walletPlatforms || ['apple', 'google']).includes(UI.getPlatform() === 'google' ? 'google' : 'apple') ? '' : `<p class="note">${t('c.walletNote')}</p>`}
       <div class="box"><h2>${t('c.activity')}</h2><ul class="history">${events}</ul></div>
       <p class="by">${t('c.by')} <i></i><b>${UI.esc(CONFIG.brand)}</b></p>`;
@@ -233,6 +278,15 @@ I18N.add({
   I18N.switchers();
   I18N.apply();
   document.addEventListener('langchange', () => render(false));
+  // Bring a friend: share the invite link (the phone's share sheet, else WhatsApp), or copy it.
+  app.addEventListener('click', async e => {
+    const share = e.target.closest('[data-invite]'), copy = e.target.closest('[data-copy]');
+    if (!share && !copy) return;
+    const url = UI.inviteUrl(card, me), text = t('c.shareText', { business: card.business });
+    if (copy) { await UI.copy(url); UI.toast(t('c.copied')); return; }
+    if (navigator.share) { try { await navigator.share({ title: card.business, text, url }); } catch (err) { /* closed */ } return; }
+    window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank', 'noopener');
+  });
   // Before going to the wallet server, add the name/mark images (see UI.walletAssets).
   app.addEventListener('submit', async e => {
     const form = e.target.closest('form[action]');

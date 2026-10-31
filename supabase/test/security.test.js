@@ -202,10 +202,61 @@ assert.equal(await call(users.ownerA, 'owner_news_targets', { p_card_id: id }), 
 await rejects(call(anon, 'owner_send_news', { p_card_id: id, p_text: 'x' }), /permission denied/);
 ok('owners send one message a day to their own customers; nobody else can send it or read who gets it');
 
+// ---- extras: Bring a friend, double-stamp hours, birthday gift, review link ----
+const xid = 'testx-' + Date.now().toString(36);
+const xdev = await call(anon, 'device_link', { p_code: (await call(users.ownerA, 'owner_link_code')).code, p_name: 'Cassa X' });
+await call(users.ownerA, 'owner_save_card', { p_card: { id: xid, business: 'Bar Test', title: 'Carta', reward: 'un caffè', stampsNeeded: 8 } });
+const person = (name, birth = '1990-03-03') => ({ p_card_id: xid, p_name: name, p_email: name.split(' ')[0].toLowerCase() + '@x.it', p_phone: '+393331234567', p_birth: birth });
+const stamp = code => call(anon, 'stamper_stamp', { p_token: xdev.token, p_code: code, p_delta: 1 });
+const look = async code => (await call(anon, 'stamper_lookup', { p_token: xdev.token, p_code: code })).customer;
+const saveX = m => call(users.ownerA, 'owner_save_messages', { p_card_id: xid, p_messages: m });
+let saved = await saveX({ double: { on: true, week: [3, 1, 9, 'x', 1], from: '15', to: 17 }, review: { on: true, url: 'javascript:alert(1)' }, birthday: { on: false, it: 'Auguri {name}!' } });
+assert.deepEqual(saved.messages.double, { on: true, week: [1, 3], from: 15, to: 17 }); assert.equal(saved.messages.review.url, undefined);
+assert.equal(saved.messages.birthday.on, false); assert.equal(saved.messages.birthday.it, 'Auguri {name}!');
+saved = await saveX({ review: { on: true, url: 'https://g.page/r/abc/review' } });
+assert.equal(saved.messages.review.url, 'https://g.page/r/abc/review'); assert.equal(saved.messages.friend, undefined);
+ok('extras are saved cleaned: weekdays 1-7, hours, and only https review links');
+
+const inviter = await call(anon, 'join_card', person('Anna Neri'));
+const other = await call(anon, 'join_card', { ...person('Otto Blu'), p_card_id: id });
+const f1 = await call(anon, 'join_card', { ...person('Bea Verdi'), p_ref: inviter.id.toLowerCase() });
+const f2 = await call(anon, 'join_card', { ...person('Carla Gialli'), p_ref: other.id });   // an invite from another card counts for nothing
+let r = await stamp(f1.id);
+assert.equal(r.customer.stamps, 1); assert.equal(r.extra.friend, null, 'Bring a friend is off');
+await saveX({ friend: { on: true } });
+const f3 = await call(anon, 'join_card', { ...person('Dario Rosa'), p_ref: inviter.id });
+r = await stamp(f3.id);
+assert.equal(r.customer.stamps, 2); assert.equal(r.extra.friend, inviter.id);
+assert.equal((await look(inviter.id)).stamps, 1); assert.equal((await look(inviter.id)).friends, 1); assert.ok((await look(inviter.id)).lastFriend > 0);
+assert.equal((await stamp(f3.id)).customer.stamps, 3, 'only the first stamp has the friend bonus');
+assert.equal((await stamp(f2.id)).customer.stamps, 1); assert.equal((await stamp(f1.id)).customer.stamps, 2, 'joined before it was on: already counted');
+const visits = (await pool.query(`select count(*) filter (where type = 'stamp') v, count(*) filter (where type = 'bonus') b from timbro.events where customer_id = $1`, [f3.id])).rows[0];
+assert.equal(+visits.v, 2); assert.equal(+visits.b, 1);
+ok('Bring a friend: the first stamp gives the friend and the inviter one more each, once; visits still count once');
+
+await saveX({ double: { on: true, week: [1, 2, 3, 4, 5, 6, 7], from: 0, to: 24 } });
+r = await stamp(f1.id);
+assert.equal(r.extra.double, true); assert.equal(r.customer.stamps, 4);
+await saveX({ double: { on: true, week: [], from: 0, to: 24 } });
+assert.equal((await stamp(f1.id)).customer.stamps, 5);
+ok('double-stamp hours give two stamps only on the chosen days and hours');
+
+const today = new Date(), bd = `${today.getFullYear() - 30}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+const birthday = await call(anon, 'join_card', person('Elena Viola', bd.endsWith('02-29') ? '1992-02-28' : bd));
+assert.equal((await look(birthday.id)).birthday, true); assert.equal((await look(f1.id)).birthday, false);
+await rejects(call(anon, 'stamper_gift', { p_token: xdev.token, p_code: birthday.id }), /No birthday gift/, 'off by default');
+await saveX({ birthday: { on: true } });
+await rejects(call(anon, 'stamper_gift', { p_token: xdev.token, p_code: f1.id }), /No birthday gift/);
+r = await call(anon, 'stamper_gift', { p_token: xdev.token, p_code: birthday.id });
+assert.equal(r.customer.birthday, false); assert.equal(r.customer.history.at(-1).type, 'gift');
+await rejects(call(anon, 'stamper_gift', { p_token: xdev.token, p_code: birthday.id }), /No birthday gift/, 'once a year');
+await rejects(call(anon, 'stamper_gift', { p_token: 'nope', p_code: birthday.id }), /not linked/);
+ok('birthday gift: only when switched on, in the birthday week, once a year, from a linked till');
+
 // ---- no function is open by accident (Postgres lets PUBLIC run new functions) ----
 const open = async role => (await pool.query(`select coalesce(string_agg(p.proname, ',' order by p.proname), '') as f from pg_proc p
   join pg_namespace s on s.oid = p.pronamespace where s.nspname = 'timbro' and has_function_privilege($1, p.oid, 'execute')`, [role])).rows[0].f.split(',').filter(Boolean);
-const PUBLIC_FNS = ['device_link', 'get_card', 'get_my_card', 'join_card', 'reminders_due', 'stamper_lookup', 'stamper_redeem', 'stamper_stamp', 'wallet_register', 'wallet_targets', 'wallet_unregister', 'wallet_updated'];
+const PUBLIC_FNS = ['device_link', 'get_card', 'get_my_card', 'join_card', 'reminders_due', 'stamper_gift', 'stamper_lookup', 'stamper_redeem', 'stamper_stamp', 'wallet_register', 'wallet_targets', 'wallet_unregister', 'wallet_updated'];
 assert.deepEqual(await open('anon'), PUBLIC_FNS);
 assert.deepEqual(await open('authenticated'), [...PUBLIC_FNS, 'admin_ask_changes', 'admin_cards', 'admin_publish', 'admin_set_plan',
   'owner_data', 'owner_link_code', 'owner_news_targets', 'owner_remove_device', 'owner_save_card', 'owner_set_device_location', 'owner_save_messages', 'owner_send_design', 'owner_send_news'].sort());

@@ -135,6 +135,22 @@ try {
   assert.equal(withNews.storeCard.backFields.find(f => f.key === 'news').value, news);
   ok('a message to all customers reaches Apple and Google Wallet, sent only by the café\'s owner');
 
+  // Extras: a birthday customer's pass carries the birthday message, the double-stamp hours and the review link;
+  // a friend's first stamp gives the inviter (Giulia) a stamp, and her pass thanks her.
+  await pool.query(`update timbro.cards set news_at = now() - interval '4 days' where id = $1`, [id]);
+  await call(owner, 'owner_save_messages', { p_card_id: id, p_messages: { birthday: { on: true }, friend: { on: true },
+    double: { on: true, week: [1, 2, 3, 4, 5, 6, 7], from: 0, to: 24 }, review: { on: true, url: 'https://g.page/r/test/review' } } });
+  const t = new Date(), bd = `${t.getFullYear() - 30}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+  const bday = await call({ role: 'anon' }, 'join_card', { p_card_id: id, p_name: 'Elena Viola', p_email: 'e@test.it', p_phone: '+393331234567', p_birth: bd.endsWith('02-29') ? `${t.getFullYear() - 31}-02-28` : bd, p_ref: me.id });
+  const pb = passJson(Buffer.from(await (await W('/apple', { method: 'POST', headers: { origin: ORIGIN, 'content-type': 'application/json' }, body: JSON.stringify({ lang: 'it', card: { id }, customer: { id: bday.id, secret: bday.secret } }) })).arrayBuffer()));
+  const back = k => (pb.storeCard.backFields.find(f => f.key === k) || {}).value;
+  assert.match(back('news'), /^Buon compleanno Elena!/); assert.match(back('double'), /00:00-24:00/); assert.equal(back('review'), 'https://g.page/r/test/review');
+  const st = await call({ role: 'anon' }, 'stamper_stamp', { p_token: dev.token, p_code: bday.id, p_delta: 1 });
+  assert.equal(st.customer.stamps, 3); assert.equal(st.extra.friend, me.id);
+  const thanked = passJson(Buffer.from(await (await W(`/passkit/v1/passes/${PT}/${serial}`, { headers: auth })).arrayBuffer()));
+  assert.match(thanked.storeCard.backFields.find(f => f.key === 'news').value, /^Grazie Giulia! Un amico/);
+  ok('extras reach Wallet: birthday message, double-stamp hours and review link on the pass; the inviter is thanked');
+
   // Removing the pass.
   assert.equal((await W(`/passkit/v1/devices/dev1/registrations/${PT}/${serial}`, { method: 'DELETE', headers: auth })).status, 200);
   assert.equal(((await (await W('/notify', { method: 'POST', headers: { origin: ORIGIN }, body: JSON.stringify({ token: dev.token, code: me.id }) })).json()).phones), 0);

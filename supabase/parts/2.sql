@@ -1,5 +1,11 @@
--- Timbro database, part 2 of 8. Run the parts in order.
+-- Timbro database, part 2 of 9. Run the parts in order.
 set search_path = timbro, extensions;
+
+create table if not exists link_codes (                        -- one-time codes to link a phone
+  code         text primary key,
+  business_id  uuid not null references businesses(id) on delete cascade,
+  expires_at   timestamptz not null
+);
 
 create table if not exists events (
   id           bigint generated always as identity primary key,
@@ -11,6 +17,10 @@ create table if not exists events (
 );
 
 create index if not exists events_customer on events(customer_id, created_at);
+
+alter table events drop constraint if exists events_type_check;
+
+alter table events add constraint events_type_check check (type in ('joined','stamp','unstamp','redeem','bonus','friend','gift'));
 
 create table if not exists admins (user_id uuid primary key);   -- Witkowski Design accounts
 
@@ -82,12 +92,3 @@ begin
   returning id into v;
   return v;
 end $$;
-
-create or replace function _clean_design(d jsonb) returns jsonb
-language sql immutable
-as $$
-  select coalesce(jsonb_object_agg(key, value), '{}'::jsonb)
-  from jsonb_each(coalesce(d, '{}'::jsonb))
-  where key in ('style','color','ink','stamp','shape','mark','markText','empty','font','strip','tagline','icon','logo','stampImage','stripImage','hideFields')
-    and octet_length(value::text) < 1200000
-$$;

@@ -149,6 +149,23 @@
   }
   const byId = list => Object.fromEntries((list || []).map(x => [x.id, x]));
 
+  // What the database works out for a customer's extras (schema.sql _customer_json), worked out
+  // here for the demo: birthday gift due (their birthday week, no gift since), when a friend's
+  // bonus and the last reward came, and how many friends joined with their invite.
+  function withExtras(c, db) {
+    if (!c) return c;
+    const last = type => (c.history || []).filter(h => h.type === type).reduce((a, h) => Math.max(a, h.t), 0) || null;
+    let birthday = false;
+    if (c.birthDate) {
+      const b = new Date(c.birthDate + 'T00:00:00'), now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      let bd = new Date(today.getFullYear(), b.getMonth(), b.getDate());
+      if (bd > today) bd = new Date(today.getFullYear() - 1, b.getMonth(), b.getDate());
+      birthday = (today - bd) / 864e5 <= 6.5 && !(c.giftAt && c.giftAt >= bd.getTime());
+    }
+    const friends = Object.values(db.customers).filter(f => f.referredBy === c.id && f.refPaid).length;
+    return Object.assign(c, { birthday, lastFriend: last('friend'), lastRedeem: last('redeem'), friends });
+  }
+
   const Store = {
     get remote() { return Boolean(remoteDb); },
     attachRemote(data) { remoteDb = { cards: byId(data.cards), customers: byId(data.customers) }; },
@@ -207,7 +224,10 @@
       if (typeof who === 'string') who = { name: who };
       let id;
       do { id = code(6); } while (db.customers[id]);
+      // Bring a friend: who invited them (a customer of the same card).
+      const inviter = who.ref && db.customers[String(who.ref).trim().toUpperCase()];
       db.customers[id] = {
+        referredBy: inviter && inviter.cardId === cardId ? inviter.id : null, refPaid: false,
         id, cardId, name: (who.name || '').trim() || 'Guest',
         email: who.email || '', phone: who.phone || '', birthDate: who.birthDate || null, marketing: !!who.marketing,
         stamps: 0, redeemed: 0, joinedAt: Date.now(), lastVisit: null,
@@ -216,26 +236,52 @@
       save(db);
       return db.customers[id];
     },
-    getCustomer(id) { return load().customers[(id || '').trim().toUpperCase()] || null; },
+    getCustomer(id) { const db = load(); return withExtras(db.customers[(id || '').trim().toUpperCase()] || null, db); },
     listCustomers(cardId) {
       return Object.values(load().customers)
         .filter(c => !cardId || c.cardId === cardId)
         .sort((a, b) => (b.lastVisit || b.joinedAt) - (a.lastVisit || a.joinedAt));
     },
 
-    // Add (or with a negative number, remove) stamps. Never goes past the goal.
+    // Add a stamp for a visit (delta > 0) or remove one. Never goes past the goal. Like the
+    // database's stamper_stamp, extras add more as a 'bonus': one in the double-stamp hours, and
+    // on a friend's first stamp one more for them and one ('friend') for whoever invited them.
+    // Returns { customer, extra: { double, friend: the inviter's code } }.
     stamp(customerId, delta = 1) {
       const db = load();
       const c = db.customers[customerId];
       if (!c) throw new Error('No customer with that code.');
-      const card = db.cards[c.cardId];
-      const next = Math.max(0, Math.min(card.stampsNeeded, c.stamps + delta));
-      if (next === c.stamps) return c;
-      c.stamps = next;
-      c.lastVisit = Date.now();
-      c.history.push({ t: Date.now(), type: delta > 0 ? 'stamp' : 'unstamp', n: Math.abs(delta) });
+      const card = db.cards[c.cardId], now = Date.now(), extra = { double: false, friend: null };
+      let more = 0;
+      if (delta > 0 && c.stamps < card.stampsNeeded && window.UI) {
+        const m = UI.messagesOf(card);
+        if (UI.doubleNow(card)) { extra.double = true; more++; }
+        if (c.referredBy && !c.refPaid && m.friend.on && !c.history.some(h => h.type === 'stamp')) {
+          more++; c.refPaid = true;
+          const inv = db.customers[c.referredBy];
+          if (inv && inv.cardId === c.cardId && inv.stamps < card.stampsNeeded) { inv.stamps++; inv.history.push({ t: now, type: 'friend', n: 1 }); extra.friend = inv.id; }
+        }
+      }
+      const next = Math.max(0, Math.min(card.stampsNeeded, c.stamps + (delta > 0 ? 1 + more : -1)));
+      if (next !== c.stamps) {
+        c.history.push({ t: now, type: delta > 0 ? 'stamp' : 'unstamp', n: 1 });
+        if (next - c.stamps > 1) c.history.push({ t: now, type: 'bonus', n: next - c.stamps - 1 });
+        c.stamps = next;
+        c.lastVisit = now;
+      }
       save(db);
-      return c;
+      return { customer: withExtras(c, db), extra };
+    },
+
+    // The birthday gift (birthday switched on, in the customer's birthday week, once a year).
+    gift(customerId) {
+      const db = load(), c = withExtras(db.customers[customerId], db);
+      const card = c && db.cards[c.cardId];
+      if (!c || !window.UI || !UI.messagesOf(card).birthday.on || !c.birthday) throw new Error('No birthday gift due for this customer.');
+      c.giftAt = c.lastVisit = Date.now();
+      c.history.push({ t: c.giftAt, type: 'gift' });
+      save(db);
+      return withExtras(c, db);
     },
 
     // Hand over the reward: card starts again from zero.

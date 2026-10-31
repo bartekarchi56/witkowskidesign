@@ -78,6 +78,7 @@ h1{font-size:24px;font-stretch:112%;font-weight:800}
       <div class="who"><h2 id="who-name"></h2><p id="who-sub"></p></div>
       <div id="who-pass" style="width:100%;display:grid;justify-items:center"></div>
       <button class="btn pop block big" type="button" id="main-action"></button>
+      <button class="btn line block" type="button" id="gift" hidden></button>
       <div class="minor">
         <button class="btn line" type="button" id="undo" data-i18n="s.undo"></button>
         <button class="btn line" type="button" id="next" data-i18n="s.next"></button>
@@ -106,6 +107,8 @@ I18N.add({
     's.linkT': 'Collega questo telefono', 's.linkP': 'Il titolare trova il codice nella sua area, sezione "Cassa". Basta farlo una volta.',
     's.linkCode': 'Codice di collegamento', 's.linkName': 'Nome di questo telefono', 's.linkNamePh': 'Es. Cassa 1, oppure il nome del barista', 's.linkBtn': 'Collega',
     's.linkedTo': 'Collegato a {business} · {name}.', 's.unlink': 'Scollega', 's.unlinkQ': 'Scollegare questo telefono? Per timbrare servirà un nuovo codice.', 's.offline': 'Nessuna connessione. Controlla internet e riprova.',
+    's.tDouble': 'Doppio timbro! ({have}/{need})', 's.tFriend': 'Primo timbro di un amico invitato: uno in più a lui e a chi l\'ha invitato.',
+    's.bday': '🎂 Compleanno questa settimana', 's.gift': 'Dai il regalo di compleanno: {reward}', 's.tGift': 'Regalo di compleanno dato. Auguri!',
     's.tAdded': 'Timbro aggiunto ({have}/{need})', 's.tFull': 'Carta piena. Dai il premio!', 's.tGiven': 'Premio dato. La carta riparte.', 's.tRemoved': 'Timbro tolto'
   },
   en: {
@@ -118,6 +121,8 @@ I18N.add({
     's.linkT': 'Link this phone', 's.linkP': 'The owner finds the code in their account, under "Till". You only do this once.',
     's.linkCode': 'Link code', 's.linkName': 'Name for this phone', 's.linkNamePh': 'E.g. Till 1, or the barista\'s name', 's.linkBtn': 'Link',
     's.linkedTo': 'Linked to {business} · {name}.', 's.unlink': 'Unlink', 's.unlinkQ': 'Unlink this phone? You will need a new code to stamp.', 's.offline': 'No connection. Check the internet and try again.',
+    's.tDouble': 'Double stamps! ({have}/{need})', 's.tFriend': 'An invited friend\'s first stamp: one more for them and for whoever invited them.',
+    's.bday': '🎂 Birthday this week', 's.gift': 'Give the birthday gift: {reward}', 's.tGift': 'Birthday gift given. Happy birthday!',
     's.tAdded': 'Stamp added ({have}/{need})', 's.tFull': 'Card full. Give the reward!', 's.tGiven': 'Reward given. The card starts again.', 's.tRemoved': 'Stamp removed'
   },
   pl: {
@@ -130,6 +135,8 @@ I18N.add({
     's.linkT': 'Połącz ten telefon', 's.linkP': 'Właściciel znajdzie kod w swoim panelu, w zakładce „Kasa”. Robisz to tylko raz.',
     's.linkCode': 'Kod połączenia', 's.linkName': 'Nazwa tego telefonu', 's.linkNamePh': 'Np. Kasa 1 albo imię baristy', 's.linkBtn': 'Połącz',
     's.linkedTo': 'Połączono: {business} · {name}.', 's.unlink': 'Odłącz', 's.unlinkQ': 'Odłączyć ten telefon? Aby przybijać pieczątki, potrzebny będzie nowy kod.', 's.offline': 'Brak połączenia. Sprawdź internet i spróbuj ponownie.',
+    's.tDouble': 'Podwójna pieczątka! ({have}/{need})', 's.tFriend': 'Pierwsza pieczątka z zaproszenia: jedna więcej dla tej osoby i dla osoby, która zaprosiła.',
+    's.bday': '🎂 Urodziny w tym tygodniu', 's.gift': 'Wydaj prezent urodzinowy: {reward}', 's.tGift': 'Prezent urodzinowy wydany. Sto lat!',
     's.tAdded': 'Pieczątka dodana ({have}/{need})', 's.tFull': 'Karta pełna. Wydaj nagrodę!', 's.tGiven': 'Nagroda wydana. Karta zaczyna się od nowa.', 's.tRemoved': 'Pieczątka usunięta'
   }
 });
@@ -141,11 +148,12 @@ I18N.add({
 
   // Same calls in both modes; each returns { customer, card } or null.
   const api = Remote.enabled ? {
-    lookup: code => Remote.lookup(code), stamp: (code, d) => Remote.stamp(code, d), redeem: code => Remote.redeem(code)
+    lookup: code => Remote.lookup(code), stamp: (code, d) => Remote.stamp(code, d), redeem: code => Remote.redeem(code), gift: code => Remote.gift(code)
   } : {
     lookup: async code => { const c = Store.getCustomer(code); return c ? { customer: c, card: Store.getCard(c.cardId) } : null; },
-    stamp: async (code, d) => { Store.stamp(code, d); return api.lookup(code); },
-    redeem: async code => { Store.redeem(code); return api.lookup(code); }
+    stamp: async (code, d) => { const { extra } = Store.stamp(code, d); return { ...await api.lookup(code), extra }; },
+    redeem: async code => { Store.redeem(code); return api.lookup(code); },
+    gift: async code => { Store.gift(code); return api.lookup(code); }
   };
   const fail = err => { lastErr = null; $('err').textContent = navigator.onLine === false ? t('s.offline') : err.message; UI.toast(navigator.onLine === false ? t('s.offline') : err.message); };
 
@@ -242,7 +250,11 @@ I18N.add({
     const title = (I18N.lang === 'en' && card.titleEn) || card.title;
     const full = c.stamps >= card.stampsNeeded;
     $('who-name').textContent = c.name;
-    $('who-sub').textContent = t('s.sub', { title, n: c.redeemed });
+    // The birthday gift, when the café switched it on and it is due (their birthday week, once a year).
+    const bday = UI.messagesOf(card).birthday.on && c.birthday;
+    $('who-sub').textContent = t('s.sub', { title, n: c.redeemed }) + (bday ? ' · ' + t('s.bday') : '');
+    $('gift').hidden = !bday;
+    $('gift').textContent = t('s.gift', { reward });
     $('who-pass').innerHTML = UI.renderPass(card, c, { pop, compact: true });
     $('main-action').textContent = full ? t('s.give', { reward }) : t('s.add');
     $('main-action').dataset.mode = full ? 'redeem' : 'stamp';
@@ -257,11 +269,12 @@ I18N.add({
     const code = state.customer.id;
     if (e.currentTarget.dataset.mode === 'redeem') { state = await api.redeem(code); draw(); UI.toast(t('s.tGiven')); return; }
     state = await api.stamp(code, 1);
-    const { customer: c, card } = state;
+    const { customer: c, card, extra = {} } = state;
     draw(c.stamps - 1);
-    navigator.vibrate && navigator.vibrate(30);
-    UI.toast(c.stamps >= card.stampsNeeded ? t('s.tFull') : t('s.tAdded', { have: c.stamps, need: card.stampsNeeded }));
+    navigator.vibrate && navigator.vibrate(extra.double || extra.friend ? [30, 60, 30] : 30);
+    UI.toast(c.stamps >= card.stampsNeeded ? t('s.tFull') : extra.friend ? t('s.tFriend') : t(extra.double ? 's.tDouble' : 's.tAdded', { have: c.stamps, need: card.stampsNeeded }));
   }));
+  $('gift').addEventListener('click', () => act(async () => { state = await api.gift(state.customer.id); draw(); UI.toast(t('s.tGift')); }));
   $('undo').addEventListener('click', () => act(async () => { state = await api.stamp(state.customer.id, -1); draw(); UI.toast(t('s.tRemoved')); }));
   $('next').addEventListener('click', () => {
     state = null; $('stamp').hidden = true; $('find').hidden = false;

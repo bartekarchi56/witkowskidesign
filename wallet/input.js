@@ -38,6 +38,8 @@ export function readPassRequest(raw) {
     stamps: Math.max(0, parseInt(customer.stamps, 10) || 0),
     // Times (ms) for the reminder: shown from remindedAt until the next visit.
     joinedAt: Math.max(0, +customer.joinedAt || 0), lastVisit: Math.max(0, +customer.lastVisit || 0), remindedAt: Math.max(0, +customer.remindedAt || 0),
+    // Extras (database cards): birthday gift due now, and when a friend's bonus and the last reward came (ms).
+    birthday: customer.birthday === true, lastFriend: Math.max(0, +customer.lastFriend || 0), lastRedeem: Math.max(0, +customer.lastRedeem || 0),
     // The customer's own secret (database cards): it becomes the pass's token for live updates.
     secret: /^[a-f0-9]{48}$/.test(customer.secret || '') ? customer.secret : ''
   };
@@ -49,7 +51,7 @@ export function readPassRequest(raw) {
 }
 
 export const LABELS = {
-  it: { stamps: 'TIMBRI', reward: 'PREMIO', member: 'CLIENTE', how: 'Come funziona', howText: n => `Mostra il codice alla cassa a ogni visita: ricevi un timbro. Dopo ${n} timbri ricevi il premio.`, by: 'Carta fedeltà con', change: 'Timbri: %@', points: 'Timbri', news: 'Novità', quiet: 'Un timbro a ogni visita.' },
-  pl: { stamps: 'PIECZĄTKI', reward: 'NAGRODA', member: 'KLIENT', how: 'Jak to działa', howText: n => `Przy każdej wizycie pokaż kod przy kasie i odbierz pieczątkę. Po ${n} pieczątkach nagroda jest Twoja.`, by: 'Karta lojalnościowa od', change: 'Pieczątki: %@', points: 'Pieczątki', news: 'Nowości', quiet: 'Pieczątka przy każdej wizycie.' },
-  en: { stamps: 'STAMPS', reward: 'REWARD', member: 'MEMBER', how: 'How it works', howText: n => `Show the code at the till every visit to get a stamp. After ${n} stamps you get the reward.`, by: 'Loyalty card by', change: 'Stamps: %@', points: 'Stamps', news: 'News', quiet: 'One stamp every visit.' }
+  it: { stamps: 'TIMBRI', reward: 'PREMIO', member: 'CLIENTE', how: 'Come funziona', howText: n => `Mostra il codice alla cassa a ogni visita: ricevi un timbro. Dopo ${n} timbri ricevi il premio.`, by: 'Carta fedeltà con', change: 'Timbri: %@', points: 'Timbri', news: 'Novità', quiet: 'Un timbro a ogni visita.', double: 'Doppio timbro', review: 'Lascia una recensione' },
+  pl: { stamps: 'PIECZĄTKI', reward: 'NAGRODA', member: 'KLIENT', how: 'Jak to działa', howText: n => `Przy każdej wizycie pokaż kod przy kasie i odbierz pieczątkę. Po ${n} pieczątkach nagroda jest Twoja.`, by: 'Karta lojalnościowa od', change: 'Pieczątki: %@', points: 'Pieczątki', news: 'Nowości', quiet: 'Pieczątka przy każdej wizycie.', double: 'Podwójne pieczątki', review: 'Wystaw opinię' },
+  en: { stamps: 'STAMPS', reward: 'REWARD', member: 'MEMBER', how: 'How it works', howText: n => `Show the code at the till every visit to get a stamp. After ${n} stamps you get the reward.`, by: 'Loyalty card by', change: 'Stamps: %@', points: 'Stamps', news: 'News', quiet: 'One stamp every visit.', double: 'Double stamps', review: 'Leave a review' }
 };

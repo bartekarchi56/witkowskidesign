@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { settings } from './settings.js';
 import { colours } from './images.js';
 import { LABELS } from './input.js';
-import { currentMessage } from './messages.js';
+import { currentMessage, doubleWhen, reviewUrl } from './messages.js';
 
 const safe = s => s.replace(/[^\w.-]/g, '_');
 
@@ -36,7 +36,9 @@ function passParts({ card, customer, lang }, live) {
   };
   const object = {
     loyaltyPoints: { label: L.points, balance: { string: `${customer.stamps}/${card.stampsNeeded}` } },
-    textModulesData: [{ id: 'reward', header: L.reward, body: reward }, { id: 'how', header: L.how, body: L.howText(card.stampsNeeded) }],
+    textModulesData: [{ id: 'reward', header: L.reward, body: reward }, { id: 'how', header: L.how, body: L.howText(card.stampsNeeded) },
+      ...(doubleWhen(card, lang) ? [{ id: 'double', header: L.double, body: doubleWhen(card, lang) }] : [])],
+    ...(reviewUrl(card) ? { linksModuleData: { uris: [{ id: 'review', uri: reviewUrl(card), description: L.review }] } } : {}),
     heroImage: img('/img/strip', { ...look, need: card.stampsNeeded, have: customer.stamps }),
     messages: []
   };

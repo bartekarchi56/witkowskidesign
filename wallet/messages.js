@@ -5,13 +5,22 @@ export const DEFAULTS = {
   close: { on: true, left: 1, it: 'Ancora {left} per {reward}! Ti aspettiamo da {business}.', en: 'Just {left} to go for {reward}! See you at {business}.' },
   ready: { on: true, it: '{name}, il tuo premio è pronto: {reward}. Mostra la carta alla cassa.', en: '{name}, your reward is ready: {reward}. Show your card at the till.' },
   remind: { on: true, days: 21, it: 'Ciao {name}! Ancora {left} per {reward}. Passa a trovarci da {business}.', en: 'Hi {name}! Just {left} to go for {reward}. Come and see us at {business}.' },
-  near: { on: false, it: 'Sei vicino a {business}: ancora {left} per {reward}.', en: 'You are near {business}: {left} to go for {reward}.' }
+  near: { on: false, it: 'Sei vicino a {business}: ancora {left} per {reward}.', en: 'You are near {business}: {left} to go for {reward}.' },
+  // Extras (supabase/updates/14a-c), off until the café switches them on.
+  friend: { on: false, it: 'Grazie {name}! Un amico si è unito con il tuo invito: un timbro in regalo per te.', en: 'Thanks {name}! A friend joined with your invite: a free stamp for you.' },
+  double: { on: false, week: [2, 3], from: 15, to: 17, it: '', en: '' },
+  birthday: { on: false, it: 'Buon compleanno {name}! Questa settimana {reward} te lo offriamo noi 🎂', en: 'Happy birthday {name}! This week {reward} is on us 🎂' },
+  review: { on: false, url: '', it: 'Ti è piaciuto? Lasciaci una recensione su Google: ci aiuta tantissimo.', en: 'Enjoyed it? Leave us a Google review: it helps us a lot.' }
 };
 const PL = {
   close: 'Jeszcze {left} i odbierasz nagrodę: {reward}. {business} czeka na Ciebie!',
   ready: '{name}, Twoja nagroda czeka: {reward}. Pokaż kartę przy kasie.',
   remind: 'Cześć {name}! Jeszcze {left} i odbierasz nagrodę: {reward}. Wpadnij, {business} czeka na Ciebie.',
-  near: '{business} jest tuż obok! Jeszcze {left} i odbierasz nagrodę: {reward}.'
+  near: '{business} jest tuż obok! Jeszcze {left} i odbierasz nagrodę: {reward}.',
+  friend: 'Dziękujemy, {name}! Znajomy dołączył z Twojego zaproszenia: pieczątka w prezencie dla Ciebie.',
+  double: '',
+  birthday: 'Wszystkiego najlepszego, {name}! W tym tygodniu {reward} na nasz koszt 🎂',
+  review: 'Smakowało? Zostaw nam opinię w Google: bardzo nam to pomoże.'
 };
 for (const k of Object.keys(PL)) DEFAULTS[k].pl = PL[k];
 
@@ -41,6 +50,12 @@ export function readMessages(raw) {
     };
     if (k === 'close') out[k].left = int(m.left, 1, 3, DEFAULTS.close.left);
     if (k === 'remind') out[k].days = int(m.days, 7, 90, DEFAULTS.remind.days);
+    if (k === 'double') {
+      out[k].week = [...new Set((Array.isArray(m.week) ? m.week : DEFAULTS.double.week).map(Number).filter(n => n >= 1 && n <= 7))].sort();
+      const hour = (v, lo, hi, d) => { const n = parseInt(v, 10); return Number.isFinite(n) ? Math.max(lo, Math.min(hi, n)) : d; };   // 0 is midnight, not "unset"
+      out[k].from = hour(m.from, 0, 23, DEFAULTS.double.from); out[k].to = hour(m.to, 1, 24, DEFAULTS.double.to);
+    }
+    if (k === 'review') out[k].url = /^https:\/\/\S{4,}$/.test(m.url || '') ? str(m.url, 300) : '';
     if (k === 'near') {
       const lat = Number(m.lat), lng = Number(m.lng);
       if (Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180 && m.lat !== '' && m.lng !== '') Object.assign(out[k], { lat, lng });
@@ -65,19 +80,42 @@ export const reminded = customer => Boolean(customer.remindedAt) && customer.rem
 export const NEWS_HOURS = 72;
 export const freshNews = (card, now = Date.now()) => card.news && card.newsAt && now - card.newsAt < NEWS_HOURS * 3600000 ? str(card.news, 140) : '';
 
+// The extras' message for a customer now (UI.extraOf on the website): the birthday gift in their
+// birthday week, a friend's bonus (3 days), or the review request (3 days after a reward).
+const EXTRA_MS = 72 * 3600000;
+export function extraOf(card, customer, now = Date.now()) {
+  const m = card.messages || readMessages({}), recent = t => t && now - t < EXTRA_MS;
+  if (m.birthday.on && customer.birthday) return { k: 'birthday', rule: m.birthday };
+  if (m.friend.on && recent(customer.lastFriend)) return { k: 'friend', rule: m.friend };
+  if (m.review.on && m.review.url && recent(customer.lastRedeem)) return { k: 'review', rule: m.review, url: m.review.url };
+  return null;
+}
+
 // The message a pass shows right now: an explicit notice from the server, else the café's
-// message to all customers (for 3 days), else the café's reminder until the next visit,
-// else "reward ready" or "almost there" when they apply.
+// message to all customers (for 3 days), else an extra (birthday, a friend's bonus, a review
+// request), else the café's reminder until the next visit, else "reward ready" or "almost there".
 export function currentMessage(card, customer, lang, notice) {
   if (notice) return str(notice, 140);
   const news = freshNews(card);
   if (news) return news;
+  const extra = extraOf(card, customer);
+  if (extra) { const ml = msgLang(card, lang); return fill(extra.rule[ml], card, { name: customer.name, left: card.stampsNeeded - customer.stamps, lang: ml }); }
   const m = card.messages || readMessages({}), left = card.stampsNeeded - customer.stamps;
   const rule = left > 0 && m.remind.on && reminded(customer) ? m.remind
     : left <= 0 ? (m.ready.on && m.ready) : left <= m.close.left ? (m.close.on && m.close) : null;
   const ml = msgLang(card, lang);
   return rule ? fill(rule[ml], card, { name: customer.name, left, lang: ml }) : '';
 }
+
+// The double-stamp hours for the back of the pass ("mar, mer · 15:00-17:00"), or '' when off.
+export function doubleWhen(card, lang) {
+  const d = card.messages && card.messages.double;
+  if (!d || !d.on || !d.week.length) return '';
+  const loc = { it: 'it-IT', en: 'en-GB', pl: 'pl-PL' }[lang] || 'it-IT', h = x => String(x).padStart(2, '0') + ':00';
+  return `${d.week.map(n => new Date(Date.UTC(2024, 0, n)).toLocaleDateString(loc, { weekday: 'short', timeZone: 'UTC' })).join(', ')} · ${h(d.from)}-${h(d.to)}`;
+}
+// The Google review link, when the café switched it on.
+export const reviewUrl = card => card.messages && card.messages.review && card.messages.review.on ? card.messages.review.url : '';
 
 // iPhone lock screen near the café ("near" switched on and a location saved).
 export function nearLocation(card, customer, lang) {
