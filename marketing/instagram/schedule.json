@@ -155,6 +155,48 @@
       "post": "post-not-just-coffee",
       "type": "image",
       "note": "moved from 26 Oct 10:00 for reel-barista"
+    },
+    {
+      "at": "2026-11-02 10:00",
+      "post": "carousel-how-many",
+      "type": "carousel"
+    },
+    {
+      "at": "2026-11-03 18:00",
+      "post": "reel-chains",
+      "type": "reel",
+      "note": "chains reel with the ElevenLabs voice (copy of marketing/animation/timbro-catene-en-voice.mp4)"
+    },
+    {
+      "at": "2026-11-04 10:00",
+      "post": "carousel-messages",
+      "type": "carousel"
+    },
+    {
+      "at": "2026-11-06 10:00",
+      "post": "carousel-launch",
+      "type": "carousel"
+    },
+    {
+      "at": "2026-11-07 18:00",
+      "post": "reel-giulia",
+      "type": "reel",
+      "note": "Italian video with music, no voice yet (copy of marketing/animation/timbro-ritorno-it.mp4)"
+    },
+    {
+      "at": "2026-11-08 10:00",
+      "post": "carousel-numbers",
+      "type": "carousel"
+    },
+    {
+      "at": "2026-11-10 10:00",
+      "post": "carousel-styles",
+      "type": "carousel"
+    },
+    {
+      "at": "2026-11-12 10:00",
+      "post": "carousel-plans",
+      "type": "carousel"
     }
   ]
 }
