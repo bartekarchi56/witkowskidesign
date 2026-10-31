@@ -198,6 +198,7 @@ html,body{margin:0;background:#CFCFCF}
 <script src="../../assets/js/ui.js"></script>
 <script src="../../assets/js/analytics.js"></script>
 <script src="../../assets/js/stamps.js"></script>
+<script src="../../assets/js/marketing.js"></script>
 <script>
 /*
  * Timbro's Instagram assets, drawn with the real card renderer.
@@ -1039,6 +1040,168 @@ ASSETS['carousel-new-way'] = { size: 'feed', slides: 3, build(s) {
   el(`<div class="abs poster" style="left:326px;top:246px;width:180px;transform:rotate(3deg)"><h4>${esc(L('Raccogli 8 timbri.', 'Collect 8 stamps.'))}</h4><div class="q">${UI.qrSvg(CONFIG.siteUrl)}</div><small>${esc(L('Inquadra il codice', 'Scan the code'))}</small></div>`);
   el(`<div class="abs" style="left:36px;bottom:74px;font-size:17px;font-weight:700;color:var(--pop)">${esc(L('Chiedi Timbro nel tuo bar preferito', 'Ask for Timbro at your favourite café'))}</div>`);
   foot();
+} };
+
+// ---------- November carousels: stamps, messages, launch week, numbers, styles, plans ----------
+const SWIPE = () => foot(L('Scorri →', 'Swipe →'));
+const cover = (label, title, size = 48) => {
+  el(`<div class="abs lbl" style="left:36px;top:40px">${esc(label)}</div>`);
+  return el(`<h1 class="abs disp" style="left:36px;right:36px;top:70px;font-size:${size}px">${esc(title)}</h1>`);
+};
+// A lock screen from `top` to `bottom` with Wallet notices stacked under the clock.
+function lockWith(top, bottom, notices) {
+  const lock = el(`<div class="lock" style="left:36px;right:36px;top:${top}px;height:${bottom - top}px;padding:22px 20px 18px;display:flex;flex-direction:column">
+    <div class="ld">${esc(new Date(2026, 10, 24).toLocaleDateString(lang === 'it' ? 'it-IT' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long' }))}</div>
+    <div class="lt" style="margin:4px 0 18px;font-size:64px">10:30</div><div style="display:grid;gap:8px;margin-top:auto"></div></div>`);
+  lock.lastElementChild.innerHTML = notices.map(([title, text, when]) => notif(title, text, when)).join('');
+  return lock;
+}
+
+ASSETS['carousel-how-many'] = { size: 'feed', slides: 5, build(s) {
+  const cards = [null, null, { ...YOUR }, TPL[2].card, TPL[3].card];   // café 10, bakery 8, salon 6
+  if (s === 1) {
+    const h = cover(L('Carte fedeltà', 'Loyalty cards'), L('Quanti timbri prima del premio?', 'How many stamps before the reward?'), 50);
+    el(`<p class="abs body" style="left:36px;right:36px;top:${70 + h.offsetHeight + 14}px">${esc(L('Dipende da quanto spesso tornano i tuoi clienti.', 'It depends on how often your customers come back.'))}</p>`);
+    const row = (n, on, label) => `<div style="display:grid;gap:10px"><span class="lbl">${esc(label)}</span><div class="dotrow">${Array.from({ length: n }, (_, i) => `<i class="${i < on ? 'on' : ''}"></i>`).join('')}</div></div>`;
+    el(`<div class="abs" style="left:36px;top:360px;display:grid;gap:24px">${row(10, 7, L('Bar · 10', 'Café · 10'))}${row(8, 5, L('Pasticceria · 8', 'Bakery · 8'))}${row(6, 3, L('Salone · 6', 'Salon · 6'))}</div>`);
+    return SWIPE();
+  }
+  if (s === 5) return ctaSlide(L('Scegli il tuo locale: Timbro propone il numero giusto.', 'Pick your kind of place: Timbro suggests the right number.'), cards[3], 5);
+  const T = [null, null,
+    [L('Ogni giorno: 10 timbri', 'Every day: 10 stamps'), L('Il caffè del mattino. Con 10 timbri il premio arriva in due settimane: abbastanza vicino da volerlo.', 'The morning coffee. With 10 stamps the reward comes in two weeks: close enough to want it.')],
+    [L('Ogni settimana: 8 timbri', 'Every week: 8 stamps'), L('La brioche della domenica, il gelato del sabato. Con 8 il premio arriva in due mesi, non in tre.', 'The Sunday pastry, the Saturday gelato. With 8 the reward comes in two months, not three.')],
+    [L('Ogni mese: 6 timbri', 'Every month: 6 stamps'), L('Taglio, piega, trattamento. Con 6 il premio arriva in sei mesi, non tra un anno.', 'A cut, a blow-dry, a facial. With 6 the reward comes in six months, not next year.')]
+  ];
+  const y = slideHead(s, 5, T[s][0], T[s][1]);
+  const c = solo(cards[s], 300, '', { compact: true }); c.card.set(cards[s].stampsNeeded - 2); fit(c.el, y + 30, 596, s === 3 ? 3 : -3);
+  SWIPE();
+} };
+
+ASSETS['carousel-messages'] = { size: 'feed', slides: 6, build(s) {
+  const W = 'Wallet · ' + YOUR.business;
+  const M = {
+    close: UI.fillMessage(CONFIG.messages.close[lang], YOUR, { left: 1, lang }),
+    ready: UI.fillMessage(CONFIG.messages.ready[lang], YOUR, { name: 'Giulia', lang }),
+    remind: UI.fillMessage(CONFIG.messages.remind[lang], YOUR, { name: 'Giulia', left: 2, lang }),
+    news: L('Cornetti appena sfornati: vi aspettiamo!', 'Fresh pastries just out of the oven: come and see us!')
+  };
+  if (s === 1) {
+    cover(L('Il tuo bar, sul loro telefono', 'Your café, on their phone'), L('4 messaggi che la carta manda al posto tuo.', '4 messages the card sends for you.'));
+    lockWith(270, 600, [[W, M.close, L('ora', 'now')], [W, M.news, L('ieri', 'yesterday')]]);
+    return SWIPE();
+  }
+  if (s === 6) return ctaSlide(L('Le parole le scegli tu. Il resto lo fa la carta.', 'You choose the words. The card does the rest.'), YOUR, 9);
+  const D = [null, null,
+    [L('Manca un timbro', 'One stamp to go'), L('Il premio è a un caffè di distanza. È la visita più facile da conquistare.', 'The reward is one coffee away. It\'s the easiest visit you\'ll ever win.'), 'close'],
+    [L('Il premio è pronto', 'The reward is ready'), L('Carta piena: il messaggio arriva da solo, con il suo nome.', 'Card full: the message arrives by itself, with their name.'), 'ready'],
+    [L(`Non passa da ${CONFIG.messages.remind.days / 7} settimane`, `Not in for ${CONFIG.messages.remind.days / 7} weeks`), L('Un promemoria gentile, al massimo uno per visita.', 'A friendly reminder, at most one per visit.'), 'remind'],
+    [L('Una novità per tutti', 'News for everyone'), L(`Dolci appena sfornati, una bevanda nuova, un evento: un messaggio al giorno, sulla carta per ${CONFIG.newsHours / 24} giorni.`, `Fresh pastries, a new drink, an event: one message a day, on the card for ${CONFIG.newsHours / 24} days.`), 'news']
+  ];
+  const y = slideHead(s, 6, D[s][0], D[s][1]);
+  lockWith(Math.max(310, y + 30), 600, [[W, M[D[s][2]]]]);
+  SWIPE();
+} };
+
+ASSETS['carousel-launch'] = { size: 'feed', slides: 6, build(s) {
+  const P = MARKETING.plan(lang).map(([d, x]) => [d, x.replace(/\s*\(.*?\)/, '')]);
+  const eight = { ...YOUR, stampsNeeded: 8 };
+  if (s === 1) {
+    cover(L('Piano di lancio', 'Launch plan'), L('La prima settimana della tua carta fedeltà, giorno per giorno.', 'Your loyalty card\'s first week, day by day.'), 44);
+    el(`<div class="abs" style="left:36px;top:330px;font:800 230px/1 var(--font);font-stretch:118%;letter-spacing:-.05em;color:var(--pop)">7</div>`);
+    el(`<p class="abs body" style="left:220px;right:36px;top:400px;font-size:20px">${esc(L('giorni, 7 cose da fare. Obiettivo: 30 clienti con la carta.', 'days, 7 things to do. Goal: 30 customers with the card.'))}</p>`);
+    return SWIPE();
+  }
+  if (s === 6) return ctaSlide(L('Con Timbro il piano arriva già pronto.', 'With Timbro the plan comes ready-made.'), eight, 1);
+  // slides 2-5: two days each (the plan's own lines), then a picture
+  const G = [null, null, [0, 1], [2, 3], [4, 5], [6]][s];
+  el(`<div class="abs lbl" style="right:36px;top:40px">${s} / 6</div>`);
+  el(`<div class="abs num" style="left:30px;top:36px">${esc(P[G[0]][0].replace(/\D+/, ''))}${G.length > 1 && P[G[1]][0] !== P[G[0]][0] ? '–' + esc(P[G[1]][0].replace(/\D+/, '')) : ''}</div>`);
+  const list = el(`<div class="abs" style="left:36px;right:40px;top:146px;display:grid;gap:18px">${G.map(i => `<div style="display:grid;gap:6px">
+    <span class="lbl blue">${esc(P[i][0])}</span><div class="disp" style="font-size:27px;line-height:1.12">${esc(P[i][1])}</div></div>`).join('')}</div>`);
+  const y = list.offsetTop + list.offsetHeight + 30;
+  if (s === 2) el(`<div class="abs poster" style="left:170px;top:${y}px;transform:rotate(-3deg)"><h4>${esc(L('Raccogli 8 timbri.', 'Collect 8 stamps.'))}</h4><div class="q">${UI.qrSvg(CONFIG.siteUrl)}</div><small>${esc(L('Inquadra il codice', 'Scan the code'))}</small></div>`);
+  else if (s === 3) {
+    const c = solo(eight, 300, '', { compact: true }); c.card.set(1); fit(c.el, y + 24, 600, -3);
+    el(`<span class="abs tag" style="left:${c.el.offsetLeft - 30}px;top:${y - 2}px;font-size:13px;padding:8px 12px;transform:rotate(-6deg)">${L('+1 in regalo', '+1 free')}</span>`);
+  } else if (s === 4) {
+    const msg = MARKETING.copy({ business: YOUR.business, title: YOUR.title, reward: YOUR.reward, stampsNeeded: 8 }, lang).find(x => x.id === 'whatsapp').text;
+    el(`<div class="abs" style="left:60px;right:36px;top:${y}px;background:#DCF8C6;color:#0B0B0C;border-radius:18px 18px 6px 18px;padding:14px 16px;font-size:15.5px;line-height:1.4;box-shadow:0 14px 30px -18px rgba(0,0,0,.4)">${esc(msg)}</div>`);
+  } else if (s === 5) {
+    el(`<div class="abs tile" style="left:36px;right:36px;top:${y}px">
+      <div class="t-l">${L('Clienti con la carta · dopo 7 giorni (esempio)', 'Customers with the card · after 7 days (example)')}</div>
+      <div style="display:flex;align-items:baseline;gap:14px"><div class="t-v" style="color:var(--pop)">34</div><span class="lbl">${L('obiettivo 30 ✓', 'goal 30 ✓')}</span></div>
+      <svg viewBox="0 0 200 50" style="width:100%;height:auto;margin-top:10px"><path d="M2 46 L30 40 L58 31 L86 27 L114 18 L142 14 L170 8 L198 4" fill="none" stroke="var(--pop)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`);
+  }
+  SWIPE();
+} };
+
+ASSETS['carousel-numbers'] = { size: 'feed', slides: 5, build(s) {
+  if (s === 1) {
+    const h = cover(L('La tua area Timbro', 'Your Timbro dashboard'), L('3 numeri da guardare ogni lunedì.', '3 numbers to check every Monday.'), 52);
+    el(`<p class="abs body" style="left:36px;right:36px;top:${70 + h.offsetHeight + 14}px">${esc(L('Cinque minuti, un caffè, e sai chi torna.', 'Five minutes, one coffee, and you know who comes back.'))}</p>`);
+    el(`<div class="abs" style="left:36px;right:36px;top:360px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">${[['126', 'var(--pop)', L('Tornano', 'Come back')], ['9', '#C98A00', L('Quasi al premio', 'Almost there')], ['31', 'var(--muted)', L('Spariti da 30 gg', 'Gone 30 days')]].map(([v, c, k]) =>
+      `<div class="tile" style="padding:16px"><div class="t-v" style="font-size:48px;color:${c}">${v}</div><div class="t-l" style="margin:8px 0 0;font-size:13px">${esc(k)}</div></div>`).join('')}</div>`);
+    el(`<div class="abs lbl" style="left:36px;top:500px">${L('Esempio', 'Example')}</div>`);
+    return SWIPE();
+  }
+  if (s === 5) return ctaSlide(L('Tutti e 3 sono nella tua area Timbro.', 'All 3 are in your Timbro dashboard.'), YOUR, 7);
+  const N = [null, null,
+    [L('Clienti che tornano', 'Customers who come back'), L('Quelli con 2 o più visite. Se sale, la carta funziona.', 'The ones with 2 or more visits. If it goes up, the card is working.'), '126', 'var(--pop)', L('su 214 con la carta', 'of 214 with the card')],
+    [L('Quasi al premio', 'Almost at the reward'), L('A 1 o 2 timbri dal premio: alla prossima visita festeggiali.', '1 or 2 stamps away: make a fuss of them next visit.'), '9', '#C98A00', 'Giulia · Marco · Sara · Luca · ' + L('e altri 5', 'and 5 more')],
+    [L('Non tornano da 30 giorni', 'Not back for 30 days'), L('Un post o un timbro doppio per una settimana li riporta al bancone.', 'A post or a double-stamp week brings them back to the counter.'), '31', 'var(--muted)', L('il promemoria parte da solo dopo 21 giorni', 'the reminder goes out by itself after 21 days')]
+  ];
+  const [title, body, v, c, sub] = N[s];
+  const y = slideHead(s, 5, title, body);
+  el(`<div class="abs tile" style="left:36px;right:36px;top:${Math.max(330, y + 34)}px;padding:22px 24px">
+    <div class="t-l">${esc(title)} · ${L('esempio', 'example')}</div><div class="t-v" style="font-size:96px;color:${c}">${v}</div>
+    <div class="body" style="font-size:16px;margin-top:10px">${esc(sub)}</div></div>`);
+  SWIPE();
+} };
+
+ASSETS['carousel-styles'] = { size: 'feed', slides: 7, build(s) {
+  const st = CONFIG.styles;
+  if (s === 1) {
+    cover(L('Il tuo stile', 'Your style'), L('5 stili per la carta del tuo locale. Qual è il tuo?', '5 styles for your café\'s card. Which one is yours?'), 46);
+    [['milano', -10, 10], ['bottega', -1, 130], ['giappone', 9, 250]].forEach(([id, r, x], i) => {
+      const c = solo({ ...YOUR, ...look(id) }, 300, `left:${x + 16}px;top:${318 + i * 22}px;transform:rotate(${r}deg) scale(.72);transform-origin:top left`, { compact: true }); c.card.set(6);
+    });
+    return SWIPE();
+  }
+  if (s === 7) return ctaSlide(L('Ogni parte si cambia: logo, colori, timbro.', 'Change any part: logo, colours, stamp.'), { ...YOUR, ...look('bottega') }, 6);
+  const x = st[s - 2], name = I18N.pick(x);
+  const D = {
+    timbro: L('Bianco e blu, con il sole. Pulito, si legge da lontano.', 'White and blue, with the sun. Clean, easy to read from afar.'),
+    minimal: L('Bianco e nero, un fiore, un carattere classico.', 'Black and white, a flower, a classic typeface.'),
+    giappone: L('Rosso come un hanko, un\'onda, una striscia color carta.', 'Hanko red, a wave, a paper-coloured strip.'),
+    milano: L('Nero e oro, una stella. Per il bar della sera.', 'Black and gold, a star. For the evening bar.'),
+    bottega: L('Crema e marrone, un ramo d\'ulivo. Per chi fa le cose a mano.', 'Cream and brown, an olive branch. For places that make things by hand.')
+  };
+  const y = slideHead(s, 7, name, D[x.id]);
+  const c = solo({ ...YOUR, ...x.look }, 300, '', { compact: true }); c.card.set(s + 3); fit(c.el, y + 30, 596, s % 2 ? 2 : -2);
+  SWIPE();
+} };
+
+ASSETS['carousel-plans'] = { size: 'feed', slides: 6, build(s) {
+  if (s === 1) {
+    const h = cover(L('Prezzi', 'Pricing'), L('Quale piano fa per il tuo locale?', 'Which plan fits your café?'), 52);
+    el(`<div class="abs" style="left:36px;right:36px;top:${70 + h.offsetHeight + 40}px;display:grid;gap:10px">${['start', 'plus', 'pro', 'chain'].map(id => {
+      const p = plan(id), t = I18N.pick(p);
+      return `<div class="plan${p.popular ? ' hl' : ''}" style="padding:12px 18px"><div class="p-n" style="font-size:22px">${esc(t.name)}</div><div class="p-f">${esc(t.for)}</div>
+        <div class="p-p" style="font-size:30px">${p.contact ? `<small>${L('da', 'from')}</small>` : ''}${money(p.month)}</div></div>`; }).join('')}</div>`);
+    return SWIPE();
+  }
+  if (s === 6) return ctaSlide(L(`Tutti partono con ${CONFIG.trialDays} giorni gratis.`, `Every plan starts with ${CONFIG.trialDays} days free.`), YOUR, 3);
+  const p = plan(['start', 'plus', 'pro', 'chain'][s - 2]), t = I18N.pick(p);
+  el(`<div class="abs lbl" style="right:36px;top:40px">${s} / 6</div>`);
+  el(`<div class="abs lbl blue" style="left:36px;top:40px">${esc(t.for)}</div>`);
+  el(`<h2 class="abs disp" style="left:36px;top:70px;font-size:64px">${esc(t.name)}${p.popular ? ` <span class="tag" style="vertical-align:middle;font-size:13px">${L('Consigliato', 'Recommended')}</span>` : ''}</h2>`);
+  el(`<div class="abs" style="left:36px;top:150px;display:flex;align-items:baseline;gap:10px">${p.contact ? `<span class="lbl">${L('da', 'from')}</span>` : ''}<span class="num" style="font-size:84px;color:var(--ink)">${money(p.month)}</span>
+    <span class="lbl">${p.contact ? L('a sede al mese', 'per location a month') : L('al mese', 'a month')}</span></div>`);
+  el(`<div class="abs ticks" style="left:36px;right:36px;top:276px;gap:20px">${t.extras.map(x => `<div style="font-size:20px;align-items:flex-start"><b style="width:24px;height:24px;flex-basis:24px;font-size:13px">✓</b>${esc(x)}</div>`).join('')}</div>`);
+  el(`<p class="abs body" style="left:36px;right:36px;bottom:74px;font-size:14px;color:var(--muted)">${esc(p.contact
+    ? L('Su preventivo, con fattura. Si parte con un pilota in alcune sedi.', 'Quoted per chain and invoiced. We start with a pilot in a few locations.')
+    : L(`Prezzi IVA esclusa. Annuale: paghi ${CONFIG.yearlyMonths} mesi, ne hai 12.`, `Prices exclude VAT. Yearly: pay for ${CONFIG.yearlyMonths} months, get 12.`))}</p>`);
+  SWIPE();
 } };
 
 // ---------- run ----------

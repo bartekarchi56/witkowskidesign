@@ -38,6 +38,12 @@ The account posts in English: the `en/` images with the English caption (`schedu
 | `post-apple-google.png` | Feed 4:5 | The same card in Apple Wallet and Google Wallet |
 | `carousel-doubts-1…6.png` | Carousel 4:5 | 4 doubts before switching: app, reader, no Wallet, time to start |
 | `post-chains.png` | Feed 4:5 | Chains: visits per location (example numbers) and the per-location price |
+| `carousel-how-many-1…5.png` | Carousel 4:5 | How many stamps before the reward: 10 for a café, 8 for a bakery, 6 for a salon |
+| `carousel-messages-1…6.png` | Carousel 4:5 | The 4 messages the card sends by itself, with the product's default texts |
+| `carousel-launch-1…6.png` | Carousel 4:5 | The first week, day by day: the 7-day launch plan from the dashboard |
+| `carousel-numbers-1…5.png` | Carousel 4:5 | 3 dashboard numbers to check every Monday (example numbers) |
+| `carousel-styles-1…7.png` | Carousel 4:5 | The 5 card styles, each on the real card |
+| `carousel-plans-1…6.png` | Carousel 4:5 | Start, Plus, Pro and Chains, one slide each, with what's included |
 | `reel-*-cover.png` | 9:16 | Cover image for each reel |
 | `brand/profile.png` | 1:1 | Profile picture (the Timbro stamp) |
 | `brand/highlight-*.png` | 9:16 | Highlight covers: how, prices, examples, faq, contact |
@@ -420,6 +426,96 @@ Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9
 >
 > #loyaltycard #franchise #retail #hospitality #multiunit
 
+### carousel-how-many
+**IT**
+> Quanti timbri prima del premio? 🤔 La risposta dipende da quanto spesso tornano i tuoi clienti.
+> Bar: 10. Pasticceria e gelateria: 8. Salone: 6. Il premio deve sembrare vicino, mai a un anno di distanza.
+> Quanti timbri ha la carta del tuo locale? 👇
+>
+> #cartafedeltà #barmilano #piccoleimprese #marketingperbar #baristi
+
+**EN**
+> How many stamps before the reward? 🤔 It depends on how often your customers come back.
+> Café: 10. Bakery and gelato shop: 8. Salon: 6. The reward should feel close, never a year away.
+> How many stamps does your card have? 👇
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #cafemarketing #loyaltyprogram
+
+### carousel-messages
+**IT**
+> La tua carta fedeltà lavora anche quando sei dietro al bancone 📲
+> Quando manca un timbro, quando il premio è pronto, quando un cliente non passa da 3 settimane, e quando hai una novità per tutti. Le parole le scegli tu.
+> Quale messaggio manderesti per primo? 👇
+>
+> #cartafedeltà #barmilano #piccoleimprese #marketinglocale #milano
+
+**EN**
+> Your loyalty card keeps working while you're behind the counter 📲
+> When they're one stamp away, when the reward is ready, when someone hasn't been in for 3 weeks, and when you have news for everyone. You choose the words.
+> Which message would you send first? 👇
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #cafemarketing #applewallet
+
+### carousel-launch
+**IT**
+> Hai una carta fedeltà nuova? Ecco la prima settimana, giorno per giorno 📌
+> Poster alla cassa, due minuti con il personale, il post, il primo timbro in regalo, il messaggio ai clienti abituali, l'adesivo in vetrina. Obiettivo: 30 clienti in 7 giorni.
+> Salvalo per il giorno del lancio.
+>
+> #cartafedeltà #baristi #piccoleimprese #marketingperbar #aperturabar
+
+**EN**
+> New loyalty card? Here's the first week, day by day 📌
+> Poster by the till, two minutes with your staff, the post, a free first stamp, a message to your regulars, the sticker on the window. Goal: 30 customers in 7 days.
+> Save it for launch day.
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #cafemarketing #newcafe
+
+### carousel-numbers
+**IT**
+> 3 numeri da guardare ogni lunedì, con il primo caffè ☕📊
+> Quanti clienti tornano. Chi è quasi al premio. Chi non passa da 30 giorni. Bastano per capire se la carta fedeltà funziona.
+> (I numeri nelle immagini sono un esempio.)
+>
+> #cartafedeltà #barmilano #piccoleimprese #marketingperbar #clientifedeli
+
+**EN**
+> 3 numbers to check every Monday, with your first coffee ☕📊
+> How many customers come back. Who's almost at the reward. Who hasn't been in for 30 days. That's enough to know if your loyalty card works.
+> (The numbers in the pictures are an example.)
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #customerloyalty #cafemarketing
+
+### carousel-styles
+**IT**
+> 5 stili per la carta fedeltà del tuo locale. Qual è il tuo? 🎨
+> Timbro, Minimal, Giapponese, Milano sera, Bottega. Ogni parte si cambia: logo, colori, timbro.
+> Scrivi il numero nei commenti 👇
+>
+> #cartafedeltà #design #barmilano #piccoleimprese #milano
+
+**EN**
+> 5 styles for your café's loyalty card. Which one is yours? 🎨
+> Timbro, Minimal, Japanese, Milan night, Bottega. Change any part: logo, colours, stamp.
+> Comment the number 👇
+>
+> #loyaltycard #design #coffeeshop #smallbusiness #cafeowner
+
+### carousel-plans
+**IT**
+> Quale piano fa per il tuo locale? 💶
+> Start, 19 € al mese: la carta la personalizzi tu. Plus, 39 €: la disegniamo noi e ti mandiamo il kit stampato. Pro, 79 €: più sedi e statistiche per sede. Catene, da 8 € a sede.
+> 30 giorni gratis, disdici quando vuoi. Prezzi IVA esclusa.
+>
+> #cartafedeltà #barmilano #piccoleimprese #baristi #milano
+
+**EN**
+> Which plan fits your café? 💶
+> Start, €19 a month: you customise the card. Plus, €39: we design it and send you the printed kit. Pro, €79: several locations and stats for each. Chains, from €8 per location.
+> 30 days free, cancel anytime. Prices exclude VAT.
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #cafe #pricing
+
 ### tre-fatti (3D reel: `marketing/animation/timbro-tre-fatti-it.mp4`, `-en.mp4`, 37 s, with sound)
 Three facts from published studies, each named on screen. The cover is `marketing/animation/timbro-tre-fatti-<lang>-cover.jpg`.
 
@@ -539,6 +635,25 @@ Voice (ElevenLabs, one take, only these lines, no times or headings): You run el
 >
 > #coffeechain #franchise #multiunit #cafeowner #loyaltyprogram #retailanalytics #cafemarketing
 
+### reel-giulia
+"Giulia came in every morning": a regular stops coming, and the card's own reminder brings her back. Italian (English renders from the same page with `en`), 36 s, with music: `marketing/animation/timbro-ritorno-it.mp4`. Made by `marketing/animation/ritorno.html` (`node marketing/animation/make.js ritorno it`), beats in `ritorno.json`. Cover: `marketing/animation/timbro-ritorno-it-cover.jpg` (the reminder on the lock screen). A month on a calendar with eight morning coffees, three empty weeks counting up to 21, the reminder on the lock screen, her return (9/10 and 10/10 on the real card), the "one to go" and "reward ready" messages, "How many Giulias did you lose this year?", and "Comment TIMBRO". The messages on the phone are the product's default texts. After recording the voice, set `beats` and `voice` in `ritorno.json` to the take, render again, then `node marketing/animation/voice.js ritorno it voice.mp3 1`.
+
+Voice (ElevenLabs, Multilingual v2, one take, only these lines): Giulia veniva ogni mattina. / Poi, per tre settimane, niente. / Al bar nessuno se n'è accorto. / La sua carta sì. / Dopo ventuno giorni, le scrive da sola. / Il giorno dopo, Giulia è di nuovo al bancone. / Le manca un timbro. / Al decimo, il caffè è offerto. / Quante Giulia hai perso quest'anno? / Timbro le avvisa per te. / Commenta TIMBRO, e ti disegniamo la tua carta.
+
+**IT**
+> Giulia veniva ogni mattina. Poi, per 3 settimane, niente ☕
+> Nessuno se n'è accorto. La sua carta sì: dopo 21 giorni senza visite le ha mandato un promemoria, da sola. Il giorno dopo era di nuovo al bancone.
+> Quante Giulia hai perso quest'anno? 👇
+>
+> #cartafedeltà #barmilano #clientifedeli #piccoleimprese #baristi
+
+**EN**
+> Giulia came in every morning. Then for 3 weeks, nothing ☕
+> Nobody noticed. Her card did: after 21 days without a visit it sent her a reminder, by itself. The next day she was back at the counter.
+> How many Giulias did you lose this year? 👇
+>
+> #loyaltycard #customerloyalty #coffeeshopowner #cafemarketing #smallbusiness
+
 ## Keep it honest
 
 - The posts say "on the phone", not "in Apple Wallet": Wallet saving isn't switched on yet (`wallet/README.md`). Change the copy once it is.
@@ -547,4 +662,6 @@ Voice (ElevenLabs, one take, only these lines, no times or headings): You run el
 - `quanto-vale` (reel-1-extra-coffee): the numbers are an example and the video says so. €800 is sales, not profit. "Once more a month" is an assumption, not a study's result: Kivetz et al. is cited only for "they come more often as the free coffee gets closer".
 - `vicino` (reel-near-the-cafe): the location notice works on iPhone (Apple Wallet) only; Google Wallet has no location notices for loyalty cards. iOS decides when to show it (a lock-screen suggestion near the place, about 100 m: `maxDistance` in `wallet/apple.js`), so the video says "wakes up", not "pushes". The café must switch on "Near the café" in the dashboard and save its location there. The other cafés in the stack are made up.
 - `catene` (reel-chains): the eleven cafés and their numbers are made up (the neighbourhoods are Milan's). The price is "from €8" because Chains is quoted per chain with volume discounts.
+- `ritorno` (reel-giulia): Giulia is made up. The reminder goes out after 21 days without a visit (`messages.remind.days` in `assets/js/config.js`), at most one per visit; the café can change the days and the words or switch it off. Her coming back the next day is the story, not a promise.
+- `carousel-numbers`: the numbers are an example and the slides say so. `carousel-plans` reads its prices and extras from `assets/js/config.js`; render it again after any price change.
 - No real café's name or logo appears. When a café agrees, make a post about them with their own numbers, as an Instagram Collab post.

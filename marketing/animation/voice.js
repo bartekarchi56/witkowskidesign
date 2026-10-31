@@ -17,6 +17,7 @@ const CUES = {
   'quanto-vale': require('./quanto-vale.json').voice || [],
   vicino: require('./vicino.json').voice || [],
   catene: require('./catene.json').voice || [],
+  ritorno: require('./ritorno.json').voice || [],
   'tre-fatti': [
     .2,                         // Three facts about regulars that most cafés don't know.
     3.7, 4.5, 6.75,             // Fact one. / Two cards, both need eight stamps. / But card B starts with two already in.

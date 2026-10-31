@@ -1,0 +1,7 @@
+{
+  "note": "Timeline of ritorno.html (Giulia comes back: the 21-day reminder), not yet set to a voice take: beats are where the scenes and captions change; voice is where each line of the script should start. After recording, set both to the take, render again, then node marketing/animation/voice.js ritorno it voice.mp3 1. Read by ritorno.html, sound.js and voice.js.",
+  "beats": { "gone": 4.0, "nobody": 7.4, "card": 10.0, "msg": 12.0, "back": 16.0, "close": 19.6, "ten": 22.4, "you": 26.2, "them": 29.0, "F": 31.4, "cta": 32.6 },
+  "voice": [0.2, 4.0, 7.4, 10.0, 12.0, 16.0, 19.6, 22.4, 26.2, 29.0, 32.6],
+  "tempo": 1,
+  "duration": 36
+}
