@@ -1204,6 +1204,52 @@ ASSETS['carousel-plans'] = { size: 'feed', slides: 6, build(s) {
   SWIPE();
 } };
 
+// ---------- the extras (dashboard → Notifications → Extras): three posts ----------
+const extraLabel = name => el(`<div class="abs lbl" style="left:36px;top:40px"><span class="tag" style="margin-right:8px">${L('Novità', 'New')}</span>${esc(name)}</div>`);
+
+ASSETS['post-friend'] = { size: 'feed', build() {
+  extraLabel(L('Porta un amico', 'Bring a friend'));
+  const h = el(`<h1 class="abs disp" style="left:36px;right:36px;top:74px;font-size:42px">${esc(L('I tuoi clienti ti portano clienti nuovi.', 'Your regulars bring you new customers.'))}</h1>`);
+  const share = L('Prendi anche tu la carta fedeltà del mio bar: al primo timbro te ne regalano uno in più ☕', 'Get my café\'s loyalty card too: your first stamp comes with one more ☕');
+  const bub = el(`<div class="abs" style="left:36px;right:110px;top:${74 + h.offsetHeight + 20}px;background:#DCF8C6;border-radius:18px 18px 18px 6px;padding:12px 14px;font-size:15px;line-height:1.38;box-shadow:0 14px 30px -18px rgba(0,0,0,.4)">${esc(share)}<br><span style="color:#2B6CB0">timbro.witkowskidesign.com/…&amp;ref=K7M2QX</span></div>`);
+  const top = bub.offsetTop + bub.offsetHeight + 56;
+  const giulia = solo({ ...YOUR, stampsNeeded: 8 }, 300, `left:18px;top:${top}px;transform:rotate(-4deg) scale(.66);transform-origin:top left`, { compact: true }); giulia.card.set(5);
+  const marco = solo({ ...YOUR, stampsNeeded: 8 }, 300, `left:282px;top:${top + 14}px;transform:rotate(3deg) scale(.66);transform-origin:top left`, { compact: true }); marco.card.set(2);
+  el(`<span class="abs tag" style="left:30px;top:${top - 40}px;font-size:13px;padding:8px 12px;transform:rotate(-6deg)">${L('Chi invita +1', 'Inviter +1')}</span>`);
+  el(`<span class="abs tag" style="left:290px;top:${top - 30}px;font-size:13px;padding:8px 12px;transform:rotate(4deg);background:#0B0B0C">${L('Amico: 1° timbro ×2', 'Friend: 1st stamp ×2')}</span>`);
+  foot();
+} };
+
+ASSETS['post-double'] = { size: 'feed', build() {
+  extraLabel(L('Doppio timbro', 'Double stamps'));
+  const h = el(`<h1 class="abs disp" style="left:36px;right:36px;top:74px;font-size:40px">${esc(L('Martedì alle 15 il bar è vuoto? Riempilo.', 'Quiet Tuesday afternoon? Fill it.'))}</h1>`);
+  const p = el(`<p class="abs body" style="left:36px;right:40px;top:${74 + h.offsetHeight + 12}px;font-size:16px">${esc(L('Scegli giorni e ore: in quelle ore ogni visita vale due timbri. I clienti lo vedono sulla carta.', 'Pick the days and hours: then every visit counts as two stamps. Customers see it on their card.'))}</p>`);
+  // visits by hour on a Tuesday (an example shape): a busy morning, a quiet afternoon
+  const hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], v = [30, 92, 78, 54, 40, 62, 58, 30, 14, 12, 26, 44, 30];
+  const top = p.offsetTop + p.offsetHeight + 26, H = 150;
+  el(`<div class="abs tile" style="left:36px;right:36px;top:${top}px;padding:16px 16px 12px">
+    <div class="t-l" style="margin-bottom:10px">${L('Visite per ora, martedì (esempio)', 'Visits by hour, Tuesday (example)')}</div>
+    <div style="display:grid;grid-template-columns:repeat(${hours.length},1fr);gap:5px;align-items:end;height:${H}px;position:relative">
+      <div style="position:absolute;left:${8 / hours.length * 100}%;width:${2 / hours.length * 100}%;top:-6px;bottom:-4px;background:var(--pop-wash);border-radius:10px;box-shadow:inset 0 0 0 1.5px var(--pop)"></div>
+      <span class="tag" style="position:absolute;left:${8 / hours.length * 100}%;top:-14px;transform:translateX(12%)">×2</span>
+      ${v.map((x, i) => `<i style="display:block;position:relative;height:${x / 92 * (H - 24)}px;border-radius:6px;background:${hours[i] === 15 || hours[i] === 16 ? 'var(--pop)' : '#D9D9DE'}"></i>`).join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(${hours.length},1fr);gap:5px;margin-top:6px;font:500 10px/1 var(--mono);color:var(--muted);text-align:center">${hours.map(x => `<span>${x}</span>`).join('')}</div></div>`);
+  el(`<div class="abs" style="left:36px;right:36px;top:${top + H + 76}px;display:flex;gap:12px;align-items:center"><span class="pill">${esc(L('Mar, mer · 15:00-17:00', 'Tue, Wed · 3pm-5pm'))}</span><span class="body" style="font-size:15px">${esc(L('= 2 timbri a visita', '= 2 stamps a visit'))}</span></div>`);
+  foot();
+} };
+
+ASSETS['post-birthday'] = { size: 'feed', build() {
+  extraLabel(L('Compleanno e recensioni', 'Birthdays and reviews'));
+  const h = el(`<h1 class="abs disp" style="left:36px;right:36px;top:74px;font-size:34px">${esc(L('Un regalo per il compleanno. Una recensione dopo il premio.', 'A birthday gift. A review after the reward.'))}</h1>`);
+  const W = 'Wallet · ' + YOUR.business, top = 74 + h.offsetHeight + 18;
+  const lock = lockWith(top, top + 300, [[W, UI.fillMessage(CONFIG.messages.birthday[lang], YOUR, { name: 'Giulia', lang })],
+    [W, UI.fillMessage(CONFIG.messages.review[lang], YOUR, { lang }), L('ieri', 'yesterday')]]);
+  el(`<div class="abs ticks" style="left:36px;right:36px;top:${lock.offsetTop + lock.offsetHeight + 16}px;gap:10px">
+    <div style="font-size:17px"><b>✓</b>${esc(L('Il regalo si dà alla cassa, una volta l\'anno', 'The gift is given at the till, once a year'))}</div>
+    <div style="font-size:17px"><b>✓</b>${esc(L('Il link porta dritto alla tua scheda Google', 'The link goes straight to your Google profile'))}</div></div>`);
+  foot();
+} };
+
 // ---------- run ----------
 window.ASSETS = Object.fromEntries(Object.entries(ASSETS).map(([k, v]) => [k, { size: v.size, slides: v.slides || 0, duration: v.duration || 0, cover: v.cover || 0 }]));
 const id = Q.get('id');

@@ -44,6 +44,9 @@ The account posts in English: the `en/` images with the English caption (`schedu
 | `carousel-numbers-1…5.png` | Carousel 4:5 | 3 dashboard numbers to check every Monday (example numbers) |
 | `carousel-styles-1…7.png` | Carousel 4:5 | The 5 card styles, each on the real card |
 | `carousel-plans-1…6.png` | Carousel 4:5 | Start, Plus, Pro and Chains, one slide each, with what's included |
+| `post-friend.png` | Feed 4:5 | New: Bring a friend (the invite message, the inviter's +1 and the friend's double first stamp) |
+| `post-double.png` | Feed 4:5 | New: double-stamp hours to fill a quiet afternoon (visits by hour, example shape) |
+| `post-birthday.png` | Feed 4:5 | New: the birthday gift and the Google review request, as lock-screen notices |
 | `reel-*-cover.png` | 9:16 | Cover image for each reel |
 | `brand/profile.png` | 1:1 | Profile picture (the Timbro stamp) |
 | `brand/highlight-*.png` | 9:16 | Highlight covers: how, prices, examples, faq, contact |
@@ -516,6 +519,55 @@ Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9
 >
 > #loyaltycard #coffeeshopowner #smallbusiness #cafe #pricing
 
+### post-friend
+Post only after the extras are live (supabase/updates/14a-c run, site deployed).
+
+**IT**
+> I tuoi clienti abituali ti portano clienti nuovi 🤝☕
+> Con "Porta un amico" ogni cliente ha un link da mandare agli amici. Quando l'amico prende il primo timbro, un timbro in più a lui e a chi l'ha invitato.
+> Lo accendi tu, dalla tua area Timbro.
+>
+> #cartafedeltà #passaparola #barmilano #piccoleimprese #marketingperbar
+
+**EN**
+> Your regulars bring you new customers 🤝☕
+> With "Bring a friend" every customer gets a link to send to friends. When the friend gets their first stamp, one more for them and one for whoever invited them.
+> You switch it on in your Timbro dashboard.
+>
+> #loyaltycard #wordofmouth #coffeeshopowner #smallbusiness #cafemarketing
+
+### post-double
+**IT**
+> Martedì pomeriggio, bar vuoto? 🕒
+> Con il doppio timbro scegli giorni e ore: in quelle ore ogni visita vale due timbri. I clienti lo vedono sulla carta e passano quando c'è più posto.
+> Qual è l'ora più tranquilla del tuo locale? 👇
+>
+> #cartafedeltà #barmilano #piccoleimprese #marketingperbar #baristi
+
+**EN**
+> Quiet Tuesday afternoon? 🕒
+> With double stamps you pick the days and hours: then every visit counts as two stamps. Customers see it on their card and come in when you have room.
+> What's your café's quietest hour? 👇
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #cafemarketing #coffeeshop
+
+### post-birthday
+**IT**
+> Due novità nella carta fedeltà 🎂⭐
+> Il regalo di compleanno: nella settimana del compleanno la carta fa gli auguri e alla cassa il regalo si dà con un tocco, una volta l'anno.
+> La recensione: dopo ogni premio la carta chiede una recensione su Google, con il link alla tua scheda.
+> Entrambe le accendi tu.
+>
+> #cartafedeltà #recensionigoogle #barmilano #piccoleimprese #clientifedeli
+
+**EN**
+> Two new things on your loyalty card 🎂⭐
+> The birthday gift: in their birthday week the card wishes them happy birthday, and at the till the gift is one tap, once a year.
+> The review: after each reward the card asks for a Google review, with the link to your profile.
+> You switch both on yourself.
+>
+> #loyaltycard #googlereviews #coffeeshopowner #smallbusiness #customerloyalty
+
 ### tre-fatti (3D reel: `marketing/animation/timbro-tre-fatti-it.mp4`, `-en.mp4`, 37 s, with sound)
 Three facts from published studies, each named on screen. The cover is `marketing/animation/timbro-tre-fatti-<lang>-cover.jpg`.
 
@@ -664,4 +716,5 @@ Voice (ElevenLabs, Multilingual v2, one take, only these lines): Giulia veniva o
 - `catene` (reel-chains): the eleven cafés and their numbers are made up (the neighbourhoods are Milan's). The price is "from €8" because Chains is quoted per chain with volume discounts.
 - `ritorno` (reel-giulia): Giulia is made up. The reminder goes out after 21 days without a visit (`messages.remind.days` in `assets/js/config.js`), at most one per visit; the café can change the days and the words or switch it off. Her coming back the next day is the story, not a promise.
 - `carousel-numbers`: the numbers are an example and the slides say so. `carousel-plans` reads its prices and extras from `assets/js/config.js`; render it again after any price change.
+- `post-friend`, `post-double`, `post-birthday`: post them only once the extras are live (`supabase/updates/14a-c` run, site deployed). The visits by hour on `post-double` are an example shape and the chart says so. The extras are off until the café switches them on, and the captions say "you switch it on".
 - No real café's name or logo appears. When a café agrees, make a post about them with their own numbers, as an Instagram Collab post.
