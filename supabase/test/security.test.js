@@ -253,6 +253,29 @@ await rejects(call(anon, 'stamper_gift', { p_token: xdev.token, p_code: birthday
 await rejects(call(anon, 'stamper_gift', { p_token: 'nope', p_code: birthday.id }), /not linked/);
 ok('birthday gift: only when switched on, in the birthday week, once a year, from a linked till');
 
+// ---- alerts to Witkowski Design: sign-up (first card) and subscription changes ----
+await pool.query(`insert into timbro.settings (name, value) values ('alerts_url', 'https://x.test/functions/v1/admin-alert') on conflict (name) do update set value = excluded.value`);
+const calls = async () => (await pool.query(`select body from net.calls order by id`)).rows.map(r => r.body);
+const before = (await calls()).length;
+const alertUser = (await pool.query(`insert into auth.users (email) values ('alert-${Date.now()}@test.local') returning id`)).rows[0].id;
+const alertOwner = { role: 'authenticated', sub: alertUser }, aid = 'alert-' + Date.now().toString(36);
+await call(alertOwner, 'owner_save_card', { p_card: { id: aid, business: 'Bar Alert', title: 'Carta', reward: 'un caffè' } });
+await call(alertOwner, 'owner_save_card', { p_card: { id: aid + 'b', business: 'Bar Alert', title: 'Carta 2', reward: 'un caffè' } });
+let got = (await calls()).slice(before);
+assert.equal(got.length, 1, 'one alert for the first card only'); assert.equal(got[0].kind, 'signup'); assert.equal(got[0].data.business, 'Bar Alert');
+assert.match(got[0].data.email, /^alert-/); assert.deepEqual(got[0].data.cards, [aid]);
+const key = (await pool.query(`select key from timbro.job_keys where name = 'alerts'`)).rows[0].key; assert.equal(got[0].key, key);
+const setBill = sql => pool.query(`update timbro.businesses set ${sql} where owner_id = $1`, [alertUser]);
+await setBill(`billing_status = 'trialing', billing_plan = 'plus', billing_interval = 'month'`);
+await setBill(`billing_period_end = now()`);   // nothing that matters changed: no alert
+await setBill(`billing_status = 'active'`); await setBill(`billing_canceling = true`); await setBill(`billing_status = 'canceled'`);
+got = (await calls()).slice(before);
+assert.deepEqual(got.map(b => b.kind), ['signup', 'trial', 'paying', 'canceling', 'ended']); assert.equal(got[1].data.plan, 'plus');
+await rejects(call(anon, 'alert_key_ok', { p_key: key }), /permission denied/);
+assert.equal(await call({ role: 'service_role' }, 'alert_key_ok', { p_key: key }), true);
+assert.equal(await call({ role: 'service_role' }, 'alert_key_ok', { p_key: 'nope' }), false);
+ok('Witkowski Design is alerted at sign-up and at each subscription change; only the alert function can check the key');
+
 // ---- no function is open by accident (Postgres lets PUBLIC run new functions) ----
 const open = async role => (await pool.query(`select coalesce(string_agg(p.proname, ',' order by p.proname), '') as f from pg_proc p
   join pg_namespace s on s.oid = p.pronamespace where s.nspname = 'timbro' and has_function_privilege($1, p.oid, 'execute')`, [role])).rows[0].f.split(',').filter(Boolean);

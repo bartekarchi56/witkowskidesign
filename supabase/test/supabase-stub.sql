@@ -11,3 +11,9 @@ create table if not exists auth.users (id uuid primary key default gen_random_uu
 create or replace function auth.uid() returns uuid language sql stable as
 $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
 grant usage on schema auth, extensions, public to anon, authenticated;
+
+-- pg_net (Supabase's HTTP from SQL): records the calls instead of sending them.
+create schema if not exists net;
+create table if not exists net.calls (id bigint generated always as identity primary key, url text, body jsonb);
+create or replace function net.http_post(url text, body jsonb default '{}', params jsonb default '{}', headers jsonb default '{}', timeout_milliseconds int default 5000)
+returns bigint language sql as $$ insert into net.calls (url, body) values (url, body) returning id $$;

@@ -1,4 +1,4 @@
--- Timbro database, part 3 of 9. Run the parts in order.
+-- Timbro database, part 3 of 10. Run the parts in order.
 set search_path = timbro, extensions;
 
 create or replace function _clean_design(d jsonb) returns jsonb

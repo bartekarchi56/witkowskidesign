@@ -1,4 +1,4 @@
--- Timbro database, part 1 of 9. Run the parts in order.
+-- Timbro database, part 1 of 10. Run the parts in order.
 create extension if not exists pgcrypto with schema extensions;
 
 create schema if not exists timbro;

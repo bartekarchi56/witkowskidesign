@@ -1,4 +1,4 @@
--- Timbro database, part 4 of 9. Run the parts in order.
+-- Timbro database, part 4 of 10. Run the parts in order.
 set search_path = timbro, extensions;
 
 create or replace function join_card(p_card_id text, p_name text, p_email text default '', p_phone text default '',
