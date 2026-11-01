@@ -47,6 +47,9 @@ The account posts in English: the `en/` images with the English caption (`schedu
 | `post-friend.png` | Feed 4:5 | New: Bring a friend (the invite message, the inviter's +1 and the friend's double first stamp) |
 | `post-double.png` | Feed 4:5 | New: double-stamp hours to fill a quiet afternoon (visits by hour, example shape) |
 | `post-birthday.png` | Feed 4:5 | New: the birthday gift and the Google review request, as lock-screen notices |
+| `carousel-places-1…6`, `carousel-till-1…6`, `carousel-rewards-1…6`, `carousel-setup-1…6`, `carousel-customer-faq-1…6` | Carousel 4:5 | 7 kinds of place; 4 things to say at the till; rewards better than 10% off; set up in 10 minutes; what customers ask |
+| `post-white-ink`, `post-poster-colors`, `post-pizzeria`, `post-beauty`, `post-stamper` | Feed 4:5 | White ink; the poster in the card's colours; the pizzeria and beauty salon cards; stamping in two seconds |
+| `reel-friend`, `reel-double`, `reel-birthday`, `reel-review`, `reel-white-ink` | Reel 9:16, 10.6-11.6 s | The extras and white ink, each with the end card and music |
 | `reel-*-cover.png` | 9:16 | Cover image for each reel |
 | `brand/profile.png` | 1:1 | Profile picture (the Timbro stamp) |
 | `brand/highlight-*.png` | 9:16 | Highlight covers: how, prices, examples, faq, contact |
@@ -593,6 +596,211 @@ Post only after the extras are live (supabase/updates/14a-c run, site deployed).
 **EN**
 > One ink for every place: blue, terracotta, black, and white for dark cards 🎨
 > The same stamp changes character with its colour. Pick the one that looks like your café, and the card becomes yours.
+>
+> #loyaltycard #design #coffeeshop #smallbusiness #branding
+
+### carousel-places
+**IT**
+> Bar, pasticceria, cocktail bar, gelateria, pizzeria, salone, centro estetico 👇
+> Se i tuoi clienti tornano, una carta timbri li fa tornare più spesso. Per ognuno il numero di timbri e il premio giusti.
+> Il tuo locale è nella lista?
+>
+> #cartafedeltà #piccoleimprese #barmilano #negozidiquartiere #milano
+
+**EN**
+> Café, bakery, cocktail bar, gelato shop, pizzeria, hair salon, beauty salon 👇
+> If your customers come back, a stamp card brings them back more often. Each one with the right number of stamps and the right reward.
+> Is your place on the list?
+>
+> #loyaltycard #smallbusiness #localbusiness #coffeeshop #cafeowner
+
+### carousel-till
+**IT**
+> 4 frasi da dire alla cassa, una per ogni momento 💬
+> Quando paga, quando manca un timbro, nelle ore del doppio timbro e nella settimana del compleanno.
+> Salvalo e mostralo a chi sta al bancone.
+>
+> #cartafedeltà #baristi #barmilano #piccoleimprese #marketingperbar
+
+**EN**
+> 4 things to say at the till, one for each moment 💬
+> When they pay, when they're one stamp away, in the double-stamp hours and in their birthday week.
+> Save it and show it to whoever is behind the counter.
+>
+> #loyaltycard #barista #coffeeshopowner #smallbusiness #cafemarketing
+
+### carousel-rewards
+**IT**
+> Il premio fa tornare i clienti più del numero di timbri 🎁
+> Una cosa vera, la specialità della casa, un upgrade, un premio da condividere. Il 10% di sconto non se lo ricorda nessuno.
+> Qual è il premio del tuo locale? 👇
+>
+> #cartafedeltà #barmilano #piccoleimprese #marketingperbar #clientifedeli
+
+**EN**
+> The reward brings people back more than the number of stamps 🎁
+> A real thing, your house special, an upgrade, one to share. Nobody remembers 10% off.
+> What's your café's reward? 👇
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #cafemarketing #customerloyalty
+
+### carousel-setup
+**IT**
+> Dalla prima idea al primo timbro: 10 minuti ⏱️
+> Crei la carta, colleghi il telefono della cassa con un codice, stampi il poster, e il primo cliente inquadra il QR.
+> Niente app, niente lettore. 30 giorni gratis.
+>
+> #cartafedeltà #baristi #piccoleimprese #barmilano #milano
+
+**EN**
+> From zero to the first stamp: 10 minutes ⏱️
+> Create the card, link the till's phone with a code, print the poster, and the first customer scans the QR.
+> No app, no reader. 30 days free.
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #cafeowner #newcafe
+
+### carousel-customer-faq
+**IT**
+> Le 4 domande che ti faranno i clienti, con le risposte pronte 🙋
+> App? Cosa devo scrivere? Chi vede i miei dati? Quanti timbri ho?
+> Salvalo per il primo giorno della carta.
+>
+> #cartafedeltà #barmilano #piccoleimprese #baristi #milano
+
+**EN**
+> The 4 questions your customers will ask, with the answers ready 🙋
+> An app? What do I fill in? Who sees my details? How many stamps do I have?
+> Save it for your card's first day.
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #cafe #customerexperience
+
+### post-white-ink
+**IT**
+> Novità: l'inchiostro bianco ⚪
+> Per le carte nere, blu notte, verde bosco: i timbri bianchi si vedono, e il poster prende i colori della carta.
+>
+> #cartafedeltà #design #barmilano #piccoleimprese #branding
+
+**EN**
+> New: white ink ⚪
+> For black, midnight blue and forest green cards: white stamps stand out, and the poster takes the card's colours.
+>
+> #loyaltycard #design #coffeeshop #smallbusiness #branding
+
+### post-poster-colors
+**IT**
+> Il poster per la cassa ha i colori della tua carta 🖨️
+> Colore, timbro, logo e inchiostro arrivano dalla carta, e anche il post per Instagram. Il QR resta sempre su bianco, così si inquadra al volo.
+>
+> #cartafedeltà #design #barmilano #piccoleimprese #branding
+
+**EN**
+> Your till poster wears your card's colours 🖨️
+> Colour, stamp, logo and ink come from the card, and so does the Instagram post. The QR code always stays on white, so it scans in a second.
+>
+> #loyaltycard #design #coffeeshop #smallbusiness #branding
+
+### post-pizzeria
+**IT**
+> La decima margherita la offre la casa 🍕
+> La carta della pizzeria: 10 timbri, una margherita gratis. Sul telefono, anche per chi ordina da asporto.
+> Manda questo post alla tua pizzeria preferita 👀
+>
+> #cartafedeltà #pizzeria #pizza #piccoleimprese #milano
+
+**EN**
+> The tenth margherita is on the house 🍕
+> The pizzeria card: 10 stamps, a free margherita. On the phone, takeaway customers too.
+> Send this to your favourite pizzeria 👀
+>
+> #loyaltycard #pizzeria #pizza #smallbusiness #localbusiness
+
+### post-beauty
+**IT**
+> Sei trattamenti, il settimo è un regalo 🌿
+> La carta del centro estetico: 6 timbri, un trattamento viso gratis. E nella settimana del compleanno, un pensiero per la cliente.
+>
+> #cartafedeltà #centroestetico #beauty #piccoleimprese #milano
+
+**EN**
+> Six treatments, the seventh is a gift 🌿
+> The beauty salon card: 6 stamps, a free facial. And in their birthday week, a little something for your client.
+>
+> #loyaltycard #beautysalon #skincare #smallbusiness #localbusiness
+
+### post-stamper
+**IT**
+> Timbrare costa due secondi ⚡
+> Il barista inquadra la carta con il telefono che ha già e tocca «Aggiungi un timbro». Niente lettore, niente app, niente coda.
+>
+> #cartafedeltà #baristi #barmilano #piccoleimprese #milano
+
+**EN**
+> Stamping takes two seconds ⚡
+> Staff scan the card with the phone they already have and tap "Add a stamp". No reader, no app, no queue.
+>
+> #loyaltycard #barista #coffeeshopowner #smallbusiness #cafe
+
+### reel-friend
+**IT**
+> Giulia manda il suo invito. Marco prende il primo timbro, e ne ricevono uno in più tutti e due 🤝
+> Porta un amico: i tuoi clienti ti portano clienti nuovi. Lo accendi dalla tua area.
+>
+> #cartafedeltà #passaparola #barmilano #piccoleimprese #marketingperbar
+
+**EN**
+> Giulia sends her invite. Marco gets his first stamp, and both get one more 🤝
+> Bring a friend: your regulars bring you new customers. Switch it on in your dashboard.
+>
+> #loyaltycard #wordofmouth #coffeeshopowner #smallbusiness #cafemarketing
+
+### reel-double
+**IT**
+> Martedì alle 15 il bar è vuoto. Da adesso ogni visita vale due timbri 🕒
+> Scegli tu giorni e ore: i clienti lo vedono sulla carta.
+>
+> #cartafedeltà #barmilano #piccoleimprese #marketingperbar #baristi
+
+**EN**
+> Tuesday, 3pm, the café is empty. From now, every visit counts as two stamps 🕒
+> You pick the days and hours: customers see it on their card.
+>
+> #loyaltycard #coffeeshopowner #smallbusiness #cafemarketing #coffeeshop
+
+### reel-birthday
+**IT**
+> È il compleanno di Giulia: la carta le fa gli auguri, e alla cassa il regalo è un tocco 🎂
+> Una volta l'anno, solo se lo accendi tu.
+>
+> #cartafedeltà #compleanno #barmilano #piccoleimprese #clientifedeli
+
+**EN**
+> It's Giulia's birthday: her card wishes her happy birthday, and at the till the gift is one tap 🎂
+> Once a year, only if you switch it on.
+>
+> #loyaltycard #birthday #coffeeshopowner #smallbusiness #customerloyalty
+
+### reel-review
+**IT**
+> Il premio è appena stato dato, e la carta chiede una recensione ⭐
+> Per 3 giorni dopo ogni premio, con il link dritto alla tua scheda Google.
+>
+> #cartafedeltà #recensionigoogle #barmilano #piccoleimprese #marketinglocale
+
+**EN**
+> The reward was just given, and the card asks for a review ⭐
+> For 3 days after each reward, with a link straight to your Google profile.
+>
+> #loyaltycard #googlereviews #coffeeshopowner #smallbusiness #localbusiness
+
+### reel-white-ink
+**IT**
+> Il tuo locale, il tuo inchiostro. E per le carte scure, il bianco ⚪
+>
+> #cartafedeltà #design #barmilano #piccoleimprese #branding
+
+**EN**
+> Your place, your ink. And for dark cards, white ⚪
 >
 > #loyaltycard #design #coffeeshop #smallbusiness #branding
 
