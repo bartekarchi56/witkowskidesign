@@ -80,14 +80,11 @@ body{overflow-x:clip}
 .b-platform button[aria-pressed="true"]{background:#fff;color:var(--ink)}
 
 /* ---------- custom design gallery ---------- */
-.gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .gallery figure{margin:0;background:#000;border-radius:28px;padding:28px 22px;display:grid;justify-items:center;gap:16px}
 .gallery figure:nth-child(2){background:var(--wash)}
 .gallery figcaption{color:#A9A9AE;font-size:14px;text-align:center}
 .gallery figure:nth-child(2) figcaption{color:var(--muted)}
-.gallery figure:nth-child(4){background:#3B4630}
-.gallery figure:nth-child(4) figcaption{color:#D9D3C2}
-@media (max-width:1180px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr));max-width:820px;margin:0 auto}}
 @media (max-width:900px){.gallery{grid-template-columns:1fr;max-width:380px;margin:0 auto}}
 
 /* ---------- what we do ---------- */
@@ -540,7 +537,7 @@ I18N.add({
     'ds.s1': 'Ci racconti il locale', 'ds.s1p': 'Logo, colori, qualche foto e il premio. Bastano dieci minuti, anche al bancone.',
     'ds.s2': 'Ti mandiamo la proposta', 'ds.s2p': 'Disegniamo la carta e il timbro su misura. La vedi sul telefono prima che parta.',
     'ds.s3': 'Vuoi cambiare? Basta chiedere', 'ds.s3p': 'Ci scrivi dalla tua area e aggiorniamo noi il design. Con Start puoi anche farlo da solo: noi approviamo ogni modifica.',
-    'ds.g1': 'The Coffee, Milano: minimal, punti neri', 'ds.g2': 'Esempio: bottega di quartiere', 'ds.g3': 'Esempio: cocktail bar', 'ds.g4': 'Totoro House: il loro timbro di gomma diventa il timbro della carta',
+    'ds.g1': 'The Coffee, Milano: minimal, punti neri', 'ds.g2': 'Esempio: bottega di quartiere', 'ds.g3': 'Esempio: cocktail bar',
     'h.label': 'Cosa facciamo noi', 'h.title': 'Non serve essere grafici. Né esperti di marketing.',
     'h.lede': 'Gli altri ti danno uno strumento e ti lasciano da solo. Con Timbro hai qualcuno che ti aiuta, dall\'idea al primo cliente.',
     'h.1': 'Disegniamo la carta con te', 'h.1p': 'Con il tuo logo e i tuoi colori, per Apple Wallet e Google Wallet. Scegli tu il premio, al resto pensiamo noi.',
@@ -601,7 +598,7 @@ I18N.add({
     'ds.s1': 'Tell us about your place', 'ds.s1p': 'Logo, colours, a few photos and the reward. Ten minutes is enough, even at the counter.',
     'ds.s2': 'We send you a proposal', 'ds.s2p': 'We design the card and the stamp for you. You see it on your phone before it goes live.',
     'ds.s3': 'Want a change? Just ask', 'ds.s3p': 'Message us from your account and we update the design. On Start you can also do it yourself: we approve every change.',
-    'ds.g1': 'The Coffee, Milan: minimal black dots', 'ds.g2': 'Example: neighbourhood bakery', 'ds.g3': 'Example: cocktail bar', 'ds.g4': 'Totoro House: their rubber stamp becomes the card\'s stamp',
+    'ds.g1': 'The Coffee, Milan: minimal black dots', 'ds.g2': 'Example: neighbourhood bakery', 'ds.g3': 'Example: cocktail bar',
     'h.label': 'What we do for you', 'h.title': 'You don\'t need to be a designer. Or a marketer.',
     'h.lede': 'Other services hand you a tool and leave you to it. With Timbro you get someone who helps, from the idea to your first customer.',
     'h.1': 'We design the card with you', 'h.1p': 'With your logo and colours, for Apple Wallet and Google Wallet. You choose the reward, we handle the rest.',
@@ -663,7 +660,7 @@ I18N.add({
     'ds.s1': 'Opowiedz nam o lokalu', 'ds.s1p': 'Logo, kolory, kilka zdjęć i nagroda. Wystarczy dziesięć minut, nawet za ladą.',
     'ds.s2': 'Wysyłamy Ci projekt', 'ds.s2p': 'Projektujemy kartę i pieczątkę specjalnie dla Ciebie. Oglądasz ją w telefonie, zanim trafi do klientów.',
     'ds.s3': 'Chcesz coś zmienić? Napisz', 'ds.s3p': 'Piszesz do nas ze swojego panelu, a my poprawiamy projekt. W planie Start możesz też zmienić go sam, a my zatwierdzamy każdą zmianę.',
-    'ds.g1': 'The Coffee, Mediolan: minimalistyczne czarne kropki', 'ds.g2': 'Przykład: osiedlowa piekarnia', 'ds.g3': 'Przykład: bar koktajlowy', 'ds.g4': 'Totoro House: ich gumowa pieczątka staje się pieczątką na karcie',
+    'ds.g1': 'The Coffee, Mediolan: minimalistyczne czarne kropki', 'ds.g2': 'Przykład: osiedlowa piekarnia', 'ds.g3': 'Przykład: bar koktajlowy',
     'h.label': 'Co robimy dla Ciebie', 'h.title': 'Nie musisz być grafikiem. Ani marketingowcem.',
     'h.lede': 'Inni dają Ci narzędzie i zostawiają Cię z nim samego. Z Timbro masz kogoś, kto pomaga Ci od pomysłu aż do pierwszego klienta.',
     'h.1': 'Projektujemy kartę z Tobą', 'h.1p': 'Z Twoim logo i kolorami, dla Apple Wallet i Google Wallet. Ty wybierasz nagrodę, resztą zajmujemy się my.',
@@ -707,13 +704,11 @@ I18N.add({
   const fmt = (n, dec = 0) => new Intl.NumberFormat(L() === 'en' ? 'en-IE' : I18N.locale(), { style: 'currency', currency: 'EUR', minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
 
   // ---------- hero: a card you can stamp ----------
-  // The hero's example café: its own look (cream, deep green ink, coffee-bean stamps), so it
-  // isn't mistaken for a real café's card. Title and reward follow the page language.
-  const heroCard = () => {
-    const tp = CONFIG.templates.find(x => x.id === 'caffe'), main = I18N.pick(tp);
-    return { id: 'hero', business: 'Cafeteria', title: main.title, reward: main.reward, titleEn: tp.en.title, rewardEn: tp.en.reward,
-      lang: L(), stampsNeeded: 8, icon: 'cup', color: '#F6F1E7', ink: '#1F4D3A', stamp: 'ziarno', font: 'serif', strip: '#EDE4D3', tagline: 'Espresso bar' };
-  };
+  // The hero's card: Totoro House's real card (their rubber-stamp logo and Totoro stamp, as on
+  // card.html?card=totoro-house, supabase/updates/10). Its front shows only the logo and the stamps.
+  const heroCard = () => ({ id: 'hero', business: 'Totoro House', title: 'Stamp card', reward: 'a free drink', titleEn: 'Stamp card', rewardEn: 'a free drink',
+    lang: 'en', stampsNeeded: 10, style: 'minimal', color: '#E6DCCB', ink: '#4F5E3B', font: 'sans', strip: '#DDD1BC',
+    logo: '/assets/demo/totoro/logo.png', stampImage: '/assets/demo/totoro/stamp.png', hideFields: true });
   let n = 3, hint = 'hero.h0', hintVars;
   const heroBtn = document.getElementById('hero-stamp');
   function hero(pop) {
@@ -859,10 +854,7 @@ I18N.add({
     const ex = [
       [Store.getCard('the-coffee'), 'ds.g1'],
       [{ business: 'Forno Bottega', title: 'Carta pane', reward: 'una focaccia gratis', titleEn: 'Bread card', rewardEn: 'a free focaccia', stampsNeeded: 8, icon: 'cake', ...CONFIG.styles.find(x => x.id === 'bottega').look, tagline: 'dal 1962' }, 'ds.g2'],
-      [{ business: 'Bar Brera', title: 'Carta aperitivo', reward: 'uno spritz gratis', titleEn: 'Aperitivo card', rewardEn: 'a free spritz', stampsNeeded: 8, icon: 'glass', ...CONFIG.styles.find(x => x.id === 'milano').look }, 'ds.g3'],
-      // Totoro House: their rubber-stamp logo, as on their card (card.html?card=totoro-house, supabase/updates/10)
-      [{ id: 'totoro-house', business: 'Totoro House', title: 'Stamp card', reward: 'a free drink', titleEn: 'Stamp card', rewardEn: 'a free drink', stampsNeeded: 10, lang: 'en',
-        style: 'minimal', color: '#E6DCCB', ink: '#4F5E3B', font: 'sans', strip: '#DDD1BC', logo: '/assets/demo/totoro/logo.png', stampImage: '/assets/demo/totoro/stamp.png', hideFields: true }, 'ds.g4']
+      [{ business: 'Bar Brera', title: 'Carta aperitivo', reward: 'uno spritz gratis', titleEn: 'Aperitivo card', rewardEn: 'a free spritz', stampsNeeded: 8, icon: 'glass', ...CONFIG.styles.find(x => x.id === 'milano').look }, 'ds.g3']
     ];
     document.getElementById('gallery').innerHTML = ex.map(([c, k]) => `<figure>${UI.renderPass(c, null, { stamps: 5, platform: 'apple' })}<figcaption>${I18N.t(k)}</figcaption></figure>`).join('');
   }
