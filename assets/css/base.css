@@ -167,8 +167,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 /* Apple Wallet store card */
 .pass.apple{border-radius:18px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,.18),0 10px 30px -14px rgba(0,0,0,.4)}
 .apple .wp-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:14px 16px 0;min-height:52px}
-.apple .wp-logo{display:flex;align-items:center;gap:8px;min-width:0;font-size:20px;font-weight:500;letter-spacing:-.01em;line-height:1.1}
-.apple .wp-logo img{max-height:44px;max-width:200px;object-fit:contain;object-position:left center}
+.apple .wp-logo{display:flex;align-items:center;gap:8px;min-width:0;flex:0 1 auto;font-size:20px;font-weight:500;letter-spacing:-.01em;line-height:1.1}
+.apple .wp-logo img{max-height:44px;max-width:min(200px,100%);min-width:0;object-fit:contain;object-position:left center}
 .apple .wp-logo svg{width:24px;height:24px;flex:0 0 24px}
 .apple .wp-logo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .apple .wp-hf{text-align:right;flex:0 0 auto}
