@@ -846,15 +846,21 @@ end $$;
 drop trigger if exists alert_card on cards;
 create trigger alert_card after insert or update of business on cards for each row execute function _alert_card();
 
--- A café sent a design for approval, or asked Witkowski Design for a change (owner_send_design).
+-- A café sent a design for approval, or asked Witkowski Design for a change (owner_send_design):
+-- Witkowski Design is told. Witkowski Design approved a design (admin_publish) or asked the café
+-- for a change (admin_ask_changes): the café's owner is told, in the card's language.
 create or replace function _alert_design() returns trigger
 language plpgsql security definer set search_path = timbro
 as $$
+declare v_status text := new.review->>'status';
 begin
-  if new.review->>'status' = 'pending' and (old.review is null or old.review->>'sentAt' is distinct from new.review->>'sentAt') then
+  if v_status = 'pending' and (old.review is null or old.review->>'sentAt' is distinct from new.review->>'sentAt') then
     perform _alert('design', new.business_id, jsonb_build_object('card', new.id, 'cardName', new.business,
       'request', new.review->>'kind' = 'request', 'note', left(new.review->>'note', 600),
       'images', jsonb_array_length(coalesce(new.review->'images', '[]'::jsonb))));
+  elsif v_status in ('approved', 'changes') and (old.review is null or old.review->>'status' is distinct from v_status or old.review->>'at' is distinct from new.review->>'at') then
+    perform _alert(v_status, new.business_id, jsonb_build_object('card', new.id, 'cardName', new.business, 'lang', new.lang,
+      'reply', left(new.review->>'reply', 600)));
   end if;
   return new;
 end $$;

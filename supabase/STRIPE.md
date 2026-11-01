@@ -83,7 +83,7 @@ You get an email at `bartek.archi56@gmail.com` when a café signs up (its first 
 1. **Resend key.** resend.com → **API Keys** → Create API key, permission **Sending access**, domain `witkowskidesign.com`. Copy it (`re_...`). It is a password: never in chat, email or the repo.
 2. **Secret.** Supabase → **Edge Functions → Secrets** → add `RESEND_API_KEY` = the key. Optional: `ALERT_TO` (another address to send to) and `ALERT_FROM` (default `Timbro <noreply@witkowskidesign.com>`).
 3. **Function.** Supabase → **Edge Functions → Deploy a new function → Via Editor**, name `admin-alert`, paste [`functions/admin-alert/index.ts`](functions/admin-alert/index.ts), **Deploy**. Then in its **Details / Settings** turn **Enforce JWT verification** off and save (each call carries a key from the database instead).
-4. **Database.** SQL Editor → paste [`updates/15-alerts.sql`](updates/15-alerts.sql) → **Run**, then [`updates/16-design-alert.sql`](updates/16-design-alert.sql). Cafés that already exist are not announced again.
+4. **Database.** SQL Editor → paste [`updates/15-alerts.sql`](updates/15-alerts.sql) → **Run**, then [`updates/16-design-alert.sql`](updates/16-design-alert.sql) and [`updates/17-owner-design-email.sql`](updates/17-owner-design-email.sql) (the café gets an email when you approve its design or ask for a change, in its card's language; its replies come to you). Cafés that already exist are not announced again.
 5. **Test.** Create a test café (a new account and its card): the email arrives within a minute. If not: Edge Functions → `admin-alert` → **Logs**, and in the SQL Editor `select status_code, content from net._http_response order by id desc limit 5;`.
 
 ## Testing on your computer

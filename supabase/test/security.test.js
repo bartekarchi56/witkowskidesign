@@ -269,16 +269,22 @@ await call(alertOwner, 'owner_send_design', { p_card_id: aid, p_kind: 'proposal'
 await call(alertOwner, 'owner_save_card', { p_card: { id: aid, title: 'Carta nuova' } });   // the same request again: no new alert
 got = (await calls()).slice(before);
 assert.equal(got.at(-1).kind, 'design'); assert.equal(got.at(-1).data.card, aid); assert.equal(got.at(-1).data.note, 'Più scuro, per favore'); assert.equal(got.at(-1).data.request, false);
+await call(users.designer, 'admin_publish', { p_card_id: aid, p_design: { color: '#000000' } });
+got = (await calls()).slice(before);
+assert.equal(got.at(-1).kind, 'approved'); assert.equal(got.at(-1).data.card, aid); assert.equal(got.at(-1).data.lang, 'it'); assert.match(got.at(-1).data.email, /^alert-/);
+await call(users.designer, 'admin_ask_changes', { p_card_id: aid, p_reply: 'Manca il logo' });
+got = (await calls()).slice(before);
+assert.equal(got.at(-1).kind, 'changes'); assert.equal(got.at(-1).data.reply, 'Manca il logo');
 const setBill = sql => pool.query(`update timbro.businesses set ${sql} where owner_id = $1`, [alertUser]);
 await setBill(`billing_status = 'trialing', billing_plan = 'plus', billing_interval = 'month'`);
 await setBill(`billing_period_end = now()`);   // nothing that matters changed: no alert
 await setBill(`billing_status = 'active'`); await setBill(`billing_canceling = true`); await setBill(`billing_status = 'canceled'`);
 got = (await calls()).slice(before);
-assert.deepEqual(got.map(b => b.kind), ['signup', 'design', 'trial', 'paying', 'canceling', 'ended']); assert.equal(got[2].data.plan, 'plus');
+assert.deepEqual(got.map(b => b.kind), ['signup', 'design', 'approved', 'changes', 'trial', 'paying', 'canceling', 'ended']); assert.equal(got[4].data.plan, 'plus');
 await rejects(call(anon, 'alert_key_ok', { p_key: key }), /permission denied/);
 assert.equal(await call({ role: 'service_role' }, 'alert_key_ok', { p_key: key }), true);
 assert.equal(await call({ role: 'service_role' }, 'alert_key_ok', { p_key: 'nope' }), false);
-ok('Witkowski Design is alerted at sign-up, when a design is sent for approval and at each subscription change; only the alert function can check the key');
+ok('Witkowski Design is alerted at sign-up, when a design is sent for approval and at each subscription change; the café hears when its design is approved or needs a change; only the alert function can check the key');
 
 // ---- no function is open by accident (Postgres lets PUBLIC run new functions) ----
 const open = async role => (await pool.query(`select coalesce(string_agg(p.proname, ',' order by p.proname), '') as f from pg_proc p
