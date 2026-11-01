@@ -865,20 +865,21 @@ ASSETS['reel-showcase'] = { size: 'story', duration: 17.4, cover: 1.9, build() {
 ASSETS['stamps-sheet'] = { size: 'square', build() {
   stage.classList.add('paper-bg');
   el(`<div class="abs lbl" style="left:36px;top:32px;color:#6E665A">${L('Timbro · i timbri', 'Timbro · the stamps')}</div>`);
-  el(`<div class="abs lbl" style="right:36px;top:32px;color:#6E665A">6 / 6</div>`);
-  const rot = [-4, 3, -2, 5, -3, 2];
-  el(`<div class="abs" style="left:30px;right:30px;top:112px;display:grid;grid-template-columns:repeat(3,1fr);row-gap:40px">${STAMPS.list.map((x, i) =>
-    `<div class="st"><div style="width:122px;transform:rotate(${rot[i]}deg)">${STAMPS.svg(x.id, '#2B32FF')}</div><span>${esc(I18N.pick(x))}</span></div>`).join('')}</div>`);
+  el(`<div class="abs lbl" style="right:36px;top:32px;color:#6E665A">${STAMPS.list.length} / ${STAMPS.list.length}</div>`);
+  const rot = [-4, 3, -2, 5, -3, 2, -5, 4];
+  el(`<div class="abs" style="left:24px;right:24px;top:118px;display:grid;grid-template-columns:repeat(4,1fr);row-gap:46px">${STAMPS.list.map((x, i) =>
+    `<div class="st"><div style="width:94px;transform:rotate(${rot[i % 8]}deg)">${STAMPS.svg(x.id, '#2B32FF')}</div><span>${esc(I18N.pick(x))}</span></div>`).join('')}</div>`);
 } };
 ASSETS['stamps-inks'] = { size: 'feed', build() {
   stage.classList.add('paper-bg');
   el(`<div class="abs lbl" style="left:36px;top:32px;color:#6E665A">${L('Un inchiostro per ogni locale', 'One ink for every place')}</div>`);
-  const inks = [['#2B32FF', L('Blu', 'Blue')], ['#B5442E', L('Terracotta', 'Terracotta')], ['#1A1A1A', L('Nero', 'Black')]];
-  el(`<div class="abs" style="left:28px;right:28px;top:66px;display:grid;gap:10px">${inks.map(([c, n]) => `<div style="display:grid;grid-template-columns:70px repeat(6,1fr);align-items:center;gap:6px">
-    <span class="lbl" style="color:#6E665A;font-size:10px">${esc(n)}</span>${STAMPS.list.map((x, i) => `<div style="transform:rotate(${[-4, 3, -2, 5, -3, 2][i]}deg)">${STAMPS.svg(x.id, c)}</div>`).join('')}</div>`).join('')}</div>`);
-  el(`<div class="abs lbl" style="left:36px;top:322px;color:#6E665A">${L('Sulla carta', 'On the card')}</div>`);
-  const card = { ...YOUR, stampsNeeded: 10, color: '#FFFFFF', ink: '#2B32FF', stamp: 'ramo', strip: '#F2EDE1' };
-  const c = solo(card, 300, '', { compact: true }); c.card.set(7); fit(c.el, 346, 640, -2);
+  // white: on a dark strip, the way it sits on a dark card
+  const inks = [['#2B32FF', L('Blu', 'Blue')], ['#B5442E', L('Terracotta', 'Terracotta')], ['#1A1A1A', L('Nero', 'Black')], ['#FFFFFF', L('Bianco', 'White')]];
+  el(`<div class="abs" style="left:28px;right:28px;top:62px;display:grid;gap:8px">${inks.map(([c, n]) => `<div style="display:grid;grid-template-columns:62px repeat(${STAMPS.list.length},1fr);align-items:center;gap:5px;${c === '#FFFFFF' ? 'background:#1A1A1A;border-radius:12px;padding:6px 6px 6px 0' : ''}">
+    <span class="lbl" style="color:${c === '#FFFFFF' ? '#E8E2D6' : '#6E665A'};font-size:10px;${c === '#FFFFFF' ? 'padding-left:8px' : ''}">${esc(n)}</span>${STAMPS.list.map((x, i) => `<div style="transform:rotate(${[-4, 3, -2, 5, -3, 2, -5, 4][i % 8]}deg)">${STAMPS.svg(x.id, c)}</div>`).join('')}</div>`).join('')}</div>`);
+  el(`<div class="abs lbl" style="left:36px;top:300px;color:#6E665A">${L('Sulla carta', 'On the card')}</div>`);
+  const light = solo({ ...YOUR, stampsNeeded: 10, color: '#FFFFFF', ink: '#2B32FF', stamp: 'ramo', strip: '#F2EDE1' }, 300, 'left:22px;top:328px;transform:rotate(-3deg) scale(.8);transform-origin:top left', { compact: true }); light.card.set(7);
+  const dark = solo({ ...YOUR, stampsNeeded: 10, color: '#1A1A1A', ink: '#FFFFFF', stamp: 'stella', strip: '' }, 300, 'left:276px;top:340px;transform:rotate(3deg) scale(.8);transform-origin:top left', { compact: true }); dark.card.set(6);
 } };
 
 

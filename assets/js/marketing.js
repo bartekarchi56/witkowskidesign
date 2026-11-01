@@ -26,6 +26,7 @@
   };
   const head = (lang, n) => P[lang].head.replace('{n}', lang === 'pl' ? `${n} ${UI.stampsWord(n, 'pl').replace(/a$/, 'ę')}` : n);
   function poster(card, opts = {}) {
+    card = { ...card, ink: UI.printInk(card) };   // white paper: never a white ink
     const lang = P[opts.lang] ? opts.lang : 'it';
     const main = words(card, lang), en = words(card, 'en');
     const sub = lang !== 'en';
@@ -53,6 +54,7 @@
 
   // ---------- Instagram post (1080×1350 canvas) ----------
   async function instagram(card, lang) {
+    card = { ...card, ink: UI.printInk(card) };   // white background: never a white ink
     const w = words(card, lang);
     const L = MSG[lang] || MSG.en;
     try { await Promise.all([document.fonts.load('800 80px Archivo'), document.fonts.load('500 30px "Spline Sans Mono"')]); } catch (e) {}

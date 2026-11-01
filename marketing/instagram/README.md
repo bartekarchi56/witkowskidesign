@@ -19,7 +19,7 @@ The account posts in English: the `en/` images with the English caption (`schedu
 | `ad-hero-story.png` | Story 9:16 | The same ad for stories |
 | `reel-ad-hero.mp4` | Reel 9:16, 7.5 s | The ad, animated: the phone turns in, stamps land, price and offer appear |
 | `reel-showcase.mp4` | Reel 9:16, 17.4 s | 3D product video on a dark stage: the phone flies in, stamps land in close-up, the message lifts out of the screen, stamps burst at ten, three styles, results tiles |
-| `stamps-sheet.png`, `stamps-inks.png` | 1:1, 4:5 | The six standard stamps; in three inks and on the card |
+| `stamps-sheet.png`, `stamps-inks.png` | 1:1, 4:5 | The eight standard stamps; in four inks (white on a dark strip) and on a light and a dark card |
 | `post-intro.png` | Feed 4:5 | The card on the phone: what Timbro is |
 | `post-paper-vs-phone.png` | Feed 4:5 | Paper card vs phone card |
 | `carousel-mistakes-1…7.png` | Carousel 4:5 | 5 loyalty card mistakes |
@@ -570,28 +570,28 @@ Post only after the extras are live (supabase/updates/14a-c run, site deployed).
 
 ### stamps-sheet
 **IT**
-> Sei timbri, disegnati a mano per le carte fedeltà 🖋️
-> Sole, ramo d'ulivo, fiore, stella, onda, albero: ogni locale sceglie il suo, oppure usa il proprio logo.
+> Otto timbri, disegnati a mano per le carte fedeltà 🖋️
+> Punto, sole, ramo d'ulivo, fiore, stella, onda, albero e luna, chicco di caffè: ogni locale sceglie il suo, oppure usa il proprio logo.
 > Quale metteresti sulla carta del tuo bar? 👇
 >
 > #cartafedeltà #design #illustrazione #barmilano #piccoleimprese
 
 **EN**
-> Six stamps, drawn by hand for loyalty cards 🖋️
-> Sun, olive branch, flower, star, wave, tree: every café picks its own, or uses its logo.
+> Eight stamps, drawn by hand for loyalty cards 🖋️
+> Dot, sun, olive branch, flower, star, wave, tree and moon, coffee bean: every café picks its own, or uses its logo.
 > Which one would you put on your café's card? 👇
 >
 > #loyaltycard #design #illustration #coffeeshop #smallbusiness
 
 ### stamps-inks
 **IT**
-> Un inchiostro per ogni locale: blu, terracotta, nero 🎨
+> Un inchiostro per ogni locale: blu, terracotta, nero, e bianco per le carte scure 🎨
 > Lo stesso timbro cambia carattere con il colore. Scegli quello che somiglia al tuo bar, e la carta diventa vostra.
 >
 > #cartafedeltà #design #barmilano #piccoleimprese #milano
 
 **EN**
-> One ink for every place: blue, terracotta, black 🎨
+> One ink for every place: blue, terracotta, black, and white for dark cards 🎨
 > The same stamp changes character with its colour. Pick the one that looks like your café, and the card becomes yours.
 >
 > #loyaltycard #design #coffeeshop #smallbusiness #branding

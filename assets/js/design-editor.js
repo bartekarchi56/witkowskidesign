@@ -12,7 +12,8 @@
 (function () {
   const COLORS = ['#FFFFFF', '#0B0B0C', '#F3EEE4', '#EEE9E1', '#4A2E21', '#1F3D2B', '#6B1E2B', '#1B2A4A'];
   const STRIPS = ['', '#EEE9E1', '#F3EEE4', '#F4F4F2', '#E7EFE9', '#0B0B0C'];
-  const INKS = ['#2B32FF', '#0B0B0C', '#B5442E', '#D6261C', '#C9A24A', '#4A2E21', '#2F6B4F'];
+  const INKS = ['#2B32FF', '#0B0B0C', '#FFFFFF', '#B5442E', '#D6261C', '#C9A24A', '#4A2E21', '#2F6B4F'];   // white: for dark cards
+  const light = hex => /^#[0-9a-f]{6}$/i.test(hex || '') && UI.textOn(hex) === '#0B0B0C';
 
   I18N.add({
     it: {
@@ -21,7 +22,7 @@
       'de.fSans': 'Moderno', 'de.fWide': 'Largo', 'de.fSerif': 'Classico', 'de.fMono': 'Macchina',
       'de.color': 'Colore della carta', 'de.strip': 'Sfondo dei timbri', 'de.stripImg': 'oppure un\'immagine di sfondo', 'de.stripHint': 'Una foto o una texture, larga e bassa (circa 3:1).',
       'de.stamp': 'Il timbro', 'de.art': 'oppure il tuo disegno del timbro', 'de.artHint': 'PNG quadrato con sfondo trasparente. Prende il posto del timbro scelto.',
-      'de.ink': 'Colore dell\'inchiostro', 'de.same': 'Uguale alla carta'
+      'de.ink': 'Colore dell\'inchiostro', 'de.same': 'Uguale alla carta', 'de.inkLight': 'L\'inchiostro bianco si vede su una carta scura: scegli anche un colore scuro per la carta.'
     },
     en: {
       'de.style': 'Starting style', 'de.logo': 'Logo', 'de.logoHint': 'A wide PNG with a transparent background. It replaces the name.',
@@ -29,7 +30,7 @@
       'de.fSans': 'Modern', 'de.fWide': 'Wide', 'de.fSerif': 'Classic', 'de.fMono': 'Typewriter',
       'de.color': 'Card colour', 'de.strip': 'Behind the stamps', 'de.stripImg': 'or a background image', 'de.stripHint': 'A photo or texture, wide and short (about 3:1).',
       'de.stamp': 'The stamp', 'de.art': 'or your own stamp artwork', 'de.artHint': 'A square PNG with a transparent background. It takes the place of the stamp above.',
-      'de.ink': 'Ink colour', 'de.same': 'Same as the card'
+      'de.ink': 'Ink colour', 'de.same': 'Same as the card', 'de.inkLight': 'White ink shows on a dark card: pick a dark card colour too.'
     },
     pl: {
       'de.style': 'Styl na start', 'de.logo': 'Logo', 'de.logoHint': 'Poziomy PNG z przezroczystym tłem. Zastępuje nazwę.',
@@ -37,7 +38,7 @@
       'de.fSans': 'Nowoczesny', 'de.fWide': 'Szeroki', 'de.fSerif': 'Klasyczny', 'de.fMono': 'Maszynowy',
       'de.color': 'Kolor karty', 'de.strip': 'Tło pod pieczątkami', 'de.stripImg': 'albo obraz w tle', 'de.stripHint': 'Zdjęcie lub tekstura, szeroka i niska (około 3:1).',
       'de.stamp': 'Pieczątka', 'de.art': 'albo Twój własny wzór pieczątki', 'de.artHint': 'Kwadratowy PNG z przezroczystym tłem. Zastępuje wybraną pieczątkę.',
-      'de.ink': 'Kolor tuszu', 'de.same': 'Jak karta'
+      'de.ink': 'Kolor tuszu', 'de.same': 'Jak karta', 'de.inkLight': 'Biały tusz widać na ciemnej karcie: wybierz też ciemny kolor karty.'
     }
   });
 
@@ -87,13 +88,19 @@
         ${field(t('de.stamp'), `<div class="chips de-stamps">${STAMPS.list.map(st =>
           `<input type="radio" name="${id}-stamp" id="${id}-stamp-${st.id}" value="${st.id}"><label for="${id}-stamp-${st.id}"><span class="de-st" data-st="${st.id}"></span>${UI.esc(I18N.pick(st))}</label>`).join('')}</div>`
           + `<small class="muted" style="margin-top:8px">${t('de.art')}</small>` + upload('stampImage', 'de.artHint'))}
-        ${field(t('de.ink'), swatches('ink', INKS))}`;
+        ${field(t('de.ink'), swatches('ink', INKS) + `<small class="muted" data-inkhint hidden style="margin-top:8px">${t('de.inkLight')}</small>`)}`;
       fill(current);
     }
-    // The stamp choices, printed in the ink currently picked.
+    // The stamp choices, printed in the ink currently picked (a light ink on a dark chip, so it shows).
+    // A light ink on a light card would be invisible: say so.
     function stampInk() {
-      const ink = radio('ink') || current.ink || '#2B32FF';
-      root.querySelectorAll('[data-st]').forEach(el => { el.innerHTML = STAMPS.svg(el.dataset.st, ink); });
+      const ink = radio('ink') || current.ink || '#2B32FF', card = radio('color') || current.color || '#FFFFFF';
+      root.querySelectorAll('[data-st]').forEach(el => {
+        el.innerHTML = STAMPS.svg(el.dataset.st, ink);
+        el.style.background = light(ink) ? '#0B0B0C' : '';
+      });
+      const hint = root.querySelector('[data-inkhint]');
+      if (hint) hint.hidden = !(light(ink) && light(card));
     }
 
     const radio = name => { const el = root.querySelector(`input[name="${id}-${name}"]:checked`); return el ? el.value : undefined; };
@@ -139,7 +146,7 @@
         root.querySelectorAll(`input[name="${id}-style"]`).forEach(r => { r.checked = false; });
         // Picking a standard stamp puts it back in place of uploaded artwork.
         if (el.name === `${id}-stamp`) { images.stampImage = ''; thumbs(); }
-        if (el.name === `${id}-ink`) stampInk();
+        if (el.name === `${id}-ink` || el.name === `${id}-color`) stampInk();
       }
       onChange(get());
     });

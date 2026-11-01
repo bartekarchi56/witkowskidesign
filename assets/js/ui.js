@@ -288,6 +288,14 @@
       .replace(/^\s*[,!]\s*/, '').replace(/\s+([!?,.])/g, '$1').replace(/\s{2,}/g, ' ').trim().replace(/^./, c => c.toUpperCase());
   }
 
+  // The ink for white paper (poster, Instagram post): a very light ink (white, for dark cards)
+  // would vanish there, so it becomes the card's own colour when that is dark, else black.
+  function printInk(card) {
+    const ink = (card && card.ink) || '#2B32FF';
+    if (textOn(ink) === '#FFFFFF') return ink;
+    return card && /^#[0-9a-f]{6}$/i.test(card.color || '') && textOn(card.color) === '#FFFFFF' ? card.color : '#0B0B0C';
+  }
+
   // ---- extras (CONFIG.messages friend, double, birthday, review; supabase/updates/14a-c) ----
   // The café's time zone, as in the database's _double_now.
   const cafeZone = card => card && card.lang === 'pl' ? 'Europe/Warsaw' : 'Europe/Rome';
@@ -320,5 +328,5 @@
   // The link a customer shares to invite a friend (Bring a friend).
   const inviteUrl = (card, customer) => publicJoinUrl(card.id) + '&ref=' + encodeURIComponent(customer.id);
 
-  window.UI = { messagesOf, newsOf, fillMessage, doubleNow, doubleWhen, extraOf, inviteUrl, cardLang, msgLang, stampsWord, walletAssets, lookOf, stampArt, stampEmpty, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
+  window.UI = { messagesOf, newsOf, fillMessage, printInk, doubleNow, doubleWhen, extraOf, inviteUrl, cardLang, msgLang, stampsWord, walletAssets, lookOf, stampArt, stampEmpty, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
 })();
