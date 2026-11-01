@@ -1,4 +1,5 @@
-// Emails Witkowski Design when a café signs up or its subscription changes. The database
+// Emails Witkowski Design when a café signs up, sends a design for approval (or asks for a
+// change), or its subscription changes. The database
 // calls this (timbro._alert in schema.sql, through pg_net) with the key from timbro.job_keys,
 // which is checked here with alert_key_ok. The email goes out with Resend.
 // Deploy with "Verify JWT" OFF (the database has no Supabase login).
@@ -13,7 +14,8 @@ const FROM = Deno.env.get('ALERT_FROM') || 'Timbro <noreply@witkowskidesign.com>
 const RESEND = Deno.env.get('RESEND_API') || 'https://api.resend.com';   // tests: a local stand-in
 
 type Data = { business?: string; contact?: string; email?: string; phone?: string; city?: string; address?: string; instagram?: string;
-  type?: string; plan?: string; interval?: string; periodEnd?: string; cards?: string[] };
+  type?: string; plan?: string; interval?: string; periodEnd?: string; cards?: string[];
+  card?: string; request?: boolean; note?: string; images?: number };   // design: the card, a change asked in words, its note
 const PRICE: Record<string, number> = { start: 19, plus: 39, pro: 79 };
 const planText = (d: Data) => d.plan ? `${d.plan[0].toUpperCase()}${d.plan.slice(1)}${PRICE[d.plan] ? `, €${PRICE[d.plan]} a month` : ''}${d.interval === 'year' ? ' (paid yearly)' : ''}` : 'no plan';
 const day = (t?: string) => t ? new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
@@ -23,6 +25,9 @@ function headline(kind: string, d: Data): [string, string] {
   const name = d.business || 'A café';
   switch (kind) {
     case 'signup': return [`New café: ${name}`, `${name} just signed up and created their card.`];
+    case 'design': return d.request
+      ? [`Change requested: ${name}`, `${name} asked for a change to their card's design.`]
+      : [`Design to approve: ${name}`, `${name} sent a new design for their card. Customers see it after you approve it in the Studio.`];
     case 'trial': return [`Trial started: ${name} · ${planText(d)}`, `${name} started the 30-day free trial of ${planText(d)}.`];
     case 'paying': return [`Paying: ${name} · ${planText(d)}`, `${name} paid: ${planText(d)}.`];
     case 'failed': return [`Payment failed: ${name}`, `${name}'s payment didn't go through (${planText(d)}). Stripe will retry; a call may help.`];
@@ -40,9 +45,10 @@ Deno.serve(async req => {
   if (ok !== true) return new Response('Forbidden', { status: 403 });
 
   const d = body.data ?? {}, [subject, first] = headline(String(body.kind ?? ''), d);
-  const card = d.cards?.[0];
+  const card = d.card || d.cards?.[0];
   const field = (label: string, v?: string) => v ? `${label}: ${v}` : null;
-  const lines = [first, '', field('Contact', d.contact), field('Email', d.email), field('Phone', d.phone),
+  const lines = [first, '', field('Their note', d.note), field('Pictures attached', d.images ? String(d.images) : ''),
+    ...(d.note || d.images ? [''] : []), field('Contact', d.contact), field('Email', d.email), field('Phone', d.phone),
     field('Where', [d.address, d.city].filter(Boolean).join(', ')), field('Instagram', d.instagram), field('Kind', d.type),
     field('Card', card && `https://timbro.witkowskidesign.com/app/card.html?card=${card}`),
     '', 'Studio: https://timbro.witkowskidesign.com/studio/'].filter(l => l !== null);

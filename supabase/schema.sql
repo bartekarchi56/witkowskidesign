@@ -797,8 +797,8 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------- alerts --
--- Witkowski Design gets an email when a café signs up (its first card) and when its
--- subscription starts, is paid, fails or is cancelled. The database calls the
+-- Witkowski Design gets an email when a café signs up (its first card), sends a design
+-- for approval or asks for a change, and when its subscription starts, is paid, fails or is cancelled. The database calls the
 -- admin-alert Edge Function (supabase/functions/admin-alert, it sends the email with
 -- Resend) through pg_net. Set its address once:
 --   insert into timbro.settings (name, value) values ('alerts_url', 'https://<project>.supabase.co/functions/v1/admin-alert')
@@ -809,7 +809,9 @@ create table if not exists settings (name text primary key, value text not null 
 alter table settings enable row level security;
 insert into job_keys (name) values ('alerts') on conflict (name) do nothing;
 
-create or replace function _alert(p_kind text, p_business uuid) returns void
+-- p_extra: more for the email (a design sent for approval: the card, its note).
+drop function if exists _alert(text, uuid);
+create or replace function _alert(p_kind text, p_business uuid, p_extra jsonb default '{}'::jsonb) returns void
 language plpgsql security definer set search_path = timbro, extensions
 as $$
 declare v_url text := (select value from settings where name = 'alerts_url'); v_data jsonb;
@@ -819,6 +821,7 @@ begin
       'address', b.address, 'instagram', b.instagram, 'type', b.kind, 'plan', b.billing_plan, 'interval', b.billing_interval,
       'periodEnd', b.billing_period_end, 'cards', (select coalesce(jsonb_agg(c.id order by c.created_at), '[]'::jsonb) from cards c where c.business_id = b.id))
     into v_data from businesses b left join auth.users u on u.id = b.owner_id where b.id = p_business;
+  v_data := v_data || coalesce(p_extra, '{}'::jsonb);
   begin
     perform net.http_post(url := v_url, body := jsonb_build_object('key', (select key from job_keys where name = 'alerts'), 'kind', p_kind, 'data', v_data));
   exception when others then raise warning 'alert not sent: %', sqlerrm;
@@ -842,6 +845,21 @@ begin
 end $$;
 drop trigger if exists alert_card on cards;
 create trigger alert_card after insert or update of business on cards for each row execute function _alert_card();
+
+-- A café sent a design for approval, or asked Witkowski Design for a change (owner_send_design).
+create or replace function _alert_design() returns trigger
+language plpgsql security definer set search_path = timbro
+as $$
+begin
+  if new.review->>'status' = 'pending' and (old.review is null or old.review->>'sentAt' is distinct from new.review->>'sentAt') then
+    perform _alert('design', new.business_id, jsonb_build_object('card', new.id, 'cardName', new.business,
+      'request', new.review->>'kind' = 'request', 'note', left(new.review->>'note', 600),
+      'images', jsonb_array_length(coalesce(new.review->'images', '[]'::jsonb))));
+  end if;
+  return new;
+end $$;
+drop trigger if exists alert_design on cards;
+create trigger alert_design after update of review on cards for each row execute function _alert_design();
 
 -- The subscription changed (stripe_sync): trial started, paying, payment failed, cancelled, ended.
 create or replace function _alert_billing() returns trigger
