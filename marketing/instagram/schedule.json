@@ -163,38 +163,81 @@
       "note": "posted now on request (was 7 Nov 18:00); Italian video with music, no voice (copy of marketing/animation/timbro-ritorno-it.mp4)"
     },
     {
-      "at": "2026-11-02 10:00",
+      "at": "2026-11-02 09:00",
       "post": "carousel-how-many",
       "type": "carousel"
     },
     {
-      "at": "2026-11-03 18:00",
+      "at": "2026-11-02 13:00",
+      "post": "post-friend",
+      "type": "image"
+    },
+    {
+      "at": "2026-11-02 19:00",
       "post": "reel-chains",
       "type": "reel",
       "note": "chains reel with the ElevenLabs voice (copy of marketing/animation/timbro-catene-en-voice.mp4)"
     },
     {
-      "at": "2026-11-04 10:00",
+      "at": "2026-11-03 09:00",
       "post": "carousel-messages",
       "type": "carousel"
     },
     {
-      "at": "2026-11-06 10:00",
+      "at": "2026-11-03 13:00",
+      "post": "post-double",
+      "type": "image"
+    },
+    {
+      "at": "2026-11-03 19:00",
+      "post": "reel-1-extra-coffee",
+      "type": "reel",
+      "note": "EN voice version, copied from marketing/animation/"
+    },
+    {
+      "at": "2026-11-04 09:00",
       "post": "carousel-launch",
       "type": "carousel"
     },
     {
-      "at": "2026-11-08 10:00",
+      "at": "2026-11-04 13:00",
+      "post": "post-birthday",
+      "type": "image"
+    },
+    {
+      "at": "2026-11-04 19:00",
+      "post": "reel-near-the-cafe",
+      "type": "reel",
+      "note": "EN voice version, copied from marketing/animation/"
+    },
+    {
+      "at": "2026-11-05 09:00",
       "post": "carousel-numbers",
       "type": "carousel"
     },
     {
-      "at": "2026-11-10 10:00",
+      "at": "2026-11-05 13:00",
+      "post": "stamps-sheet",
+      "type": "image"
+    },
+    {
+      "at": "2026-11-05 19:00",
+      "post": "reel-3-facts",
+      "type": "reel",
+      "note": "EN voice version, copied from marketing/animation/"
+    },
+    {
+      "at": "2026-11-06 09:00",
       "post": "carousel-styles",
       "type": "carousel"
     },
     {
-      "at": "2026-11-12 10:00",
+      "at": "2026-11-06 13:00",
+      "post": "stamps-inks",
+      "type": "image"
+    },
+    {
+      "at": "2026-11-06 19:00",
       "post": "carousel-plans",
       "type": "carousel"
     }

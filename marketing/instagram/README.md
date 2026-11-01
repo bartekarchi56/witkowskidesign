@@ -568,7 +568,36 @@ Post only after the extras are live (supabase/updates/14a-c run, site deployed).
 >
 > #loyaltycard #googlereviews #coffeeshopowner #smallbusiness #customerloyalty
 
-### tre-fatti (3D reel: `marketing/animation/timbro-tre-fatti-it.mp4`, `-en.mp4`, 37 s, with sound)
+### stamps-sheet
+**IT**
+> Sei timbri, disegnati a mano per le carte fedeltà 🖋️
+> Sole, ramo d'ulivo, fiore, stella, onda, albero: ogni locale sceglie il suo, oppure usa il proprio logo.
+> Quale metteresti sulla carta del tuo bar? 👇
+>
+> #cartafedeltà #design #illustrazione #barmilano #piccoleimprese
+
+**EN**
+> Six stamps, drawn by hand for loyalty cards 🖋️
+> Sun, olive branch, flower, star, wave, tree: every café picks its own, or uses its logo.
+> Which one would you put on your café's card? 👇
+>
+> #loyaltycard #design #illustration #coffeeshop #smallbusiness
+
+### stamps-inks
+**IT**
+> Un inchiostro per ogni locale: blu, terracotta, nero 🎨
+> Lo stesso timbro cambia carattere con il colore. Scegli quello che somiglia al tuo bar, e la carta diventa vostra.
+>
+> #cartafedeltà #design #barmilano #piccoleimprese #milano
+
+**EN**
+> One ink for every place: blue, terracotta, black 🎨
+> The same stamp changes character with its colour. Pick the one that looks like your café, and the card becomes yours.
+>
+> #loyaltycard #design #coffeeshop #smallbusiness #branding
+
+### reel-3-facts
+3D reel `tre-fatti`: `marketing/animation/timbro-tre-fatti-it.mp4`, `-en.mp4`, 37 s, with sound; `en/reel-3-facts.mp4` is the EN voice version.
 Three facts from published studies, each named on screen. The cover is `marketing/animation/timbro-tre-fatti-<lang>-cover.jpg`.
 
 Voice-over: `timbro-tre-fatti-en-voice.mp4` is the same video with a voice (ElevenLabs, Multilingual v2). To make another, generate the script below as one take with a pause between sentences, then `FFMPEG=/path/to/ffmpeg node marketing/animation/voice.js tre-fatti <it|en> voice.mp3`: it finds the 14 sentences, puts each at its moment and lowers the music under the voice.
