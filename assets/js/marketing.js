@@ -25,8 +25,10 @@
     pl: { head: 'Zbierz {n}:', steps: ['Zeskanuj kod', 'Zapisz kartę w telefonie', 'Pokazuj ją przy każdej wizycie'], foot: 'Bez aplikacji. Nic do zgubienia.' }
   };
   const head = (lang, n) => P[lang].head.replace('{n}', lang === 'pl' ? `${n} ${UI.stampsWord(n, 'pl').replace(/a$/, 'ę')}` : n);
+  // In the card's own colours (UI.paperOf), with its logo in place of the name when it has one.
   function poster(card, opts = {}) {
-    card = { ...card, ink: UI.printInk(card) };   // white paper: never a white ink
+    const pp = UI.paperOf(card);
+    card = { ...card, ink: pp.ink };   // never an ink that vanishes on the paper
     const lang = P[opts.lang] ? opts.lang : 'it';
     const main = words(card, lang), en = words(card, 'en');
     const sub = lang !== 'en';
@@ -36,9 +38,9 @@
     const art = UI.stampArt(card), off = UI.stampEmpty(card);
     for (let i = 0; i < need; i++) dots += `<i class="p-art${i < 3 ? ' on' : ''}"><img src="${esc(i < 3 ? art : off.src)}" alt=""${i < 3 ? '' : ` class="${off.cls}"`}></i>`;
     return `
-      <div class="poster" lang="${lang}" style="--s:${esc(card.ink || '#2B32FF')}"><div class="poster-in">
+      <div class="poster" lang="${lang}" style="--s:${esc(pp.ink)};--bg:${pp.bg};--fg:${pp.fg};--muted:${pp.muted};--dash:${pp.line}"><div class="poster-in">
         <div class="poster-top">
-          <span class="poster-biz"><img src="${esc(art)}" alt="">${esc(card.business)}</span>
+          ${card.logo ? `<span class="poster-biz poster-logo"><img src="${esc(card.logo)}" alt="${esc(card.business)}"></span>` : `<span class="poster-biz"><img src="${esc(art)}" alt="">${esc(card.business)}</span>`}
           <span class="poster-tag">${esc(main.title)}</span>
         </div>
         <h2 class="poster-h">${esc(head(lang, need))} <em>${esc(main.reward)}.</em></h2>
@@ -54,14 +56,15 @@
 
   // ---------- Instagram post (1080×1350 canvas) ----------
   async function instagram(card, lang) {
-    card = { ...card, ink: UI.printInk(card) };   // white background: never a white ink
+    const pp = UI.paperOf(card);
+    card = { ...card, ink: pp.ink };   // in the card's own colours, never an ink that vanishes on them
     const w = words(card, lang);
     const L = MSG[lang] || MSG.en;
     try { await Promise.all([document.fonts.load('800 80px Archivo'), document.fonts.load('500 30px "Spline Sans Mono"')]); } catch (e) {}
     // The card's stamp: its own artwork or one of the standard stamps.
     const load = src => new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = src; });
     const off = UI.stampEmpty(card);
-    const [art, empty] = await Promise.all([load(UI.stampArt(card)), load(off.src)]);
+    const [art, empty, logo] = await Promise.all([load(UI.stampArt(card)), load(off.src), card.logo ? load(card.logo) : null]);
     const W = 1080, H = 1350;
     const cv = document.createElement('canvas');
     cv.width = W; cv.height = H;
@@ -69,14 +72,20 @@
     const ink = card.ink || '#2B32FF';
     const font = (wt, px, stretch = 'normal', fam = 'Archivo') => { c.font = `${wt} ${px}px "${fam}", system-ui, sans-serif`; if ('fontStretch' in c) c.fontStretch = stretch; };
 
-    c.fillStyle = '#FFFFFF'; c.fillRect(0, 0, W, H);
+    c.fillStyle = pp.bg; c.fillRect(0, 0, W, H);
 
-    // business name
-    c.fillStyle = '#0B0B0C';
-    font(700, 34, 'normal');
-    c.letterSpacing = '4px';
-    c.fillText(w.business.toUpperCase(), 90, 130);
-    c.letterSpacing = '0px';
+    // the café's logo, else its name
+    if (logo) {
+      const k = Math.min(84 / logo.height, 520 / logo.width);
+      c.drawImage(logo, 90, 150 - logo.height * k, logo.width * k, logo.height * k);
+    } else {
+      c.fillStyle = pp.fg;
+      font(700, 34, 'normal');
+      c.letterSpacing = '4px';
+      c.fillText(w.business.toUpperCase(), 90, 130);
+      c.letterSpacing = '0px';
+    }
+    c.fillStyle = pp.fg;
 
     // headline, wrapped; longer languages (Polish) get a smaller size so the card and footer still fit
     const cardH = 430, room = (H - 220) - cardH - 240;   // the card must end above the footer text
@@ -88,13 +97,13 @@
     // card
     const top = 200 + lines.length * lh + 40;
     roundRect(c, 90, top, W - 180, cardH, 36);
-    c.fillStyle = '#FFFFFF'; c.fill();
-    c.lineWidth = 4; c.strokeStyle = '#0B0B0C'; c.stroke();
+    c.fillStyle = pp.bg; c.fill();
+    c.lineWidth = 4; c.strokeStyle = pp.fg; c.stroke();
     font(800, 52, 'semi-expanded');
-    c.fillStyle = '#0B0B0C';
+    c.fillStyle = pp.fg;
     c.fillText(w.title, 140, top + 95);
     font(400, 32);
-    c.fillStyle = '#55555A';
+    c.fillStyle = pp.muted;
     c.fillText(fit(c, I18N.t('pass.collect', { n: w.n, reward: w.reward }), W - 280), 140, top + 148);
     // Balanced rows: 8 stamps = 4 + 4, 10 = 5 + 5.
     const n = Math.min(10, w.n), cols = n <= 5 ? n : Math.ceil(n / 2), rows = Math.ceil(n / cols);
@@ -112,10 +121,10 @@
 
     // footer
     font(600, 40);
-    c.fillStyle = '#0B0B0C';
+    c.fillStyle = pp.fg;
     c.fillText(L.igCta, 90, H - 150);
     font(500, 28, 'normal', 'Spline Sans Mono');
-    c.fillStyle = '#6B6B70';
+    c.fillStyle = pp.muted;
     c.fillText(L.igSub, 90, H - 95);
     return cv;
   }

@@ -288,12 +288,17 @@
       .replace(/^\s*[,!]\s*/, '').replace(/\s+([!?,.])/g, '$1').replace(/\s{2,}/g, ' ').trim().replace(/^./, c => c.toUpperCase());
   }
 
-  // The ink for white paper (poster, Instagram post): a very light ink (white, for dark cards)
-  // would vanish there, so it becomes the card's own colour when that is dark, else black.
-  function printInk(card) {
-    const ink = (card && card.ink) || '#2B32FF';
-    if (textOn(ink) === '#FFFFFF') return ink;
-    return card && /^#[0-9a-f]{6}$/i.test(card.color || '') && textOn(card.color) === '#FFFFFF' ? card.color : '#0B0B0C';
+  // Print material (poster, Instagram post) in the card's own colours: the card's colour as the
+  // paper, text that reads on it, and the card's ink, unless that ink would barely show on the
+  // paper (white ink on a white card): then the text colour. { bg, fg, muted, line, ink }
+  function paperOf(card) {
+    const hex = v => /^#[0-9a-f]{6}$/i.test(v || '');
+    const look = card || {};
+    const bg = hex(look.color) ? look.color : '#FFFFFF', fg = textOn(bg), dark = fg === '#FFFFFF';
+    const ink = hex(look.ink) ? look.ink : '#2B32FF';
+    const lum = h => { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255].map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }).reduce((a, v, i) => a + v * [.2126, .7152, .0722][i], 0); };
+    const contrast = (Math.max(lum(ink), lum(bg)) + .05) / (Math.min(lum(ink), lum(bg)) + .05);
+    return { bg, fg, muted: dark ? 'rgba(255,255,255,.68)' : '#55555A', line: dark ? 'rgba(255,255,255,.35)' : '#B5B5B8', ink: contrast < 1.8 ? fg : ink };
   }
 
   // ---- extras (CONFIG.messages friend, double, birthday, review; supabase/updates/14a-c) ----
@@ -328,5 +333,5 @@
   // The link a customer shares to invite a friend (Bring a friend).
   const inviteUrl = (card, customer) => publicJoinUrl(card.id) + '&ref=' + encodeURIComponent(customer.id);
 
-  window.UI = { messagesOf, newsOf, fillMessage, printInk, doubleNow, doubleWhen, extraOf, inviteUrl, cardLang, msgLang, stampsWord, walletAssets, lookOf, stampArt, stampEmpty, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
+  window.UI = { messagesOf, newsOf, fillMessage, paperOf, doubleNow, doubleWhen, extraOf, inviteUrl, cardLang, msgLang, stampsWord, walletAssets, lookOf, stampArt, stampEmpty, platformSwitch, getPlatform: () => platform, inkStamp, esc, icon, ICONS: Object.keys(PATHS), textOn, qrSvg, qrCanvas, renderPass, toast, copy, joinUrl, publicUrl, publicJoinUrl, timeAgo };
 })();
