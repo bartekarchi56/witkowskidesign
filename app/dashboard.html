@@ -73,6 +73,7 @@ details.en[open]{padding-bottom:4px}
 .rule-head small{display:block;color:var(--ink-2);font-size:14px;margin-top:2px}
 .rule-body{margin-top:14px;display:grid;gap:10px}
 .rule-opts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--ink-2)}
+.nt-lang{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--pop-wash);border-radius:14px;padding:12px 14px;font-size:14px}
 .nt-extras{margin:10px 0 -4px}
 .nt-extras h3{font-size:19px;font-stretch:112%;font-weight:800}
 .nt-extras p{color:var(--ink-2);font-size:14px;margin-top:2px}
@@ -566,6 +567,7 @@ I18N.add({
     'd.nReady': 'Premio pronto', 'd.nReadyW': 'Quando la carta è piena.',
     'd.nRemind': 'Promemoria', 'd.nRemindW': 'Se un cliente non passa da un po\'. Al massimo uno ogni volta.', 'd.nRemindOpt': 'Dopo', 'd.nDays': '{n} giorni senza visite',
     'd.nNear': 'Vicino al locale', 'd.nNearW': 'La carta appare sulla schermata di blocco quando il cliente passa vicino. Solo iPhone.', 'd.nUseHere': 'Usa la mia posizione (sono al locale)', 'd.nSaved': 'Posizione: {p}', 'd.nNoPlace': 'Nessuna posizione: premi il pulsante quando sei al locale.', 'd.nRemovePlace': 'Rimuovi', 'd.nGeoErr': 'Non riesco a leggere la posizione. Controlla i permessi del browser.',
+    'd.nAddEn': '+ English per i turisti', 'd.nCardIs': 'La tua carta è in {lang}: i clienti ricevono le notifiche in questa lingua.', 'd.nSwitch': 'Passa all\'italiano', 'd.nLangName': { it: 'italiano', en: 'inglese', pl: 'polacco' },
     'd.nIt': 'Italiano', 'd.nPl': 'Polski', 'd.nEn': 'English (turisti)', 'd.nEnOnly': 'English', 'd.nInsert': 'Inserisci:', 'd.vName': 'nome', 'd.vLeft': 'timbri mancanti', 'd.vReward': 'premio', 'd.vBusiness': 'locale',
     'd.newsT': 'Messaggio a tutti i clienti', 'd.newsP': 'Una novità sul telefono di tutti quelli che hanno la carta: dolci appena sfornati, una bevanda nuova, un evento. Una volta al giorno.',
     'd.newsLabel': 'Il messaggio', 'd.newsIdeas': 'Idee:', 'd.newsIdea1': 'Cornetti appena sfornati: vi aspettiamo!', 'd.newsIdea2': 'Novità: Matcha Maple Apple. Venite a provarla!', 'd.newsIdea3': 'Oggi doppio timbro su ogni caffè ☕',
@@ -671,6 +673,7 @@ I18N.add({
     'd.nReady': 'Reward ready', 'd.nReadyW': 'When the card is full.',
     'd.nRemind': 'Reminder', 'd.nRemindW': 'When a customer hasn\'t been in for a while. At most one each time.', 'd.nRemindOpt': 'After', 'd.nDays': '{n} days without a visit',
     'd.nNear': 'Near the café', 'd.nNearW': 'The card shows on the lock screen when the customer walks nearby. iPhone only.', 'd.nUseHere': 'Use my location (I am at the café)', 'd.nSaved': 'Location: {p}', 'd.nNoPlace': 'No location yet: press the button while you are at the café.', 'd.nRemovePlace': 'Remove', 'd.nGeoErr': 'Can\'t read your location. Check the browser\'s permission.',
+    'd.nAddEn': '', 'd.nCardIs': 'Your card is in {lang}: customers get notifications in that language.', 'd.nSwitch': 'Switch to English', 'd.nLangName': { it: 'Italian', en: 'English', pl: 'Polish' },
     'd.nIt': 'Italiano', 'd.nPl': 'Polski', 'd.nEn': 'English (tourists)', 'd.nEnOnly': 'English', 'd.nInsert': 'Insert:', 'd.vName': 'name', 'd.vLeft': 'stamps left', 'd.vReward': 'reward', 'd.vBusiness': 'café',
     'd.newsT': 'Message to all customers', 'd.newsP': 'News on the phone of everyone with your card: fresh pastries, a new drink, an event. Once a day.',
     'd.newsLabel': 'Your message', 'd.newsIdeas': 'Ideas:', 'd.newsIdea1': 'Fresh pastries just out of the oven: come and see us!', 'd.newsIdea2': 'New: Matcha Maple Apple. Come and try it!', 'd.newsIdea3': 'Double stamps on every coffee today ☕',
@@ -777,6 +780,7 @@ I18N.add({
     'd.nReady': 'Nagroda gotowa', 'd.nReadyW': 'Gdy karta jest pełna.',
     'd.nRemind': 'Przypomnienie', 'd.nRemindW': 'Gdy klient dawno nie przychodził. Najwyżej jedno między wizytami.', 'd.nRemindOpt': 'Po', 'd.nDays': '{n} dniach bez wizyty',
     'd.nNear': 'W pobliżu lokalu', 'd.nNearW': 'Karta pojawia się na ekranie blokady, gdy klient przechodzi obok. Tylko na iPhonie.', 'd.nUseHere': 'Użyj mojej lokalizacji (jestem w lokalu)', 'd.nSaved': 'Lokalizacja: {p}', 'd.nNoPlace': 'Brak lokalizacji: naciśnij przycisk, gdy jesteś w lokalu.', 'd.nRemovePlace': 'Usuń', 'd.nGeoErr': 'Nie udało się odczytać lokalizacji. Sprawdź uprawnienia przeglądarki.',
+    'd.nAddEn': '+ angielski dla turystów', 'd.nCardIs': 'Twoja karta jest w języku: {lang}. Klienci dostają powiadomienia w tym języku.', 'd.nSwitch': 'Zmień na polski', 'd.nLangName': { it: 'włoski', en: 'angielski', pl: 'polski' },
     'd.nIt': 'Italiano', 'd.nPl': 'Polski', 'd.nEn': 'English (turyści)', 'd.nEnOnly': 'English', 'd.nInsert': 'Wstaw:', 'd.vName': 'imię', 'd.vLeft': 'brakujące pieczątki', 'd.vReward': 'nagroda', 'd.vBusiness': 'lokal',
     'd.newsT': 'Wiadomość do wszystkich klientów', 'd.newsP': 'Nowość na telefonie każdego, kto ma Twoją kartę: świeże wypieki, nowy napój, wydarzenie. Raz dziennie.',
     'd.newsLabel': 'Wiadomość', 'd.newsIdeas': 'Pomysły:', 'd.newsIdea1': 'Świeże wypieki prosto z pieca: zapraszamy!', 'd.newsIdea2': 'Nowość: Matcha Maple Apple. Wpadnij spróbować!', 'd.newsIdea3': 'Dziś podwójna pieczątka za każdą kawę ☕',
@@ -1207,7 +1211,7 @@ I18N.add({
   const NT_NAMES = { close: ['d.nClose', 'd.nCloseW'], ready: ['d.nReady', 'd.nReadyW'], remind: ['d.nRemind', 'd.nRemindW'], near: ['d.nNear', 'd.nNearW'],
     friend: ['d.nFriend', 'd.nFriendW'], double: ['d.nDouble', 'd.nDoubleW'], birthday: ['d.nBirthday', 'd.nBirthdayW'], review: ['d.nReview', 'd.nReviewW'] };
   const NT_EXTRAS = 'friend';   // the extras start here (supabase/updates/14a-c), all off until switched on
-  let ntDraft = null, ntField = null, ntCard = null;   // ntField: the last text box used, for the insert buttons
+  let ntDraft = null, ntField = null, ntCard = null, ntEn = false;   // ntEn: show the English (tourists) texts   // ntField: the last text box used, for the insert buttons
   const ntBox = k => $('nt-form').querySelector(`[data-k="${k}"]`);
   // A message to all customers (Store.sendNews): one a day, shown on their cards for 3 days.
   const NEWS_GAP = 20 * 3600000;
@@ -1240,6 +1244,12 @@ I18N.add({
     renderNews();
     if (!keepDraft || !ntDraft || ntCard !== current.id) { ntDraft = JSON.parse(JSON.stringify(UI.messagesOf(current))); ntCard = current.id; }
     const t = k => I18N.t(k);
+    // Only the card's own language; English for tourists behind a link, unless a text was already written in English.
+    const cl = UI.cardLang(current);
+    const enOwn = NT.some(k => ntDraft[k].en && CONFIG.messages[k].en && ntDraft[k].en !== CONFIG.messages[k].en);
+    const langs = cl === 'en' || !(ntEn || enOwn) ? [cl] : [cl, 'en'];
+    const names = I18N.t('d.nLangName');
+    const other = I18N.lang !== cl ? `<div class="nt-lang"><span>${UI.esc(I18N.t('d.nCardIs', { lang: (names && names[cl]) || cl }))}</span><button class="btn line small" type="button" data-cardlang="${I18N.lang}">${t('d.nSwitch')}</button></div>` : '';
     const opts = {
       close: `<label>${t('d.nCloseOpt')} <select data-f="left">${[1, 2, 3].map(n => `<option value="${n}">${n === 1 ? t('d.nStamps1') : I18N.t('d.nStampsN', { n })}</option>`).join('')}</select></label>`,
       remind: `<label>${t('d.nRemindOpt')} <select data-f="days">${[14, 21, 30, 45, 60].map(n => `<option value="${n}">${I18N.t('d.nDays', { n })}</option>`).join('')}</select></label>`,
@@ -1249,12 +1259,13 @@ I18N.add({
         <label>${t('d.nTo')} <select data-f="to">${Array.from({ length: 24 }, (_, h) => `<option value="${h + 1}">${String(h + 1).padStart(2, '0')}:00</option>`).join('')}</select></label>`,
       review: `<label class="field"><span>${t('d.nReviewUrl')}</span><input type="url" data-f="url" maxlength="300" placeholder="https://g.page/r/…/review"><small class="muted">${t('d.nReviewHint')}</small></label>`
     };
-    $('nt-form').innerHTML = NT.map(k => `${k === NT_EXTRAS ? `<div class="nt-extras"><h3>${t('d.nExtras')}</h3><p>${t('d.nExtrasP')}</p></div>` : ''}
+    $('nt-form').innerHTML = other + NT.map(k => `${k === NT_EXTRAS ? `<div class="nt-extras"><h3>${t('d.nExtras')}</h3><p>${t('d.nExtrasP')}</p></div>` : ''}
       <fieldset class="rule" data-k="${k}">
         <label class="rule-head"><input type="checkbox" data-f="on"><span><b>${t(NT_NAMES[k][0])}</b><small>${t(NT_NAMES[k][1])}</small></span></label>
         <div class="rule-body">
           ${opts[k] ? `<div class="rule-opts">${opts[k]}</div>` : ''}
-          ${k === 'double' ? '' : [...new Set([UI.cardLang(current), 'en'])].map(l => `<label class="field"><span>${t({ it: 'd.nIt', pl: 'd.nPl', en: UI.cardLang(current) === 'en' ? 'd.nEnOnly' : 'd.nEn' }[l])} <em data-count="${l}"></em></span><textarea data-f="${l}" maxlength="140" rows="2"></textarea></label>`).join('')}
+          ${k === 'double' ? '' : langs.map(l => `<label class="field"><span>${t({ it: 'd.nIt', pl: 'd.nPl', en: UI.cardLang(current) === 'en' ? 'd.nEnOnly' : 'd.nEn' }[l])} <em data-count="${l}"></em></span><textarea data-f="${l}" maxlength="140" rows="2"></textarea></label>`).join('')}
+          ${k === 'double' || langs.length > 1 || cl === 'en' ? '' : `<button class="link" type="button" data-adden style="justify-self:start;font-size:14px">${t('d.nAddEn')}</button>`}
           ${k === 'double' ? '' : `<div class="vars"><span>${t('d.nInsert')}</span>${[['name', 'd.vName'], ['left', 'd.vLeft'], ['reward', 'd.vReward'], ['business', 'd.vBusiness']].map(([v, l]) => `<button type="button" data-var="{${v}}">${t(l)}</button>`).join('')}</div>`}
         </div>
       </fieldset>`).join('') + `<div class="nt-save"><button class="btn pop" type="button" id="nt-save">${t('d.nSave')}</button></div>`;
@@ -1319,6 +1330,15 @@ I18N.add({
       return;
     }
     if (e.target.closest('[data-noplace]')) { delete ntDraft.near.lat; delete ntDraft.near.lng; ntSync(); return; }
+    if (e.target.closest('[data-adden]')) { ntRead(); ntEn = true; renderNotify(true); return; }
+    const sw = e.target.closest('[data-cardlang]');
+    if (sw) {
+      // The card speaks the page's language from now on; the default texts follow it (texts the café wrote stay).
+      ntRead();
+      current = Store.saveCard({ ...current, lang: sw.dataset.cardlang }) || current;
+      ntDraft = JSON.parse(JSON.stringify(UI.messagesOf(current)));
+      renderNotify(true); return;
+    }
     if (e.target.closest('#nt-save')) {
       ntRead();
       const L = ['it', 'en', 'pl'], keep = { close: ['on', 'left', ...L], ready: ['on', ...L], remind: ['on', 'days', ...L], near: ['on', ...L, 'lat', 'lng'],
