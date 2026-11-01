@@ -106,7 +106,7 @@
   const CAFEZAL = {
     id: 'cafezal', business: 'Cafezal', city: 'Milano', type: 'caffe', lang: 'it', tagline: 'Piazza Gae Aulenti · Milano',
     title: 'Carta Cafezal', reward: 'un caffè gratis', titleEn: 'Cafezal card', rewardEn: 'a free coffee',
-    stampsNeeded: 6, icon: 'cup', plan: 'plus', style: 'minimal', color: '#1C2638', ink: '#F3EDE2', font: 'serif', strip: '#16202F',
+    stampsNeeded: 8, icon: 'cup', plan: 'plus', style: 'minimal', color: '#1C2638', ink: '#F3EDE2', font: 'serif', strip: '#16202F',
     logo: '/assets/demo/cafezal/word-cream.png', iconLogo: '/assets/demo/cafezal/stamp-cream.png',
     stampImage: '/assets/demo/cafezal/stamp-cream.png', stripImage: '/assets/demo/cafezal/strip-palms-navy.png'
   };
