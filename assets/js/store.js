@@ -28,6 +28,7 @@
         if (!db.cards.sisu || db.cards.sisu.stripImage !== SISU.stripImage) { db.cards.sisu = { createdAt: Date.now(), ...db.cards.sisu, ...SISU }; save(db); }
         if (!db.cards.parzymy || db.cards.parzymy.stripImage !== PARZYMY.stripImage) { db.cards.parzymy = { createdAt: Date.now(), ...db.cards.parzymy, ...PARZYMY }; save(db); }
         if (!db.cards.younique || db.cards.younique.stripImage !== YOUNIQUE.stripImage) { db.cards.younique = { createdAt: Date.now(), ...db.cards.younique, ...YOUNIQUE }; save(db); }
+        if (!db.cards.cafezal || db.cards.cafezal.stripImage !== CAFEZAL.stripImage) { db.cards.cafezal = { createdAt: Date.now(), ...db.cards.cafezal, ...CAFEZAL }; save(db); }
         return db;
       }
     } catch (e) { if (memory) return memory; }
@@ -100,6 +101,16 @@
     stampImage: '/assets/demo/younique/stamp.png', stripImage: '/assets/demo/younique/strip.png'
   };
 
+  // Cafezal, Piazza Gae Aulenti (proposal): night blue and cream, coffee beans behind the stamps,
+  // a palm as the stamp (our own drawing). Same card as print/cafezal-look.js (navy).
+  const CAFEZAL = {
+    id: 'cafezal', business: 'Cafezal', city: 'Milano', type: 'caffe', lang: 'it', tagline: 'Piazza Gae Aulenti · Milano',
+    title: 'Carta Cafezal', reward: 'un caffè gratis', titleEn: 'Cafezal card', rewardEn: 'a free coffee',
+    stampsNeeded: 10, icon: 'cup', plan: 'plus', style: 'minimal', color: '#1C2638', ink: '#F3EDE2', font: 'serif', strip: '#16202F',
+    logo: '/assets/demo/cafezal/logo-cream.svg', iconLogo: '/assets/demo/cafezal/stamp-cream.svg',
+    stampImage: '/assets/demo/cafezal/stamp-cream.svg', stripImage: '/assets/demo/cafezal/strip-navy.svg'
+  };
+
   // Every fresh browser starts with the example card for The Coffee, so a
   // QR code on the brochure opens a working card on any phone.
   function seed() {
@@ -123,6 +134,7 @@
     db.cards.sisu = { ...SISU, createdAt: Date.now() };
     db.cards.parzymy = { ...PARZYMY, createdAt: Date.now() };
     db.cards.younique = { ...YOUNIQUE, createdAt: Date.now() };
+    db.cards.cafezal = { ...CAFEZAL, createdAt: Date.now() };
     save(db);
     return db;
   }
