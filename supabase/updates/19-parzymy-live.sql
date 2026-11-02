@@ -23,10 +23,10 @@ insert into cards (id, business_id, business, city, type, title, reward, title_e
 values ('parzymy-pokaz', '7a0c0000-0000-4000-8000-00000000a001', 'Parzymy Tutaj', 'Bydgoszcz', 'caffe',
   'Karta kawowa', 'kawa gratis', 'Coffee card', 'a free coffee', 10, 'plus', 'pl',
   '{"style": "minimal", "color": "#C9E3A3", "ink": "#2F4A2B", "font": "sans", "strip": "#C9E3A3", "icon": "cup",
-    "logo": "https://timbro.witkowskidesign.com/assets/demo/parzymy/logo.png",
-    "iconLogo": "https://timbro.witkowskidesign.com/assets/demo/parzymy/mark.png",
-    "stampImage": "https://timbro.witkowskidesign.com/assets/demo/parzymy/stamp.png",
-    "stripImage": "https://timbro.witkowskidesign.com/assets/demo/parzymy/strip.png"}'::jsonb)
+    "logo": "/assets/demo/parzymy/logo.png",
+    "iconLogo": "/assets/demo/parzymy/mark.png",
+    "stampImage": "/assets/demo/parzymy/stamp.png",
+    "stripImage": "/assets/demo/parzymy/strip.png"}'::jsonb)
 on conflict (id) do update set design = excluded.design, updated_at = now();
 
 -- The code to link the till (stamper.html → "Połącz"); one use, 2 days.
