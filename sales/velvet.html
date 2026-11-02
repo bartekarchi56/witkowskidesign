@@ -123,17 +123,17 @@ window.WAIT_READY = true;
     <p class="kicker">Cennik</p>
     <h2>Jedna subskrypcja. Wszystko w cenie.</h2>
     <div class="plans">
-      <div class="plan hl"><h3>${esc(I18N.pick(plan('plus')).name)} <span class="tag">Polecany dla Was</span></h3>
-        <p>Projektuję Waszą kartę i wysyłam wydrukowany zestaw: plakat przy kasie, naklejkę na witrynę i karteczki na stoliki.</p>
-        <div class="pr">${zl(plan('plus').month)} zł<small>miesięcznie</small></div></div>
-      <div class="plan"><h3>${esc(I18N.pick(plan('start')).name)}</h3>
-        <p>Sami ustawiacie logo, kolory i pieczątkę; plakat i kod QR do wydruku.</p>
+      <div class="plan hl"><h3>${esc(I18N.pick(plan('start')).name)} <span class="tag">Polecany dla Was</span></h3>
+        <p>Karta w projekcie z tej propozycji, gotowa od razu. Logo, kolory i pieczątkę możecie zmieniać sami; plakat i kod QR do wydruku.</p>
         <div class="pr">${zl(plan('start').month)} zł<small>miesięcznie</small></div></div>
+      <div class="plan"><h3>${esc(I18N.pick(plan('plus')).name)}</h3>
+        <p>Jeśli wolicie, żebym zajął się wszystkim: dopracowuję kartę i wysyłam wydrukowany zestaw (plakat przy kasie, naklejka na witrynę, karteczki na stoliki).</p>
+        <div class="pr">${zl(plan('plus').month)} zł<small>miesięcznie</small></div></div>
     </div>
     <ul class="ticks">
       <li>Pierwsze ${CONFIG.trialDays} dni za darmo: sprawdzacie, jak działa z Waszymi klientami, i dopiero wtedy decydujecie, czy zostajecie.</li>
       <li>Rezygnujecie, kiedy chcecie. Rocznie: 2 miesiące gratis.</li>
-      <li>Ceny netto (bez VAT). Płatność w euro (${plan('plus').month} € i ${plan('start').month} €), więc kwota w złotych zależy od kursu. Bez limitu klientów i pieczątek.</li>
+      <li>Ceny netto (bez VAT). Płatność w euro (${plan('start').month} € i ${plan('plus').month} €), więc kwota w złotych zależy od kursu. Bez limitu klientów i pieczątek.</li>
     </ul>
     <p class="kicker" style="margin-top:8mm">Jak zaczynamy</p>
     <div class="steps" style="margin-top:0">
