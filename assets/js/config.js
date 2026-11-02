@@ -81,18 +81,19 @@ window.CONFIG = {
   // design: 'self'   = the café customises logo, colours, background and stamp;
   //                    every change is approved by Witkowski Design first.
   //         'custom' = Witkowski Design designs the card; the café asks for changes.
+  // cards: 0 = unlimited (every plan: as many customer cards as people want; shown as ∞).
   // contact: true = not sold online: the price is "from", per location, and the
   //                 button opens WhatsApp. Witkowski Design sets the plan in Studio.
   plans: [
-    { id: 'start', design: 'self', month: 19, locations: 1, cards: 1, staff: 3,
+    { id: 'start', design: 'self', month: 19, locations: 1, cards: 0, staff: 3,
       it: { name: 'Start', for: 'Un bar, una sede', extras: ['Personalizzi tu logo, colori, sfondo e timbro', 'Poster e QR da stampare', 'Piano di lancio di 7 giorni', 'Post Instagram pronti'] },
       en: { name: 'Start', for: 'One café, one location', extras: ['Customise logo, colours, background and stamp', 'Printable poster and QR code', '7-day launch plan', 'Ready-made Instagram posts'] },
       pl: { name: 'Start', for: 'Jeden lokal', extras: ['Sam ustawiasz logo, kolory, tło i pieczątkę', 'Plakat i kod QR do wydruku', '7-dniowy plan startu', 'Gotowe posty na Instagrama'] } },
-    { id: 'plus', design: 'custom', month: 39, locations: 3, cards: 3, staff: 10, popular: true,
+    { id: 'plus', design: 'custom', month: 39, locations: 3, cards: 0, staff: 10, popular: true,
       it: { name: 'Plus', for: 'Vuoi che ci pensiamo noi', extras: ['Tutto di Start', 'Carta disegnata su misura da noi', 'Kit stampato a casa tua', 'Nuovi post e messaggi ogni mese'] },
       en: { name: 'Plus', for: 'You want us to handle it', extras: ['Everything in Start', 'Card custom-designed by us', 'Printed kit sent to you', 'New posts and messages every month'] },
       pl: { name: 'Plus', for: 'Chcesz, żebyśmy zajęli się wszystkim', extras: ['Wszystko z planu Start', 'Karta zaprojektowana przez nas', 'Wydrukowane materiały z wysyłką do Ciebie', 'Nowe posty i wiadomości co miesiąc'] } },
-    { id: 'pro', design: 'custom', month: 79, locations: 10, cards: 10, staff: 50,
+    { id: 'pro', design: 'custom', month: 79, locations: 10, cards: 0, staff: 50,
       it: { name: 'Pro', for: 'Più sedi', extras: ['Tutto di Plus', 'Statistiche per sede', 'Esporta i clienti in Excel', 'Assistenza prioritaria su WhatsApp'] },
       en: { name: 'Pro', for: 'Several locations', extras: ['Everything in Plus', 'Stats per location', 'Export customers to Excel', 'Priority WhatsApp support'] },
       pl: { name: 'Pro', for: 'Kilka lokali', extras: ['Wszystko z planu Plus', 'Statystyki dla każdego lokalu', 'Eksport klientów do Excela', 'Priorytetowe wsparcie na WhatsAppie'] } },

@@ -290,7 +290,7 @@ const COPY = {
       <span class="pg-num">3</span>
     </section>`;
 
-    const lim = (v, one, many) => `${v} ${Array.isArray(many) ? I18N.plural(v, many) : v === 1 ? one : many}`;
+    const lim = (v, one, many) => !v ? `∞ ${Array.isArray(many) ? I18N.plural(5, many) : many}` : `${v} ${Array.isArray(many) ? I18N.plural(v, many) : v === 1 ? one : many}`;   // 0 = unlimited
     const p4 = `<section class="page">
       ${top(L.priceLbl)}
       <p class="lbl">${esc(L.priceLbl)}</p>

@@ -822,7 +822,7 @@ I18N.add({
       const yearly = p.month * CONFIG.yearlyMonths;
       const price = bill === 'year' ? fmt(yearly) : fmt(p.month);
       const billed = bill === 'year' ? I18N.t('p.billedY', { x: fmt(yearly / 12, 2) }) : I18N.t('p.billedM');
-      const lim = (v, one, many) => `<div><b>${v}</b><span>${I18N.t(v === 1 ? one : many, { n: v })}</span></div>`;
+      const lim = (v, one, many) => !v ? `<div><b>∞</b><span>${I18N.t(many, { n: 5 })}</span></div>` : `<div><b>${v}</b><span>${I18N.t(v === 1 ? one : many, { n: v })}</span></div>`;   // 0 = unlimited
       return `<article class="plan${p.popular ? ' popular' : ''}">
         ${p.popular ? `<span class="badge">${I18N.t('p.popular')}</span>` : ''}
         <h3>${tx.name}</h3><p class="for">${tx.for}</p>
