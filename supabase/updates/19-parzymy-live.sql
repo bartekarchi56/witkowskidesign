@@ -4,6 +4,16 @@
 -- Paste in Supabase SQL Editor and Run. Safe to run again (it also renews the link code).
 set search_path = timbro, extensions;
 
+-- Cards can keep a round mark for Google Wallet's small circle (iconLogo), next to the wide logo.
+create or replace function _clean_design(d jsonb) returns jsonb
+language sql immutable
+as $$
+  select coalesce(jsonb_object_agg(key, value), '{}'::jsonb)
+  from jsonb_each(coalesce(d, '{}'::jsonb))
+  where key in ('style','color','ink','stamp','shape','mark','markText','empty','font','strip','tagline','icon','logo','iconLogo','stampImage','stripImage','hideFields')
+    and octet_length(value::text) < 1200000
+$$;
+
 -- A business with no owner account (nobody logs in as it); no "new café" email.
 insert into businesses (id, owner_id, name, city, kind, signup_alerted)
 values ('7a0c0000-0000-4000-8000-00000000a001', '7a0c0000-0000-4000-8000-00000000b001', 'Parzymy Tutaj', 'Bydgoszcz', 'caffe', true)
@@ -14,6 +24,7 @@ values ('parzymy-pokaz', '7a0c0000-0000-4000-8000-00000000a001', 'Parzymy Tutaj'
   'Karta kawowa', 'kawa gratis', 'Coffee card', 'a free coffee', 10, 'plus', 'pl',
   '{"style": "minimal", "color": "#C9E3A3", "ink": "#2F4A2B", "font": "sans", "strip": "#C9E3A3", "icon": "cup",
     "logo": "https://timbro.witkowskidesign.com/assets/demo/parzymy/logo.png",
+    "iconLogo": "https://timbro.witkowskidesign.com/assets/demo/parzymy/mark.png",
     "stampImage": "https://timbro.witkowskidesign.com/assets/demo/parzymy/stamp.png",
     "stripImage": "https://timbro.witkowskidesign.com/assets/demo/parzymy/strip.png"}'::jsonb)
 on conflict (id) do update set design = excluded.design, updated_at = now();
