@@ -29,6 +29,9 @@
 //   ritorno:       eight morning coffees (a blip each), the empty days ticking by, the phone's buzz and the
 //                  reminder, the stamps of her return, the "one to go" notice, the tenth stamp with a chime
 //                  and confetti, the dots of the other customers, the Timbro mark (timed from ritorno.json)
+//   velvet:        a Velvet customer's phone: the camera finding the QR, typing and the tap, the card
+//                  into Wallet, a stamp for every visit, the lock-screen notice, the reward with a chime
+//                  and confetti (timed from velvet.json)
 //   bed:           the music alone, for any length: { duration, bpm, key } (key in semitones), used by
 //                  marketing/instagram/music.js for the reels that have no sound of their own
 //   require('./sound.js').write(file, name, opts)  → writes a 44.1 kHz stereo WAV
@@ -39,8 +42,8 @@ const RATE = 44100;
 const T0 = 2.0, DAY = 1.7, DAYS = 7, T_CMP = T0 + DAYS * DAY + .4, T_END = T_CMP + 2.6;
 const COUNT_A = [3, 3, 2, 2, 2, 1, 1], COUNT_B = [2, 3, 4, 5, 6, 7, 8];
 const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, S6 = 22.0, END = 26.4;
-const TC = require('./tre-clienti.json'), BA = require('./barista.json'), CQ = require('./cinque.json'), QV = require('./quanto-vale.json'), VC = require('./vicino.json'), CT = require('./catene.json'), RT = require('./ritorno.json');
-const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration, barista: BA.duration, cinque: CQ.duration, 'quanto-vale': QV.duration, vicino: VC.duration, catene: CT.duration, ritorno: RT.duration };
+const TC = require('./tre-clienti.json'), BA = require('./barista.json'), CQ = require('./cinque.json'), QV = require('./quanto-vale.json'), VC = require('./vicino.json'), CT = require('./catene.json'), RT = require('./ritorno.json'), VV = require('./velvet.json');
+const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration, barista: BA.duration, cinque: CQ.duration, 'quanto-vale': QV.duration, vicino: VC.duration, catene: CT.duration, ritorno: RT.duration, velvet: VV.duration };
 
 const T_CAPS = B => [.3, B.this, B.B + .2, B.C + .2, B.wake, B.D + .2, B.phone, B.E + .2, B.grid, B.cta];
 function render(name, opts = {}) {
@@ -192,6 +195,18 @@ function render(name, opts = {}) {
     for (let i = 0; i < 3; i++) blip(B.pilot + .2 + i * .12, 86 + i * 3, .1, (i - 1) * .3);
     for (let i = 0; i < 14; i++) blip(B.F + hash(i) * 1.1, 90 + Math.floor(hash(i + 3) * 8), .025, hash(i + 7) - .5);
     thud(B.F + 1.1, .2); chime(B.F + 1.2, .12); blip(B.cta + .6, 84, .12, 0);
+  } else if (name === 'velvet') {
+    const B = VV.beats;
+    const ding = t => [88, 84, 91].forEach((m, i) => beep(t + i * .12, m, .1, .08));
+    for (const t of Object.values(B)) add(t, .1, x => Math.exp(-x * 40) * Math.sin(2 * Math.PI * 1100 * x), .05);
+    beep(B.scan + 1.85, 96, .07, .08); blip(B.scan + 2.3, 88, .1, 0);                                  // QR found
+    for (let i = 0; i < 12; i++) click(B.join + .95 + i * .13 + hash(i) * .03, .05);                     // typing the name
+    click(B.join + 3.0, .22); whoosh(B.wallet - .1, .6, .2); click(B.wallet + 1.6, .22);              // tap, into Wallet, "Dodaj"
+    for (let k = 0; k < 7; k++) { thud(B.stamps + .5 + k * .65, .14); blip(B.stamps + .55 + k * .65, 76 + k * 2, .07, .2); }
+    whoosh(B.remind - .1, .6, .2); ding(B.remind + .7);
+    thud(B.reward + .6, .22); chime(B.reward + .7, .12);
+    for (let i = 0; i < 30; i++) blip(B.reward + .65 + hash(i + 40) * 1.4, 96 + Math.floor(hash(i + 19) * 10), .02, hash(i + 13) - .5);
+    ding(B.reward + 1.5); whoosh(B.end - .1, .7, .22); chime(B.end + .4, .09);
   } else if (name === 'ritorno') {
     const B = RT.beats;
     const pop = (t, f0, g, pan = 0) => add(t, .22, x => Math.exp(-x * 20) * Math.sin(2 * Math.PI * (f0 + 600 * x) * x), g, pan);

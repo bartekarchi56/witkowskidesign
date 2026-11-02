@@ -1,0 +1,5 @@
+{
+  "note": "Timeline of velvet.html (what a Velvet customer sees on their phone, in Polish): beats are where the scenes change. Read by velvet.html and sound.js.",
+  "beats": { "scan": 0.2, "join": 3.4, "wallet": 7.4, "stamps": 10.4, "remind": 15.2, "reward": 18.2, "end": 22.0 },
+  "duration": 25.5
+}
