@@ -101,7 +101,7 @@ I18N.add({
     's.title': 'Timbratore', 's.dash': 'Area locale', 's.scan': 'Inquadra la carta del cliente',
     's.camOn': 'Accendi la fotocamera', 's.camHint': 'Punta il QR sul telefono del cliente.', 's.or': 'oppure scrivi il codice',
     's.code': 'Codice cliente', 's.find': 'Cerca', 's.undo': 'Togli un timbro', 's.next': 'Prossimo cliente',
-    's.notFound': 'Nessuna carta con il codice "{code}". Controlla le lettere e riprova.',
+    's.demoGuest': 'Cliente {code}', 's.notFound': 'Nessuna carta con il codice "{code}". Controlla le lettere e riprova.',
     's.camBlocked': 'La fotocamera è bloccata. Consenti l\'accesso nel browser, oppure scrivi il codice qui sotto.',
     's.add': 'Aggiungi un timbro', 's.give': 'Dai il premio: {reward}', 's.sub': '{title} · premi ricevuti: {n}',
     's.linkT': 'Collega questo telefono', 's.linkP': 'Il titolare trova il codice nella sua area, sezione "Cassa". Basta farlo una volta.',
@@ -115,7 +115,7 @@ I18N.add({
     's.title': 'Stamper', 's.dash': 'Dashboard', 's.scan': 'Scan the customer\'s card',
     's.camOn': 'Turn on the camera', 's.camHint': 'Point it at the QR code on the customer\'s phone.', 's.or': 'or type the code',
     's.code': 'Customer code', 's.find': 'Find', 's.undo': 'Remove a stamp', 's.next': 'Next customer',
-    's.notFound': 'No card with code "{code}". Check the letters and try again.',
+    's.demoGuest': 'Customer {code}', 's.notFound': 'No card with code "{code}". Check the letters and try again.',
     's.camBlocked': 'The camera is blocked. Allow camera access in your browser, or type the code below.',
     's.add': 'Add a stamp', 's.give': 'Give the reward: {reward}', 's.sub': '{title} · rewards received: {n}',
     's.linkT': 'Link this phone', 's.linkP': 'The owner finds the code in their account, under "Till". You only do this once.',
@@ -129,7 +129,7 @@ I18N.add({
     's.title': 'Skaner pieczątek', 's.dash': 'Panel', 's.scan': 'Zeskanuj kartę klienta',
     's.camOn': 'Włącz aparat', 's.camHint': 'Skieruj go na kod QR w telefonie klienta.', 's.or': 'albo wpisz kod',
     's.code': 'Kod klienta', 's.find': 'Znajdź', 's.undo': 'Usuń pieczątkę', 's.next': 'Następny klient',
-    's.notFound': 'Nie ma karty z kodem "{code}". Sprawdź litery i spróbuj ponownie.',
+    's.demoGuest': 'Klient {code}', 's.notFound': 'Nie ma karty z kodem "{code}". Sprawdź litery i spróbuj ponownie.',
     's.camBlocked': 'Aparat jest zablokowany. Zezwól na dostęp do aparatu w przeglądarce albo wpisz kod poniżej.',
     's.add': 'Dodaj pieczątkę', 's.give': 'Wydaj nagrodę: {reward}', 's.sub': '{title} · odebrane nagrody: {n}',
     's.linkT': 'Połącz ten telefon', 's.linkP': 'Właściciel znajdzie kod w swoim panelu, w zakładce „Kasa”. Robisz to tylko raz.',
@@ -150,7 +150,14 @@ I18N.add({
   const api = Remote.enabled ? {
     lookup: code => Remote.lookup(code), stamp: (code, d) => Remote.stamp(code, d), redeem: code => Remote.redeem(code), gift: code => Remote.gift(code)
   } : {
-    lookup: async code => { const c = Store.getCustomer(code); return c ? { customer: c, card: Store.getCard(c.cardId) } : null; },
+    lookup: async code => {
+      let c = Store.getCustomer(code);
+      // Demo: the card was opened on another device (its data lives there), so this till
+      // starts its own copy of that customer and shows how stamping works.
+      const demoCard = new URLSearchParams(location.search).get('card') || 'the-coffee', id = (code || '').trim().toUpperCase();
+      if (!c && /^[A-Z0-9]{6}$/.test(id) && Store.getCard(demoCard)) c = Store.join(demoCard, { id, name: t('s.demoGuest', { code: id }) });
+      return c ? { customer: c, card: Store.getCard(c.cardId) } : null;
+    },
     stamp: async (code, d) => { const { extra } = Store.stamp(code, d); return { ...await api.lookup(code), extra }; },
     redeem: async code => { Store.redeem(code); return api.lookup(code); },
     gift: async code => { Store.gift(code); return api.lookup(code); }

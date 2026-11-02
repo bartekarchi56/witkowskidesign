@@ -246,7 +246,9 @@
       if (!db.cards[cardId]) throw new Error('This card no longer exists.');
       if (typeof who === 'string') who = { name: who };
       let id;
-      do { id = code(6); } while (db.customers[id]);
+      // who.id: a code from another device (demo till scanning a demo card on someone's phone).
+      if (/^[A-Z0-9]{6}$/.test(who.id || '') && !db.customers[who.id]) id = who.id;
+      else do { id = code(6); } while (db.customers[id]);
       // Bring a friend: who invited them (a customer of the same card).
       const inviter = who.ref && db.customers[String(who.ref).trim().toUpperCase()];
       db.customers[id] = {
