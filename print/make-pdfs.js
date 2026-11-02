@@ -36,6 +36,7 @@ const FILES = [
   ['sales/labruma.html', 'kit-labruma/proposta-labruma.pdf'],
   ['sales/luceferma.html', 'kit-luceferma/proposta-luceferma.pdf'],
   ['sales/cafezal.html', 'kit-cafezal/proposta-cafezal.pdf'],
+  ['sales/velvet.html', 'kit-velvet/propozycja-velvet.pdf'],
   ['sales/theseed.html', 'kit-theseed/proposta-theseed.pdf'],
   ['sales/sarpi.html?p=qqtea', 'kit-qqtea/proposta-qqtea.pdf'],
   ['sales/sarpi.html?p=slab', 'kit-slab/proposta-slab.pdf'],

@@ -28,6 +28,7 @@
         if (!db.cards.sisu || db.cards.sisu.stripImage !== SISU.stripImage) { db.cards.sisu = { createdAt: Date.now(), ...db.cards.sisu, ...SISU }; save(db); }
         if (!db.cards.parzymy || db.cards.parzymy.stripImage !== PARZYMY.stripImage) { db.cards.parzymy = { createdAt: Date.now(), ...db.cards.parzymy, ...PARZYMY }; save(db); }
         if (!db.cards.younique || db.cards.younique.stripImage !== YOUNIQUE.stripImage) { db.cards.younique = { createdAt: Date.now(), ...db.cards.younique, ...YOUNIQUE }; save(db); }
+        if (!db.cards.velvet || db.cards.velvet.stripImage !== VELVET.stripImage) { db.cards.velvet = { createdAt: Date.now(), ...db.cards.velvet, ...VELVET }; save(db); }
         if (!db.cards.cafezal || db.cards.cafezal.stripImage !== CAFEZAL.stripImage || db.cards.cafezal.stampsNeeded !== CAFEZAL.stampsNeeded) { db.cards.cafezal = { createdAt: Date.now(), ...db.cards.cafezal, ...CAFEZAL }; save(db); }
         return db;
       }
@@ -111,6 +112,15 @@
     stampImage: '/assets/demo/cafezal/stamp-cream.png', stripImage: '/assets/demo/cafezal/strip-palms-navy.png'
   };
 
+  // Velvet, Gdańska 25, Bydgoszcz (proposal): black, their pencil drawing of the café behind the
+  // stamps, their V with the steam on violet as the stamp. Same card as print/velvet-look.js (dark).
+  const VELVET = {
+    id: 'velvet', business: 'VELVET', city: 'Bydgoszcz', type: 'caffe', lang: 'pl', tagline: 'speciality coffee · art gallery',
+    title: 'Karta Velvet', reward: 'kawa gratis', titleEn: 'Velvet card', rewardEn: 'a free coffee',
+    stampsNeeded: 8, icon: 'cup', plan: 'plus', style: 'minimal', color: '#0E0E10', ink: '#9B1FE8', font: 'wide', strip: '#0E0E10',
+    iconLogo: '/assets/demo/velvet/stamp-violet.png', stampImage: '/assets/demo/velvet/stamp-violet.png', stripImage: '/assets/demo/velvet/strip-dark.jpg'
+  };
+
   // Every fresh browser starts with the example card for The Coffee, so a
   // QR code on the brochure opens a working card on any phone.
   function seed() {
@@ -135,6 +145,7 @@
     db.cards.parzymy = { ...PARZYMY, createdAt: Date.now() };
     db.cards.younique = { ...YOUNIQUE, createdAt: Date.now() };
     db.cards.cafezal = { ...CAFEZAL, createdAt: Date.now() };
+    db.cards.velvet = { ...VELVET, createdAt: Date.now() };
     save(db);
     return db;
   }
