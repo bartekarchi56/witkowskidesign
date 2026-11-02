@@ -286,13 +286,29 @@ assert.equal(await call({ role: 'service_role' }, 'alert_key_ok', { p_key: key }
 assert.equal(await call({ role: 'service_role' }, 'alert_key_ok', { p_key: 'nope' }), false);
 ok('Witkowski Design is alerted at sign-up, when a design is sent for approval and at each subscription change; the café hears when its design is approved or needs a change; only the alert function can check the key');
 
+// ---- online orders (Wolt, Uber Eats, Glovo, Deliveroo reports) ----
+const T = Date.parse('2026-10-20T12:30:00Z');
+const orders = [{ p: 'wolt', id: 'W1', t: T, v: 42.5, c: 'PLN' }, { p: 'wolt', id: 'W2', t: T + 36e5, v: 18, c: 'PLN' },
+  { p: 'glovo', id: 'G1', t: T, v: 25, c: 'PLN' }, { p: 'evil', id: 'X', t: T, v: 1 }, { p: 'wolt', id: 'W3', t: 'soon', v: 5 }];
+await rejects(call(anon, 'owner_import_orders', { p_card_id: id, p_orders: orders }), /permission denied/);
+await rejects(call(users.ownerB, 'owner_import_orders', { p_card_id: id, p_orders: orders }), /another café/);
+assert.equal((await call(users.ownerA, 'owner_import_orders', { p_card_id: id, p_orders: orders })).added, 3);
+assert.equal((await call(users.ownerA, 'owner_import_orders', { p_card_id: id, p_orders: [{ ...orders[0], v: 44 }] })).added, 0);
+const onl = await call(users.ownerA, 'owner_online_orders', { p_card_id: id });
+assert.equal(onl.length, 3); assert.equal(Number(onl.find(o => o.id === 'W1').v), 44); assert.equal(onl[0].t, T);
+await rejects(call(users.ownerB, 'owner_online_orders', { p_card_id: id }), /another café/);
+await rejects(call(users.ownerA, 'owner_import_orders', { p_card_id: id, p_orders: Array(2001).fill(orders[0]) }), /Too many/);
+assert.equal(await call(users.ownerA, 'owner_clear_orders', { p_card_id: id, p_platform: 'glovo' }), 1);
+assert.equal((await call(users.ownerA, 'owner_online_orders', { p_card_id: id })).length, 2);
+ok('only the café uploads, reads and removes its online orders; the same order twice is replaced, bad rows are skipped');
+
 // ---- no function is open by accident (Postgres lets PUBLIC run new functions) ----
 const open = async role => (await pool.query(`select coalesce(string_agg(p.proname, ',' order by p.proname), '') as f from pg_proc p
   join pg_namespace s on s.oid = p.pronamespace where s.nspname = 'timbro' and has_function_privilege($1, p.oid, 'execute')`, [role])).rows[0].f.split(',').filter(Boolean);
 const PUBLIC_FNS = ['device_link', 'get_card', 'get_my_card', 'join_card', 'reminders_due', 'stamper_gift', 'stamper_lookup', 'stamper_redeem', 'stamper_stamp', 'wallet_register', 'wallet_targets', 'wallet_unregister', 'wallet_updated'];
 assert.deepEqual(await open('anon'), PUBLIC_FNS);
 assert.deepEqual(await open('authenticated'), [...PUBLIC_FNS, 'admin_ask_changes', 'admin_cards', 'admin_publish', 'admin_set_plan',
-  'owner_data', 'owner_link_code', 'owner_news_targets', 'owner_remove_device', 'owner_save_card', 'owner_set_device_location', 'owner_save_messages', 'owner_send_design', 'owner_send_news'].sort());
+  'owner_clear_orders', 'owner_data', 'owner_import_orders', 'owner_link_code', 'owner_news_targets', 'owner_online_orders', 'owner_remove_device', 'owner_save_card', 'owner_set_device_location', 'owner_save_messages', 'owner_send_design', 'owner_send_news'].sort());
 ok('only the intended functions can be called by visitors and logged-in users');
 
 console.log(`\nAll ${n} checks passed.`);

@@ -165,6 +165,26 @@ details.en[open]{padding-bottom:4px}
 .money input{min-height:44px}
 .money .out b{display:block;font-size:26px;font-weight:800;font-stretch:112%;letter-spacing:-.02em}
 .money .out span{font-size:14px;color:var(--ink-2)}
+.online{margin-top:36px;padding-top:28px;border-top:1.5px solid var(--line)}
+.on-imp{border:1.5px solid var(--ink);border-radius:16px;padding:18px;margin-bottom:12px}
+.on-imp h3{font-size:17px;font-weight:700;overflow-wrap:anywhere}
+.on-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.on-cols label{display:flex;flex-direction:column;gap:4px;font-size:14px;font-weight:600;min-width:0}
+.on-cols select{width:100%;min-height:0;padding:8px 32px 8px 10px}
+.on-sum{font-size:15px;margin:4px 0 12px}
+.on-sum.bad{color:#B00020}
+.on-imp .btns{display:flex;gap:8px;flex-wrap:wrap}
+.on-plat .lbar i{background:var(--pc)}
+.on-plat .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--pc);margin-right:8px;vertical-align:middle}
+.on-src{list-style:none;margin:6px 0 0;padding:0}
+.on-src li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1.5px solid var(--line);flex-wrap:wrap}
+.on-src small{color:var(--muted);font-size:13px;display:block}
+.on-empty{background:var(--wash);border-radius:16px;padding:18px;font-size:15px;margin-bottom:12px}
+.on-how{margin:6px 0 0}
+.on-how summary{cursor:pointer;font-weight:600}
+.on-how ul{font-size:14px;color:var(--ink-2);padding-left:20px;margin:8px 0}
+.on-how li{margin:4px 0}
+@media (max-width:700px){.on-cols{grid-template-columns:1fr 1fr}}
 .res-table summary{cursor:pointer;font-weight:600;margin:6px 0 10px}
 .res-table table{font-size:14px}
 @media (max-width:980px){.res-top{grid-template-columns:1fr 1fr}.kpi.hero{grid-column:1/-1}.money{grid-template-columns:1fr 1fr}}
@@ -488,6 +508,17 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
     </div>
     <p class="res-sample" id="res-sample" hidden><span id="res-sample-t"></span> <button class="link" type="button" id="res-sample-b"></button></p>
     <div id="res"></div>
+    <!-- Online orders: reports from Wolt, Uber Eats, Glovo, Deliveroo (assets/js/online.js) -->
+    <div class="online" id="online">
+      <div class="res-head">
+        <div><h2 class="sec" data-i18n="d.onT"></h2><p class="sec-sub" data-i18n="d.onP"></p></div>
+        <div class="res-ctrl"><button class="btn pop small" type="button" id="on-add" data-i18n="d.onAdd"></button>
+          <input type="file" id="on-file" accept=".csv,.txt,.xlsx,.xls,.ods,text/csv" multiple hidden></div>
+      </div>
+      <div id="on-import"></div>
+      <div id="on-body"></div>
+      <details class="on-how"><summary data-i18n="d.onHow"></summary><ul id="on-how"></ul></details>
+    </div>
   </section>
 
   <!-- NOTIFICATIONS: the café's own messages for customers' Wallet cards -->
@@ -528,6 +559,7 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
 <script src="../assets/js/remote.js"></script>
 <script src="../assets/js/marketing.js"></script>
 <script src="../assets/js/analytics.js"></script>
+<script src="../assets/js/online.js"></script>
 <script src="../assets/js/design-editor.js"></script>
 <script>
 I18N.add({
@@ -585,6 +617,20 @@ I18N.add({
     'd.locWVisits': ['visita', 'visite', 'visite'], 'd.locVisitors': ['cliente', 'clienti', 'clienti'], 'd.locRewards': ['premio', 'premi', 'premi'], 'd.locSample': ['Centro', 'Stazione', 'Porta Nuova'],
     'd.locPh': 'Sede, es. Via Roma 12', 'd.locSaved': 'Sede salvata', 'd.locHint': 'Più sedi? Scrivi dove si trova ogni telefono: nei Risultati vedi i numeri di ogni sede.',
     'd.resDemo': 'Dati di esempio: così appare questa pagina dopo qualche settimana di carta.', 'd.resEmpty': 'Ancora pochi dati: i grafici si riempiono con le prime visite.', 'd.resShowEx': 'Vedi un esempio', 'd.resShowMine': 'Torna ai tuoi dati', 'd.resExample': 'Stai guardando un esempio.',
+    'd.onT': 'Ordini online', 'd.onP': 'Wolt, Uber Eats, Glovo e Deliveroo accanto alle visite della carta: carica il report degli ordini di ogni app.',
+    'd.onAdd': 'Carica un report', 'd.onHow': 'Dove trovo il report?',
+    'd.onHowL': ['Wolt: nel portale Wolt Merchant, apri ordini o report e scarica il file CSV o Excel del periodo.', 'Uber Eats: in Uber Eats Manager, apri i report e scarica il report degli ordini.', 'Glovo: nel portale partner di Glovo, apri gli ordini ed esporta il file.', 'Deliveroo: nel Partner Hub, apri ordini o fatture e scarica il CSV.', 'Caricalo qui: leggiamo solo data, importo e numero dell\'ordine, nessun dato dei clienti. Lo stesso ordine caricato due volte conta una volta sola.'],
+    'd.onEmpty': 'Ancora nessun ordine online. Carica un report di Wolt, Uber Eats, Glovo o Deliveroo per vedere quanto portano le app, in quali giorni e a che ora.',
+    'd.onExample': 'Esempio: ordini online inventati. Carica i tuoi report per vedere i tuoi numeri.',
+    'd.onKOrders': 'Ordini online', 'd.onKRevenue': 'Incasso online', 'd.onKBasket': 'Ordine medio', 'd.onKBasketN': 'per ordine online', 'd.onKShare': 'Quota online', 'd.onKShareN': 'degli ordini più le visite timbrate', 'd.onVisitsN': 'timbrate con la carta, per confronto',
+    'd.onPlat': 'Per app', 'd.onPlatN': 'Ordini e incasso di ogni app nel periodo.', 'd.onWOrders': ['ordine', 'ordini', 'ordini'],
+    'd.onSeries': 'Ordini online', 'd.onSeriesN': { day: 'Ordini al giorno.', week: 'Ordini a settimana.', month: 'Ordini al mese.' },
+    'd.onDays': 'Giorni con più ordini', 'd.onDaysN': 'Ordini online per giorno della settimana.', 'd.onHours': 'Orari degli ordini', 'd.onHoursN': 'Ordini online per ora: confrontali con gli orari delle visite qui sopra.',
+    'd.onSrc': 'Report caricati', 'd.onSrcN': 'Ordini salvati per ogni app. Caricare un report più recente aggiunge solo gli ordini nuovi.', 'd.onRemove': 'Elimina', 'd.onRemoveQ': 'Eliminare tutti gli ordini di {p}?',
+    'd.onPlatform': 'App', 'd.onPick': 'Scegli', 'd.onDate': 'Data dell\'ordine', 'd.onTotal': 'Importo', 'd.onId': 'Numero ordine', 'd.onStatus': 'Stato', 'd.onTime': 'Ora', 'd.onCur': 'Valuta', 'd.onNone': '(nessuna)',
+    'd.onFound': 'Trovati {n} ordini, dal {a} al {b}, in tutto {m}.', 'd.onSkipped': ' Saltati {n} annullati o rifiutati.', 'd.onBadRows': ' {n} righe senza data o importo.',
+    'd.onNothing': 'Non troviamo data e importo: scegli le colonne giuste qui sopra.', 'd.onNeedPlat': 'Scegli da quale app viene il report.',
+    'd.onSave': 'Aggiungi gli ordini', 'd.onCancel': 'Annulla', 'd.onAdded': 'Aggiunti {n} ordini nuovi.', 'd.onUnread': 'Non riusciamo a leggere questo file. Prova a scaricarlo come CSV.',
     'd.kMembers': 'Clienti con la carta', 'd.kNew': '{n} nuovi', 'd.kVisits': 'Visite timbrate', 'd.kReturning': 'Clienti che tornano', 'd.kReturningN': '2 o più visite', 'd.kPer': 'Visite per cliente', 'd.kPerN': 'in media, nel periodo', 'd.kRewards': 'Premi dati',
     'd.vsPrev': 'rispetto al periodo prima', 'd.vsNone': 'nessun dato prima',
     'd.cGrowth': 'Clienti iscritti', 'd.cGrowthN': 'Totale delle carte attive nel tempo.', 'd.cVisits': 'Visite', 'd.cVisitsN': { day: 'Visite timbrate al giorno.', week: 'Visite timbrate a settimana.', month: 'Visite timbrate al mese.' },
@@ -691,6 +737,20 @@ I18N.add({
     'd.locWVisits': ['visit', 'visits', 'visits'], 'd.locVisitors': ['customer', 'customers', 'customers'], 'd.locRewards': ['reward', 'rewards', 'rewards'], 'd.locSample': ['Centre', 'Station', 'Old Town'],
     'd.locPh': 'Location, e.g. Main Street 12', 'd.locSaved': 'Location saved', 'd.locHint': 'More than one shop? Write where each phone is: Results then shows the numbers for each location.',
     'd.resDemo': 'Example data: this is how this page looks after a few weeks with the card.', 'd.resEmpty': 'Not much data yet: the charts fill up with the first visits.', 'd.resShowEx': 'See an example', 'd.resShowMine': 'Back to your data', 'd.resExample': 'You are looking at an example.',
+    'd.onT': 'Online orders', 'd.onP': 'Wolt, Uber Eats, Glovo and Deliveroo next to the card\'s visits: upload each app\'s order report.',
+    'd.onAdd': 'Upload a report', 'd.onHow': 'Where do I find the report?',
+    'd.onHowL': ['Wolt: in the Wolt Merchant portal, open orders or reports and download the CSV or Excel file for the period.', 'Uber Eats: in Uber Eats Manager, open reports and download the orders report.', 'Glovo: in the Glovo partner portal, open orders and export the file.', 'Deliveroo: in Partner Hub, open orders or invoices and download the CSV.', 'Upload it here: only the date, amount and order number are read, no customer data. The same order uploaded twice counts once.'],
+    'd.onEmpty': 'No online orders yet. Upload a report from Wolt, Uber Eats, Glovo or Deliveroo to see how much the apps bring in, on which days and at what times.',
+    'd.onExample': 'Example: made-up online orders. Upload your reports to see your own numbers.',
+    'd.onKOrders': 'Online orders', 'd.onKRevenue': 'Online sales', 'd.onKBasket': 'Average order', 'd.onKBasketN': 'per online order', 'd.onKShare': 'Online share', 'd.onKShareN': 'of orders plus stamped visits', 'd.onVisitsN': 'stamped with the card, to compare',
+    'd.onPlat': 'By app', 'd.onPlatN': 'Orders and sales from each app in this period.', 'd.onWOrders': ['order', 'orders', 'orders'],
+    'd.onSeries': 'Online orders', 'd.onSeriesN': { day: 'Orders per day.', week: 'Orders per week.', month: 'Orders per month.' },
+    'd.onDays': 'Busiest order days', 'd.onDaysN': 'Online orders by day of the week.', 'd.onHours': 'Order times', 'd.onHoursN': 'Online orders by hour: compare them with the visit hours above.',
+    'd.onSrc': 'Uploaded reports', 'd.onSrcN': 'Orders saved for each app. Uploading a newer report adds only the new orders.', 'd.onRemove': 'Remove', 'd.onRemoveQ': 'Remove all {p} orders?',
+    'd.onPlatform': 'App', 'd.onPick': 'Choose', 'd.onDate': 'Order date', 'd.onTotal': 'Amount', 'd.onId': 'Order number', 'd.onStatus': 'Status', 'd.onTime': 'Time', 'd.onCur': 'Currency', 'd.onNone': '(none)',
+    'd.onFound': 'Found {n} orders, {a} to {b}, {m} in total.', 'd.onSkipped': ' Skipped {n} cancelled or rejected.', 'd.onBadRows': ' {n} rows without a date or amount.',
+    'd.onNothing': 'No date and amount found: choose the right columns above.', 'd.onNeedPlat': 'Choose which app the report is from.',
+    'd.onSave': 'Add the orders', 'd.onCancel': 'Cancel', 'd.onAdded': 'Added {n} new orders.', 'd.onUnread': 'This file can\'t be read. Try downloading it as CSV.',
     'd.kMembers': 'Customers with the card', 'd.kNew': '{n} new', 'd.kVisits': 'Stamped visits', 'd.kReturning': 'Customers who come back', 'd.kReturningN': '2 or more visits', 'd.kPer': 'Visits per customer', 'd.kPerN': 'on average, in the period', 'd.kRewards': 'Rewards given',
     'd.vsPrev': 'vs the period before', 'd.vsNone': 'no earlier data',
     'd.cGrowth': 'Customers with the card', 'd.cGrowthN': 'Total cards over time.', 'd.cVisits': 'Visits', 'd.cVisitsN': { day: 'Stamped visits per day.', week: 'Stamped visits per week.', month: 'Stamped visits per month.' },
@@ -798,6 +858,20 @@ I18N.add({
     'd.locWVisits': ['wizyta', 'wizyty', 'wizyt'], 'd.locVisitors': ['klient', 'klientów', 'klientów'], 'd.locRewards': ['nagroda', 'nagrody', 'nagród'], 'd.locSample': ['Centrum', 'Dworzec', 'Stare Miasto'],
     'd.locPh': 'Lokal, np. Długa 12', 'd.locSaved': 'Lokal zapisany', 'd.locHint': 'Masz kilka lokali? Przypisz każdy telefon do lokalu, a w Wynikach zobaczysz dane każdego z nich.',
     'd.resDemo': 'Przykładowe dane: tak wygląda ta strona po kilku tygodniach z kartą.', 'd.resEmpty': 'Na razie mało danych: wykresy wypełnią się po pierwszych wizytach.', 'd.resShowEx': 'Zobacz przykład', 'd.resShowMine': 'Wróć do swoich danych', 'd.resExample': 'Oglądasz przykład.',
+    'd.onT': 'Zamówienia online', 'd.onP': 'Wolt, Uber Eats, Glovo i Deliveroo obok wizyt z karty: wgraj raport zamówień z każdej aplikacji.',
+    'd.onAdd': 'Wgraj raport', 'd.onHow': 'Skąd wziąć raport?',
+    'd.onHowL': ['Wolt: w panelu Wolt Merchant otwórz zamówienia albo raporty i pobierz plik CSV lub Excel za wybrany okres.', 'Uber Eats: w Uber Eats Manager otwórz raporty i pobierz raport zamówień.', 'Glovo: w portalu partnera Glovo otwórz zamówienia i wyeksportuj plik.', 'Deliveroo: w Partner Hub otwórz zamówienia albo faktury i pobierz CSV.', 'Wgraj go tutaj: odczytujemy tylko datę, kwotę i numer zamówienia, bez danych klientów. To samo zamówienie wgrane dwa razy liczy się raz.'],
+    'd.onEmpty': 'Brak zamówień online. Wgraj raport z Wolta, Uber Eats, Glovo albo Deliveroo, żeby zobaczyć, ile przynoszą aplikacje, w które dni i o jakich godzinach.',
+    'd.onExample': 'Przykład: zmyślone zamówienia online. Wgraj swoje raporty, żeby zobaczyć własne liczby.',
+    'd.onKOrders': 'Zamówienia online', 'd.onKRevenue': 'Sprzedaż online', 'd.onKBasket': 'Średnie zamówienie', 'd.onKBasketN': 'na jedno zamówienie online', 'd.onKShare': 'Udział online', 'd.onKShareN': 'z zamówień i wizyt z pieczątką', 'd.onVisitsN': 'z pieczątką na karcie, dla porównania',
+    'd.onPlat': 'Według aplikacji', 'd.onPlatN': 'Zamówienia i sprzedaż z każdej aplikacji w tym okresie.', 'd.onWOrders': ['zamówienie', 'zamówienia', 'zamówień'],
+    'd.onSeries': 'Zamówienia online', 'd.onSeriesN': { day: 'Zamówienia dziennie.', week: 'Zamówienia tygodniowo.', month: 'Zamówienia miesięcznie.' },
+    'd.onDays': 'Dni z największą liczbą zamówień', 'd.onDaysN': 'Zamówienia online według dnia tygodnia.', 'd.onHours': 'Godziny zamówień', 'd.onHoursN': 'Zamówienia online według godziny: porównaj je z godzinami wizyt powyżej.',
+    'd.onSrc': 'Wgrane raporty', 'd.onSrcN': 'Zapisane zamówienia z każdej aplikacji. Nowszy raport dodaje tylko nowe zamówienia.', 'd.onRemove': 'Usuń', 'd.onRemoveQ': 'Usunąć wszystkie zamówienia z {p}?',
+    'd.onPlatform': 'Aplikacja', 'd.onPick': 'Wybierz', 'd.onDate': 'Data zamówienia', 'd.onTotal': 'Kwota', 'd.onId': 'Numer zamówienia', 'd.onStatus': 'Status', 'd.onTime': 'Godzina', 'd.onCur': 'Waluta', 'd.onNone': '(brak)',
+    'd.onFound': 'Zamówienia: {n}, od {a} do {b}, razem {m}.', 'd.onSkipped': ' Pominięte anulowane lub odrzucone: {n}.', 'd.onBadRows': ' Wiersze bez daty lub kwoty: {n}.',
+    'd.onNothing': 'Nie znaleźliśmy daty i kwoty: wybierz właściwe kolumny powyżej.', 'd.onNeedPlat': 'Wybierz, z której aplikacji jest raport.',
+    'd.onSave': 'Dodaj zamówienia', 'd.onCancel': 'Anuluj', 'd.onAdded': 'Nowe zamówienia dodane: {n}.', 'd.onUnread': 'Nie udało się odczytać pliku. Spróbuj pobrać go jako CSV.',
     'd.kMembers': 'Klienci z kartą', 'd.kNew': ({ n }) => `${n} ${I18N.plural(+n, ['nowy', 'nowi', 'nowych'])}`, 'd.kVisits': 'Wizyty z pieczątką', 'd.kReturning': 'Klienci, którzy wracają', 'd.kReturningN': '2 wizyty lub więcej', 'd.kPer': 'Wizyty na klienta', 'd.kPerN': 'średnio, w tym okresie', 'd.kRewards': 'Wydane nagrody',
     'd.vsPrev': 'w porównaniu z poprzednim okresem', 'd.vsNone': 'brak wcześniejszych danych',
     'd.cGrowth': 'Klienci z kartą', 'd.cGrowthN': 'Łączna liczba kart w czasie.', 'd.cVisits': 'Wizyty', 'd.cVisitsN': { day: 'Wizyty z pieczątką dziennie.', week: 'Wizyty z pieczątką tygodniowo.', month: 'Wizyty z pieczątką miesięcznie.' },
@@ -1438,6 +1512,7 @@ I18N.add({
     ANALYTICS.columns($('ch-days'), r.weekday.map((v, i) => ({ v, label: days[i], title: long[i] })), { label: I18N.t('d.cDays'), fmt: num, height: 180 });
     const open = r.hours.map((v, h) => ({ v, h })).filter(x => x.h >= 6 && x.h <= 22);
     ANALYTICS.columns($('ch-hours'), open.map(x => ({ v: x.v, label: String(x.h), title: `${x.h}:00-${x.h + 1}:00` })), { label: I18N.t('d.cHours'), fmt: num, height: 180 });
+    renderOnline(r, useExample);
   }
   $('res-range').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { resDays = Number(b.dataset.d); renderResults(); } });
   $('res-sample-b').addEventListener('click', () => { resExample = !resExample; renderResults(); });
@@ -1445,6 +1520,127 @@ I18N.add({
   $('res').addEventListener('click', e => { const b = e.target.closest('[data-loc]'); if (b) { resLoc = b.dataset.loc; renderResults(); $('res-loc').focus(); } });
   document.addEventListener('langchange', () => { if (!$('tab-results').hidden) renderResults(); });
   let resTimer; window.addEventListener('resize', () => { clearTimeout(resTimer); resTimer = setTimeout(() => { if (!$('tab-results').hidden) renderResults(); }, 200); });
+
+  // ---------- online orders: Wolt, Uber Eats, Glovo, Deliveroo reports (assets/js/online.js) ----------
+  let onOrders = null, onCard = null, onLast = null;
+  const onMoney = (n, c, d = 0) => { try { return new Intl.NumberFormat(I18N.locale(), { style: 'currency', currency: c, maximumFractionDigits: d, minimumFractionDigits: d }).format(n); } catch (e) { return num(n) + ' ' + c; } };
+  const plat = p => (ONLINE.PLATFORMS[p] || { name: p, color: '#888' });
+  async function loadOnline(force) {
+    if (onOrders && onCard === current.id && !force) return onOrders;
+    onCard = current.id;
+    try { onOrders = await ONLINE.list(current.id); } catch (e) { onOrders = []; UI.toast(e.message); }
+    return onOrders;
+  }
+  // Called by renderResults with its numbers (stamped visits in the same period).
+  async function renderOnline(res, useExample) {
+    onLast = { res, useExample };
+    const mine = await loadOnline();
+    if (onLast.res !== res) return;   // a newer render started meanwhile
+    const example = useExample && !mine.length, orders = example ? ONLINE.sample(current) : mine;
+    $('on-how').innerHTML = I18N.t('d.onHowL').map(l => `<li>${UI.esc(l)}</li>`).join('');
+    if (!orders.length) { $('on-body').innerHTML = `<p class="on-empty">${I18N.t('d.onEmpty')}</p>`; return; }
+    const r = ONLINE.compute(orders, { days: resDays }), cur = r.currency;
+    const share = r.orders + res.visits ? r.orders / (r.orders + res.visits) : 0;
+    const label = p => r.bucket === 'week' ? I18N.t('d.weekOf', { d: dateFmt(p.t) }) : r.bucket === 'month' ? new Date(p.t).toLocaleDateString(I18N.locale(), { month: 'long', year: 'numeric' }) : dateFmt(p.t, true);
+    const plats = Object.entries(r.byPlatform).sort((a, b) => b[1].orders - a[1].orders), top = Math.max(1, ...plats.map(x => x[1].orders));
+    const srcs = example ? [] : ONLINE.sources(mine);
+    $('on-body').innerHTML = `
+      ${example ? `<p class="res-sample">${I18N.t('d.onExample')}</p>` : ''}
+      <div class="res-top">
+        <div class="kpi hero"><span class="lab">${I18N.t('d.onKOrders')}</span><span class="val" data-o="orders"></span>${delta(r.orders, r.prevOrders, resDays > 0 && r.hasBefore)}</div>
+        <div class="kpi"><span class="lab">${I18N.t('d.onKRevenue')}</span><span class="val" data-o="revenue"></span>${delta(r.revenue, r.prevRevenue, resDays > 0 && r.hasBefore)}</div>
+        <div class="kpi"><span class="lab">${I18N.t('d.onKBasket')}</span><span class="val" data-o="basket"></span><span class="delta">${I18N.t('d.onKBasketN')}</span></div>
+        <div class="kpi"><span class="lab">${I18N.t('d.onKShare')}</span><span class="val" data-o="share"></span><span class="delta">${I18N.t('d.onKShareN')}</span></div>
+        <div class="kpi"><span class="lab">${I18N.t('d.kVisits')}</span><span class="val">${num(res.visits)}</span><span class="delta">${I18N.t('d.onVisitsN')}</span></div>
+      </div>
+      <div class="res-grid">
+        <div class="card-box wide"><h3>${I18N.t('d.onPlat')}</h3><p class="note">${I18N.t('d.onPlatN')}</p><ul class="locs on-plat">${plats.map(([p, x]) =>
+          `<li style="--pc:${plat(p).color}"><button type="button" tabindex="-1"><span class="name"><i class="dot"></i>${UI.esc(plat(p).name)}</span><span class="num">${num(x.orders)} ${I18N.plural(x.orders, I18N.t('d.onWOrders'))} · ${onMoney(x.revenue, cur)}</span><span class="lbar"><i style="width:${Math.round(x.orders / top * 100)}%"></i></span><small>${Math.round(x.orders / Math.max(1, r.orders) * 100)}% · ${I18N.t('d.onKBasket').toLowerCase()} ${onMoney(x.orders ? x.revenue / x.orders : 0, cur, 2)}</small></button></li>`).join('')}</ul></div>
+        <div class="card-box wide"><h3>${I18N.t('d.onSeries')}</h3><p class="note">${I18N.t('d.onSeriesN')[r.bucket]}</p><div id="on-ch-series"></div></div>
+        <div class="card-box"><h3>${I18N.t('d.onDays')}</h3><p class="note">${I18N.t('d.onDaysN')}</p><div id="on-ch-days"></div></div>
+        <div class="card-box"><h3>${I18N.t('d.onHours')}</h3><p class="note">${I18N.t('d.onHoursN')}</p><div id="on-ch-hours"></div></div>
+        ${srcs.length ? `<div class="card-box wide"><h3>${I18N.t('d.onSrc')}</h3><p class="note">${I18N.t('d.onSrcN')}</p><ul class="on-src">${srcs.map(x =>
+          `<li><span><b>${UI.esc(plat(x.p).name)}</b><small>${num(x.n)} ${I18N.plural(x.n, I18N.t('d.onWOrders'))} · ${dateFmt(x.from)} – ${dateFmt(x.to)}</small></span><button class="btn line small" type="button" data-on-clear="${x.p}">${I18N.t('d.onRemove')}</button></li>`).join('')}</ul></div>` : ''}
+      </div>`;
+    const k = n => $('on-body').querySelector(`[data-o="${n}"]`);
+    ANALYTICS.countUp(k('orders'), r.orders, num);
+    ANALYTICS.countUp(k('revenue'), r.revenue, n => onMoney(n, cur));
+    ANALYTICS.countUp(k('basket'), r.basket, n => onMoney(n, cur, 2));
+    ANALYTICS.countUp(k('share'), share * 100, n => Math.round(n) + '%');
+    ANALYTICS.columns($('on-ch-series'), r.series.map(p => ({ v: p.v, label: r.bucket === 'month' ? new Date(p.t).toLocaleDateString(I18N.locale(), { month: 'short' }) : dateFmt(p.t), title: label(p) })), { label: I18N.t('d.onSeries'), fmt: num });
+    const days = I18N.t('d.days'), long = I18N.t('d.daysLong');
+    ANALYTICS.columns($('on-ch-days'), r.weekday.map((v, i) => ({ v, label: days[i], title: long[i] })), { label: I18N.t('d.onDays'), fmt: num, height: 180 });
+    const open = r.hours.map((v, h) => ({ v, h })).filter(x => x.h >= 6 && x.h <= 23);
+    ANALYTICS.columns($('on-ch-hours'), open.map(x => ({ v: x.v, label: String(x.h), title: `${x.h}:00-${x.h + 1}:00` })), { label: I18N.t('d.onHours'), fmt: num, height: 180 });
+  }
+  const rerenderOnline = () => { if (onLast) renderOnline(onLast.res, onLast.useExample); };
+
+  // Uploading: each file gets a small form with the columns we guessed, and a live summary.
+  const onQueue = [];
+  $('on-add').addEventListener('click', () => $('on-file').click());
+  $('on-file').addEventListener('change', async e => {
+    for (const f of e.target.files) {
+      try { onQueue.push(await ONLINE.read(f)); } catch (err) { UI.toast(I18N.t('d.onUnread') + ' (' + f.name + ')'); }
+    }
+    e.target.value = '';
+    showImport();
+  });
+  function showImport() {
+    const src = onQueue[0];
+    if (!src) { $('on-import').innerHTML = ''; return; }
+    const cols = (key, cur, optional) => `<select data-col="${key}">${optional ? `<option value="-1">${I18N.t('d.onNone')}</option>` : ''}${src.headers.map((h, i) =>
+      `<option value="${i}"${i === cur ? ' selected' : ''}>${UI.esc(h || '#' + (i + 1))}</option>`).join('')}</select>`;
+    $('on-import').innerHTML = `<form class="on-imp" id="on-form">
+      <h3>${UI.esc(src.name)}${onQueue.length > 1 ? ` <small>(1/${onQueue.length})</small>` : ''}</h3>
+      <div class="on-cols">
+        <label>${I18N.t('d.onPlatform')}<select id="on-plat"><option value="">${I18N.t('d.onPick')}</option>${Object.entries(ONLINE.PLATFORMS).map(([k, p]) => `<option value="${k}"${k === src.platform ? ' selected' : ''}>${p.name}</option>`).join('')}</select></label>
+        <label>${I18N.t('d.onDate')}${cols('date', src.map.date, true)}</label>
+        <label>${I18N.t('d.onTotal')}${cols('total', src.map.total, true)}</label>
+        <label>${I18N.t('d.onId')}${cols('id', src.map.id, true)}</label>
+        <label>${I18N.t('d.onStatus')}${cols('status', src.map.status, true)}</label>
+        <label>${I18N.t('d.onCur')}<select id="on-cur">${['PLN', 'EUR', 'GBP', 'CHF', 'CZK'].map(c => `<option${c === src.currency ? ' selected' : ''}>${c}</option>`).join('')}</select></label>
+      </div>
+      <p class="on-sum" id="on-sum" aria-live="polite"></p>
+      <div class="btns"><button class="btn pop" type="submit" id="on-save">${I18N.t('d.onSave')}</button><button class="btn line" type="button" id="on-cancel">${I18N.t('d.onCancel')}</button></div>
+    </form>`;
+    const form = $('on-form');
+    const current_ = () => {
+      const map = { ...src.map }; form.querySelectorAll('[data-col]').forEach(s => { map[s.dataset.col] = Number(s.value); });
+      return ONLINE.parse(src, map, $('on-plat').value, $('on-cur').value);
+    };
+    const update = () => {
+      const r = current_(), sum = $('on-sum'), o = r.orders;
+      const ok = o.length && $('on-plat').value;
+      sum.classList.toggle('bad', !ok);
+      if (!o.length) sum.textContent = I18N.t('d.onNothing');
+      else {
+        const ts = o.map(x => x.t), total = o.reduce((a, x) => a + (x.c === $('on-cur').value ? x.v : 0), 0);
+        sum.textContent = I18N.t('d.onFound', { n: num(o.length), a: dateFmt(Math.min(...ts)), b: dateFmt(Math.max(...ts)), m: onMoney(total, $('on-cur').value) })
+          + (r.skipped ? I18N.t('d.onSkipped', { n: r.skipped }) : '') + (r.bad ? I18N.t('d.onBadRows', { n: r.bad }) : '')
+          + ($('on-plat').value ? '' : ' ' + I18N.t('d.onNeedPlat'));
+      }
+      $('on-save').disabled = !ok;
+    };
+    form.addEventListener('change', update); update();
+    $('on-cancel').addEventListener('click', () => { onQueue.shift(); showImport(); });
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      $('on-save').disabled = true;
+      try {
+        const { added } = await ONLINE.save(current.id, current_().orders);
+        UI.toast(I18N.t('d.onAdded', { n: num(added) }));
+        onQueue.shift(); showImport();
+        await loadOnline(true); rerenderOnline();
+      } catch (err) { UI.toast(err.message); $('on-save').disabled = false; }
+    });
+    form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  $('on-body').addEventListener('click', async e => {
+    const b = e.target.closest('[data-on-clear]'); if (!b) return;
+    if (!confirm(I18N.t('d.onRemoveQ', { p: plat(b.dataset.onClear).name }))) return;
+    try { await ONLINE.clear(current.id, b.dataset.onClear); await loadOnline(true); rerenderOnline(); } catch (err) { UI.toast(err.message); }
+  });
+  document.addEventListener('langchange', () => { if (onQueue.length) showImport(); });
 
   // ---------- plan: the subscription (Stripe, see supabase/functions/) ----------
   let billing = null, interval = 'month';

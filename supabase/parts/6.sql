@@ -1,4 +1,4 @@
--- Timbro database, part 6 of 10. Run the parts in order.
+-- Timbro database, part 6 of 11. Run the parts in order.
 set search_path = timbro, extensions;
 
 create or replace function owner_send_design(p_card_id text, p_kind text, p_design jsonb, p_note text, p_images jsonb, p_links jsonb) returns jsonb

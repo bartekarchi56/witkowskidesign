@@ -110,6 +110,10 @@
     linkCode: () => rpc('owner_link_code'),
     removeDevice: id => rpc('owner_remove_device', { p_device_id: id }),
     setDeviceLocation: (id, location) => rpc('owner_set_device_location', { p_device_id: id, p_location: location }),
+    // Online orders from Wolt, Uber Eats, Glovo, Deliveroo reports (assets/js/online.js).
+    onlineOrders: cardId => rpc('owner_online_orders', { p_card_id: cardId }),
+    importOrders: (cardId, orders) => rpc('owner_import_orders', { p_card_id: cardId, p_orders: orders }),
+    clearOrders: (cardId, platform) => rpc('owner_clear_orders', { p_card_id: cardId, p_platform: platform }),
 
     // ---- Witkowski Design ----
     adminCards: () => rpc('admin_cards'),

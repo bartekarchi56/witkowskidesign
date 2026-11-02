@@ -1,4 +1,4 @@
--- Timbro database, part 8 of 10. Run the parts in order.
+-- Timbro database, part 8 of 11. Run the parts in order.
 set search_path = timbro, extensions;
 
 create or replace function stripe_is_admin(p_user uuid) returns boolean
