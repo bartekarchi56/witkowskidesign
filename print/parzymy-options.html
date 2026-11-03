@@ -64,6 +64,10 @@ body{margin:0;background:#EDEBE4}
     return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/><g fill="none" stroke="${line}" stroke-width="24">${p}</g></svg>`);
   }
   const dots = (bg, dot) => { let c = ''; for (let y = 15; y < 450; y += 30) for (let x = (y / 30 % 2) * 15 + 15; x < 1020; x += 30) c += `<circle cx="${x}" cy="${y}" r="3"/>`; return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/><g fill="${dot}">${c}</g></svg>`); };
+  // The name in powder pink on an orange label (Apple Wallet has one background colour, so the bar is a label).
+  const label = (bg, ink) => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="132" viewBox="0 0 640 132"><rect width="640" height="132" rx="18" fill="${bg}"/><g transform="translate(26 18) scale(.92)">${markG(ink, 8)}</g><text x="128" y="86" font-family="Archivo, Arial, sans-serif" font-weight="800" font-size="52" letter-spacing="3" fill="${ink}">PARZYMY TUTAJ</text></svg>`);
+  // A coffee cup drawn in green inside a thin green ring.
+  const ringCup = ink => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="${ink}" stroke-width="1.6"/><g fill="${ink}"><path d="M27 42 H67 L63 66 Q61 73 54 73 H40 Q33 73 31 66 Z"/></g><g fill="none" stroke="${ink}" stroke-width="5" stroke-linecap="round"><path d="M66 48 Q78 48 76 57 Q74 64 63 63"/><path d="M41 34 Q37 29 41 24 M51 35 Q47 29 51 23 M61 34 Q57 29 61 24"/></g><path d="M23 79 Q50 86 77 79" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/></svg>`);
   const caps = ink => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="120" viewBox="0 0 600 120"><g transform="translate(4 8) scale(1)">${markG(ink, 7)}</g><text x="112" y="80" font-family="Archivo, Arial, sans-serif" font-weight="800" font-size="50" letter-spacing="3" fill="${ink}">PARZYMY TUTAJ</text></svg>`);
   const BASE = { ...L.green, hideReward: true, hideCount: true, stampsNeeded: 8 };
   const OPTS = [
@@ -72,7 +76,7 @@ body{margin:0;background:#EDEBE4}
     ['3 · Filiżanki', 'Kremowe filiżanki na ciemnej zieleni.', { ...BASE, color: '#25432A', ink: '#F1EAD8', strip: '#25432A', logo: L.green.logo.replace(/%232F4A2B/g, '%23F1EAD8'), stripImage: plain('#25432A'), stampImage: cup('#F1EAD8', '#25432A') }],
     ['4 · Ich wzór', 'Biała karta, zielone fale z ich grafiki.', { ...BASE, color: '#FFFFFF', ink: '#111111', strip: '#7DC242', logo: caps('#111111'), stripImage: swirl('#7DC242', '#FFFFFF'), stampImage: disc('#FFFFFF', `<g transform="translate(26 22) scale(.48)">${markG('#3E7D1E', 8)}</g>`) }],
     ['5 · Kraft', 'Ciepły beż jak papierowy kubek, oliwkowe pieczątki.', { ...BASE, color: '#EADFCB', ink: '#2F4A2B', strip: '#EADFCB', logo: caps('#2F4A2B'), stripImage: dots('#EADFCB', '#DCCDB0'), stampImage: disc('#6E8B3D', `<g transform="translate(26 22) scale(.48)">${markG('#F4EEDF', 8)}</g>`) }],
-    ['6 · Ciemna', 'Odwrotność minimalistycznej: zieleń w nocy.', { ...BASE, color: '#14261A', ink: '#C9E3A3', strip: '#14261A', logo: caps('#C9E3A3'), stripImage: plain('#14261A'), stampImage: disc('#C9E3A3', `<g transform="translate(26 22) scale(.48)">${markG('#14261A', 8)}</g>`) }]
+    ['6 · Picco', 'Pudrowy róż, pomarańczowa etykieta, zielone filiżanki.', { ...BASE, color: '#F4C7B8', ink: '#1F5A2E', strip: '#F4C7B8', logo: label('#F26B1D', '#F4C7B8'), stripImage: plain('#F4C7B8'), stampImage: ringCup('#1F5A2E') }]
   ];
   const who = { id: 'P4RZ7Y', name: 'Anna Nowak', stamps: 3 };
   document.getElementById('grid').innerHTML = OPTS.map(([h, p, card]) => `<div class="opt"><h2>${h}</h2><p>${p}</p>${UI.renderPass(card, who, { platform: 'apple' })}</div>`).join('');
