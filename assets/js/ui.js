@@ -48,6 +48,8 @@
 
   // Each stamp lands at a slightly different angle, like a real rubber stamp.
   const ANGLES = [-8, 5, -3, 9, -6, 3, -10, 7, -2, 6, -7, 4, -4, 8, -9, 2, -5, 10, -1, 5];
+  // Where a stamp lands in its box (% of the box), for cards with their own empty box: like a hand stamp.
+  const JITTER = [[-9, -6], [7, 5], [-4, 9], [10, -7], [-8, 4], [5, -9], [-6, -8], [9, 7], [3, -5], [-10, 6], [8, 2], [-3, -10], [6, 9], [-7, -3], [4, 8], [-5, 5], [9, -4], [-9, -9], [2, 10], [7, -8]];
 
   // A card's look, with defaults for cards made before styles existed.
   function lookOf(card) {
@@ -97,7 +99,9 @@
     for (let i = 0; i < need; i++) {
       const on = i < have;
       // Empty boxes show a faint print of the same stamp, waiting to be inked.
-      dots += art
+      dots += art && card.emptyImage
+        ? `<span class="wp-dot s-art s-box${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}"><img src="${esc(card.emptyImage)}" alt="" class="st-own">${on ? `<img src="${esc(art)}" alt="" class="st-in" style="transform:translate(${JITTER[i][0]}%,${JITTER[i][1]}%) rotate(${ANGLES[i] * 3}deg)">` : ''}</span>`
+        : art
         ? `<span class="wp-dot s-art${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}" style="--r:${ANGLES[i]}deg"><img src="${esc(on ? art : off.src)}" alt=""${on ? '' : ` class="${off.cls}"`}></span>`
         : `<span class="wp-dot s-${look.shape} e-${look.empty}${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}" style="--r:${ANGLES[i]}deg">${on ? markHtml : ''}</span>`;
     }

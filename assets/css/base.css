@@ -228,3 +228,4 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .de-icons label{padding:9px}
 .de-marktext{margin-top:10px;max-width:90px;font:700 22px/1 "Noto Serif JP","EB Garamond",serif!important;text-align:center}
 .wp-dot.s-art img.st-own{transform:none}
+.wp-dot.s-box img.st-in{position:absolute;inset:0;width:100%;height:100%}

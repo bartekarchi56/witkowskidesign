@@ -21,6 +21,8 @@ export function colours(card) {
 }
 
 const ANGLES = [-8, 5, -3, 9, -6, 3, -10, 7, -2, 6, -7, 4, -4, 8, -9, 2, -5, 10, -1, 5];
+// Where a stamp lands in its box (% of the box), for cards with their own empty box (same as assets/js/ui.js).
+const JITTER = [[-9, -6], [7, 5], [-4, 9], [10, -7], [-8, 4], [5, -9], [-6, -8], [9, 7], [3, -5], [-10, 6], [8, 2], [-3, -10], [6, 9], [-7, -3], [4, 8], [-5, 5], [9, -4], [-9, -9], [2, 10], [7, -8]];
 const pngData = (v, max = 200000) => /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(v || '') && v.length < max ? v : '';
 // A café's own stamp artwork: PNG/JPEG/WebP, or an SVG (base64 or URL-encoded) that loads
 // nothing from outside itself (no scripts, no links except to data: images).
@@ -63,6 +65,13 @@ export async function strip(card, have, { w = 375, h = 123, scale = 1 } = {}) {
   let out = '';
   for (let i = 0; i < need; i++) {
     const x = padX + (i % cols) * (d + gapX), y = top + Math.floor(i / cols) * (d + gapY);
+    const box = artData(card.emptyImage);
+    if (box) {   // the box stays under the stamp, which lands a little off-centre
+      const img = `<image href="${box}" x="${x}" y="${y}" width="${d}" height="${d}" preserveAspectRatio="xMidYMid meet"/>`;
+      const dx = JITTER[i][0] / 100 * d, dy = JITTER[i][1] / 100 * d;
+      out += img + (i < have ? `<g transform="translate(${dx} ${dy}) rotate(${ANGLES[i] * 3} ${x + d / 2} ${y + d / 2})">${stampAt(card, ink, x, y, d)}</g>` : '');
+      continue;
+    }
     out += i < have
       ? `<g transform="rotate(${ANGLES[i]} ${x + d / 2} ${y + d / 2})">${stampAt(card, ink, x, y, d)}</g>`
       : artData(card.emptyImage) ? `<image href="${artData(card.emptyImage)}" x="${x}" y="${y}" width="${d}" height="${d}" preserveAspectRatio="xMidYMid meet"/>`
