@@ -8,13 +8,13 @@
 /* Six Apple Wallet designs for Parzymy Tutaj, on one board (print/make-parzymy-options.js). */
 @font-face{font-family:"Homemade Apple";src:url(../assets/fonts/homemade-apple.woff2) format("woff2")}
 body{margin:0;background:#EDEBE4}
-#board{width:2000px;padding:70px 70px 40px;box-sizing:border-box;font-family:var(--font)}
-#board h1{font-size:46px;margin:0 0 6px;letter-spacing:-.02em}
-#board > p{font-size:20px;color:#5c5c60;margin:0 0 46px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:56px 50px}
+#board{width:1290px;padding:50px 50px 30px;box-sizing:border-box;font-family:var(--font)}
+#board h1{font-size:34px;margin:0 0 6px;letter-spacing:-.02em}
+#board > p{font-size:16px;color:#5c5c60;margin:0 0 46px}
+.grid{display:grid;grid-template-columns:repeat(3,340px);gap:44px 50px}
 .opt h2{font:700 15px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#2F4A2B;margin:0 0 4px}
-.opt p{font-size:16px;color:#6b6b70;margin:0 0 16px;min-height:22px}
-.opt .pass{max-width:none;width:100%;border-radius:18px;box-shadow:0 1px 3px rgba(0,0,0,.16),0 26px 50px -26px rgba(0,0,0,.5)}
+.opt p{font-size:14px;color:#6b6b70;margin:0 0 16px;min-height:22px}
+.opt .pass{max-width:340px;width:340px;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.16),0 26px 50px -26px rgba(0,0,0,.5)}
 </style>
 </head>
 <body>
@@ -64,7 +64,7 @@ body{margin:0;background:#EDEBE4}
     return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/><g fill="none" stroke="${line}" stroke-width="24">${p}</g></svg>`);
   }
   const caps = ink => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="120" viewBox="0 0 600 120"><g transform="translate(4 8) scale(1)">${markG(ink, 7)}</g><text x="112" y="80" font-family="Archivo, Arial, sans-serif" font-weight="800" font-size="50" letter-spacing="3" fill="${ink}">PARZYMY TUTAJ</text></svg>`);
-  const BASE = { ...L.green, hideReward: true, hideCount: false };
+  const BASE = { ...L.green, hideReward: true, hideCount: true, stampsNeeded: 8 };
   const OPTS = [
     ['1 · Obecna', 'Jasna zieleń i ich znak.', { ...BASE }],
     ['2 · Minimalistyczna', 'Biała karta, zielone kropki, czarne logo.', { ...BASE, color: '#FFFFFF', ink: '#111111', strip: '#FFFFFF', logo: caps('#111111'), stripImage: plain('#FFFFFF'), stampImage: disc('#7BB33C') }],
@@ -73,7 +73,7 @@ body{margin:0;background:#EDEBE4}
     ['5 · Pchli targ', 'Kolory z ich plakatu: róż i zieleń.', { ...BASE, color: '#D9A3D6', ink: '#1F4A2A', strip: '#D9A3D6', logo: caps('#1F4A2A'), stripImage: stripes('#D9A3D6', '#1F4A2A'), stampImage: disc('#F07A2B', `<g transform="translate(26 22) scale(.48)">${markG('#FFFFFF', 8)}</g>`) }],
     ['6 · Ciemna', 'Odwrotność minimalistycznej: zieleń w nocy.', { ...BASE, color: '#14261A', ink: '#C9E3A3', strip: '#14261A', logo: caps('#C9E3A3'), stripImage: plain('#14261A'), stampImage: disc('#C9E3A3', `<g transform="translate(26 22) scale(.48)">${markG('#14261A', 8)}</g>`) }]
   ];
-  const who = { id: 'P4RZ7Y', name: 'Anna Nowak', stamps: 4 };
+  const who = { id: 'P4RZ7Y', name: 'Anna Nowak', stamps: 3 };
   document.getElementById('grid').innerHTML = OPTS.map(([h, p, card]) => `<div class="opt"><h2>${h}</h2><p>${p}</p>${UI.renderPass(card, who, { platform: 'apple' })}</div>`).join('');
   await new Promise(r => setTimeout(r, 800));
   window.READY = true;

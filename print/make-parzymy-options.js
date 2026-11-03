@@ -10,7 +10,7 @@ const server = http.createServer((req, res) => {
   fs.readFile(file, (err, data) => { if (err || !file.startsWith(ROOT)) { res.writeHead(404); return res.end(); } res.writeHead(200, { 'content-type': TYPES[path.extname(file)] || 'application/octet-stream' }); res.end(data); });
 });
 server.listen(0, async () => {
-  const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 2000, height: 1200 }, deviceScaleFactor: 1.5 });
+  const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1290, height: 1200 }, deviceScaleFactor: 2.5 });
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   await p.goto(`http://localhost:${server.address().port}/print/parzymy-options.html`);
   await p.waitForFunction(() => window.READY === true, null, { timeout: 15000 });
