@@ -83,7 +83,7 @@ body{margin:0;background:#EDEBE4}
     ['3 · Filiżanki', 'Kremowe filiżanki na ciemnej zieleni.', { ...BASE, color: '#25432A', ink: '#F1EAD8', strip: '#25432A', logo: L.green.logo.replace(/%232F4A2B/g, '%23F1EAD8'), stripImage: plain('#25432A'), stampImage: cup('#F1EAD8', '#25432A') }],
     ['4 · Ich wzór', 'Biała karta, zielone fale z ich grafiki.', { ...BASE, color: '#FFFFFF', ink: '#111111', strip: '#7DC242', logo: caps('#111111'), stripImage: swirl('#7DC242', '#FFFFFF'), stampImage: disc('#FFFFFF', `<g transform="translate(26 22) scale(.48)">${markG('#3E7D1E', 8)}</g>`) }],
     ['5 · Kraft', 'Ciepły beż jak papierowy kubek, oliwkowe pieczątki.', { ...BASE, color: '#EADFCB', ink: '#2F4A2B', strip: '#EADFCB', logo: caps('#2F4A2B'), stripImage: dots('#EADFCB', '#DCCDB0'), stampImage: disc('#6E8B3D', `<g transform="translate(26 22) scale(.48)">${markG('#F4EEDF', 8)}</g>`) }],
-    ['6 · Picco', 'Zieleń, pasek, pomarańczowe rysowane filiżanki.', { ...BASE, color: '#1E5631', ink: '#1E5631', strip: '#F2C4B4', logo: caps('#F2C4B4'), stripImage: band('#F2C4B4', '#F26B1D'), stampImage: walkingCup('#E8682A') }]
+    ['6 · Picco', 'Zieleń, pasek, pomarańczowe rysowane filiżanki.', { ...BASE, color: '#1E5631', ink: '#1E5631', strip: '#F2C4B4', logo: caps('#F2C4B4'), stripImage: band('#F2C4B4', '#F26B1D'), stampImage: '../assets/demo/parzymy/stamp-walking.png' }]
   ];
   const who = { id: 'P4RZ7Y', name: 'Anna Nowak', stamps: 3 };
   document.getElementById('grid').innerHTML = OPTS.map(([h, p, card]) => `<div class="opt"><h2>${h}</h2><p>${p}</p>${UI.renderPass(card, who, { platform: 'apple' })}</div>`).join('');
