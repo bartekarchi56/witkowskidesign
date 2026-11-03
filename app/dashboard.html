@@ -638,7 +638,7 @@ I18N.add({
     'd.days': ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'], 'd.daysLong': ['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'], 'd.weekOf': 'settimana dal {d}',
     'd.close': 'Quasi al premio', 'd.closeN': 'A 1 o 2 timbri dal premio: alla prossima visita festeggiali.', 'd.lapsed': 'Non tornano da 30 giorni', 'd.lapsedN': 'Un post o un timbro doppio per una settimana li riporta al bancone.', 'd.nobody': 'Nessuno, per ora.', 'd.andMore': 'e altri {n}',
     'd.money': 'Quanto vale', 'd.moneyN': 'Una stima con i tuoi numeri. Non tutta la spesa nasce dalla carta, ma sono i clienti che tornano.',
-    'd.ticket': 'Scontrino medio (€)', 'd.rewardCost': 'Costo di un premio per te (€)', 'd.spent': 'spesi dai clienti con la carta', 'd.rewardsCost': 'costo dei premi',
+    'd.ticket': 'Scontrino medio ({c})', 'd.rewardCost': 'Costo di un premio per te ({c})', 'd.spent': 'spesi dai clienti con la carta', 'd.rewardsCost': 'costo dei premi',
     'd.table': 'Vedi i numeri in tabella', 'd.tDate': 'Periodo', 'd.tVisits': 'Visite', 'd.tMembers': 'Iscritti',
     'd.tPlan': 'Abbonamento', 'd.planT': 'Il tuo abbonamento', 'd.monthly': 'Mensile', 'd.yearly': 'Annuale (2 mesi gratis)', 'd.manage': 'Gestisci o disdici', 'd.monthlyShort': 'mensile', 'd.yearlyShort': 'annuale',
     'd.manageHint': 'Per cambiare piano, cambiare carta, scaricare le fatture o disdire, usa "Gestisci o disdici".',
@@ -758,7 +758,7 @@ I18N.add({
     'd.days': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], 'd.daysLong': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], 'd.weekOf': 'week from {d}',
     'd.close': 'Almost at the reward', 'd.closeN': '1 or 2 stamps away: make a fuss of them next visit.', 'd.lapsed': 'Not back for 30 days', 'd.lapsedN': 'A post or a double-stamp week brings them back to the counter.', 'd.nobody': 'Nobody, for now.', 'd.andMore': 'and {n} more',
     'd.money': 'What it is worth', 'd.moneyN': 'An estimate with your numbers. Not all of this spending comes from the card, but these are the customers who come back.',
-    'd.ticket': 'Average ticket (€)', 'd.rewardCost': 'What a reward costs you (€)', 'd.spent': 'spent by card customers', 'd.rewardsCost': 'cost of rewards',
+    'd.ticket': 'Average ticket ({c})', 'd.rewardCost': 'What a reward costs you ({c})', 'd.spent': 'spent by card customers', 'd.rewardsCost': 'cost of rewards',
     'd.table': 'See the numbers as a table', 'd.tDate': 'Period', 'd.tVisits': 'Visits', 'd.tMembers': 'Members',
     'd.tPlan': 'Plan', 'd.planT': 'Your subscription', 'd.monthly': 'Monthly', 'd.yearly': 'Yearly (2 months free)', 'd.manage': 'Manage or cancel', 'd.monthlyShort': 'monthly', 'd.yearlyShort': 'yearly',
     'd.manageHint': 'To change plan or card, download invoices or cancel, use "Manage or cancel".',
@@ -879,7 +879,7 @@ I18N.add({
     'd.days': ['pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.', 'niedz.'], 'd.daysLong': ['poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota', 'niedziela'], 'd.weekOf': 'tydzień od {d}',
     'd.close': 'Blisko nagrody', 'd.closeN': 'Brakuje im 1 lub 2 pieczątek: zadbaj o nich przy następnej wizycie.', 'd.lapsed': 'Nie byli od ponad 30 dni', 'd.lapsedN': 'Post albo tydzień z podwójnymi pieczątkami może ich ściągnąć z powrotem.', 'd.nobody': 'Na razie nikt.', 'd.andMore': 'i {n} więcej',
     'd.money': 'Ile to jest warte', 'd.moneyN': 'Szacunek na podstawie Twoich liczb. Nie każdy zakup to zasługa karty, ale to są klienci, którzy wracają.',
-    'd.ticket': 'Średni paragon (€)', 'd.rewardCost': 'Koszt jednej nagrody (€)', 'd.spent': 'wydali klienci z kartą', 'd.rewardsCost': 'koszt nagród',
+    'd.ticket': 'Średni paragon ({c})', 'd.rewardCost': 'Koszt jednej nagrody ({c})', 'd.spent': 'wydali klienci z kartą', 'd.rewardsCost': 'koszt nagród',
     'd.table': 'Zobacz liczby w tabeli', 'd.tDate': 'Okres', 'd.tVisits': 'Wizyty', 'd.tMembers': 'Klienci z kartą',
     'd.tPlan': 'Plan', 'd.planT': 'Twoja subskrypcja', 'd.monthly': 'Miesięcznie', 'd.yearly': 'Rocznie (2 miesiące gratis)', 'd.manage': 'Zarządzaj lub anuluj', 'd.monthlyShort': 'miesięcznie', 'd.yearlyShort': 'rocznie',
     'd.manageHint': 'Aby zmienić plan lub kartę płatniczą, pobrać faktury albo anulować subskrypcję, użyj „Zarządzaj lub anuluj”.',
@@ -1433,7 +1433,9 @@ I18N.add({
   let resDays = 30, resExample = false, resLoc = '';
   const resPrefs = () => { try { return JSON.parse(localStorage.getItem('timbro:results:' + current.id)) || {}; } catch (e) { return {}; } };
   const saveResPrefs = p => { try { localStorage.setItem('timbro:results:' + current.id, JSON.stringify(p)); } catch (e) { /* not saved */ } };
-  const euro = (n, d = 0) => new Intl.NumberFormat(I18N.lang === 'en' ? 'en-IE' : I18N.locale(), { style: 'currency', currency: 'EUR', maximumFractionDigits: d, minimumFractionDigits: d }).format(n);
+  // Polish cafés count in złoty, the others in euro.
+  const pln = () => current && current.lang === 'pl';
+  const euro = (n, d = 0) => new Intl.NumberFormat(pln() ? 'pl-PL' : I18N.lang === 'en' ? 'en-IE' : I18N.locale(), { style: 'currency', currency: pln() ? 'PLN' : 'EUR', maximumFractionDigits: d, minimumFractionDigits: d }).format(n);
   const num = n => Math.round(n).toLocaleString(I18N.locale());
   const dateFmt = (t, long) => new Date(t).toLocaleDateString(I18N.locale(), long ? { weekday: 'short', day: 'numeric', month: 'long' } : { day: 'numeric', month: 'short' });
   function delta(now, before, hasBefore) {
@@ -1464,7 +1466,7 @@ I18N.add({
     const locBox = byLoc.length ? `<div class="card-box wide"><h3>${I18N.t('d.locT')}</h3><p class="note">${I18N.t('d.locN')}</p><ul class="locs">${byLoc.map(x =>
       `<li><button type="button" data-loc="${UI.esc(x.place)}"><span class="name">${UI.esc(x.place)}</span><span class="num">${num(x.visits)} ${I18N.plural(x.visits, I18N.t('d.locWVisits'))}</span><span class="lbar"><i style="width:${Math.round(x.visits / topLoc * 100)}%"></i></span><small>${num(x.visitors)} ${I18N.plural(x.visitors, I18N.t('d.locVisitors'))} · ${num(x.rewards)} ${I18N.plural(x.rewards, I18N.t('d.locRewards'))}</small></button></li>`).join('')}</ul></div>` : '';
     const hasBefore = resDays > 0 && customers.some(c => (c.joinedAt || 0) < r.from);
-    const prefs = resPrefs(), ticket = prefs.ticket ?? 3.5, rewardCost = prefs.rewardCost ?? 1.2;
+    const prefs = resPrefs(), ticket = prefs.ticket ?? (pln() ? 15 : 3.5), rewardCost = prefs.rewardCost ?? (pln() ? 5 : 1.2), cur = pln() ? 'zł' : '€';
     const people = list => list.length ? `<ul class="people">${list.slice(0, 5).map(c => `<li><span>${UI.esc(c.name)}</span><span>${c.stamps}/${current.stampsNeeded} · ${UI.timeAgo(c.lastVisit || c.joinedAt)}</span></li>`).join('')}</ul>${list.length > 5 ? `<p class="note">${I18N.t('d.andMore', { n: list.length - 5 })}</p>` : ''}` : `<p class="note">${I18N.t('d.nobody')}</p>`;
     const rows = r.visitSeries.map(p => `<tr><td>${r.bucket === 'week' ? I18N.t('d.weekOf', { d: dateFmt(p.t) }) : r.bucket === 'month' ? new Date(p.t).toLocaleDateString(I18N.locale(), { month: 'long', year: 'numeric' }) : dateFmt(p.t, true)}</td><td>${p.v}</td></tr>`).join('');
     $('res').innerHTML = `
@@ -1485,8 +1487,8 @@ I18N.add({
         <div class="card-box"><h3>${I18N.t('d.lapsed')} · ${r.lapsed.length}</h3><p class="note">${I18N.t('d.lapsedN')}</p>${people(r.lapsed)}</div>
         <div class="card-box wide"><h3>${I18N.t('d.money')}</h3><p class="note">${I18N.t('d.moneyN')}</p>
           <div class="money">
-            <label>${I18N.t('d.ticket')}<input type="number" min="0" step="0.1" id="res-ticket" value="${ticket}"></label>
-            <label>${I18N.t('d.rewardCost')}<input type="number" min="0" step="0.1" id="res-reward" value="${rewardCost}"></label>
+            <label>${I18N.t('d.ticket', { c: cur })}<input type="number" min="0" step="0.1" id="res-ticket" value="${ticket}"></label>
+            <label>${I18N.t('d.rewardCost', { c: cur })}<input type="number" min="0" step="0.1" id="res-reward" value="${rewardCost}"></label>
             <div class="out"><b id="res-spent"></b><span>${I18N.t('d.spent')}</span></div>
             <div class="out"><b id="res-cost"></b><span>${I18N.t('d.rewardsCost')}</span></div>
           </div>
