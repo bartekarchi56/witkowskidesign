@@ -77,6 +77,7 @@
    * Wallet ('google') shows it.
    * card: {business,title,reward,stampsNeeded,color,ink,icon,logo}; hideCount: no "3/10" field (the dots say it);
    *   hideFields: no reward or card name on the front (only the logo, the count and the stamps)
+   *   hideReward: no reward on the front, only the customer's name (the reward is on the back)
    * customer (optional): {id,name,stamps}
    * opts.stamps: stamps to show when there is no customer
    * opts.pop: index of a stamp to animate in
@@ -121,7 +122,7 @@
       <div class="pass google${fontCls}" style="${style}" role="group" aria-label="${aria}">
         <div class="wp-head"><span class="wp-glogo">${logo}</span><span class="wp-name">${esc(card.business)}</span></div>
         ${card.hideFields ? '' : `<div class="wp-title">${esc(title)}</div>`}
-        <div class="wp-fields">${card.hideCount ? '' : field(t('pass.stamps'), `${have}/${need}`)}${card.hideFields ? '' : field(t('pass.reward'), reward)}</div>
+        <div class="wp-fields">${card.hideCount ? '' : field(t('pass.stamps'), `${have}/${need}`)}${card.hideFields || card.hideReward ? '' : field(t('pass.reward'), reward)}</div>
         ${ready}
         ${codeBox}
         ${strip}
@@ -134,7 +135,7 @@
       <div class="pass apple${fontCls}${opts.compact ? ' compact' : ''}" style="${style}" role="group" aria-label="${aria}">
         <div class="wp-head"><div class="wp-logo">${logo}</div>${card.hideCount ? '' : field(t('pass.stamps'), `${have}/${need}`, 'wp-hf')}</div>
         ${strip}
-        ${card.hideFields ? '' : `<div class="wp-fields">${field(t('pass.reward'), reward)}${field(customer ? t('pass.member') : t('pass.card'), customer ? customer.name : title)}</div>`}
+        ${card.hideFields ? '' : `<div class="wp-fields">${card.hideReward ? '' : field(t('pass.reward'), reward)}${field(customer ? t('pass.member') : t('pass.card'), customer ? customer.name : title)}</div>`}
         ${ready}
         ${codeBox}
         ${opts.compact ? '' : `<div class="wp-tap">${t('pass.tap')}</div>`}

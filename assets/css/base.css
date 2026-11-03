@@ -176,6 +176,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .apple .wp-strip{padding:18px 26px;margin:10px 0 8px}
 .apple .wp-fields{display:flex;justify-content:space-between;gap:12px;padding:6px 16px 0}
 .apple .wp-fields > div:last-child{text-align:right}
+.apple .wp-fields > div:only-child{text-align:left}
 .apple .wp-code{margin-top:auto;padding:22px 0 10px}
 .pass.apple.compact{padding-bottom:16px}
 .apple .wp-tap{font-size:11px;opacity:.55;text-align:center;padding-bottom:10px}

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Parzymy Tutaj · propozycje karty</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* Six Apple Wallet designs for Parzymy Tutaj, on one board (print/make-parzymy-options.js). */
+@font-face{font-family:"Homemade Apple";src:url(../assets/fonts/homemade-apple.woff2) format("woff2")}
+body{margin:0;background:#EDEBE4}
+#board{width:2000px;padding:70px 70px 40px;box-sizing:border-box;font-family:var(--font)}
+#board h1{font-size:46px;margin:0 0 6px;letter-spacing:-.02em}
+#board > p{font-size:20px;color:#5c5c60;margin:0 0 46px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:56px 50px}
+.opt h2{font:700 15px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#2F4A2B;margin:0 0 4px}
+.opt p{font-size:16px;color:#6b6b70;margin:0 0 16px;min-height:22px}
+.opt .pass{max-width:none;width:100%;border-radius:18px;box-shadow:0 1px 3px rgba(0,0,0,.16),0 26px 50px -26px rgba(0,0,0,.5)}
+</style>
+</head>
+<body>
+<div id="board"><h1>Parzymy Tutaj · karta w Apple Wallet</h1><p>6 propozycji · na karcie tylko imię klienta, nagroda jest z tyłu karty</p><div class="grid" id="grid"></div></div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="parzymy-look.js"></script>
+<script>
+(async () => {
+  I18N.lang = 'pl';
+  await document.fonts.load('80px "Homemade Apple"');
+  const svgUrl = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+  const L = PARZYMY_LOOK;
+  const MARK = '<path d="M27 74 V43 C27 14 73 14 73 43 V66 Q73 71 77 73"/><path d="M40 46 V87"/><path d="M50 46 V96"/><path d="M60 46 V80"/>';
+  const markG = (ink, w = 6.5) => `<g fill="none" stroke="${ink}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${MARK}</g>`;
+  const plain = bg => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/></svg>`);
+  const disc = (fill, inner = '') => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="${fill}"/>${inner}</svg>`);
+  // Script lettering drawn on a canvas (the font lives in this page, not in an image).
+  function script(text, ink, sub, subInk) {
+    const c = document.createElement('canvas'), x = c.getContext('2d'); x.font = '96px "Homemade Apple"';
+    c.width = Math.ceil(x.measureText(text).width) + 30; c.height = sub ? 260 : 190;
+    x.fillStyle = ink; x.font = '96px "Homemade Apple"'; x.textBaseline = 'alphabetic'; x.fillText(text, 10, 140);
+    if (sub) { x.fillStyle = subInk; x.font = '600 34px Archivo, Arial'; x.letterSpacing = '6px'; x.fillText(sub, 14, 232); }
+    return c.toDataURL();
+  }
+  // A cup drawn with lines, in a disc (like a hand-drawn stamp).
+  const cup = (bg, ink) => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="${bg}"/><g fill="none" stroke="${ink}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M28 44 H66 L62 66 Q60 72 54 72 H40 Q34 72 32 66 Z"/><path d="M66 49 Q77 49 75 57 Q73 63 63 62"/><path d="M22 76 Q48 84 76 76"/><path d="M36 48 L38 66 M44 48 L45 68 M52 48 L52 68 M59 48 L57 66"/><path d="M41 36 Q37 31 41 26 M50 37 Q46 31 50 25 M59 36 Q55 31 59 26"/></g></svg>`);
+  // Their swirl (white wavy rings on green), redrawn so it stays sharp; the final uses their file.
+  function swirl(bg, line) {
+    let p = '';
+    for (let r = 30; r < 700; r += 34) {
+      let d = '';
+      for (let a = 0; a <= 360; a += 6) {
+        const t = a * Math.PI / 180, rr = r + 9 * Math.sin(t * 5 + r / 40);
+        d += `${a ? 'L' : 'M'}${(510 + rr * Math.cos(t)).toFixed(1)},${(225 + rr * Math.sin(t) * .8).toFixed(1)}`;
+      }
+      p += `<path d="${d}Z"/>`;
+    }
+    return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/><g fill="none" stroke="${line}" stroke-width="11">${p}</g></svg>`);
+  }
+  function stripes(bg, line) {
+    let p = '';
+    for (let i = -12; i < 40; i++) p += `<path d="M${i * 60} 0 q 40 112 0 225 q -40 112 0 225" />`;
+    return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/><g fill="none" stroke="${line}" stroke-width="24">${p}</g></svg>`);
+  }
+  const caps = ink => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="120" viewBox="0 0 600 120"><g transform="translate(4 8) scale(1)">${markG(ink, 7)}</g><text x="112" y="80" font-family="Archivo, Arial, sans-serif" font-weight="800" font-size="50" letter-spacing="3" fill="${ink}">PARZYMY TUTAJ</text></svg>`);
+  const BASE = { ...L.green, hideReward: true, hideCount: false };
+  const OPTS = [
+    ['1 · Obecna', 'Jasna zieleń i ich znak.', { ...BASE }],
+    ['2 · Minimalistyczna', 'Biała karta, zielone kropki, czarne logo.', { ...BASE, color: '#FFFFFF', ink: '#111111', strip: '#FFFFFF', logo: caps('#111111'), stripImage: plain('#FFFFFF'), stampImage: disc('#7BB33C') }],
+    ['3 · Ręczne pismo', 'Jak papierowa karta: kremowe litery na ciemnej zieleni.', { ...BASE, color: '#25432A', ink: '#F1EAD8', strip: '#25432A', logo: script('Parzymy Tutaj', '#F1EAD8'), stripImage: plain('#25432A'), stampImage: cup('#F1EAD8', '#25432A') }],
+    ['4 · Ich wzór', 'Biała karta, zielone fale z ich grafiki.', { ...BASE, color: '#FFFFFF', ink: '#111111', strip: '#7DC242', logo: caps('#111111'), stripImage: swirl('#7DC242', '#FFFFFF'), stampImage: disc('#FFFFFF', `<g transform="translate(26 22) scale(.48)">${markG('#3E7D1E', 8)}</g>`) }],
+    ['5 · Pchli targ', 'Kolory z ich plakatu: róż i zieleń.', { ...BASE, color: '#D9A3D6', ink: '#1F4A2A', strip: '#D9A3D6', logo: caps('#1F4A2A'), stripImage: stripes('#D9A3D6', '#1F4A2A'), stampImage: disc('#F07A2B', `<g transform="translate(26 22) scale(.48)">${markG('#FFFFFF', 8)}</g>`) }],
+    ['6 · Ciemna', 'Odwrotność minimalistycznej: zieleń w nocy.', { ...BASE, color: '#14261A', ink: '#C9E3A3', strip: '#14261A', logo: caps('#C9E3A3'), stripImage: plain('#14261A'), stampImage: disc('#C9E3A3', `<g transform="translate(26 22) scale(.48)">${markG('#14261A', 8)}</g>`) }]
+  ];
+  const who = { id: 'P4RZ7Y', name: 'Anna Nowak', stamps: 4 };
+  document.getElementById('grid').innerHTML = OPTS.map(([h, p, card]) => `<div class="opt"><h2>${h}</h2><p>${p}</p>${UI.renderPass(card, who, { platform: 'apple' })}</div>`).join('');
+  await new Promise(r => setTimeout(r, 800));
+  window.READY = true;
+})();
+</script>
+</body>
+</html>
