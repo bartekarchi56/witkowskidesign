@@ -64,7 +64,8 @@
   // The picture a stamp prints: the café's own artwork, else one of the standard stamps in its ink.
   const stampArt = (card, look = lookOf(card)) => card.stampImage || (look.stamp ? STAMPS.dataUrl(look.stamp, card.ink || '#2B32FF') : '');
   // An empty box: the stamp's own empty drawing (the dot's circle), else a faint print of the stamp.
-  const stampEmpty = (card, look = lookOf(card)) => !card.stampImage && look.stamp && STAMPS.hasEmpty(look.stamp)
+  // A card can bring its own picture for empty boxes (emptyImage), e.g. plain white circles on a photo.
+  const stampEmpty = (card, look = lookOf(card)) => card.emptyImage ? { src: card.emptyImage, cls: 'st-own' } : !card.stampImage && look.stamp && STAMPS.hasEmpty(look.stamp)
     ? { src: STAMPS.dataUrl(look.stamp, card.ink || '#2B32FF', true), cls: 'st-empty' }
     : { src: stampArt(card, look), cls: 'st-ghost' };
 

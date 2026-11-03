@@ -27,6 +27,9 @@ export function readPassRequest(raw) {
     empty: str(card.empty, 10), strip: str(card.strip, 7), tagline: str(card.tagline, 30),
     // No reward or card name on the front: the reward moves to the back.
     hideFields: card.hideFields === true,
+    // hideCount: no "3/8" (the stamps say it); hideReward: only the customer's name on the front.
+    emptyImage: typeof card.emptyImage === 'string' && card.emptyImage.length < 200000 ? card.emptyImage : '',
+    hideCount: card.hideCount === true, hideReward: card.hideReward === true,
     messages: readMessages(card.messages),
     // A message the café sent to all its customers, and when (ms): shown for NEWS_HOURS.
     news: str(card.news, 140), newsAt: Math.max(0, parseInt(card.newsAt, 10) || 0),

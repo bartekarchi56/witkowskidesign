@@ -28,14 +28,14 @@ export async function buildApplePass({ card, customer, lang, notice }) {
     foregroundColor: rgb(fg),
     labelColor: rgb(fg),
     storeCard: {
-      headerFields: [{ key: 'stamps', label: L.stamps, value: `${customer.stamps}/${card.stampsNeeded}`, ...(news ? {} : { changeMessage: L.change }) }],
+      headerFields: card.hideCount ? [] : [{ key: 'stamps', label: L.stamps, value: `${customer.stamps}/${card.stampsNeeded}`, ...(news ? {} : { changeMessage: L.change }) }],
       // hideFields: only the stamps on the front; the reward and the name go on the back.
-      secondaryFields: card.hideFields ? [] : [
+      secondaryFields: card.hideFields ? [] : card.hideReward ? [{ key: 'member', label: L.member, value: customer.name }] : [
         { key: 'reward', label: L.reward, value: reward },
         { key: 'member', label: L.member, value: customer.name, textAlignment: 'PKTextAlignmentRight' }
       ],
       backFields: [
-        ...(card.hideFields ? [{ key: 'reward', label: L.reward, value: reward }, { key: 'member', label: L.member, value: customer.name }] : []),
+        ...(card.hideFields ? [{ key: 'reward', label: L.reward, value: reward }, { key: 'member', label: L.member, value: customer.name }] : card.hideReward ? [{ key: 'reward', label: L.reward, value: reward }] : []),
         { key: 'news', label: L.news, value: news || L.quiet, changeMessage: '%@' },
         ...(doubleWhen(card, lang) ? [{ key: 'double', label: L.double, value: doubleWhen(card, lang) }] : []),
         ...(reviewUrl(card) ? [{ key: 'review', label: L.review, value: reviewUrl(card), attributedValue: `<a href="${reviewUrl(card)}">${L.review}</a>` }] : []),

@@ -65,6 +65,7 @@ export async function strip(card, have, { w = 375, h = 123, scale = 1 } = {}) {
     const x = padX + (i % cols) * (d + gapX), y = top + Math.floor(i / cols) * (d + gapY);
     out += i < have
       ? `<g transform="rotate(${ANGLES[i]} ${x + d / 2} ${y + d / 2})">${stampAt(card, ink, x, y, d)}</g>`
+      : artData(card.emptyImage) ? `<image href="${artData(card.emptyImage)}" x="${x}" y="${y}" width="${d}" height="${d}" preserveAspectRatio="xMidYMid meet"/>`
       : drawnEmpty ? `<g opacity="0.4">${stampAt(card, ink, x, y, d, true)}</g>` : `<g opacity="0.15">${stampAt(card, ink, x, y, d)}</g>`;
   }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w * scale}" height="${h * scale}" viewBox="0 0 ${w} ${h}">

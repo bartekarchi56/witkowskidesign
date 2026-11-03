@@ -35,7 +35,7 @@ function passParts({ card, customer, lang }, live) {
     countryCode: card.lang === 'pl' ? 'PL' : 'IT'
   };
   const object = {
-    loyaltyPoints: { label: L.points, balance: { string: `${customer.stamps}/${card.stampsNeeded}` } },
+    ...(card.hideCount ? {} : { loyaltyPoints: { label: L.points, balance: { string: `${customer.stamps}/${card.stampsNeeded}` } } }),
     textModulesData: [{ id: 'reward', header: L.reward, body: reward }, { id: 'how', header: L.how, body: L.howText(card.stampsNeeded) },
       ...(doubleWhen(card, lang) ? [{ id: 'double', header: L.double, body: doubleWhen(card, lang) }] : [])],
     ...(reviewUrl(card) ? { linksModuleData: { uris: [{ id: 'review', uri: reviewUrl(card), description: L.review }] } } : {}),
