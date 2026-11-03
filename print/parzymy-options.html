@@ -63,14 +63,15 @@ body{margin:0;background:#EDEBE4}
     for (let i = -12; i < 40; i++) p += `<path d="M${i * 60} 0 q 40 112 0 225 q -40 112 0 225" />`;
     return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/><g fill="none" stroke="${line}" stroke-width="24">${p}</g></svg>`);
   }
+  const dots = (bg, dot) => { let c = ''; for (let y = 15; y < 450; y += 30) for (let x = (y / 30 % 2) * 15 + 15; x < 1020; x += 30) c += `<circle cx="${x}" cy="${y}" r="3"/>`; return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/><g fill="${dot}">${c}</g></svg>`); };
   const caps = ink => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="120" viewBox="0 0 600 120"><g transform="translate(4 8) scale(1)">${markG(ink, 7)}</g><text x="112" y="80" font-family="Archivo, Arial, sans-serif" font-weight="800" font-size="50" letter-spacing="3" fill="${ink}">PARZYMY TUTAJ</text></svg>`);
   const BASE = { ...L.green, hideReward: true, hideCount: true, stampsNeeded: 8 };
   const OPTS = [
     ['1 · Obecna', 'Jasna zieleń i ich znak.', { ...BASE }],
     ['2 · Minimalistyczna', 'Biała karta, zielone kropki, czarne logo.', { ...BASE, color: '#FFFFFF', ink: '#111111', strip: '#FFFFFF', logo: caps('#111111'), stripImage: plain('#FFFFFF'), stampImage: disc('#7BB33C') }],
-    ['3 · Ręczne pismo', 'Jak papierowa karta: kremowe litery na ciemnej zieleni.', { ...BASE, color: '#25432A', ink: '#F1EAD8', strip: '#25432A', logo: script('Parzymy Tutaj', '#F1EAD8'), stripImage: plain('#25432A'), stampImage: cup('#F1EAD8', '#25432A') }],
+    ['3 · Filiżanki', 'Kremowe filiżanki na ciemnej zieleni.', { ...BASE, color: '#25432A', ink: '#F1EAD8', strip: '#25432A', logo: L.green.logo.replace(/%232F4A2B/g, '%23F1EAD8'), stripImage: plain('#25432A'), stampImage: cup('#F1EAD8', '#25432A') }],
     ['4 · Ich wzór', 'Biała karta, zielone fale z ich grafiki.', { ...BASE, color: '#FFFFFF', ink: '#111111', strip: '#7DC242', logo: caps('#111111'), stripImage: swirl('#7DC242', '#FFFFFF'), stampImage: disc('#FFFFFF', `<g transform="translate(26 22) scale(.48)">${markG('#3E7D1E', 8)}</g>`) }],
-    ['5 · Pchli targ', 'Kolory z ich plakatu: róż i zieleń.', { ...BASE, color: '#D9A3D6', ink: '#1F4A2A', strip: '#D9A3D6', logo: caps('#1F4A2A'), stripImage: stripes('#D9A3D6', '#1F4A2A'), stampImage: disc('#F07A2B', `<g transform="translate(26 22) scale(.48)">${markG('#FFFFFF', 8)}</g>`) }],
+    ['5 · Kraft', 'Ciepły beż jak papierowy kubek, oliwkowe pieczątki.', { ...BASE, color: '#EADFCB', ink: '#2F4A2B', strip: '#EADFCB', logo: caps('#2F4A2B'), stripImage: dots('#EADFCB', '#DCCDB0'), stampImage: disc('#6E8B3D', `<g transform="translate(26 22) scale(.48)">${markG('#F4EEDF', 8)}</g>`) }],
     ['6 · Ciemna', 'Odwrotność minimalistycznej: zieleń w nocy.', { ...BASE, color: '#14261A', ink: '#C9E3A3', strip: '#14261A', logo: caps('#C9E3A3'), stripImage: plain('#14261A'), stampImage: disc('#C9E3A3', `<g transform="translate(26 22) scale(.48)">${markG('#14261A', 8)}</g>`) }]
   ];
   const who = { id: 'P4RZ7Y', name: 'Anna Nowak', stamps: 3 };
