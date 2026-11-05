@@ -32,14 +32,15 @@ h1{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:8px 0 12px}
 .lead{position:absolute;inset:0;background:var(--card);border-radius:20px;box-shadow:0 8px 30px rgba(0,0,0,.12);overflow:hidden;display:flex;flex-direction:column;touch-action:pan-y;user-select:none;transition:transform .3s ease}
 .lead.back{transform:scale(.95) translateY(12px);filter:brightness(.97)}
 .lead.drag{transition:none}
-.pics{position:relative;flex:none;height:44%;background:#ddd;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
-.pics::-webkit-scrollbar{display:none}
-.pics img{flex:none;width:100%;height:100%;object-fit:cover;scroll-snap-align:center;pointer-events:none}
+/* Photos: tap the right half for the next one, the left half for the previous (like Stories). */
+.pics{position:relative;flex:none;height:44%;background:#ddd;display:flex;cursor:pointer}
+.pics img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;opacity:0;transition:opacity .2s}
+.pics img.on{opacity:1}
 .pics .none{margin:auto;color:var(--muted);font-size:15px}
-.dots{position:absolute;top:8px;left:0;right:0;display:flex;gap:4px;justify-content:center;padding:0 12px}
+.dots{pointer-events:none;position:absolute;top:8px;left:0;right:0;display:flex;gap:4px;justify-content:center;padding:0 12px}
 .dots i{flex:1;max-width:60px;height:3px;border-radius:2px;background:rgba(255,255,255,.5)}
 .dots i.on{background:#fff}
-.stampbadge{position:absolute;top:22px;padding:6px 12px;border:3px solid;border-radius:10px;font:800 22px/1 inherit;letter-spacing:.04em;opacity:0;transform:rotate(-12deg)}
+.stampbadge{pointer-events:none;position:absolute;top:22px;padding:6px 12px;border:3px solid;border-radius:10px;font:800 22px/1 inherit;letter-spacing:.04em;opacity:0;transform:rotate(-12deg)}
 .yes{left:18px;color:var(--blue)} .no{right:18px;color:var(--red);transform:rotate(12deg)}
 .info{padding:14px 16px;overflow-y:auto;flex:1}
 .info h2{font-size:22px;font-weight:700;margin:0 0 2px;letter-spacing:-.01em}
@@ -168,7 +169,7 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
 
   // ---------- new: the card stack ----------
   function card(l, back) {
-    const pics = (l.photos || []).length ? l.photos.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join('') : '<span class="none">Brak zdjęć</span>';
+    const pics = (l.photos || []).length ? l.photos.map((u, i) => `<img src="${esc(u)}" alt=""${i ? '' : ' class="on"'}>`).join('') : '<span class="none">Brak zdjęć</span>';
     const loyal = l.loyalty ? `<span class="tag warn">Ma już: ${esc(l.loyalty)}</span>` : l.website ? '<span class="tag ok">Brak śladu programu lojalnościowego</span>' : '<span class="tag">Brak strony: nie wiadomo</span>';
     return `<div class="lead${back ? ' back' : ''}" data-p="${esc(l.place_id)}">
       <div class="pics">${pics}</div>
@@ -189,7 +190,13 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
       ${leads.length ? `<div class="actions"><button class="round no" id="b-no" aria-label="Pomiń">✕</button><button class="round yes" id="b-yes" aria-label="Wyślij">✓</button></div><p class="hint">W prawo: wyślij mail (bez maila: Instagram) · w lewo: pomiń</p>` : ''}`;
     if (!leads.length) return;
     const top = $('stack').querySelector('.lead:not(.back)');
-    top.querySelector('.pics').addEventListener('scroll', e => { const p = e.target, i = Math.round(p.scrollLeft / p.clientWidth); top.querySelectorAll('.dots i').forEach((d, k) => d.classList.toggle('on', k === i)); });
+    let pic = 0;
+    top.querySelector('.pics').addEventListener('click', e => {
+      const imgs = top.querySelectorAll('.pics img'); if (imgs.length < 2) return;
+      const r = e.currentTarget.getBoundingClientRect();
+      pic = (pic + (e.clientX - r.left > r.width / 2 ? 1 : -1) + imgs.length) % imgs.length;
+      imgs.forEach((im, k) => im.classList.toggle('on', k === pic));
+      top.querySelectorAll('.dots i').forEach((d, k) => d.classList.toggle('on', k === pic)); });
     const det = top.querySelector('details');
     if (det && leads[0].email) det.addEventListener('toggle', async () => { if (!det.open || det.dataset.done) return; det.dataset.done = 1; try { const m = await Remote.leads({ action: 'preview', place: top.dataset.p }); det.querySelector('pre').textContent = `Temat: ${m.subject}\n\n${m.text}`; } catch (err) { det.querySelector('pre').textContent = err.message; } });
     drag(top);
