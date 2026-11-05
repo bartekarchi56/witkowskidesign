@@ -282,7 +282,7 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     drag(top);
     $('b-no').onclick = () => decide(top, -1);
     $('b-yes').onclick = () => decide(top, 1);
-    $('b-copy').onclick = () => copyDm(top);
+    $('b-copy').onclick = () => copyDm(leads.find(l => l.place_id === top.dataset.p));
   }
   // One set of window listeners at a time: the previous card's are removed when a new card is drawn.
   let dragOff = null;
