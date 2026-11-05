@@ -35,6 +35,9 @@ async function findInstagram(name: string, city: string) {
 }
 const FROM = Deno.env.get('LEADS_FROM') || 'Timbro · Bartek Witkowski <timbro@witkowskidesign.com>';
 const REPLY_TO = Deno.env.get('LEADS_REPLY_TO') || 'bartek.archi56@gmail.com';
+// The "yes" buttons write to an address on the sending domain (spam filters dislike links to another
+// domain); forward it to your inbox with Cloudflare Email Routing.
+const MAILTO = Deno.env.get('LEADS_MAILTO') || 'timbro@witkowskidesign.com';
 const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, x-client-info, apikey, content-type' };
 const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'content-type': 'application/json' } });
 
@@ -156,7 +159,7 @@ const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 function html(lang: string, subject: string, lines: string[]) {
   const B = { pl: ['Tak, wyślij propozycję', 'Zobacz, jak to działa', 'Tak, chętnie zobaczę propozycję.'], it: ['Sì, inviatemi la proposta', 'Guarda come funziona', 'Sì, vorrei vedere la proposta.'], en: ['Yes, send me the proposal', 'See how it works', 'Yes, I would like to see the proposal.'] }[lang]!;
   const H = { pl: ['Karta lojalnościowa, której nikt', 'nie gubi.'], it: ['La carta fedeltà che nessuno', 'perde.'], en: ['The loyalty card nobody', 'loses.'] }[lang]!;
-  const yes = `mailto:${REPLY_TO}?subject=${encodeURIComponent('Re: ' + subject)}&body=${encodeURIComponent(B[2])}`;
+  const yes = `mailto:${MAILTO}?subject=${encodeURIComponent('Re: ' + subject)}&body=${encodeURIComponent(B[2])}`;
   const paras = lines.join('\n').split('\n\n').map(p => p.trim()).filter(Boolean);
   const close = paras.pop() ?? '';
   const F = "font-family:Archivo,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif", BLUE = '#2B32FF', INK = '#0B0B0C';
@@ -223,7 +226,7 @@ function proposal(l: any, first = false) {
   const BLUE = '#2B32FF', INK = '#0B0B0C', MUTED = '#5A5A60';
   const kicker = (x: string) => `<div style="${F};font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:${BLUE}">${x}</div>`;
   const pill = (href: string, label: string, filled = true) => `<a href="${href}" style="display:inline-block;padding:14px 26px;border-radius:999px;${F};font-size:15px;font-weight:700;text-decoration:none;${filled ? `background:${BLUE};color:#fff` : `border:1.5px solid ${INK};color:${INK}`}">${label}</a>`;
-  const yes = `mailto:${REPLY_TO}?subject=${encodeURIComponent(t.subject(l.name))}&body=${encodeURIComponent(t.ctaBody)}`;
+  const yes = `mailto:${MAILTO}?subject=${encodeURIComponent(t.subject(l.name))}&body=${encodeURIComponent(t.ctaBody)}`;
   const demo = `${SITE}/app/card.html?card=the-coffee&lang=${lang}`;
   const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet"><title>${esc(t.subject(l.name))}</title></head>
