@@ -92,6 +92,13 @@ body{margin:0;background:#EDEBE4}
     }
     return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${colors[0]}"/>${p}</svg>`);
   };
+  // Wide, slanted flowing bands (like their 70s poster), two colours only.
+  const flow = colors => {
+    let p = '';
+    const edge = k => { let d = ''; for (let y = -30; y <= 480; y += 10) { const x = k * 130 - 260 + y * .45 + 120 * Math.sin(y / 120 + k * .7) + 18 * Math.sin(y / 40 + k * 2); d += `${d ? 'L' : 'M'}${x.toFixed(1)},${y}`; } return d; };
+    for (let k = 0; k < 14; k++) { const a = edge(k), b = edge(k + 1).split('L').reverse().join('L').replace(/^M/, ''); p += `<path d="${a}L${b}Z" fill="${colors[k % colors.length]}"/>`; }
+    return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${colors[1]}"/>${p}</svg>`);
+  };
   // Sun rays from below, like an old café sign.
   const rays = (bg, ray) => { let p = ''; for (let i = 0; i < 18; i++) { const a1 = Math.PI + i * Math.PI / 18, a2 = a1 + Math.PI / 36; p += `<path d="M510 520 L${510 + 900 * Math.cos(a1)} ${520 + 900 * Math.sin(a1)} L${510 + 900 * Math.cos(a2)} ${520 + 900 * Math.sin(a2)} Z" fill="${ray}"/>`; } return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/>${p}<circle cx="510" cy="520" r="150" fill="${bg}"/></svg>`); };
   const mk = (fill, ink) => disc(fill, `<g transform="translate(26 22) scale(.48)">${markG(ink, 8)}</g>`);
@@ -103,7 +110,7 @@ body{margin:0;background:#EDEBE4}
     ['2 · Ceglana', 'Karta w kolorze cegły, zielone pieczątki.', { ...BASE, color: R, ink: W, strip: R, logo: caps(W), stripImage: plain(R), stampImage: mk(G, W) }],
     ['3 · Zielona', 'Zielona karta, ceglane pieczątki.', { ...BASE, color: G, ink: W, strip: G, logo: caps(W), stripImage: plain(G), stampImage: mk(R, W) }],
     ['4 · Markiza', 'Zielono-ceglane pasy jak markiza nad wejściem.', { ...BASE, color: W, ink: '#1A1A1A', strip: W, logo: caps(GR[700]), stripImage: awning(G, R), stampImage: mk(W, GR[700]) }],
-    ['5 · Retro fala', 'Płynne pasy: zieleń, cegła i biel.', { ...BASE, color: W, ink: '#1A1A1A', strip: W, logo: caps(R), stripImage: liquid([G, R, W, G, R, W]), stampImage: mk(W, R) }],
+    ['5 · Retro fala', 'Szerokie płynne pasy: zieleń i cegła.', { ...BASE, color: W, ink: '#1A1A1A', strip: W, logo: caps(R), stripImage: flow([G, R]), stampImage: mk(W, R) }],
     ['6 · Wir', 'Biała karta, zielono-ceglane fale.', { ...BASE, color: W, ink: '#1A1A1A', strip: G, logo: caps('#111111'), stripImage: swirl(G, R), stampImage: svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="${R}" stroke="${W}" stroke-width="5"/><g transform="translate(26 22) scale(.48)">${markG(W, 9)}</g></svg>`) }]
   ];
   const who = { id: 'P4RZ7Y', name: 'Anna Nowak', stamps: 3 };
