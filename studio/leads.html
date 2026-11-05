@@ -215,6 +215,11 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
       if (leads.length && confirm(`Następny: ${leads[leads.length - 1].name}. Otworzyć Instagram?`)) instagram(leads[leads.length - 1]);
     }
   });
+  // Just copy the message (no Instagram opened), e.g. to send it on WhatsApp or Facebook.
+  async function copyDm(l) {
+    try { await navigator.clipboard.writeText(dm(l)); toast('Wiadomość skopiowana'); }
+    catch (e) { prompt('Skopiuj wiadomość:', dm(l)); }
+  }
   async function instagram(l) {
     waiting = l;
     try { await navigator.clipboard.writeText(dm(l)); } catch (e) { /* the clipboard may be blocked */ }
@@ -230,10 +235,11 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   function renderList() {
     const label = { sent: 'Odpisali', manual: 'Pominięte', skipped: 'Przywróć' }[status];
     $('view').innerHTML = leads.length ? `<div class="list">${leads.slice().reverse().map(l => `<div class="item"><div><b>${esc(l.name)}</b><small>${esc(l.kind)} · ${esc(l.email || (l.instagram ? '@' + l.instagram : '') || l.phone || l.address)}${l.sent_at ? ' · wysłano ' + new Date(l.sent_at).toLocaleString('pl-PL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}</small></div>
-      ${status === 'sent' ? `<button data-a="proposal" data-p="${esc(l.place_id)}">Odpisali: wyślij propozycję</button>` : status === 'manual' ? `<span style="display:flex;gap:6px"><button data-ig="${esc(l.place_id)}">Instagram</button><button data-a="sent" data-p="${esc(l.place_id)}">Wysłane ✓</button></span>` : ''}</div>`).join('')}</div>`
+      ${status === 'sent' ? `<button data-a="proposal" data-p="${esc(l.place_id)}">Odpisali: wyślij propozycję</button>` : status === 'manual' ? `<span style="display:flex;gap:6px"><button data-copy="${esc(l.place_id)}">Kopiuj</button><button data-ig="${esc(l.place_id)}">Instagram</button><button data-a="sent" data-p="${esc(l.place_id)}">Wysłane ✓</button></span>` : ''}</div>`).join('')}</div>`
       : '<p class="hint">Pusto.</p>';
   }
   $('view').addEventListener('click', async e => {
+    const cp = e.target.closest('[data-copy]'); if (cp) return copyDm(leads.find(l => l.place_id === cp.dataset.copy));
     const ig = e.target.closest('[data-ig]'); if (ig) return instagram(leads.find(l => l.place_id === ig.dataset.ig));
     const b = e.target.closest('[data-a]'); if (!b) return;
     if (b.dataset.a === 'proposal' && !confirm('Wysłać długą propozycję z projektami kart?')) return;
@@ -261,7 +267,7 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   }
   function renderStack() {
     $('view').innerHTML = `<div class="stack" id="stack">${leads.length ? leads.slice(0, 2).reverse().map((l, i, a) => card(l, i < a.length - 1)).join('') : '<div class="empty">Brak nowych miejsc.<br>Wybierz rodzaj i miasto, potem „Szukaj”.</div>'}</div>
-      ${leads.length ? `<div class="actions"><button class="round no" id="b-no" aria-label="Pomiń">✕</button><button class="round yes" id="b-yes" aria-label="Wyślij">✓</button></div><p class="hint">W prawo: wyślij mail (bez maila: Instagram) · w lewo: pomiń</p>` : ''}`;
+      ${leads.length ? `<div class="actions"><button class="round no" id="b-no" aria-label="Pomiń">✕</button><button class="round yes" id="b-yes" aria-label="Wyślij">✓</button></div><button type="button" class="chip" id="b-copy" style="display:block;margin:10px auto 0">Kopiuj wiadomość</button><p class="hint">W prawo: wyślij mail (bez maila: Instagram) · w lewo: pomiń</p>` : ''}`;
     if (!leads.length) return;
     const top = $('stack').querySelector('.lead:not(.back)');
     let pic = 0;
@@ -276,6 +282,7 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     drag(top);
     $('b-no').onclick = () => decide(top, -1);
     $('b-yes').onclick = () => decide(top, 1);
+    $('b-copy').onclick = () => copyDm(top);
   }
   // One set of window listeners at a time: the previous card's are removed when a new card is drawn.
   let dragOff = null;
