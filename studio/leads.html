@@ -198,11 +198,13 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   // Instagram doesn't let apps start conversations, so the message is copied and their chat opened:
   // paste and tap Send. Same question as the e-mail (permission first), in the place's language.
   const langOf = l => /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) ? 'pl' : 'en';
-  const dm = l => ({
+  // Google names often carry slogans ("LAGACCA Cafe | dobra kawa Stary Rynek"): keep the part before | or -.
+  const short = n => n.split(/\s[|\-–·]\s?|\|/)[0].trim() || n;
+  const dm = l0 => { const l = { ...l0, name: short(l0.name) }; return ({
     pl: `Witam, z tej strony Timbro! Projektujemy karty lojalnościowe w telefonie (Apple i Google Wallet) dla lokali takich jak ${l.name}: klient zbiera pieczątki w telefonie, bez aplikacji i kartoników. Zobaczcie, jak to działa: timbro.witkowskidesign.com. Czy możemy przesłać krótką propozycję z projektem karty dla Was?`,
     it: `Salve, qui è Timbro! Disegniamo carte fedeltà nel telefono (Apple e Google Wallet) per locali come ${l.name}: i clienti raccolgono i timbri nel telefono, senza app né cartoncini. Guardate come funziona: timbro.witkowskidesign.com. Possiamo mandarvi una breve proposta con il design della vostra carta?`,
     en: `Hello, this is Timbro! We design phone loyalty cards (Apple and Google Wallet) for places like ${l.name}: customers collect stamps on their phone, no app and no paper cards. See how it works: timbro.witkowskidesign.com. May we send you a short proposal with a card design for you?`
-  })[langOf(l)];
+  })[langOf(l)]; };
   // After Instagram opens, coming back to this page asks whether the message went out: yes saves it
   // under "Wysłane" with the time, and opens the next place without an e-mail, if any.
   let waiting = null;
