@@ -138,7 +138,7 @@ async function find(query: string, city: string, kindLabel = '', placeName = '')
 // (from the country in its address): Polish, Italian, otherwise English.
 const SIGN = ['Bartek Witkowski', 'Witkowski Design · timbro.witkowskidesign.com', '+48 530 340 988'];
 function draft(l: any) {
-  const lang = /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) || !/,.*,/.test(l.address) ? 'pl' : 'en';
+  const lang = /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) ? 'pl' : 'en';
   const T = {
     pl: [`Pytanie do ${l.name}`, ['Witam,', '', `z tej strony Timbro. Projektujemy karty lojalnościowe w telefonie dla lokali takich jak ${l.name}: klient zapisuje kartę w Apple Wallet lub Google Wallet, a obsługa dodaje pieczątkę telefonem w dwie sekundy. Bez aplikacji i bez papierowych kartoników.`, '', `Zobacz, jak to działa: ${SITE}`, '',
       'Czy mogę przesłać Państwu krótką propozycję z projektem karty dla Państwa lokalu? Wystarczy odpowiedzieć „tak” na tego maila.', '',
@@ -215,7 +215,7 @@ const FIRST: Record<string, { hello: (n: string) => string; optout: string }> = 
   en: { hello: n => `Hello! I'm Bartek Witkowski (Witkowski Design) and I design phone loyalty cards. This is how a card for ${n} could look.`, optout: 'If it is not for you, please ignore this message: I will not write again.' }
 };
 function proposal(l: any, first = false) {
-  const lang = /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) || !/,.*,/.test(l.address) ? 'pl' : 'en';
+  const lang = /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) ? 'pl' : 'en';
   const t = (P as any)[lang], img = (n: string) => `${SITE}/assets/email/${n}-${lang}.png`;
   const H = { pl: ['Karta lojalnościowa, której nikt', 'nie gubi.'], it: ['La carta fedeltà che nessuno', 'perde.'], en: ['The loyalty card nobody', 'loses.'] }[lang]!;
   const SHOW = { pl: ['Prosto i w Twoim stylu', 'Minimalistyczna, klasyczna albo nocna: każdą kartę projektujemy od zera, w stylu Twojego lokalu. Parzymy Tutaj z Bydgoszczy już dołączyło do Timbro.'], it: ['Semplice, nel tuo stile', 'Minimal, classica o notturna: ogni carta la disegniamo da zero, nello stile del tuo locale. Parzymy Tutaj di Bydgoszcz è già entrato in Timbro.'], en: ['Simple, in your style', 'Minimal, classic or after dark: we design every card from scratch, in your style. Parzymy Tutaj from Bydgoszcz has already joined Timbro.'] }[lang]!;

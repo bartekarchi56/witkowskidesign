@@ -195,7 +195,7 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   // ---------- Instagram: places without an e-mail ----------
   // Instagram doesn't let apps start conversations, so the message is copied and their chat opened:
   // paste and tap Send. Same question as the e-mail (permission first), in the place's language.
-  const langOf = l => /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) || !/,.*,/.test(l.address) ? 'pl' : 'en';
+  const langOf = l => /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) ? 'pl' : 'en';
   const dm = l => ({
     pl: `Witam, z tej strony Timbro! Projektujemy karty lojalnościowe w telefonie (Apple i Google Wallet) dla lokali takich jak ${l.name}: klient zbiera pieczątki w telefonie, bez aplikacji i kartoników. Zobaczcie, jak to działa: timbro.witkowskidesign.com. Czy możemy przesłać krótką propozycję z projektem karty dla Was?`,
     it: `Salve, qui è Timbro! Disegniamo carte fedeltà nel telefono (Apple e Google Wallet) per locali come ${l.name}: i clienti raccolgono i timbri nel telefono, senza app né cartoncini. Guardate come funziona: timbro.witkowskidesign.com. Possiamo mandarvi una breve proposta con il design della vostra carta?`,
