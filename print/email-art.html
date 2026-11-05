@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Email art</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* Pictures for the long proposal e-mail (supabase/functions/leads/, action "proposal"): the hero
+   card on a warm taupe ground, then three card designs, each on its own band (like a premium
+   product newsletter). Rendered by print/make-email-art.js into assets/email/. */
+body{margin:0;background:#fff}
+.art{position:relative;overflow:hidden;display:grid;place-items:center}
+.hero{width:600px;height:430px;background:radial-gradient(ellipse at 50% 40%,#D6C8B8 0%,#BFAE9C 70%,#B09E8B 100%)}
+.band{width:600px;height:330px;background:linear-gradient(#F6F5F2,#ECEAE5)}
+.art .pass{max-width:none;border-radius:14px}
+.hero .pass{width:270px;transform:rotate(-9deg) translateY(6px);box-shadow:0 3px 8px rgba(0,0,0,.18),0 50px 70px -30px rgba(40,25,10,.65)}
+.band .pass{width:230px;box-shadow:0 2px 6px rgba(0,0,0,.12),0 36px 50px -26px rgba(0,0,0,.45)}
+.band.l .pass{transform:rotate(-6deg)} .band.r .pass{transform:rotate(6deg)}
+.shadow{position:absolute;bottom:34px;width:240px;height:24px;border-radius:50%;background:rgba(60,40,20,.25);filter:blur(14px)}
+</style>
+</head>
+<body>
+<div id="out"></div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+(async () => {
+  const lang = new URLSearchParams(location.search).get('lang') || 'pl';
+  I18N.lang = lang;
+  const name = { pl: 'Twoja Kawiarnia', it: 'Il tuo Caffè', en: 'Your Café' }[lang];
+  const base = { business: name, title: 'Coffee', reward: '☕', stampsNeeded: 8, font: 'sans', hideCount: true, hideReward: true };
+  const CARDS = {
+    hero: { ...base, id: 'h', color: '#1F3B2D', ink: '#E9C894', strip: '#1F3B2D', stamp: 'ziarno' },
+    v1: { ...base, id: 'a', color: '#FFFFFF', ink: '#2B32FF', strip: '#FFFFFF', stamp: 'stella' },
+    v2: { ...base, id: 'b', color: '#B5432C', ink: '#F7E7D3', strip: '#B5432C', stamp: 'ramo' },
+    v3: { ...base, id: 'c', color: '#0E0E10', ink: '#D9C6F2', strip: '#0E0E10', stamp: 'fiore' }
+  };
+  const who = n => ({ id: 'K7M2QX', name: 'Ola K.', stamps: n });
+  await document.fonts.load('600 20px Archivo');
+  document.getElementById('out').innerHTML =
+    `<div class="art hero" id="hero"><div class="shadow"></div>${UI.renderPass(CARDS.hero, who(5), { platform: 'apple', compact: true })}</div>` +
+    ['v1', 'v2', 'v3'].map((k, i) => `<div class="art band ${i % 2 ? 'r' : 'l'}" id="${k}">${UI.renderPass(CARDS[k], who(3 + i), { platform: 'apple', compact: true })}</div>`).join('');
+  await new Promise(r => setTimeout(r, 500));
+  window.READY = true;
+})();
+</script>
+</body>
+</html>

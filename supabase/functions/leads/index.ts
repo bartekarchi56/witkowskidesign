@@ -10,6 +10,7 @@
 //   POST { action: 'list', status: 'new' }                          → leads
 //   POST { action: 'skip' | 'manual' | 'replied' | 'sent', place: id }   (sent: written by hand, e.g. on Instagram)
 //   POST { action: 'preview', place: id } / { action: 'send', place: id }   → { subject, text } / { sent }
+//   POST { action: 'proposal', place: id [, preview: true] }   → the long e-mail for a place that said yes
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const serverKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || (() => { try { return Object.values(JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}'))[0] as string; } catch { return ''; } })();
@@ -126,6 +127,72 @@ ${paras.map(p => `<p style="margin:0 0 16px">${esc(p).replace(/\n/g, '<br>')}</p
 </td></tr></table></body></html>`;
 }
 
+// The long e-mail for places that said yes: a premium-newsletter layout (centred, airy, a big light
+// title, the card on a warm taupe ground, three designs one below the other, how it works, the price
+// and a row of features). Pictures: print/email-art.html → assets/email/.
+const P = {
+  pl: { subject: (n: string) => `Karta lojalnościowa dla ${n}`, label: 'Propozycja dla', title: 'Karta lojalnościowa', sub: 'w telefonie Twoich klientów', demo: 'Zobacz demo',
+    closer: 'Z bliska', intro: 'Klient skanuje kod QR przy kasie i karta trafia do Apple Wallet lub Google Wallet. Bez aplikacji do pobrania i bez kartoników. Obsługa dodaje pieczątkę telefonem w dwie sekundy, a telefon sam przypomina klientom o nagrodzie.',
+    looks: [['Ziarno', 'Ciemna zieleń'], ['Gwiazda', 'Biel i niebieski'], ['Gałązka', 'Cegła'], ['Kwiat', 'Czerń']], made: 'Każdą kartę projektuję od zera, w kolorach i z logo Twojego lokalu.',
+    how: 'Jak to działa', steps: [['Skanuj', 'Klient skanuje kod QR z plakatu przy kasie.'], ['Pieczątka', 'Obsługa dodaje pieczątkę telefonem, który już macie.'], ['Nagroda', 'Pełna karta: nagroda i karta zaczyna się od nowa.']],
+    price: '30 dni za darmo', priceSub: 'Potem od 19 € miesięcznie (ok. 80 zł). Rezygnacja w każdej chwili.', cta: 'Zaprojektuj moją kartę', ctaBody: 'Chcę kartę lojalnościową dla naszego lokalu.',
+    feats: ['Bez aplikacji', 'Apple i Google Wallet', 'Gotowe w kilka dni'], hello: (n: string) => `Dzień dobry, dziękuję za odpowiedź! Poniżej krótko, jak mogłaby wyglądać karta dla ${n}.` },
+  it: { subject: (n: string) => `La carta fedeltà per ${n}`, label: 'Proposta per', title: 'Carta fedeltà', sub: 'nel telefono dei tuoi clienti', demo: 'Guarda la demo',
+    closer: 'Da vicino', intro: "Il cliente inquadra il QR alla cassa e la carta va in Apple Wallet o Google Wallet. Nessuna app da scaricare, niente cartoncini. Lo staff aggiunge il timbro con il telefono in due secondi e il telefono ricorda ai clienti il premio.",
+    looks: [['Chicco', 'Verde scuro'], ['Stella', 'Bianco e blu'], ['Rametto', 'Mattone'], ['Fiore', 'Nero']], made: 'Ogni carta la disegno da zero, con i colori e il logo del tuo locale.',
+    how: 'Come funziona', steps: [['Scansiona', 'Il cliente inquadra il QR del poster alla cassa.'], ['Timbro', 'Lo staff aggiunge il timbro con il telefono che avete già.'], ['Premio', 'Carta piena: il premio, e la carta ricomincia.']],
+    price: '30 giorni gratis', priceSub: 'Poi da 19 € al mese. Disdici quando vuoi.', cta: 'Disegnate la mia carta', ctaBody: 'Vorrei una carta fedeltà per il nostro locale.',
+    feats: ['Senza app', 'Apple e Google Wallet', 'Pronta in pochi giorni'], hello: (n: string) => `Buongiorno, grazie della risposta! Ecco in breve come potrebbe essere la carta per ${n}.` },
+  en: { subject: (n: string) => `A loyalty card for ${n}`, label: 'A proposal for', title: 'Loyalty card', sub: "on your customers' phones", demo: 'See the demo',
+    closer: 'A closer look', intro: 'Customers scan a QR code at the till and the card goes into Apple Wallet or Google Wallet. No app to download, no paper cards. Staff add a stamp with their phone in two seconds, and the phone reminds customers about their reward.',
+    looks: [['Bean', 'Dark green'], ['Star', 'White and blue'], ['Sprig', 'Brick'], ['Flower', 'Black']], made: "I design every card from scratch, in your place's colours and with your logo.",
+    how: 'How it works', steps: [['Scan', 'Customers scan the QR code on the poster at the till.'], ['Stamp', 'Staff add a stamp with the phone you already have.'], ['Reward', 'A full card: the reward, and the card starts again.']],
+    price: '30 days free', priceSub: 'Then from €19 a month. Cancel any time.', cta: 'Design my card', ctaBody: 'I would like a loyalty card for our place.',
+    feats: ['No app', 'Apple and Google Wallet', 'Ready in a few days'], hello: (n: string) => `Hello, thank you for your reply! Here is, in short, how a card for ${n} could look.` }
+};
+function proposal(l: any) {
+  const lang = /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) || !/,.*,/.test(l.address) ? 'pl' : 'en';
+  const t = (P as any)[lang], img = (n: string) => `${SITE}/assets/email/${n}-${lang}.png`;
+  const serif = "font-family:'Helvetica Neue',Helvetica,Arial,sans-serif";
+  const cap = `${serif};font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#7A6E62`;
+  const btn = (href: string, label: string, dark = false) => `<table role="presentation" cellpadding="0" cellspacing="0" align="center"><tr><td style="border:1px solid #2A2522;${dark ? 'background:#2A2522;' : ''}"><a href="${href}" style="display:inline-block;padding:13px 34px;${serif};font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:${dark ? '#ffffff' : '#2A2522'};text-decoration:none">${label}</a></td></tr></table>`;
+  const yes = `mailto:${REPLY_TO}?subject=${encodeURIComponent(t.subject(l.name))}&body=${encodeURIComponent(t.ctaBody)}`;
+  const band = (i: number) => `<tr><td style="padding:0"><img src="${img('v' + i)}" width="600" alt="" style="display:block;width:100%;height:auto;border:0"></td></tr>
+<tr><td align="center" style="padding:14px 0 30px;${cap}">${t.looks[i][0]} / ${t.looks[i][1]}</td></tr>`;
+  const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(t.subject(l.name))}</title></head>
+<body style="margin:0;padding:0;background:#EFECE6">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EFECE6"><tr><td align="center" style="padding:24px 10px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff">
+<tr><td align="center" style="padding:30px 0 22px;${serif};font-size:15px;letter-spacing:.42em;font-weight:700;color:#2A2522">TIMBRO</td></tr>
+<tr><td style="background:#C8B8A7;padding:34px 30px 0" align="center">
+  <div style="${cap};color:#5E5246">${t.label} ${esc(l.name)}</div>
+  <div style="${serif};font-size:44px;line-height:1.05;font-weight:200;letter-spacing:.06em;text-transform:uppercase;color:#2A2522;margin:14px 0 6px">${t.title}</div>
+  <div style="${serif};font-size:15px;color:#4A4038">${t.sub}</div></td></tr>
+<tr><td style="background:#C8B8A7;padding:0"><img src="${img('hero')}" width="600" alt="" style="display:block;width:100%;height:auto;border:0"></td></tr>
+<tr><td style="background:#C8B8A7;padding:6px 0 38px">${btn(`${SITE}/app/card.html?card=the-coffee&lang=${lang}`, t.demo)}</td></tr>
+<tr><td align="center" style="padding:44px 56px 10px">
+  <div style="${cap}">${t.closer}</div>
+  <p style="${serif};font-size:15px;line-height:1.7;color:#4A4038;margin:16px 0 6px">${esc(t.hello(l.name))}</p>
+  <p style="${serif};font-size:15px;line-height:1.7;color:#4A4038;margin:0 0 34px">${t.intro}</p></td></tr>
+${band(1)}${band(2)}${band(3)}
+<tr><td align="center" style="padding:0 60px 40px;${serif};font-size:14px;line-height:1.6;color:#7A6E62;font-style:italic">${t.made}</td></tr>
+<tr><td style="padding:40px 36px;background:#F6F4F0" align="center"><div style="${cap}">${t.how}</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:22px"><tr>
+  ${t.steps.map((s: string[], i: number) => `<td width="33%" valign="top" align="center" style="padding:0 8px"><div style="${serif};font-size:30px;font-weight:200;color:#2B32FF">0${i + 1}</div><div style="${serif};font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#2A2522;margin:6px 0">${s[0]}</div><div style="${serif};font-size:13px;line-height:1.5;color:#5E5246">${s[1]}</div></td>`).join('')}
+  </tr></table></td></tr>
+<tr><td align="center" style="padding:46px 40px 44px">
+  <div style="${serif};font-size:30px;font-weight:200;letter-spacing:.08em;text-transform:uppercase;color:#2A2522">${t.price}</div>
+  <p style="${serif};font-size:14px;color:#5E5246;margin:10px 0 24px">${t.priceSub}</p>
+  ${btn(yes, t.cta, true)}</td></tr>
+<tr><td style="border-top:1px solid #E6E1D9;padding:26px 20px" align="center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+  ${t.feats.map((f: string, i: number) => `<td width="33%" align="center" valign="top" style="padding:0 6px"><div style="width:34px;height:34px;line-height:34px;border:1px solid #2A2522;border-radius:50%;margin:0 auto 8px;${serif};font-size:14px;color:#2A2522">${['✓', '◎', '✦'][i]}</div><div style="${serif};font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#2A2522">${f}</div></td>`).join('')}
+  </tr></table></td></tr>
+<tr><td align="center" style="padding:20px 20px 30px;${serif};font-size:12px;line-height:1.7;color:#8A8077">${SIGN[0]} · ${SIGN[1]}<br>${SIGN[2]}</td></tr>
+</table></td></tr></table></body></html>`;
+  const text = [t.hello(l.name), '', t.intro, '', t.made, '', ...t.steps.map((s: string[], i: number) => `${i + 1}. ${s[0]}: ${s[1]}`), '', `${t.price}. ${t.priceSub}`, '', `${SITE}/app/card.html?card=the-coffee&lang=${lang}`, '', ...SIGN].join('\n');
+  return { subject: t.subject(l.name), text, html };
+}
+
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   try {
@@ -142,6 +209,19 @@ Deno.serve(async req => {
       case 'list': { const { data } = await db.rpc('leads_list', { p_status: ['new', 'sent', 'skipped', 'manual', 'replied'].includes(b.status) ? b.status : 'new' }); return reply(data ?? []); }
       case 'skip': case 'manual': case 'replied': case 'sent':
         await db.rpc('leads_set', { p_place: place, p_status: b.action === 'skip' ? 'skipped' : b.action }); return reply({ ok: true });
+      case 'proposal': {   // the long e-mail, for a place that answered yes
+        const { data: l } = await db.rpc('leads_get', { p_place: place });
+        if (!l?.email) return reply({ error: 'No e-mail for this place.' }, 400);
+        const mail = proposal(l);
+        if (b.preview) return reply(mail);
+        const r = await fetch('https://api.resend.com/emails', {
+          method: 'POST', headers: { authorization: `Bearer ${Deno.env.get('RESEND_API_KEY') ?? ''}`, 'content-type': 'application/json' },
+          body: JSON.stringify({ from: FROM, to: [l.email], reply_to: REPLY_TO, subject: mail.subject, text: mail.text, html: mail.html })
+        });
+        if (!r.ok) { console.error('resend', r.status, await r.text()); return reply({ error: 'E-mail not sent. Try again.' }, 502); }
+        await db.rpc('leads_set', { p_place: place, p_status: 'replied' });
+        return reply({ sent: true });
+      }
       case 'preview': case 'send': {
         const { data: l } = await db.rpc('leads_get', { p_place: place });
         if (!l) return reply({ error: 'Not found.' }, 404);

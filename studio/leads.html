@@ -139,13 +139,15 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   function renderList() {
     const label = { sent: 'Odpisali', manual: 'Pominięte', skipped: 'Przywróć' }[status];
     $('view').innerHTML = leads.length ? `<div class="list">${leads.slice().reverse().map(l => `<div class="item"><div><b>${esc(l.name)}</b><small>${esc(l.kind)} · ${esc(l.email || (l.instagram ? '@' + l.instagram : '') || l.phone || l.address)}</small></div>
-      ${status === 'sent' ? `<button data-a="replied" data-p="${esc(l.place_id)}">${label}</button>` : status === 'manual' ? `<span style="display:flex;gap:6px"><button data-ig="${esc(l.place_id)}">Instagram</button><button data-a="sent" data-p="${esc(l.place_id)}">Wysłane ✓</button></span>` : ''}</div>`).join('')}</div>`
+      ${status === 'sent' ? `<button data-a="proposal" data-p="${esc(l.place_id)}">Odpisali: wyślij propozycję</button>` : status === 'manual' ? `<span style="display:flex;gap:6px"><button data-ig="${esc(l.place_id)}">Instagram</button><button data-a="sent" data-p="${esc(l.place_id)}">Wysłane ✓</button></span>` : ''}</div>`).join('')}</div>`
       : '<p class="hint">Pusto.</p>';
   }
   $('view').addEventListener('click', async e => {
     const ig = e.target.closest('[data-ig]'); if (ig) return instagram(leads.find(l => l.place_id === ig.dataset.ig));
     const b = e.target.closest('[data-a]'); if (!b) return;
-    await Remote.leads({ action: b.dataset.a, place: b.dataset.p }); toast('Zapisano'); setTab(status);
+    if (b.dataset.a === 'proposal' && !confirm('Wysłać długą propozycję z projektami kart?')) return;
+    try { await Remote.leads({ action: b.dataset.a, place: b.dataset.p }); toast(b.dataset.a === 'proposal' ? 'Propozycja wysłana' : 'Zapisano'); } catch (err) { toast(err.message); }
+    setTab(status);
   });
 
   // ---------- new: the card stack ----------
