@@ -103,7 +103,10 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     piekarnia: /piekar|baker|panific|forno|boulang|chleb/, cukiernia: /cukier|pastr|pasticc|patiss|ciast|dessert|deser/, lodziarnia: /lod|gelat|ice cream|glac/,
     restauracja: /restaur|ristor|bistro|trattor|osteria|bar /, kosmetyczka: /kosmet|beauty|estetic|nail|paznok|spa/, 'myjnia samochodowa': /myjni|car wash|lavaggio|lavage/ };
   $('kinds').innerHTML = KINDS.map(k => `<button type="button" class="chip" data-k="${k}" aria-pressed="${k === kind}">${k[0].toUpperCase() + k.slice(1)}</button>`).join('');
-  $('kinds').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; kind = b.dataset.k; $('kinds').querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); filterCity(true); });
+  $('kinds').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; kind = b.dataset.k; $('kinds').querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); filterCity(true);
+    // Nothing of this kind saved yet in this city: look for it on Google right away.
+    if (status === 'new' && !leads.length && $('city').value.trim()) $('search').requestSubmit();
+  });
 
   $('search').addEventListener('submit', async e => {
     e.preventDefault();
