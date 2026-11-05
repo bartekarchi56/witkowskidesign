@@ -78,17 +78,23 @@ async function find(query: string, city: string) {
   return { added, found: leads.length };
 }
 
-// The first e-mail: short, no offer, asks if a proposal may be sent.
+// The first e-mail: short, no offer, asks if a proposal may be sent. In the place's language
+// (from the country in its address): Polish, Italian, otherwise English.
+const SIGN = ['Bartek Witkowski', 'Witkowski Design · timbro.witkowskidesign.com', '+48 530 340 988'];
 function draft(l: any) {
-  const subject = `Pytanie do ${l.name}`;
-  const text = [
-    'Dzień dobry,', '',
-    `nazywam się Bartek Witkowski, jestem projektantem z Bydgoszczy (Witkowski Design). Projektuję karty lojalnościowe w telefonie dla lokali takich jak ${l.name}: klient zapisuje kartę w Apple Wallet lub Google Wallet, a obsługa dodaje pieczątkę telefonem w dwie sekundy.`, '',
-    'Czy mogę przesłać Państwu krótką propozycję z projektem karty dla Państwa lokalu? Wystarczy odpowiedzieć „tak” na tego maila.', '',
-    'Jeśli nie są Państwo zainteresowani, proszę zignorować tę wiadomość: nie napiszę ponownie.', '',
-    'Pozdrawiam', 'Bartek Witkowski', 'Witkowski Design · timbro.witkowskidesign.com', '+48 530 340 988'
-  ].join('\n');
-  return { subject, text };
+  const lang = /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) || !/,.*,/.test(l.address) ? 'pl' : 'en';
+  const T = {
+    pl: [`Pytanie do ${l.name}`, ['Dzień dobry,', '', `nazywam się Bartek Witkowski, jestem projektantem (Witkowski Design). Projektuję karty lojalnościowe w telefonie dla lokali takich jak ${l.name}: klient zapisuje kartę w Apple Wallet lub Google Wallet, a obsługa dodaje pieczątkę telefonem w dwie sekundy.`, '',
+      'Czy mogę przesłać Państwu krótką propozycję z projektem karty dla Państwa lokalu? Wystarczy odpowiedzieć „tak” na tego maila.', '',
+      'Jeśli nie są Państwo zainteresowani, proszę zignorować tę wiadomość: nie napiszę ponownie.', '', 'Pozdrawiam']],
+    it: [`Una domanda per ${l.name}`, ['Buongiorno,', '', `sono Bartek Witkowski, designer (Witkowski Design). Disegno carte fedeltà nel telefono per locali come ${l.name}: il cliente salva la carta in Apple Wallet o Google Wallet e lo staff aggiunge il timbro con il telefono in due secondi.`, '',
+      'Posso inviarvi una breve proposta con il design della carta per il vostro locale? Basta rispondere “sì” a questa mail.', '',
+      'Se non siete interessati, ignorate pure questo messaggio: non scriverò di nuovo.', '', 'Cordiali saluti']],
+    en: [`A question for ${l.name}`, ['Hello,', '', `I'm Bartek Witkowski, a designer (Witkowski Design). I design phone loyalty cards for places like ${l.name}: customers save the card to Apple Wallet or Google Wallet and staff add a stamp with their phone in two seconds.`, '',
+      'May I send you a short proposal with a card design for your place? Just reply “yes” to this e-mail.', '',
+      'If you are not interested, please ignore this message: I will not write again.', '', 'Best regards']]
+  }[lang] as [string, string[]];
+  return { subject: T[0], text: [...T[1], ...SIGN].join('\n'), lang };
 }
 
 Deno.serve(async req => {
