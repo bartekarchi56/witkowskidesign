@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Leady · Timbro</title>
+<link rel="icon" href="../assets/icons/favicon.svg">
+<style>
+/* Leads for Witkowski Design: places found on Google Maps (supabase/functions/leads/), one card at
+   a time. Swipe right: send the short e-mail that asks for permission (or keep it to contact by hand
+   when there is no e-mail); swipe left: skip. iOS look: white, system font, blue accent. */
+:root{--blue:#007AFF;--red:#FF3B30;--green:#34C759;--ink:#000;--ink2:#3C3C43;--muted:#8E8E93;--line:#E5E5EA;--bg:#F2F2F7;--card:#fff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;overscroll-behavior:none}
+.wrap{max-width:480px;margin:0 auto;padding:12px 16px calc(24px + env(safe-area-inset-bottom))}
+h1{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:8px 0 12px}
+.seg{display:flex;background:#E3E3E8;border-radius:9px;padding:2px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;font:500 13px/1 inherit;padding:8px 4px;border-radius:7px;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:600}
+.seg b{color:var(--muted);font-weight:500;margin-left:3px}
+.search{background:var(--card);border-radius:14px;padding:12px;margin-bottom:14px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;border-radius:16px;padding:7px 12px;font:500 14px inherit;background:var(--bg);color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--blue);color:#fff}
+.row{display:flex;gap:8px}
+.row input{flex:1;min-width:0;border:0;background:var(--bg);border-radius:10px;padding:10px 12px;font:inherit}
+.btn{border:0;border-radius:12px;padding:10px 16px;font:600 16px inherit;background:var(--blue);color:#fff;cursor:pointer}
+.btn:disabled{opacity:.4}
+.stack{position:relative;height:min(600px,calc(100dvh - 340px));min-height:400px}
+.lead{position:absolute;inset:0;background:var(--card);border-radius:20px;box-shadow:0 8px 30px rgba(0,0,0,.12);overflow:hidden;display:flex;flex-direction:column;touch-action:pan-y;user-select:none;transition:transform .3s ease}
+.lead.back{transform:scale(.95) translateY(12px);filter:brightness(.97)}
+.lead.drag{transition:none}
+.pics{position:relative;flex:none;height:44%;background:#ddd;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.pics::-webkit-scrollbar{display:none}
+.pics img{flex:none;width:100%;height:100%;object-fit:cover;scroll-snap-align:center;pointer-events:none}
+.pics .none{margin:auto;color:var(--muted);font-size:15px}
+.dots{position:absolute;top:8px;left:0;right:0;display:flex;gap:4px;justify-content:center;padding:0 12px}
+.dots i{flex:1;max-width:60px;height:3px;border-radius:2px;background:rgba(255,255,255,.5)}
+.dots i.on{background:#fff}
+.stampbadge{position:absolute;top:22px;padding:6px 12px;border:3px solid;border-radius:10px;font:800 22px/1 inherit;letter-spacing:.04em;opacity:0;transform:rotate(-12deg)}
+.yes{left:18px;color:var(--blue)} .no{right:18px;color:var(--red);transform:rotate(12deg)}
+.info{padding:14px 16px;overflow-y:auto;flex:1}
+.info h2{font-size:22px;font-weight:700;margin:0 0 2px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:15px;margin:0 0 8px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.tag{font-size:13px;font-weight:600;border-radius:8px;padding:4px 8px;background:var(--bg);color:var(--ink2)}
+.tag.ok{background:#E8F7EC;color:#1F7A35} .tag.warn{background:#FFEDEC;color:#C4271F} .tag.blue{background:#E5F0FF;color:var(--blue)}
+.desc{font-size:15px;color:var(--ink2);margin:6px 0}
+.links{display:flex;gap:14px;font-size:15px;margin-top:8px}
+.links a{color:var(--blue);text-decoration:none}
+details{margin-top:10px;font-size:14px}
+summary{color:var(--blue);cursor:pointer;font-size:15px}
+pre{white-space:pre-wrap;font:14px/1.4 inherit;background:var(--bg);border-radius:10px;padding:10px;margin:8px 0 0;color:var(--ink2)}
+.actions{display:flex;justify-content:center;gap:28px;margin-top:16px}
+.round{width:64px;height:64px;border-radius:50%;border:0;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.12);font-size:28px;cursor:pointer;display:grid;place-items:center}
+.round.no{color:var(--red)} .round.yes{color:#fff;background:var(--blue)}
+.round:active{transform:scale(.92)}
+.hint{text-align:center;color:var(--muted);font-size:13px;margin-top:8px}
+.empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);padding:30px}
+.list .item{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.list .item small{display:block;color:var(--muted);font-size:13px}
+.list .item button{border:0;background:var(--bg);color:var(--blue);border-radius:8px;padding:6px 10px;font:600 13px inherit}
+.toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:10px 16px;border-radius:14px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Leady</h1>
+  <div class="seg" id="tabs">
+    <button data-s="new" aria-pressed="true">Nowe<b id="c-new"></b></button>
+    <button data-s="sent" aria-pressed="false">Wysłane</button>
+    <button data-s="manual" aria-pressed="false">Bez maila</button>
+    <button data-s="skipped" aria-pressed="false">Pominięte</button>
+  </div>
+  <form class="search" id="search">
+    <div class="chips" id="kinds"></div>
+    <div class="row"><input id="city" value="Bydgoszcz" placeholder="Miasto" autocomplete="off"><button class="btn" id="go">Szukaj</button></div>
+  </form>
+  <div id="view"></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script src="../assets/vendor/supabase.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/remote.js"></script>
+<script>
+(async () => {
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const toast = t => { $('toast').textContent = t; $('toast').classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => $('toast').classList.remove('on'), 2600); };
+  if (!Remote.enabled) { $('view').innerHTML = '<p class="hint">Ta strona działa tylko z bazą danych.</p>'; return; }
+  if (!await Remote.requireLogin()) return;
+
+  const KINDS = ['kawiarnia', 'pizzeria', 'barber', 'fryzjer', 'piekarnia', 'cukiernia', 'lodziarnia', 'restauracja', 'kosmetyczka', 'myjnia samochodowa'];
+  let kind = KINDS[0], status = 'new', leads = [];
+  $('kinds').innerHTML = KINDS.map(k => `<button type="button" class="chip" data-k="${k}" aria-pressed="${k === kind}">${k[0].toUpperCase() + k.slice(1)}</button>`).join('');
+  $('kinds').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; kind = b.dataset.k; $('kinds').querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); });
+
+  $('search').addEventListener('submit', async e => {
+    e.preventDefault();
+    $('go').disabled = true; $('go').textContent = 'Szukam…';
+    try {
+      const r = await Remote.leads({ action: 'find', query: kind, city: $('city').value.trim() });
+      toast(r.added ? `Nowe miejsca: ${r.added} (z ${r.found})` : `Brak nowych: ${r.found} już widzianych`);
+      setTab('new');
+    } catch (err) { toast(err.message); }
+    $('go').disabled = false; $('go').textContent = 'Szukaj';
+  });
+
+  $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-s]'); if (b) setTab(b.dataset.s); });
+  async function setTab(s) {
+    status = s;
+    $('tabs').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.s === s)));
+    $('search').hidden = s !== 'new';
+    try { leads = await Remote.leads({ action: 'list', status: s }); } catch (err) { leads = []; toast(err.message); }
+    if (s === 'new') $('c-new').textContent = leads.length ? ' ' + leads.length : '';
+    s === 'new' ? renderStack() : renderList();
+  }
+
+  // ---------- the other tabs: a plain list ----------
+  function renderList() {
+    const label = { sent: 'Odpisali', manual: 'Pominięte', skipped: 'Przywróć' }[status];
+    $('view').innerHTML = leads.length ? `<div class="list">${leads.slice().reverse().map(l => `<div class="item"><div><b>${esc(l.name)}</b><small>${esc(l.kind)} · ${esc(l.email || l.phone || l.address)}</small></div>
+      ${status === 'sent' ? `<button data-a="replied" data-p="${esc(l.place_id)}">${label}</button>` : status === 'manual' ? `<a class="btn" style="font-size:13px;padding:6px 10px" href="${esc(l.maps_url)}" target="_blank">Mapy</a>` : ''}</div>`).join('')}</div>`
+      : '<p class="hint">Pusto.</p>';
+  }
+  $('view').addEventListener('click', async e => {
+    const b = e.target.closest('[data-a]'); if (!b) return;
+    await Remote.leads({ action: b.dataset.a, place: b.dataset.p }); toast('Zapisano'); setTab(status);
+  });
+
+  // ---------- new: the card stack ----------
+  function card(l, back) {
+    const pics = (l.photos || []).length ? l.photos.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join('') : '<span class="none">Brak zdjęć</span>';
+    const loyal = l.loyalty ? `<span class="tag warn">Ma już: ${esc(l.loyalty)}</span>` : l.website ? '<span class="tag ok">Brak śladu programu lojalnościowego</span>' : '<span class="tag">Brak strony: nie wiadomo</span>';
+    return `<div class="lead${back ? ' back' : ''}" data-p="${esc(l.place_id)}">
+      <div class="pics">${pics}</div>
+      ${(l.photos || []).length > 1 ? `<div class="dots">${l.photos.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}
+      <div class="stampbadge yes">${l.email ? 'WYŚLIJ' : 'NA PÓŹNIEJ'}</div><div class="stampbadge no">POMIŃ</div>
+      <div class="info">
+        <h2>${esc(l.name)}</h2>
+        <p class="sub">${esc(l.kind)}${l.rating ? ` · ★ ${l.rating}${l.reviews ? ` (${l.reviews})` : ''}` : ''}</p>
+        <p class="sub">${esc(l.address)}</p>
+        ${l.summary ? `<p class="desc">${esc(l.summary)}</p>` : ''}
+        <div class="tags">${loyal}${l.email ? `<span class="tag blue">${esc(l.email)}</span>` : '<span class="tag">Brak e-maila</span>'}${l.phone ? `<span class="tag">${esc(l.phone)}</span>` : ''}</div>
+        <div class="links">${l.website ? `<a href="${esc(l.website)}" target="_blank" rel="noopener">Strona</a>` : ''}${l.maps_url ? `<a href="${esc(l.maps_url)}" target="_blank" rel="noopener">Mapy Google</a>` : ''}</div>
+        ${l.email ? '<details><summary>Treść maila</summary><pre>…</pre></details>' : ''}
+      </div></div>`;
+  }
+  function renderStack() {
+    $('view').innerHTML = `<div class="stack" id="stack">${leads.length ? leads.slice(0, 2).reverse().map((l, i, a) => card(l, i < a.length - 1)).join('') : '<div class="empty">Brak nowych miejsc.<br>Wybierz rodzaj i miasto, potem „Szukaj”.</div>'}</div>
+      ${leads.length ? `<div class="actions"><button class="round no" id="b-no" aria-label="Pomiń">✕</button><button class="round yes" id="b-yes" aria-label="Wyślij">✓</button></div><p class="hint">W prawo: wyślij pytanie o zgodę · w lewo: pomiń</p>` : ''}`;
+    if (!leads.length) return;
+    const top = $('stack').querySelector('.lead:not(.back)');
+    top.querySelector('.pics').addEventListener('scroll', e => { const p = e.target, i = Math.round(p.scrollLeft / p.clientWidth); top.querySelectorAll('.dots i').forEach((d, k) => d.classList.toggle('on', k === i)); });
+    const det = top.querySelector('details');
+    if (det) det.addEventListener('toggle', async () => { if (!det.open || det.dataset.done) return; det.dataset.done = 1; try { const m = await Remote.leads({ action: 'preview', place: top.dataset.p }); det.querySelector('pre').textContent = `Temat: ${m.subject}\n\n${m.text}`; } catch (err) { det.querySelector('pre').textContent = err.message; } });
+    drag(top);
+    $('b-no').onclick = () => decide(top, -1);
+    $('b-yes').onclick = () => decide(top, 1);
+  }
+  function drag(el) {
+    let x0 = null, y0 = 0, dx = 0, horizontal = null;
+    const yes = el.querySelector('.yes'), no = el.querySelector('.no');
+    el.addEventListener('pointerdown', e => { if (e.target.closest('a,summary,pre,.pics')) return; x0 = e.clientX; y0 = e.clientY; dx = 0; horizontal = null; });
+    window.addEventListener('pointermove', e => {
+      if (x0 === null) return;
+      dx = e.clientX - x0;
+      if (horizontal === null && (Math.abs(dx) > 8 || Math.abs(e.clientY - y0) > 8)) horizontal = Math.abs(dx) > Math.abs(e.clientY - y0);
+      if (!horizontal) return;
+      el.classList.add('drag'); el.style.transform = `translateX(${dx}px) rotate(${dx / 20}deg)`;
+      yes.style.opacity = Math.max(0, dx / 100); no.style.opacity = Math.max(0, -dx / 100);
+    });
+    window.addEventListener('pointerup', () => {
+      if (x0 === null) return; x0 = null; el.classList.remove('drag');
+      if (horizontal && Math.abs(dx) > 110) decide(el, Math.sign(dx));
+      else { el.style.transform = ''; yes.style.opacity = no.style.opacity = 0; }
+    });
+  }
+  let busy = false;
+  async function decide(el, dir) {
+    if (busy) return; busy = true;
+    const l = leads[0];
+    el.style.transform = `translateX(${dir * 600}px) rotate(${dir * 25}deg)`; el.style.opacity = 0;
+    try {
+      if (dir < 0) { await Remote.leads({ action: 'skip', place: l.place_id }); }
+      else if (l.email) { await Remote.leads({ action: 'send', place: l.place_id }); toast(`Wysłano do ${l.name}`); }
+      else { await Remote.leads({ action: 'manual', place: l.place_id }); toast(`${l.name}: do kontaktu ręcznie (Bez maila)`); }
+      leads.shift();
+    } catch (err) { toast(err.message); }
+    $('c-new').textContent = leads.length ? ' ' + leads.length : '';
+    setTimeout(() => { busy = false; renderStack(); }, 220);
+  }
+  setTab('new');
+})();
+</script>
+</body>
+</html>

@@ -83,14 +83,3 @@ begin
   get diagnostics n = row_count;
   return n;
 end $$;
-
-grant usage on schema timbro to anon, authenticated;
-
-revoke all on all tables in schema timbro from anon, authenticated;
-
-revoke execute on all functions in schema timbro from public, anon, authenticated;
-
-grant execute on function get_card(text), join_card(text, text, text, text, date, boolean, text), get_my_card(text, text),
-  device_link(text, text), stamper_lookup(text, text), stamper_stamp(text, text, int), stamper_redeem(text, text), stamper_gift(text, text),
-  wallet_register(text, text, text, text), wallet_unregister(text, text, text), wallet_updated(text, bigint), wallet_targets(text, text), reminders_due(text)
-  to anon, authenticated;

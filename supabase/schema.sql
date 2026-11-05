@@ -956,6 +956,61 @@ begin
   return n;
 end $$;
 
+-- ---------------------------------------------------------------- leads --
+-- Places Witkowski Design may write to (studio/leads.html): found on Google Maps by the leads
+-- function (supabase/functions/leads/), with photos, a short description, a public e-mail from
+-- their website and any sign of a loyalty programme. Only the leads function (service role) reads
+-- and writes them. status: new, sent (asked for permission), skipped, manual (no e-mail: write
+-- on Instagram or call), replied.
+create table if not exists leads (
+  place_id    text primary key,
+  name        text not null default '',
+  kind        text not null default '',
+  address     text not null default '',
+  city        text not null default '',
+  rating      numeric(2,1),
+  reviews     int,
+  website     text not null default '',
+  email       text not null default '',
+  phone       text not null default '',
+  maps_url    text not null default '',
+  summary     text not null default '',
+  photos      jsonb not null default '[]'::jsonb,
+  loyalty     text not null default '',
+  status      text not null default 'new' check (status in ('new', 'sent', 'skipped', 'manual', 'replied')),
+  created_at  timestamptz not null default now(),
+  sent_at     timestamptz
+);
+alter table leads enable row level security;
+
+-- New places only; the ones already seen keep their status.
+create or replace function leads_add(p_leads jsonb) returns int
+language plpgsql security definer set search_path = timbro
+as $$
+declare n int;
+begin
+  insert into leads (place_id, name, kind, address, city, rating, reviews, website, email, phone, maps_url, summary, photos, loyalty)
+  select l->>'place_id', coalesce(l->>'name', ''), coalesce(l->>'kind', ''), coalesce(l->>'address', ''), coalesce(l->>'city', ''),
+         nullif(l->>'rating', '')::numeric, nullif(l->>'reviews', '')::int, coalesce(l->>'website', ''), coalesce(l->>'email', ''),
+         coalesce(l->>'phone', ''), coalesce(l->>'maps_url', ''), coalesce(l->>'summary', ''), coalesce(l->'photos', '[]'::jsonb), coalesce(l->>'loyalty', '')
+  from jsonb_array_elements(p_leads) l where coalesce(l->>'place_id', '') <> ''
+  on conflict (place_id) do nothing;
+  get diagnostics n = row_count;
+  return n;
+end $$;
+
+create or replace function leads_list(p_status text) returns jsonb
+language sql stable security definer set search_path = timbro
+as $$ select coalesce(jsonb_agg(to_jsonb(l) order by l.created_at), '[]'::jsonb) from leads l where l.status = p_status $$;
+
+create or replace function leads_get(p_place text) returns jsonb
+language sql stable security definer set search_path = timbro
+as $$ select to_jsonb(l) from leads l where l.place_id = p_place $$;
+
+create or replace function leads_set(p_place text, p_status text) returns void
+language sql security definer set search_path = timbro
+as $$ update leads set status = p_status, sent_at = case when p_status = 'sent' then now() else sent_at end where place_id = p_place $$;
+
 -- ----------------------------------------------------------- permissions --
 
 -- Only inside the timbro schema: other apps in this project are not touched.
@@ -977,7 +1032,8 @@ grant execute on function owner_data(), owner_save_card(jsonb), owner_save_messa
 -- The Stripe functions (supabase/functions/) use the service role.
 grant usage on schema timbro to service_role;
 grant execute on function stripe_business(uuid), stripe_set_customer(uuid, text),
-  stripe_sync(text, text, text, text, text, bigint, boolean), stripe_is_admin(uuid), alert_key_ok(text) to service_role;
+  stripe_sync(text, text, text, text, text, bigint, boolean), stripe_is_admin(uuid), alert_key_ok(text),
+  leads_add(jsonb), leads_list(text), leads_get(text), leads_set(text, text) to service_role;
 
 -- ---------------------------------------------------------- after setup --
 -- Make your own account a designer (run once, after signing up on the site):

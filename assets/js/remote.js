@@ -120,6 +120,8 @@
     publish: (cardId, design) => rpc('admin_publish', { p_card_id: cardId, p_design: design }),
     askChanges: (cardId, reply) => rpc('admin_ask_changes', { p_card_id: cardId, p_reply: reply }),
     setPlan: (cardId, plan) => rpc('admin_set_plan', { p_card_id: cardId, p_plan: plan }),
-    stripeSetup: plans => edge('stripe-setup', { plans })
+    stripeSetup: plans => edge('stripe-setup', { plans }),
+    // Leads (studio/leads.html): find places, list, skip, preview and send the first e-mail.
+    leads: body => edge('leads', body)
   };
 })();
