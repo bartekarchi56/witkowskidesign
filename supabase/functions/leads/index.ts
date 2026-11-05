@@ -107,22 +107,27 @@ const SITE = 'https://timbro.witkowskidesign.com';
 const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 function html(lang: string, subject: string, lines: string[]) {
   const B = { pl: ['Tak, wyślij propozycję', 'Zobacz, jak to działa', 'Tak, chętnie zobaczę propozycję.'], it: ['Sì, inviatemi la proposta', 'Guarda come funziona', 'Sì, vorrei vedere la proposta.'], en: ['Yes, send me the proposal', 'See how it works', 'Yes, I would like to see the proposal.'] }[lang]!;
+  const H = { pl: ['Karta lojalnościowa, której nikt', 'nie gubi.'], it: ['La carta fedeltà che nessuno', 'perde.'], en: ['The loyalty card nobody', 'loses.'] }[lang]!;
   const yes = `mailto:${REPLY_TO}?subject=${encodeURIComponent('Re: ' + subject)}&body=${encodeURIComponent(B[2])}`;
   const paras = lines.join('\n').split('\n\n').map(p => p.trim()).filter(Boolean);
   const close = paras.pop() ?? '';
-  const font = "font-family:Archivo,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif";
-  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(subject)}</title></head>
-<body style="margin:0;padding:0;background:#EDEAE2">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EDEAE2"><tr><td align="center" style="padding:24px 12px">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:18px;overflow:hidden">
-<tr><td><a href="${SITE}/?lang=${lang}"><img src="${SITE}/assets/email/banner-${lang}.png" width="600" alt="Timbro" style="display:block;width:100%;height:auto;border:0"></a></td></tr>
-<tr><td style="padding:28px 34px 8px;${font};font-size:16px;line-height:1.55;color:#0B0B0C">
+  const F = "font-family:Archivo,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif", BLUE = '#2B32FF', INK = '#0B0B0C';
+  // Same look as the proposal: the Timbro header, the wide headline with a blue word, the floating
+  // iPhones (assets/email/hero-<lang>.png), then the short question and a blue button.
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet"><title>${esc(subject)}</title></head>
+<body style="margin:0;padding:0;background:#F4F4F6">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F4F4F6"><tr><td align="center" style="padding:24px 10px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:24px;overflow:hidden">
+<tr><td style="padding:24px 32px;${F};font-size:18px;font-weight:800;color:${INK}"><span style="display:inline-block;width:12px;height:12px;border:4px solid ${BLUE};border-radius:50%;vertical-align:-2px;margin-right:8px"></span>Timbro</td></tr>
+<tr><td style="padding:6px 32px 0"><div style="${F};font-stretch:125%;font-weight:800;letter-spacing:-.03em;font-size:38px;line-height:1;color:${INK}">${H[0]} <span style="color:${BLUE}">${H[1]}</span></div></td></tr>
+<tr><td style="padding:16px 0 0"><a href="${SITE}/?lang=${lang}"><img src="${SITE}/assets/email/hero-${lang}.png" width="600" alt="Timbro" style="display:block;width:100%;height:auto;border:0"></a></td></tr>
+<tr><td style="padding:22px 32px 8px;${F};font-size:16px;line-height:1.6;color:#2A2A2E">
 ${paras.map(p => `<p style="margin:0 0 16px">${esc(p).replace(/\n/g, '<br>')}</p>`).join('')}
-<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 22px"><tr>
-<td style="background:#2B32FF;border-radius:999px"><a href="${yes}" style="display:inline-block;padding:13px 24px;${font};font-size:15px;font-weight:700;color:#ffffff;text-decoration:none">${B[0]}</a></td>
-<td style="padding-left:16px"><a href="${SITE}/?lang=${lang}" style="${font};font-size:15px;font-weight:600;color:#2B32FF;text-decoration:none">${B[1]} →</a></td></tr></table>
+<div style="margin:10px 0 26px"><a href="${yes}" style="display:inline-block;padding:14px 26px;border-radius:999px;background:${BLUE};color:#fff;${F};font-size:15px;font-weight:700;text-decoration:none">${B[0]}</a>&nbsp;&nbsp;
+<a href="${SITE}/?lang=${lang}" style="${F};font-size:15px;font-weight:700;color:${BLUE};text-decoration:none">${B[1]} →</a></div>
 <p style="margin:0 0 4px">${esc(close)}</p>
-<p style="margin:0 0 24px"><b>${SIGN[0]}</b><br><span style="color:#5A5A60;font-size:14px">${esc(SIGN[1])}<br>${SIGN[2]}</span></p>
+<p style="margin:0 0 26px"><b>${SIGN[0]}</b><br><span style="color:#8A8A90;font-size:14px">${esc(SIGN[1])}<br>${SIGN[2]}</span></p>
 </td></tr></table>
 </td></tr></table></body></html>`;
 }
