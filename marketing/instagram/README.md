@@ -955,3 +955,14 @@ Voice (ElevenLabs, Multilingual v2, one take, only these lines): Giulia veniva o
 - `carousel-numbers`: the numbers are an example and the slides say so. `carousel-plans` reads its prices and extras from `assets/js/config.js`; render it again after any price change.
 - `post-friend`, `post-double`, `post-birthday`: post them only once the extras are live (`supabase/updates/14a-c` run, site deployed). The visits by hour on `post-double` are an example shape and the chart says so. The extras are off until the café switches them on, and the captions say "you switch it on".
 - No real café's name or logo appears. When a café agrees, make a post about them with their own numbers, as an Instagram Collab post.
+
+### reel-praktyka-pl
+Polish reel for Polish cafés: what a customer sees on their phone, from scanning the QR to the free coffee, with a neutral example card ("Twoja Kawiarnia"), 25 s, with sound: `marketing/animation/timbro-w-praktyce-pl.mp4` (copied to `en/reel-praktyka-pl.mp4` for posting). Made by `marketing/animation/timbro-pl.html` (`node marketing/animation/make.js timbro-pl pl`). Posted without the English call to action (`"cta": false`).
+
+**EN**
+> Tak wygląda karta lojalnościowa w telefonie Twojego klienta ☕📱
+> Skanuje kod QR przy kasie, karta trafia do Portfela, a przy każdej kawie dostaje pieczątkę. Telefon sam przypomina, gdy brakuje jednej do nagrody.
+> Bez aplikacji, bez kartoników. Pierwsze 30 dni za darmo.
+> Napisz TIMBRO w komentarzu, a zaprojektujemy kartę dla Twojej kawiarni 👇
+>
+> #kartalojalnosciowa #kawiarnia #kawa #bydgoszcz #małybiznes

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timbro: karta w praktyce</title>
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/poster.css">
+<style>
+/* Polish reel for Timbro's own Instagram (copied from velvet.html, with a neutral example card).
+   Was: what a Velvet customer sees on their own phone, screen-sized (for Velvet, in Polish): scanning
+   the QR at the till, getting the card without an app, saving it to Wallet, a stamp for every
+   coffee, the "one to go" notice on the lock screen and the free coffee. The card is Velvet's
+   (print/velvet-look.js); the notices are Timbro's Polish defaults (CONFIG.messages).
+   Vertical 540 x 960 (1080 x 1920 at 2x). make.js calls window.renderAt(t). */
+html,body{margin:0;background:#000}
+body{display:grid;place-items:center;min-height:100vh;font-family:var(--font)}
+.stage{width:540px;height:960px;position:relative;overflow:hidden;background:#000}
+.scene{position:absolute;inset:0;opacity:0}
+.cap{position:absolute;left:0;right:0;top:0;z-index:20;padding:62px 30px 26px;background:linear-gradient(rgba(0,0,0,.78),rgba(0,0,0,0));color:#fff;font:800 31px/1.15 var(--font);font-stretch:112%;letter-spacing:-.015em;text-wrap:balance}
+.cap b{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#9B1FE8;font-size:21px;margin-right:10px;vertical-align:4px}
+/* 1: the camera finds the QR on the poster */
+.cam{background:radial-gradient(120% 80% at 50% 60%,#3a3a40,#121214)}
+.cam .pst{position:absolute;left:105px;top:250px;width:330px;transform-origin:50% 40%;box-shadow:0 30px 60px -20px rgba(0,0,0,.7)}
+.cam .corner{position:absolute;width:46px;height:46px;border:5px solid #FFD60A;opacity:0}
+.cam .open{position:absolute;left:50%;top:800px;transform:translateX(-50%);background:rgba(255,255,255,.92);color:#0B0B0C;border-radius:16px;padding:12px 18px;font:600 15px/1.25 -apple-system,var(--font);white-space:nowrap;display:flex;gap:10px;align-items:center;opacity:0}
+.cam .open i{width:26px;height:26px;border-radius:7px;background:#9B1FE8;flex:none}
+/* 2: the join page */
+.join{background:#F4F3F1;padding:150px 22px 0}
+.join .pass{max-width:none}
+.join h2{font-size:22px;margin:22px 0 4px;letter-spacing:-.01em}
+.join p{color:#55555A;font-size:15px;margin:0 0 14px}
+.join .fld{background:#fff;border:1.5px solid #DDDCD8;border-radius:12px;padding:12px 14px;font-size:17px;margin-bottom:10px;min-height:22px}
+.join .fld small{display:block;color:#8A8A8F;font-size:12px;margin-bottom:3px}
+.join .btn{display:block;text-align:center;background:#0E0E10;color:#fff;border-radius:14px;padding:16px;font-weight:700;font-size:17px;margin-top:14px}
+/* 3-6: Wallet */
+.wal{background:#0B0B0C;padding:150px 20px 0}
+.wal .top{display:flex;justify-content:space-between;align-items:center;color:#fff;font:700 30px/1 -apple-system,var(--font);margin-bottom:20px}
+.wal .add{font:600 17px/1 -apple-system,var(--font);color:#fff;background:#2C2C2E;border-radius:999px;padding:10px 18px}
+.wal .pass{max-width:none;box-shadow:0 30px 60px -24px rgba(155,31,232,.55)}
+.day{position:absolute;right:24px;top:212px;z-index:6;font:600 14px/1 var(--mono);color:#fff;background:#9B1FE8;border-radius:999px;padding:9px 13px;opacity:0}
+.lock{background:linear-gradient(165deg,#5B0F8F 0%,#2A0A44 45%,#0B0B0C 100%);color:#fff;text-align:center;padding-top:170px}
+.lock .d{font:600 18px/1 -apple-system,var(--font);opacity:.85}
+.lock .t{font:300 96px/1 -apple-system,var(--font);letter-spacing:-.02em;margin-top:8px}
+.notif{position:absolute;left:16px;right:16px;z-index:8;background:rgba(245,245,247,.94);color:#0B0B0C;border-radius:22px;padding:13px 14px;display:grid;grid-template-columns:42px 1fr auto;gap:2px 11px;align-items:start;font:15px/1.32 -apple-system,var(--font);text-align:left;box-shadow:0 14px 34px -12px rgba(0,0,0,.6);opacity:0}
+.notif img{grid-row:1/3;width:42px;height:42px;border-radius:10px;background:#0E0E10}
+.notif b{font-weight:600}
+.notif small{color:#6B6B70;font-size:13px}
+.notif p{grid-column:2/4;margin:0}
+.end{background:#0E0E10;display:grid;align-content:center;justify-items:center;gap:16px;text-align:center;color:#fff;padding:0 40px}
+.end img{width:170px;height:170px}
+.end h2{font:800 46px/1 var(--font);font-stretch:125%;letter-spacing:.06em}
+.end p{font-size:20px;line-height:1.35;color:#C9C9CD;margin:0}
+.end .pill{background:#9B1FE8;color:#fff;border-radius:999px;padding:12px 20px;font-weight:700;font-size:17px}
+.end small{font:500 13px/1 var(--mono);color:#8A8A8F;letter-spacing:.04em}
+canvas{position:absolute;inset:0;width:540px;height:960px;pointer-events:none;z-index:15}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="scene cam" id="s-scan"><div class="pst" id="poster"></div><div class="open" id="open"><i></i><span>Otwórz w Safari<br><small style="color:#6B6B70">timbro.witkowskidesign.com</small></span></div></div>
+  <div class="scene join" id="s-join"><div id="join-pass"></div><h2>Twoja kawiarnia zaprasza do programu lojalnościowego</h2><p>Pieczątka przy każdej wizycie. Po 8 pieczątkach: kawa gratis.</p>
+    <div class="fld"><small>Imię i nazwisko</small><span id="typed"></span></div><div class="btn" id="get">Odbierz kartę</div></div>
+  <div class="scene wal" id="s-wal"><div class="top"><span>Portfel</span><span class="add" id="add">Dodaj</span></div><div id="wal-pass"></div></div>
+  <div class="scene lock" id="s-lock"><div class="d">czwartek, 20 listopada</div><div class="t">08:47</div></div>
+  <div class="scene end" id="s-end"></div>
+  <div class="day" id="day"></div>
+  <div class="notif" id="n-close"></div><div class="notif" id="n-ready"></div>
+  <canvas id="o"></canvas>
+  <div class="cap" id="cap"></div>
+</div>
+<script src="../../assets/vendor/qrcode.js"></script>
+<script src="../../assets/js/config.js"></script>
+<script src="../../assets/js/i18n.js"></script>
+<script src="../../assets/js/store.js"></script>
+<script src="../../assets/js/ui.js"></script>
+<script src="../../assets/js/stamps.js"></script>
+<script src="../../assets/js/marketing.js"></script>
+<script>
+(async () => {
+const J = await (await fetch('timbro-pl.json')).json(), B = J.beats, DURATION = J.duration;
+I18N.lang = 'pl'; document.documentElement.lang = 'pl';
+const $ = id => document.getElementById(id);
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const ease = x => { x = clamp01(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const easeOut = x => 1 - Math.pow(1 - clamp01(x), 3);
+const backOut = x => { x = clamp01(x); const c = 1.7; return Math.max(0, 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2)); };
+const hash = i => { const v = Math.sin(i * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
+
+const CARD = { id: 'demo', business: 'Twoja Kawiarnia', title: 'Karta kawowa', reward: 'kawa gratis', stampsNeeded: 8, lang: 'pl', color: '#1F3B2D', ink: '#E9C894', strip: '#1F3B2D', stamp: 'ziarno', font: 'sans' }, NAME = 'Ola Kowalska', ME = { id: 'K7M2QX', name: NAME };
+await Promise.all(['800 40px Archivo', '600 20px Archivo', '500 20px "Spline Sans Mono"'].map(f => document.fonts.load(f)));
+$('poster').innerHTML = MARKETING.poster(CARD, { lang: 'pl' });
+$('join-pass').innerHTML = UI.renderPass(CARD, null, { stamps: 0, compact: true, platform: 'apple' });
+const notice = (el, text, when) => { el.innerHTML = `<img src="/assets/icons/apple-touch-icon.png" alt=""><b>TWOJA KAWIARNIA</b><small>${when}</small><p>${UI.esc(text)}</p>`; };
+notice($('n-close'), UI.fillMessage(CONFIG.messages.close.pl, CARD, { left: 1, lang: 'pl' }), 'teraz');
+notice($('n-ready'), UI.fillMessage(CONFIG.messages.ready.pl, CARD, { name: NAME, lang: 'pl' }), 'teraz');
+$('s-end').innerHTML = `<img src="/assets/icons/apple-touch-icon.png" alt=""><h2>TIMBRO</h2><p>Karta lojalnościowa w telefonie Waszych klientów. Bez aplikacji, bez kartoników.</p><span class="pill">Pierwsze 30 dni za darmo</span><small>timbro.witkowskidesign.com</small>`;
+// Wallet's pass, redrawn with n stamps; the newest lands like a rubber stamp.
+let key = -1;
+function setPass(n, age) {
+  if (n !== key) { $('wal-pass').innerHTML = UI.renderPass(CARD, { ...ME, stamps: n }, { stamps: n, platform: 'apple' }); key = n; }
+  const dot = $('wal-pass').querySelectorAll('.wp-dot.on')[n - 1];
+  if (!dot) return;
+  if (age < .4) { const p = age / .4; dot.style.transform = `scale(${(1 + .9 * (1 - backOut(p))).toFixed(3)})`; dot.style.opacity = Math.min(1, p / .55); }
+  else { dot.style.transform = ''; dot.style.opacity = ''; }
+}
+const STAMPS = [B.stamps + .5, B.stamps + 1.15, B.stamps + 1.8, B.stamps + 2.45, B.stamps + 3.1, B.stamps + 3.75, B.stamps + 4.4, B.reward + .6];
+const DAYS = ['pon. 08:12', 'wt. 08:31', 'śr. 13:05', 'czw. 08:09', 'pt. 08:20', 'sob. 11:40', 'pon. 08:15', 'śr. 08:47'];
+const CAPS = [[B.scan, 1, 'Klient skanuje kod QR przy kasie'], [B.join, 2, 'Odbiera kartę. Bez aplikacji.'], [B.wallet, 3, 'Karta trafia do Portfela'],
+  [B.stamps, 4, 'Każda kawa to pieczątka'], [B.remind, 5, 'Brakuje jednej? Telefon przypomina'], [B.reward, 6, 'Kawa gratis ☕'], [B.end, 0, '']];
+const oc = $('o'), DPR = 2; oc.width = 540 * DPR; oc.height = 960 * DPR; const og = oc.getContext('2d');
+const CONF = [...Array(70)].map((_, i) => ({ a: -Math.PI / 2 + (hash(i + 3) - .5) * 2.6, v: 260 + hash(i + 9) * 340, c: ['#9B1FE8', '#FFFFFF', '#C58BF5', '#FFD60A'][i % 4], s: 5 + hash(i) * 7, r: hash(i + 5) * 6 }));
+
+function caption(t) {
+  const i = CAPS.findLastIndex(([s]) => t >= s), c = CAPS[i];
+  if (renderAt.ci !== i) { renderAt.ci = i; $('cap').innerHTML = c && c[2] ? `<b>${c[1]}</b>${UI.esc(c[2])}` : ''; }
+  if (!c) { $('cap').style.opacity = 0; return; }
+  const into = easeOut((t - c[0]) / .4), next = CAPS[i + 1], out = next ? clamp01((t - next[0] + .2) / .2) : 0;
+  $('cap').style.opacity = into * (1 - out); $('cap').style.transform = `translateY(${((1 - into) * -14).toFixed(1)}px)`;
+}
+const fade = (id, a, b) => { $(id).style.opacity = ease((renderAtT - a) / .35) * (1 - ease((renderAtT - b) / .35)); };
+let renderAtT = 0;
+function renderAt(t) {
+  renderAtT = t;
+  caption(t);
+  // 1: the camera moves onto the poster, the frame finds the QR, iOS offers to open it
+  fade('s-scan', -1, B.join - .2);
+  const z = ease((t - .2) / 1.6); $('poster').style.transform = `translateY(${(z * 30).toFixed(1)}px) scale(${(1 + z * .22).toFixed(3)})`;
+  const qr = $('poster').querySelector('.poster-qr'), st = $('stage').getBoundingClientRect();
+  if (qr) {
+    const r = qr.getBoundingClientRect(), f = easeOut((t - 1.8) / .4), pad = 26 - 16 * f, on = t > 1.8 && t < B.join ? 1 : 0;
+    const box = [r.left - st.left - pad, r.top - st.top - pad, r.width + pad * 2, r.height + pad * 2];
+    document.querySelectorAll('#s-scan .corner').forEach((c, k) => {
+      c.style.left = (box[0] + (k % 2) * (box[2] - 46)) + 'px'; c.style.top = (box[1] + (k > 1) * (box[3] - 46)) + 'px'; c.style.opacity = on;
+      c.style.borderWidth = `${k > 1 ? 0 : 5}px ${k % 2 ? 5 : 0}px ${k > 1 ? 5 : 0}px ${k % 2 ? 0 : 5}px`;
+    });
+  }
+  const op = backOut((t - 2.3) / .4); $('open').style.opacity = clamp01((t - 2.3) / .2); $('open').style.transform = `translateX(-50%) scale(${(.85 + .15 * op).toFixed(3)})`;
+  // 2: the join page; the name is typed, the button pressed
+  fade('s-join', B.join, B.wallet - .2);
+  const typed = Math.floor(clamp01((t - B.join - .9) / 1.6) * NAME.length); $('typed').textContent = NAME.slice(0, typed) + (t > B.join + .8 && t < B.join + 2.8 && Math.floor(t * 2) % 2 ? '|' : '');
+  const press = clamp01((t - B.join - 3.0) / .3); $('get').style.transform = `scale(${(1 - .06 * Math.sin(Math.PI * press)).toFixed(3)})`;
+  // 3-4, 6: Wallet. "Dodaj" is tapped, then a stamp every visit
+  fade('s-wal', B.wallet, B.remind - .2);
+  if (t >= B.reward - .2) fade('s-wal', B.reward - .2, 99);
+  $('add').style.opacity = t < B.stamps ? 1 : 0;
+  $('add').style.transform = `scale(${(1 - .1 * Math.sin(Math.PI * clamp01((t - B.wallet - 1.6) / .3))).toFixed(3)})`;
+  const k = STAMPS.filter(s => t >= s).length, age = k ? t - STAMPS[k - 1] : 9;
+  const slide = easeOut((t - B.wallet) / .6); $('wal-pass').style.transform = `translateY(${((1 - slide) * 400).toFixed(1)}px)`;
+  setPass(k, age);
+  $('day').textContent = k ? DAYS[k - 1] : '';
+  $('day').style.opacity = k && ((t > B.stamps && t < B.remind - .2) || (t > B.reward + .5 && t < B.end - .2)) ? 1 : 0;
+  // 5: the lock screen with the "one to go" notice
+  fade('s-lock', B.remind, B.reward - .2);
+  const nc = backOut((t - B.remind - .7) / .45); $('n-close').style.top = '330px';
+  $('n-close').style.opacity = clamp01((t - B.remind - .7) / .2) * (1 - ease((t - B.reward + .2) / .3));
+  $('n-close').style.transform = `translateY(${((1 - nc) * -40).toFixed(1)}px)`;
+  const nr = backOut((t - B.reward - 1.5) / .45); $('n-ready').style.top = '96px';
+  $('n-ready').style.opacity = clamp01((t - B.reward - 1.5) / .2) * (1 - ease((t - B.end + .2) / .3));
+  $('n-ready').style.transform = `translateY(${((1 - nr) * -40).toFixed(1)}px)`;
+  // the end
+  fade('s-end', B.end, 99);
+  $('s-end').style.transform = `scale(${(.96 + .04 * easeOut((t - B.end) / .6)).toFixed(3)})`;
+  // confetti at the eighth stamp
+  og.setTransform(DPR, 0, 0, DPR, 0, 0); og.clearRect(0, 0, 540, 960);
+  const cu = (t - STAMPS[7]) / 1.6;
+  if (cu > 0 && cu < 1) CONF.forEach(c => { const x = 270 + Math.cos(c.a) * c.v * cu, y = 380 + Math.sin(c.a) * c.v * cu + 460 * cu * cu;
+    og.save(); og.globalAlpha = 1 - cu; og.translate(x, y); og.rotate(c.r + cu * 8); og.fillStyle = c.c; og.fillRect(-c.s / 2, -c.s / 4, c.s, c.s / 2); og.restore(); });
+}
+for (let k = 0; k < 4; k++) { const c = document.createElement('div'); c.className = 'corner'; $('s-scan').appendChild(c); }
+window.renderAt = renderAt; window.DURATION = DURATION;
+renderAt(0);
+await document.fonts.ready;
+window.READY = true;
+const q = new URLSearchParams(location.search);
+if (!q.has('capture')) { const t0 = performance.now() - (+(q.get('t') || 0)) * 1000; const loop = () => { renderAt(((performance.now() - t0) / 1000) % (DURATION + .5)); requestAnimationFrame(loop); }; loop(); }
+})();
+</script>
+</body>
+</html>

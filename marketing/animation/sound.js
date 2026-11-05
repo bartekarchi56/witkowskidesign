@@ -43,7 +43,7 @@ const T0 = 2.0, DAY = 1.7, DAYS = 7, T_CMP = T0 + DAYS * DAY + .4, T_END = T_CMP
 const COUNT_A = [3, 3, 2, 2, 2, 1, 1], COUNT_B = [2, 3, 4, 5, 6, 7, 8];
 const S1 = 2.8, S2 = 7.2, S3 = 11.4, S4 = 15.4, S5 = 18.6, S6 = 22.0, END = 26.4;
 const TC = require('./tre-clienti.json'), BA = require('./barista.json'), CQ = require('./cinque.json'), QV = require('./quanto-vale.json'), VC = require('./vicino.json'), CT = require('./catene.json'), RT = require('./ritorno.json'), VV = require('./velvet.json');
-const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration, barista: BA.duration, cinque: CQ.duration, 'quanto-vale': QV.duration, vicino: VC.duration, catene: CT.duration, ritorno: RT.duration, velvet: VV.duration };
+const DURATIONS = { 'due-caffe': T_END + 4.6, 'come-funziona': 30.7, 'due-caffe-2': 38.5, 'tre-fatti': 37.0, 'tre-clienti': TC.duration, barista: BA.duration, cinque: CQ.duration, 'quanto-vale': QV.duration, vicino: VC.duration, catene: CT.duration, ritorno: RT.duration, velvet: VV.duration, 'timbro-pl': VV.duration };
 
 const T_CAPS = B => [.3, B.this, B.B + .2, B.C + .2, B.wake, B.D + .2, B.phone, B.E + .2, B.grid, B.cta];
 function render(name, opts = {}) {
@@ -195,7 +195,7 @@ function render(name, opts = {}) {
     for (let i = 0; i < 3; i++) blip(B.pilot + .2 + i * .12, 86 + i * 3, .1, (i - 1) * .3);
     for (let i = 0; i < 14; i++) blip(B.F + hash(i) * 1.1, 90 + Math.floor(hash(i + 3) * 8), .025, hash(i + 7) - .5);
     thud(B.F + 1.1, .2); chime(B.F + 1.2, .12); blip(B.cta + .6, 84, .12, 0);
-  } else if (name === 'velvet') {
+  } else if (name === 'velvet' || name === 'timbro-pl') {
     const B = VV.beats;
     const ding = t => [88, 84, 91].forEach((m, i) => beep(t + i * .12, m, .1, .08));
     for (const t of Object.values(B)) add(t, .1, x => Math.exp(-x * 40) * Math.sin(2 * Math.PI * 1100 * x), .05);

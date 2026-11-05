@@ -52,7 +52,8 @@ function captions() {
   return out;
 }
 // The first language, the others below it, then the first language's hashtags at the end.
-function captionFor(name, all) {
+// A post with "cta": false (e.g. one in another language) ends without the call to action.
+function captionFor(name, all, item = {}) {
   const c = all[name];
   if (!c) throw new Error(`No caption for "${name}" in README.md`);
   const [first, ...rest] = schedule.captions || ['it'];
@@ -60,7 +61,7 @@ function captionFor(name, all) {
   const isTags = x => x.trim().startsWith('#');
   const words = l => c[l].split('\n').filter(x => !isTags(x)).join('\n').trim();
   const tags = c[first].split('\n').filter(isTags).join(' ').trim();
-  const text = [words(first), ...rest.filter(l => c[l]).map(words), callToAction(), tags].filter(Boolean).join('\n\n').trim();
+  const text = [words(first), ...rest.filter(l => c[l]).map(words), item.cta === false ? '' : callToAction(), tags].filter(Boolean).join('\n\n').trim();
   if (text.length > 2200) throw new Error(`Caption for "${name}" is longer than 2200 characters`);
   return text;
 }
@@ -131,7 +132,7 @@ async function publish(item, files, caption) {
   const due = schedule.posts.filter(p => !posted[key(p)] && utcOf(p.at, tz) <= now);
   // Check every post's files and caption up front, so mistakes show long before their day.
   const problems = [];
-  for (const p of schedule.posts) { try { filesFor(p); if (p.type !== 'story') captionFor(p.post, all); utcOf(p.at, tz); } catch (e) { problems.push(`${p.at} ${p.post}: ${e.message}`); } }
+  for (const p of schedule.posts) { try { filesFor(p); if (p.type !== 'story') captionFor(p.post, all, p); utcOf(p.at, tz); } catch (e) { problems.push(`${p.at} ${p.post}: ${e.message}`); } }
   if (problems.length) console.log('Problems in schedule.json:\n  ' + problems.join('\n  '));
 
   if (!due.length) { console.log('Nothing due.'); process.exit(problems.length ? 1 : 0); }
@@ -148,7 +149,7 @@ async function publish(item, files, caption) {
   for (const p of due) {
     if (now - utcOf(p.at, tz) > LATE) { console.log(`skip  ${p.at} ${p.post} (more than 2 days late)`); if (!dry) posted[key(p)] = { skipped: true }; continue; }
     try {
-      const files = filesFor(p), caption = p.type === 'story' ? '' : captionFor(p.post, all);
+      const files = filesFor(p), caption = p.type === 'story' ? '' : captionFor(p.post, all, p);
       if (dry) { console.log(`would post  ${p.at} ${p.type} ${p.post}\n  ${Object.values(files).flat().filter(Boolean).join('\n  ')}\n  ---\n  ${caption.replace(/\n/g, '\n  ')}`); continue; }
       const id = await publish(p, files, caption);
       posted[key(p)] = { id, postedAt: new Date().toISOString() };
