@@ -104,7 +104,10 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     e.preventDefault();
     $('go').disabled = true; $('go').textContent = 'Szukam…';
     try {
-      const r = await Remote.leads({ action: 'find', query: kind, city: $('city').value.trim() });
+      // Google understands English kinds in every country ("kawiarnia Milano" finds little).
+      const EN = { kawiarnia: 'cafe', pizzeria: 'pizzeria', barber: 'barber shop', fryzjer: 'hair salon', piekarnia: 'bakery', cukiernia: 'pastry shop', lodziarnia: 'ice cream shop', restauracja: 'restaurant', kosmetyczka: 'beauty salon', 'myjnia samochodowa': 'car wash' };
+      const city = $('city').value.trim();
+      const r = await Remote.leads({ action: 'find', query: /bydgoszcz|warszaw|krak|gda|pozna|wroc|łód|lodz|toru|polsk/i.test(city) ? kind : EN[kind] || kind, city });
       toast(r.added ? `Nowe miejsca: ${r.added} (z ${r.found})` : `Brak nowych: ${r.found} już widzianych`);
       setTab('new');
     } catch (err) { toast(err.message); }
