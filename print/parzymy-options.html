@@ -79,6 +79,21 @@ body{margin:0;background:#EDEBE4}
   const BASE = { ...L.green, hideReward: true, hideCount: true, stampsNeeded: 8 };
   // Their colours (StoColor R184442 brick, B725040 green), with white.
   const R = '#BB4F35', G = '#528E36', W = '#FFFFFF';
+  // Tokens: each colour from light (50) to dark (900), built around their two paints (500).
+  const BR = { 50: '#FBEDE9', 100: '#F3D2C9', 200: '#E6A795', 300: '#D67C63', 500: R, 700: '#8F3A26', 900: '#5C2418' };
+  const GR = { 50: '#EEF5EA', 100: '#D3E6C9', 200: '#A9CD96', 300: '#7FB264', 500: G, 700: '#3D6B28', 900: '#26431A' };
+  // Retro liquid stripes (like a 70s poster): wavy vertical bands in shades of the two colours.
+  const liquid = colors => {
+    let p = '';
+    const edge = k => { let d = ''; for (let y = -20; y <= 470; y += 10) { const x = k * 64 - 120 + 70 * Math.sin(y / 85 + k * .55) + 26 * Math.sin(y / 31 + k); d += `${d ? 'L' : 'M'}${x.toFixed(1)},${y}`; } return d; };
+    for (let k = 0; k < 22; k++) {
+      const a = edge(k), b = edge(k + 1).split('L').reverse().join('L').replace(/^M/, '');
+      p += `<path d="${a}L${b}Z" fill="${colors[k % colors.length]}"/>`;
+    }
+    return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${colors[0]}"/>${p}</svg>`);
+  };
+  // Sun rays from below, like an old café sign.
+  const rays = (bg, ray) => { let p = ''; for (let i = 0; i < 18; i++) { const a1 = Math.PI + i * Math.PI / 18, a2 = a1 + Math.PI / 36; p += `<path d="M510 520 L${510 + 900 * Math.cos(a1)} ${520 + 900 * Math.sin(a1)} L${510 + 900 * Math.cos(a2)} ${520 + 900 * Math.sin(a2)} Z" fill="${ray}"/>`; } return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/>${p}<circle cx="510" cy="520" r="150" fill="${bg}"/></svg>`); };
   const mk = (fill, ink) => disc(fill, `<g transform="translate(26 22) scale(.48)">${markG(ink, 8)}</g>`);
   const awning = (a, b) => { let r = ''; for (let x = 0; x < 1020; x += 102) r += `<rect x="${x}" width="51" height="450" fill="${b}"/>`; return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${a}"/>${r}</svg>`); };
   const split = (top, bottom) => svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450" preserveAspectRatio="none"><rect width="1020" height="450" fill="${bottom}"/><path d="M0 0 H1020 V170 Q760 300 510 225 Q250 150 0 280 Z" fill="${top}"/></svg>`);
@@ -87,9 +102,9 @@ body{margin:0;background:#EDEBE4}
     ['1 · Ich wzór', 'Biała karta, zielone fale, ceglane pieczątki.', { ...BASE, color: W, ink: '#1A1A1A', strip: G, logo: caps('#1A1A1A'), stripImage: swirl(G, W), stampImage: mk(R, W) }],
     ['2 · Ceglana', 'Karta w kolorze cegły, zielone pieczątki.', { ...BASE, color: R, ink: W, strip: R, logo: caps(W), stripImage: plain(R), stampImage: mk(G, W) }],
     ['3 · Zielona', 'Zielona karta, ceglane pieczątki.', { ...BASE, color: G, ink: W, strip: G, logo: caps(W), stripImage: plain(G), stampImage: mk(R, W) }],
-    ['4 · Markiza', 'Pasy jak markiza nad wejściem.', { ...BASE, color: W, ink: '#1A1A1A', strip: W, logo: caps(R), stripImage: awning(G, '#6FA552'), stampImage: mk(W, R) }],
-    ['5 · Fala', 'Zieleń przechodzi w cegłę jedną falą.', { ...BASE, color: W, ink: '#1A1A1A', strip: W, logo: caps(G), stripImage: split(G, R), stampImage: mk(W, G) }],
-    ['6 · Łuki', 'Ceglane łuki jak okna kamienicy.', { ...BASE, color: R, ink: W, strip: R, logo: caps(W), stripImage: arches(R, '#C9674E'), stampImage: mk(W, G) }]
+    ['4 · Markiza', 'Zielono-ceglane pasy jak markiza nad wejściem.', { ...BASE, color: W, ink: '#1A1A1A', strip: W, logo: caps(GR[700]), stripImage: awning(G, R), stampImage: mk(W, GR[700]) }],
+    ['5 · Retro fala', 'Płynne pasy w odcieniach cegły i zieleni.', { ...BASE, color: W, ink: '#1A1A1A', strip: W, logo: caps(R), stripImage: liquid([GR[700], GR[300], BR[500], BR[200], GR[500], BR[300], GR[100], BR[700]]), stampImage: mk(W, R) }],
+    ['6 · Słońce', 'Zielona góra, ceglana nazwa, promienie.', { ...BASE, color: GR[700], ink: W, strip: BR[50], logo: caps(BR[300]), stripImage: rays(BR[50], BR[100]), stampImage: mk(G, W) }]
   ];
   const who = { id: 'P4RZ7Y', name: 'Anna Nowak', stamps: 3 };
   document.getElementById('grid').innerHTML = OPTS.map(([h, p, card]) => `<div class="opt"><h2>${h}</h2><p>${p}</p>${UI.renderPass(card, who, { platform: 'apple' })}</div>`).join('');
