@@ -25,7 +25,7 @@ h1{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:8px 0 12px}
 .chip{flex:none;border:0;border-radius:16px;padding:7px 12px;font:500 14px inherit;background:var(--bg);color:var(--ink);cursor:pointer}
 .chip[aria-pressed=true]{background:var(--blue);color:#fff}
 .row{display:flex;gap:8px}
-.row input{flex:1;min-width:0;border:0;background:var(--bg);border-radius:10px;padding:10px 12px;font:inherit}
+.row input,.row select{flex:1;min-width:0;border:0;background:var(--bg);border-radius:10px;padding:10px 12px;font:inherit;color:inherit;-webkit-appearance:none;appearance:none}
 .btn{border:0;border-radius:12px;padding:10px 16px;font:600 16px inherit;background:var(--blue);color:#fff;cursor:pointer}
 .btn:disabled{opacity:.4}
 .stack{position:relative;height:min(600px,calc(100dvh - 340px));min-height:400px}
@@ -78,7 +78,7 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   </div>
   <form class="search" id="search">
     <div class="chips" id="kinds"></div>
-    <div class="row"><input id="city" value="Bydgoszcz" placeholder="Miasto" autocomplete="off"><button class="btn" id="go">Szukaj</button></div>
+    <div class="row"><select id="country" aria-label="Kraj"></select><select id="city" aria-label="Miasto"></select><button class="btn" id="go">Szukaj</button></div>
     <button type="button" class="chip" id="recheck" style="margin-top:8px">Szukaj maili jeszcze raz na stronach</button>
   </form>
   <div id="view"></div>
@@ -105,7 +105,7 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   $('kinds').innerHTML = KINDS.map(k => `<button type="button" class="chip" data-k="${k}" aria-pressed="${k === kind}">${k[0].toUpperCase() + k.slice(1)}</button>`).join('');
   $('kinds').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; kind = b.dataset.k; $('kinds').querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); filterCity(true);
     // Nothing of this kind saved yet in this city: look for it on Google right away.
-    if (status === 'new' && !leads.length && $('city').value.trim()) $('search').requestSubmit();
+    if (status === 'new' && !leads.length) $('search').requestSubmit();
   });
 
   let searching = false;
@@ -116,10 +116,9 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     try {
       // Google understands English kinds in every country ("kawiarnia Milano" finds little).
       const EN = { kawiarnia: 'cafe', pizzeria: 'pizzeria', barber: 'barber shop', fryzjer: 'hair salon', piekarnia: 'bakery', cukiernia: 'pastry shop', lodziarnia: 'ice cream shop', restauracja: 'restaurant', kosmetyczka: 'beauty salon', 'myjnia samochodowa': 'car wash' };
-      const city = $('city').value.trim();
-      if (!city) { toast('Wpisz miasto'); return; }
-      // The places are saved under the chosen kind, so the chips always find them again.
-      const r = await Remote.leads({ action: 'find', query: EN[kind] || kind, kind, city });
+      // Saved under the city's label from the menu and the chosen kind, so the menus always find them again.
+      const c = cityOf();
+      const r = await Remote.leads({ action: 'find', query: EN[kind] || kind, kind, city: c[0], place: `${googleCity(c)}, ${cgoogle($('country').value)}` });
       toast(r.added ? `Nowe miejsca: ${r.added} (z ${r.found})` : `Brak nowych: ${r.found} już widzianych`);
       setTab('new');
     } catch (err) { toast(err.message); }
@@ -135,16 +134,53 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   // Only the places of the city in the box (all of them when it's empty); remembered on this device.
   let all = [];
   const norm = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ł/g, 'l').trim();
+  // Countries and their cities, chosen from menus. A place belongs to the city it was searched in
+  // (its name doesn't matter: "Milan Café" in Bydgoszcz stays in Bydgoszcz). [label, name for Google, older spellings]
+  const PLACES = {
+    'Polska|Poland': [['Bydgoszcz'], ['Warszawa'], ['Kraków', 'Krakow'], ['Gdańsk', 'Gdansk'], ['Gdynia'], ['Sopot'], ['Poznań', 'Poznan'], ['Wrocław', 'Wroclaw'], ['Łódź', 'Lodz'], ['Toruń', 'Torun'], ['Katowice'], ['Lublin'], ['Szczecin'], ['Białystok', 'Bialystok'], ['Rzeszów', 'Rzeszow'], ['Olsztyn'], ['Kielce'], ['Opole'], ['Zakopane']],
+    'Włochy|Italy': [['Mediolan', 'Milano', 'Milan'], ['Rzym', 'Roma', 'Rome'], ['Turyn', 'Torino', 'Turin'], ['Florencja', 'Firenze', 'Florence'], ['Bolonia', 'Bologna'], ['Neapol', 'Napoli', 'Naples'], ['Wenecja', 'Venezia', 'Venice'], ['Werona', 'Verona'], ['Genua', 'Genova'], ['Bergamo'], ['Brescia'], ['Palermo'], ['Bari'], ['Padwa', 'Padova']],
+    'Francja|France': [['Paryż', 'Paris'], ['Lyon'], ['Marsylia', 'Marseille'], ['Nicea', 'Nice'], ['Bordeaux'], ['Tuluza', 'Toulouse'], ['Lille'], ['Nantes'], ['Strasburg', 'Strasbourg']],
+    'Hiszpania|Spain': [['Madryt', 'Madrid'], ['Barcelona'], ['Walencja', 'Valencia'], ['Sewilla', 'Sevilla'], ['Malaga', 'Málaga'], ['Bilbao'], ['Palma'], ['Saragossa', 'Zaragoza']],
+    'Niemcy|Germany': [['Berlin'], ['Monachium', 'München', 'Munich'], ['Hamburg'], ['Kolonia', 'Köln', 'Cologne'], ['Frankfurt'], ['Stuttgart'], ['Düsseldorf', 'Dusseldorf'], ['Lipsk', 'Leipzig'], ['Drezno', 'Dresden']],
+    'Wielka Brytania|United Kingdom': [['Londyn', 'London'], ['Manchester'], ['Birmingham'], ['Edynburg', 'Edinburgh'], ['Glasgow'], ['Liverpool'], ['Bristol'], ['Leeds']],
+    'Irlandia|Ireland': [['Dublin'], ['Cork'], ['Galway']],
+    'Holandia|Netherlands': [['Amsterdam'], ['Rotterdam'], ['Haga', 'Den Haag', 'The Hague'], ['Utrecht'], ['Eindhoven']],
+    'Belgia|Belgium': [['Bruksela', 'Bruxelles', 'Brussels'], ['Antwerpia', 'Antwerpen'], ['Gandawa', 'Gent']],
+    'Portugalia|Portugal': [['Lizbona', 'Lisboa', 'Lisbon'], ['Porto'], ['Faro']],
+    'Austria': [['Wiedeń', 'Wien', 'Vienna'], ['Salzburg'], ['Graz'], ['Innsbruck']],
+    'Szwajcaria|Switzerland': [['Zurych', 'Zürich', 'Zurich'], ['Genewa', 'Genève', 'Geneva'], ['Bazylea', 'Basel'], ['Lozanna', 'Lausanne']],
+    'Czechy|Czechia': [['Praga', 'Praha', 'Prague'], ['Brno'], ['Ostrawa', 'Ostrava']],
+    'Dania|Denmark': [['Kopenhaga', 'København', 'Copenhagen'], ['Aarhus']],
+    'Szwecja|Sweden': [['Sztokholm', 'Stockholm'], ['Göteborg', 'Gothenburg'], ['Malmö', 'Malmo']],
+    'Norwegia|Norway': [['Oslo'], ['Bergen']],
+    'Grecja|Greece': [['Ateny', 'Athens'], ['Saloniki', 'Thessaloniki']],
+    'Chorwacja|Croatia': [['Zagrzeb', 'Zagreb'], ['Split'], ['Dubrownik', 'Dubrovnik']],
+    'USA|United States': [['Nowy Jork', 'New York'], ['Los Angeles'], ['Chicago'], ['San Francisco'], ['Miami'], ['Boston'], ['Seattle'], ['Austin']],
+    'Kanada|Canada': [['Toronto'], ['Vancouver'], ['Montreal']],
+    'ZEA|United Arab Emirates': [['Dubaj', 'Dubai'], ['Abu Zabi', 'Abu Dhabi']],
+    'Sri Lanka': [['Kolombo', 'Colombo'], ['Kandy'], ['Galle']],
+    'Australia': [['Sydney'], ['Melbourne'], ['Brisbane'], ['Perth']]
+  };
+  const cname = k => k.split('|')[0], cgoogle = k => k.split('|').pop();
+  const cityOf = () => (PLACES[$('country').value] || []).find(c => c[0] === $('city').value) || [];
+  const googleCity = c => c[c.length > 2 ? 1 : c.length - 1];   // the local name ("Milano"), else the label
+  $('country').innerHTML = Object.keys(PLACES).map(k => `<option value="${k}">${cname(k)}</option>`).join('');
+  function fillCities(keep) { $('city').innerHTML = PLACES[$('country').value].map(c => `<option${c[0] === keep ? ' selected' : ''}>${c[0]}</option>`).join(''); }
   function filterCity(render) {
-    const c = norm($('city').value);
+    const names = cityOf().map(norm);
     const kre = KIND_RE[kind];
     const ofKind = l => l.kind === kind || (!KINDS.includes(l.kind) && kre && kre.test(norm(l.kind + ' ' + l.name)));
-    leads = all.filter(l => (!c || norm(l.city).includes(c) || norm(l.address).includes(c)) && (status !== 'new' || ofKind(l)));
+    leads = all.filter(l => (!names.length || names.includes(norm(String(l.city).split(',')[0]))) && (status !== 'new' || ofKind(l)));
     if (status === 'new') $('c-new').textContent = leads.length ? ' ' + leads.length : '';
     if (render) status === 'new' ? renderStack() : renderList();
   }
-  try { const saved = localStorage.getItem('timbro:leads-city'); if (saved !== null) $('city').value = saved; } catch (e) { /* not saved */ }
-  $('city').addEventListener('input', () => { try { localStorage.setItem('timbro:leads-city', $('city').value); } catch (e) { /* not saved */ } filterCity(true); });
+  let savedPlace = {};
+  try { savedPlace = JSON.parse(localStorage.getItem('timbro:leads-place')) || {}; } catch (e) { /* not saved */ }
+  $('country').value = PLACES[savedPlace.country] ? savedPlace.country : 'Polska|Poland';
+  fillCities(savedPlace.city);
+  const remember = () => { try { localStorage.setItem('timbro:leads-place', JSON.stringify({ country: $('country').value, city: $('city').value })); } catch (e) { /* not saved */ } };
+  $('country').addEventListener('change', () => { fillCities(); remember(); filterCity(true); });
+  $('city').addEventListener('change', () => { remember(); filterCity(true); });
   $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-s]'); if (b) setTab(b.dataset.s); });
   async function setTab(s) {
     status = s;
