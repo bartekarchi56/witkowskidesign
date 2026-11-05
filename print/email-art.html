@@ -5,18 +5,25 @@
 <title>Email art</title>
 <link rel="stylesheet" href="../assets/css/base.css">
 <style>
-/* Pictures for the long proposal e-mail (supabase/functions/leads/, action "proposal"): the hero
-   card on a warm taupe ground, then three card designs, each on its own band (like a premium
-   product newsletter). Rendered by print/make-email-art.js into assets/email/. */
+/* Pictures for the proposal e-mail (supabase/functions/leads/, action "proposal"), in the website's
+   style: white, clean, the blue stamp colour, iPhones floating with real Wallet cards on screen.
+   Rendered by print/make-email-art.js into assets/email/{hero,phones}-<lang>.png. */
 body{margin:0;background:#fff}
-.art{position:relative;overflow:hidden;display:grid;place-items:center}
-.hero{width:600px;height:430px;background:radial-gradient(ellipse at 50% 40%,#D6C8B8 0%,#BFAE9C 70%,#B09E8B 100%)}
-.band{width:600px;height:330px;background:linear-gradient(#F6F5F2,#ECEAE5)}
-.art .pass{max-width:none;border-radius:14px}
-.hero .pass{width:270px;transform:rotate(-9deg) translateY(6px);box-shadow:0 3px 8px rgba(0,0,0,.18),0 50px 70px -30px rgba(40,25,10,.65)}
-.band .pass{width:230px;box-shadow:0 2px 6px rgba(0,0,0,.12),0 36px 50px -26px rgba(0,0,0,.45)}
-.band.l .pass{transform:rotate(-6deg)} .band.r .pass{transform:rotate(6deg)}
-.shadow{position:absolute;bottom:34px;width:240px;height:24px;border-radius:50%;background:rgba(60,40,20,.25);filter:blur(14px)}
+.art{position:relative;overflow:hidden;width:600px}
+.hero{height:460px;background:radial-gradient(ellipse at 50% 55%,#EEF0FF 0%,#F7F7FA 55%,#FFFFFF 100%)}
+.phones{height:400px;background:linear-gradient(#FFFFFF,#F4F5FA)}
+.ph{position:absolute;width:190px;height:390px;border-radius:38px;background:#111;padding:9px;box-sizing:border-box;
+  box-shadow:0 0 0 1.5px #3A3A3E inset,0 2px 4px rgba(0,0,0,.18),0 40px 60px -24px rgba(20,24,80,.45)}
+.ph .scr{position:relative;width:100%;height:100%;border-radius:30px;background:#F2F2F7;overflow:hidden}
+.ph .isl{position:absolute;top:9px;left:50%;width:58px;height:17px;margin-left:-29px;border-radius:10px;background:#000;z-index:3}
+.ph .bar{display:flex;justify-content:space-between;padding:11px 18px 0;font:600 10px/1 -apple-system,Archivo,sans-serif;color:#000}
+.ph .wal{padding:20px 9px 0}
+.ph .wal b{display:block;font:800 17px/1 Archivo,sans-serif;letter-spacing:-.02em;margin:0 3px 9px}
+.ph .pass{max-width:none;width:100%;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.ph .pass .wp-code{display:none}
+.ring{position:absolute;border-radius:50%;border:3px solid #2B32FF}
+.dot{position:absolute;border-radius:50%;background:#2B32FF}
+.shadow{position:absolute;height:22px;border-radius:50%;background:rgba(30,34,90,.22);filter:blur(12px)}
 </style>
 </head>
 <body>
@@ -25,25 +32,44 @@ body{margin:0;background:#fff}
 <script src="../assets/js/config.js"></script>
 <script src="../assets/js/i18n.js"></script>
 <script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/store.js"></script>
 <script src="../assets/js/ui.js"></script>
 <script>
 (async () => {
   const lang = new URLSearchParams(location.search).get('lang') || 'pl';
   I18N.lang = lang;
   const name = { pl: 'Twoja Kawiarnia', it: 'Il tuo Caffè', en: 'Your Café' }[lang];
+  const wallet = { pl: 'Portfel', it: 'Wallet', en: 'Wallet' }[lang];
   const base = { business: name, title: 'Coffee', reward: '☕', stampsNeeded: 8, font: 'sans', hideCount: true, hideReward: true };
-  const CARDS = {
-    hero: { ...base, id: 'h', color: '#1F3B2D', ink: '#E9C894', strip: '#1F3B2D', stamp: 'ziarno' },
-    v1: { ...base, id: 'a', color: '#FFFFFF', ink: '#2B32FF', strip: '#FFFFFF', stamp: 'stella' },
-    v2: { ...base, id: 'b', color: '#B5432C', ink: '#F7E7D3', strip: '#B5432C', stamp: 'ramo' },
-    v3: { ...base, id: 'c', color: '#0E0E10', ink: '#D9C6F2', strip: '#0E0E10', stamp: 'fiore' }
+  const C = {
+    green: { ...base, id: 'g', color: '#1F3B2D', ink: '#E9C894', strip: '#1F3B2D', stamp: 'ziarno' },
+    white: { ...base, id: 'w', color: '#FFFFFF', ink: '#2B32FF', strip: '#FFFFFF', stamp: 'stella' },
+    brick: { ...base, id: 'b', color: '#B5432C', ink: '#F7E7D3', strip: '#B5432C', stamp: 'ramo' },
+    black: { ...base, id: 'k', color: '#0E0E10', ink: '#D9C6F2', strip: '#0E0E10', stamp: 'fiore' },
+    blue: { ...base, id: 'u', color: '#2B32FF', ink: '#FFFFFF', strip: '#2B32FF', stamp: 'sole' }
   };
-  const who = n => ({ id: 'K7M2QX', name: 'Ola K.', stamps: n });
-  await document.fonts.load('600 20px Archivo');
-  document.getElementById('out').innerHTML =
-    `<div class="art hero" id="hero"><div class="shadow"></div>${UI.renderPass(CARDS.hero, who(5), { platform: 'apple', compact: true })}</div>` +
-    ['v1', 'v2', 'v3'].map((k, i) => `<div class="art band ${i % 2 ? 'r' : 'l'}" id="${k}">${UI.renderPass(CARDS[k], who(3 + i), { platform: 'apple', compact: true })}</div>`).join('');
-  await new Promise(r => setTimeout(r, 500));
+  // Real cards from the demo (Parzymy Tutaj, Orsonero, Sowa), name only on the front.
+  const real = id => ({ ...Store.getCard(id), hideCount: true, hideReward: true });
+  const P = real('parzymy'), O = real('orsonero'), S = real('sowa');
+  const phone = (card, n, css) => `<div class="ph" style="${css}"><div class="scr"><div class="isl"></div><div class="bar"><span>9:41</span><span>●●● ▮</span></div><div class="wal"><b>${wallet}</b>${UI.renderPass(card, { id: 'K7M2QX', name: 'Ola K.', stamps: n }, { platform: 'apple', compact: true })}</div></div></div>`;
+  await document.fonts.load('800 17px Archivo');
+  document.getElementById('out').innerHTML = `
+  <div class="art hero" id="hero">
+    <div class="ring" style="width:120px;height:120px;left:40px;top:40px;opacity:.12"></div>
+    <div class="dot" style="width:14px;height:14px;right:70px;top:70px"></div>
+    <div class="ring" style="width:26px;height:26px;right:90px;bottom:70px"></div>
+    <div class="shadow" style="left:150px;bottom:20px;width:300px"></div>
+    ${phone(O, 3, 'left:70px;top:58px;transform:rotate(-12deg) scale(.86)')}
+    ${phone(S, 6, 'right:70px;top:58px;transform:rotate(12deg) scale(.86)')}
+    ${phone(P, 5, 'left:205px;top:28px;transform:rotate(-2deg)')}
+  </div>
+  <div class="art phones" id="phones">
+    <div class="shadow" style="left:60px;bottom:22px;width:480px"></div>
+    ${phone(S, 4, 'left:22px;top:24px;transform:rotate(-6deg) scale(.92)')}
+    ${phone(P, 7, 'left:205px;top:10px;transform:rotate(1deg) scale(.92)')}
+    ${phone(O, 2, 'right:22px;top:24px;transform:rotate(7deg) scale(.92)')}
+  </div>`;
+  await new Promise(r => setTimeout(r, 600));
   window.READY = true;
 })();
 </script>

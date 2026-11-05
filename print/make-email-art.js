@@ -1,4 +1,4 @@
-// Renders print/email-art.html into assets/email/{hero,v1,v2,v3}-<lang>.png (2x) for the
+// Renders print/email-art.html into assets/email/{hero,phones}-<lang>.png (2x) for the
 // proposal e-mail:   node print/make-email-art.js
 const http = require('http'), fs = require('fs'), path = require('path');
 let chromium;
@@ -14,7 +14,7 @@ server.listen(0, async () => {
   for (const lang of ['pl', 'it', 'en']) {
     await p.goto(`http://localhost:${server.address().port}/print/email-art.html?lang=${lang}`);
     await p.waitForFunction(() => window.READY === true);
-    for (const id of ['hero', 'v1', 'v2', 'v3']) await p.locator('#' + id).screenshot({ path: path.join(ROOT, 'assets/email', `${id}-${lang}.png`) });
+    for (const id of ['hero', 'phones']) await p.locator('#' + id).screenshot({ path: path.join(ROOT, 'assets/email', `${id}-${lang}.png`) });
     console.log('✓', lang);
   }
   await b.close(); server.close();

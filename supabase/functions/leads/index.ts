@@ -127,9 +127,9 @@ ${paras.map(p => `<p style="margin:0 0 16px">${esc(p).replace(/\n/g, '<br>')}</p
 </td></tr></table></body></html>`;
 }
 
-// The long e-mail for places that said yes: a premium-newsletter layout (centred, airy, a big light
-// title, the card on a warm taupe ground, three designs one below the other, how it works, the price
-// and a row of features). Pictures: print/email-art.html → assets/email/.
+// The long e-mail for places that said yes, in the website's style: white, Archivo, a wide bold
+// headline with a blue word, blue pills, floating iPhones with real cards (Parzymy Tutaj, Orsonero,
+// Sowa), the three steps and the free month on a blue card. Pictures: print/email-art.html → assets/email/.
 const P = {
   pl: { subject: (n: string) => `Karta lojalnościowa dla ${n}`, label: 'Propozycja dla', title: 'Karta lojalnościowa', sub: 'w telefonie Twoich klientów', demo: 'Zobacz demo',
     closer: 'Z bliska', intro: 'Klient skanuje kod QR przy kasie i karta trafia do Apple Wallet lub Google Wallet. Bez aplikacji do pobrania i bez kartoników. Obsługa dodaje pieczątkę telefonem w dwie sekundy, a telefon sam przypomina klientom o nagrodzie.',
@@ -153,43 +153,50 @@ const P = {
 function proposal(l: any) {
   const lang = /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) || !/,.*,/.test(l.address) ? 'pl' : 'en';
   const t = (P as any)[lang], img = (n: string) => `${SITE}/assets/email/${n}-${lang}.png`;
-  const serif = "font-family:'Helvetica Neue',Helvetica,Arial,sans-serif";
-  const cap = `${serif};font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#7A6E62`;
-  const btn = (href: string, label: string, dark = false) => `<table role="presentation" cellpadding="0" cellspacing="0" align="center"><tr><td style="border:1px solid #2A2522;${dark ? 'background:#2A2522;' : ''}"><a href="${href}" style="display:inline-block;padding:13px 34px;${serif};font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:${dark ? '#ffffff' : '#2A2522'};text-decoration:none">${label}</a></td></tr></table>`;
+  const H = { pl: ['Karta lojalnościowa, której nikt', 'nie gubi.'], it: ['La carta fedeltà che nessuno', 'perde.'], en: ['The loyalty card nobody', 'loses.'] }[lang]!;
+  const SHOW = { pl: ['Prawdziwe karty naszych kawiarni', 'Parzymy Tutaj, Orsonero i Cukiernia Sowa: każda zaprojektowana od zera.'], it: ['Carte vere dei nostri caffè', 'Parzymy Tutaj, Orsonero e Cukiernia Sowa: ognuna disegnata da zero.'], en: ['Real cards from our cafés', 'Parzymy Tutaj, Orsonero and Cukiernia Sowa: each one designed from scratch.'] }[lang]!;
+  const F = "font-family:Archivo,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif";
+  const W = 'font-stretch:125%;font-weight:800;letter-spacing:-.03em';
+  const BLUE = '#2B32FF', INK = '#0B0B0C', MUTED = '#5A5A60';
+  const kicker = (x: string) => `<div style="${F};font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:${BLUE}">${x}</div>`;
+  const pill = (href: string, label: string, filled = true) => `<a href="${href}" style="display:inline-block;padding:14px 26px;border-radius:999px;${F};font-size:15px;font-weight:700;text-decoration:none;${filled ? `background:${BLUE};color:#fff` : `border:1.5px solid ${INK};color:${INK}`}">${label}</a>`;
   const yes = `mailto:${REPLY_TO}?subject=${encodeURIComponent(t.subject(l.name))}&body=${encodeURIComponent(t.ctaBody)}`;
-  const band = (i: number) => `<tr><td style="padding:0"><img src="${img('v' + i)}" width="600" alt="" style="display:block;width:100%;height:auto;border:0"></td></tr>
-<tr><td align="center" style="padding:14px 0 30px;${cap}">${t.looks[i][0]} / ${t.looks[i][1]}</td></tr>`;
-  const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(t.subject(l.name))}</title></head>
-<body style="margin:0;padding:0;background:#EFECE6">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EFECE6"><tr><td align="center" style="padding:24px 10px">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff">
-<tr><td align="center" style="padding:30px 0 22px;${serif};font-size:15px;letter-spacing:.42em;font-weight:700;color:#2A2522">TIMBRO</td></tr>
-<tr><td style="background:#C8B8A7;padding:34px 30px 0" align="center">
-  <div style="${cap};color:#5E5246">${t.label} ${esc(l.name)}</div>
-  <div style="${serif};font-size:44px;line-height:1.05;font-weight:200;letter-spacing:.06em;text-transform:uppercase;color:#2A2522;margin:14px 0 6px">${t.title}</div>
-  <div style="${serif};font-size:15px;color:#4A4038">${t.sub}</div></td></tr>
-<tr><td style="background:#C8B8A7;padding:0"><img src="${img('hero')}" width="600" alt="" style="display:block;width:100%;height:auto;border:0"></td></tr>
-<tr><td style="background:#C8B8A7;padding:6px 0 38px">${btn(`${SITE}/app/card.html?card=the-coffee&lang=${lang}`, t.demo)}</td></tr>
-<tr><td align="center" style="padding:44px 56px 10px">
-  <div style="${cap}">${t.closer}</div>
-  <p style="${serif};font-size:15px;line-height:1.7;color:#4A4038;margin:16px 0 6px">${esc(t.hello(l.name))}</p>
-  <p style="${serif};font-size:15px;line-height:1.7;color:#4A4038;margin:0 0 34px">${t.intro}</p></td></tr>
-${band(1)}${band(2)}${band(3)}
-<tr><td align="center" style="padding:0 60px 40px;${serif};font-size:14px;line-height:1.6;color:#7A6E62;font-style:italic">${t.made}</td></tr>
-<tr><td style="padding:40px 36px;background:#F6F4F0" align="center"><div style="${cap}">${t.how}</div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:22px"><tr>
-  ${t.steps.map((s: string[], i: number) => `<td width="33%" valign="top" align="center" style="padding:0 8px"><div style="${serif};font-size:30px;font-weight:200;color:#2B32FF">0${i + 1}</div><div style="${serif};font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#2A2522;margin:6px 0">${s[0]}</div><div style="${serif};font-size:13px;line-height:1.5;color:#5E5246">${s[1]}</div></td>`).join('')}
-  </tr></table></td></tr>
-<tr><td align="center" style="padding:46px 40px 44px">
-  <div style="${serif};font-size:30px;font-weight:200;letter-spacing:.08em;text-transform:uppercase;color:#2A2522">${t.price}</div>
-  <p style="${serif};font-size:14px;color:#5E5246;margin:10px 0 24px">${t.priceSub}</p>
-  ${btn(yes, t.cta, true)}</td></tr>
-<tr><td style="border-top:1px solid #E6E1D9;padding:26px 20px" align="center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-  ${t.feats.map((f: string, i: number) => `<td width="33%" align="center" valign="top" style="padding:0 6px"><div style="width:34px;height:34px;line-height:34px;border:1px solid #2A2522;border-radius:50%;margin:0 auto 8px;${serif};font-size:14px;color:#2A2522">${['✓', '◎', '✦'][i]}</div><div style="${serif};font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#2A2522">${f}</div></td>`).join('')}
-  </tr></table></td></tr>
-<tr><td align="center" style="padding:20px 20px 30px;${serif};font-size:12px;line-height:1.7;color:#8A8077">${SIGN[0]} · ${SIGN[1]}<br>${SIGN[2]}</td></tr>
+  const demo = `${SITE}/app/card.html?card=the-coffee&lang=${lang}`;
+  const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet"><title>${esc(t.subject(l.name))}</title></head>
+<body style="margin:0;padding:0;background:#F4F4F6">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F4F4F6"><tr><td align="center" style="padding:24px 10px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:24px;overflow:hidden">
+<tr><td style="padding:24px 32px">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+  <td style="${F};font-size:18px;font-weight:800;color:${INK}"><span style="display:inline-block;width:12px;height:12px;border:4px solid ${BLUE};border-radius:50%;vertical-align:-2px;margin-right:8px"></span>Timbro</td>
+  <td align="right"><a href="${SITE}/?lang=${lang}" style="${F};font-size:13px;font-weight:700;color:${BLUE};text-decoration:none">${t.price} →</a></td></tr></table></td></tr>
+<tr><td style="padding:18px 32px 0">
+  ${kicker(`${t.label} ${esc(l.name)}`)}
+  <div style="${F};${W};font-size:42px;line-height:1;color:${INK};margin:14px 0 16px">${H[0]} <span style="color:${BLUE}">${H[1]}</span></div>
+  <p style="${F};font-size:16px;line-height:1.55;color:${MUTED};margin:0 0 22px">${esc(t.hello(l.name))} ${t.intro}</p>
+  ${pill(yes, t.cta)}&nbsp;&nbsp;${pill(demo, t.demo, false)}</td></tr>
+<tr><td style="padding:22px 0 0"><img src="${img('hero')}" width="600" alt="" style="display:block;width:100%;height:auto;border:0"></td></tr>
+<tr><td style="padding:6px 32px 30px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+  ${t.feats.map((f: string) => `<td align="center" style="${F};font-size:13px;font-weight:600;color:${INK};padding:0 4px"><span style="color:${BLUE}">●</span>&nbsp;${f}</td>`).join('')}</tr></table></td></tr>
+<tr><td style="padding:34px 32px 8px;border-top:1px solid #EDEDF0">${kicker(t.how)}
+  <div style="${F};${W};font-size:30px;line-height:1.05;color:${INK};margin:10px 0 18px">${{ pl: 'Trzy kroki i gotowe.', it: 'Tre passi ed è fatta.', en: 'Three steps, done.' }[lang]}</div></td></tr>
+<tr><td style="padding:0 26px 30px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+  ${t.steps.map((st: string[], i: number) => `<td width="33%" valign="top" style="padding:0 6px"><div style="background:#F4F4F6;border-radius:18px;padding:18px 16px;min-height:150px">
+    <div style="width:34px;height:34px;line-height:34px;border-radius:50%;background:${BLUE};color:#fff;text-align:center;${F};font-size:15px;font-weight:800">${i + 1}</div>
+    <div style="${F};font-size:16px;font-weight:800;color:${INK};margin:12px 0 6px">${st[0]}</div>
+    <div style="${F};font-size:13.5px;line-height:1.45;color:${MUTED}">${st[1]}</div></div></td>`).join('')}</tr></table></td></tr>
+<tr><td style="padding:30px 32px 6px;border-top:1px solid #EDEDF0">${kicker(SHOW[0])}
+  <p style="${F};font-size:15px;line-height:1.55;color:${MUTED};margin:10px 0 0">${SHOW[1]}</p></td></tr>
+<tr><td style="padding:14px 0 0"><img src="${img('phones')}" width="600" alt="" style="display:block;width:100%;height:auto;border:0"></td></tr>
+<tr><td style="padding:12px 24px 28px"><div style="background:${BLUE};border-radius:22px;padding:34px 28px;text-align:center">
+  <div style="${F};${W};font-size:34px;line-height:1;color:#fff">${t.price}</div>
+  <p style="${F};font-size:15px;line-height:1.5;color:#DADCFF;margin:12px 0 22px">${t.priceSub}</p>
+  <a href="${yes}" style="display:inline-block;padding:14px 28px;border-radius:999px;background:#fff;color:${BLUE};${F};font-size:15px;font-weight:800;text-decoration:none">${t.cta}</a></div></td></tr>
+<tr><td style="padding:6px 32px 30px;${F};font-size:13px;line-height:1.7;color:#8A8A90">
+  <b style="color:${INK}">${SIGN[0]}</b><br>${esc(SIGN[1])}<br>${SIGN[2]}</td></tr>
 </table></td></tr></table></body></html>`;
-  const text = [t.hello(l.name), '', t.intro, '', t.made, '', ...t.steps.map((s: string[], i: number) => `${i + 1}. ${s[0]}: ${s[1]}`), '', `${t.price}. ${t.priceSub}`, '', `${SITE}/app/card.html?card=the-coffee&lang=${lang}`, '', ...SIGN].join('\n');
+  const text = [t.hello(l.name), '', t.intro, '', t.made, '', ...t.steps.map((s: string[], i: number) => `${i + 1}. ${s[0]}: ${s[1]}`), '', `${t.price}. ${t.priceSub}`, '', demo, '', ...SIGN].join('\n');
   return { subject: t.subject(l.name), text, html };
 }
 
