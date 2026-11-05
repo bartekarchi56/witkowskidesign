@@ -3,8 +3,9 @@
 // short first e-mail that asks for permission to send a proposal (Polish law: no offer by e-mail
 // without consent). Only Witkowski Design accounts (timbro.admins) can use it.
 // Deploy with "Verify JWT" ON. Secrets: GOOGLE_MAPS_KEY (Places API (New)), RESEND_API_KEY;
-// optional LEADS_FROM (default "Bartek Witkowski <bartek@witkowskidesign.com>", a sender verified in
-// Resend) and LEADS_REPLY_TO (default bartek.archi56@gmail.com).
+// optional LEADS_FROM (default "Timbro · Bartek Witkowski <timbro@witkowskidesign.com>": Resend sends only
+// from the verified domain, not from a @gmail.com address) and LEADS_REPLY_TO, where replies go
+// (default bartek.archi56@gmail.com; e.g. timbro.witkowskidesign@gmail.com).
 //   POST { action: 'find', query: 'kawiarnia', city: 'Bydgoszcz' }   → { added, found }
 //   POST { action: 'list', status: 'new' }                          → leads
 //   POST { action: 'skip' | 'manual' | 'replied' | 'sent', place: id }   (sent: written by hand, e.g. on Instagram)
@@ -14,7 +15,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const serverKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || (() => { try { return Object.values(JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}'))[0] as string; } catch { return ''; } })();
 const db = createClient(Deno.env.get('SUPABASE_URL')!, serverKey, { db: { schema: 'timbro' } });
 const GKEY = Deno.env.get('GOOGLE_MAPS_KEY') ?? '';
-const FROM = Deno.env.get('LEADS_FROM') || 'Bartek Witkowski <bartek@witkowskidesign.com>';
+const FROM = Deno.env.get('LEADS_FROM') || 'Timbro · Bartek Witkowski <timbro@witkowskidesign.com>';
 const REPLY_TO = Deno.env.get('LEADS_REPLY_TO') || 'bartek.archi56@gmail.com';
 const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, x-client-info, apikey, content-type' };
 const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'content-type': 'application/json' } });
@@ -96,7 +97,33 @@ function draft(l: any) {
       'May I send you a short proposal with a card design for your place? Just reply “yes” to this e-mail.', '',
       'If you are not interested, please ignore this message: I will not write again.', '', 'Best regards']]
   }[lang] as [string, string[]];
-  return { subject: T[0], text: [...T[1], ...SIGN].join('\n'), lang };
+  return { subject: T[0], text: [...T[1], ...SIGN].join('\n'), html: html(lang, T[0], T[1]), lang };
+}
+
+// The same e-mail as a page in the website's style: the banner (print/email-banner.html), the
+// text, a blue "reply yes" button and the signature. Plain tables and inline styles, for e-mail apps.
+const SITE = 'https://timbro.witkowskidesign.com';
+const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function html(lang: string, subject: string, lines: string[]) {
+  const B = { pl: ['Tak, wyślij propozycję', 'Zobacz, jak to działa', 'Tak, chętnie zobaczę propozycję.'], it: ['Sì, inviatemi la proposta', 'Guarda come funziona', 'Sì, vorrei vedere la proposta.'], en: ['Yes, send me the proposal', 'See how it works', 'Yes, I would like to see the proposal.'] }[lang]!;
+  const yes = `mailto:${REPLY_TO}?subject=${encodeURIComponent('Re: ' + subject)}&body=${encodeURIComponent(B[2])}`;
+  const paras = lines.join('\n').split('\n\n').map(p => p.trim()).filter(Boolean);
+  const close = paras.pop() ?? '';
+  const font = "font-family:Archivo,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif";
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(subject)}</title></head>
+<body style="margin:0;padding:0;background:#EDEAE2">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EDEAE2"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:18px;overflow:hidden">
+<tr><td><a href="${SITE}/?lang=${lang}"><img src="${SITE}/assets/email/banner-${lang}.png" width="600" alt="Timbro" style="display:block;width:100%;height:auto;border:0"></a></td></tr>
+<tr><td style="padding:28px 34px 8px;${font};font-size:16px;line-height:1.55;color:#0B0B0C">
+${paras.map(p => `<p style="margin:0 0 16px">${esc(p).replace(/\n/g, '<br>')}</p>`).join('')}
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 22px"><tr>
+<td style="background:#2B32FF;border-radius:999px"><a href="${yes}" style="display:inline-block;padding:13px 24px;${font};font-size:15px;font-weight:700;color:#ffffff;text-decoration:none">${B[0]}</a></td>
+<td style="padding-left:16px"><a href="${SITE}/?lang=${lang}" style="${font};font-size:15px;font-weight:600;color:#2B32FF;text-decoration:none">${B[1]} →</a></td></tr></table>
+<p style="margin:0 0 4px">${esc(close)}</p>
+<p style="margin:0 0 24px"><b>${SIGN[0]}</b><br><span style="color:#5A5A60;font-size:14px">${esc(SIGN[1])}<br>${SIGN[2]}</span></p>
+</td></tr></table>
+</td></tr></table></body></html>`;
 }
 
 Deno.serve(async req => {
@@ -124,7 +151,7 @@ Deno.serve(async req => {
         if (!l.email) return reply({ error: 'No e-mail for this place.' }, 400);
         const r = await fetch('https://api.resend.com/emails', {
           method: 'POST', headers: { authorization: `Bearer ${Deno.env.get('RESEND_API_KEY') ?? ''}`, 'content-type': 'application/json' },
-          body: JSON.stringify({ from: FROM, to: [l.email], reply_to: REPLY_TO, subject: mail.subject, text: mail.text })
+          body: JSON.stringify({ from: FROM, to: [l.email], reply_to: REPLY_TO, subject: mail.subject, text: mail.text, html: mail.html })
         });
         if (!r.ok) { console.error('resend', r.status, await r.text()); return reply({ error: 'E-mail not sent. Try again.' }, 502); }
         await db.rpc('leads_set', { p_place: place, p_status: 'sent' });

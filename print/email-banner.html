@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Email banner</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* The banner at the top of the leads e-mail (supabase/functions/leads/), in the website's style:
+   cream, ink, the blue stamp colour, Archivo, real Wallet cards. 600x300 shown, rendered at 2x by
+   print/make-email-banner.js into assets/email/banner-<lang>.png. */
+body{margin:0;background:#fff}
+#b{width:600px;height:300px;position:relative;overflow:hidden;background:#F4F1EA;font-family:var(--font);color:#0B0B0C}
+.txt{position:absolute;left:34px;top:34px;width:268px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:17px;letter-spacing:-.01em}
+.brand i{width:18px;height:18px;border-radius:50%;border:4px solid var(--pop);box-sizing:border-box}
+h1{font-size:31px;line-height:1.02;font-weight:800;font-stretch:112%;letter-spacing:-.035em;margin:22px 0 10px}
+h1 em{font-style:normal;color:var(--pop)}
+p{font-size:13.5px;line-height:1.35;color:#3A3A3E;margin:0 0 16px}
+.pill{display:inline-block;background:var(--pop);color:#fff;font-weight:700;font-size:13px;border-radius:999px;padding:8px 14px}
+.cards{position:absolute;right:-34px;top:28px;width:300px;height:300px}
+.cards .c{position:absolute;width:210px}
+.cards .c .pass{max-width:none;width:210px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.12),0 24px 40px -18px rgba(0,0,0,.45)}
+.c1{left:0;top:26px;transform:rotate(-7deg)} .c2{left:84px;top:0;transform:rotate(5deg)}
+.stamp{position:absolute;right:26px;bottom:18px;width:74px;height:74px;border-radius:50%;border:3px solid var(--pop);color:var(--pop);display:grid;place-items:center;transform:rotate(-14deg);font:800 11px/1.05 var(--font);text-align:center;letter-spacing:.04em;background:rgba(244,241,234,.9)}
+</style>
+</head>
+<body>
+<div id="b"></div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+(async () => {
+  const lang = new URLSearchParams(location.search).get('lang') || 'pl';
+  I18N.lang = lang;
+  const T = {
+    pl: ['Karta lojalnościowa <em>w telefonie</em>.', 'Klienci zbierają pieczątki w Apple i Google Wallet. Bez aplikacji, bez kartoników.', '30 dni za darmo', 'BEZ<br>APLIKACJI'],
+    it: ['La carta fedeltà <em>nel telefono</em>.', 'I clienti raccolgono i timbri in Apple e Google Wallet. Senza app, senza cartoncini.', '30 giorni gratis', 'SENZA<br>APP'],
+    en: ['The loyalty card, <em>on the phone</em>.', 'Customers collect stamps in Apple and Google Wallet. No app, no paper cards.', '30 days free', 'NO<br>APP']
+  }[lang];
+  const A = { id: 'a', business: lang === 'pl' ? 'Twoja Kawiarnia' : lang === 'it' ? 'Il tuo Caffè' : 'Your Café', title: 'Coffee', reward: '☕', stampsNeeded: 8, color: '#1F3B2D', ink: '#E9C894', strip: '#1F3B2D', stamp: 'ziarno', font: 'sans', hideCount: true, hideReward: true };
+  const B = { ...A, id: 'b', color: '#FFFFFF', ink: '#2B32FF', strip: '#FFFFFF', stamp: 'stella' };
+  const who = n => ({ id: 'K7M2QX', name: 'Ola K.', stamps: n });
+  await document.fonts.load('800 36px Archivo');
+  document.getElementById('b').innerHTML = `
+    <div class="txt"><div class="brand"><i></i>Timbro</div><h1>${T[0]}</h1><p>${T[1]}</p><span class="pill">${T[2]}</span></div>
+    <div class="cards"><div class="c c1">${UI.renderPass(A, who(5), { platform: 'apple', compact: true })}</div><div class="c c2">${UI.renderPass(B, who(3), { platform: 'apple', compact: true })}</div></div>`;
+  await new Promise(r => setTimeout(r, 500));
+  window.READY = true;
+})();
+</script>
+</body>
+</html>
