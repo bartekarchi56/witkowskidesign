@@ -155,6 +155,9 @@ function proposal(l: any) {
   const t = (P as any)[lang], img = (n: string) => `${SITE}/assets/email/${n}-${lang}.png`;
   const H = { pl: ['Karta lojalnościowa, której nikt', 'nie gubi.'], it: ['La carta fedeltà che nessuno', 'perde.'], en: ['The loyalty card nobody', 'loses.'] }[lang]!;
   const SHOW = { pl: ['Prosto i w Twoim stylu', 'Minimalistyczna, klasyczna albo nocna: każdą kartę projektujemy od zera, w stylu Twojego lokalu. Parzymy Tutaj z Bydgoszczy już dołączyło do Timbro.'], it: ['Semplice, nel tuo stile', 'Minimal, classica o notturna: ogni carta la disegniamo da zero, nello stile del tuo locale. Parzymy Tutaj di Bydgoszcz è già entrato in Timbro.'], en: ['Simple, in your style', 'Minimal, classic or after dark: we design every card from scratch, in your style. Parzymy Tutaj from Bydgoszcz has already joined Timbro.'] }[lang]!;
+  const WAL = { pl: ['Zawsze pod ręką', 'W Portfelu, obok karty płatniczej.', 'Klient nie szuka kartonika ani aplikacji: Twoja karta jest w Apple Wallet, tuż przy karcie, którą płaci. Jedno przesunięcie i pokazuje ją przy kasie.'],
+    it: ['Sempre a portata di mano', 'Nel Wallet, accanto alla carta di pagamento.', "Il cliente non cerca cartoncini né app: la tua carta è in Apple Wallet, proprio accanto alla carta con cui paga. Un gesto e la mostra alla cassa."],
+    en: ['Always at hand', 'In Wallet, next to their bank card.', 'No paper card or app to look for: your card sits in Apple Wallet, right next to the card they pay with. One swipe and they show it at the till.'] }[lang]!;
   const F = "font-family:Archivo,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif";
   const W = 'font-stretch:125%;font-weight:800;letter-spacing:-.03em';
   const BLUE = '#2B32FF', INK = '#0B0B0C', MUTED = '#5A5A60';
@@ -189,6 +192,10 @@ function proposal(l: any) {
 <tr><td style="padding:30px 32px 6px;border-top:1px solid #EDEDF0">${kicker(SHOW[0])}
   <p style="${F};font-size:15px;line-height:1.55;color:${MUTED};margin:10px 0 0">${SHOW[1]}</p></td></tr>
 <tr><td style="padding:14px 0 0"><img src="${img('phones')}" width="600" alt="" style="display:block;width:100%;height:auto;border:0"></td></tr>
+<tr><td style="padding:30px 32px 6px;border-top:1px solid #EDEDF0">${kicker(WAL[0])}
+  <div style="${F};${W};font-size:30px;line-height:1.05;color:${INK};margin:10px 0 10px">${WAL[1]}</div>
+  <p style="${F};font-size:15px;line-height:1.55;color:${MUTED};margin:0">${WAL[2]}</p></td></tr>
+<tr><td style="padding:14px 0 0"><img src="${img('stack')}" width="600" alt="" style="display:block;width:100%;height:auto;border:0"></td></tr>
 <tr><td style="padding:12px 24px 28px"><div style="background:${BLUE};border-radius:22px;padding:34px 28px;text-align:center">
   <div style="${F};${W};font-size:34px;line-height:1;color:#fff">${t.price}</div>
   <p style="${F};font-size:15px;line-height:1.5;color:#DADCFF;margin:12px 0 22px">${t.priceSub}</p>

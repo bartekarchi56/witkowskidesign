@@ -23,6 +23,16 @@ body{margin:0;background:#fff}
 .ph .pass .wp-code{display:none}
 .ring{position:absolute;border-radius:50%;border:3px solid #2B32FF}
 .dot{position:absolute;border-radius:50%;background:#2B32FF}
+.stk{height:440px;background:radial-gradient(ellipse at 50% 60%,#EEF0FF 0%,#F7F7FA 55%,#FFFFFF 100%)}
+.big{width:236px;height:480px;border-radius:46px;padding:10px;left:182px;top:22px}
+.big .scr{border-radius:37px}
+.big .wal{padding:24px 11px 0}
+.big .wal b{font-size:22px;margin:0 4px 12px;display:flex;justify-content:space-between;align-items:center}
+.big .wal b i{width:22px;height:22px;border-radius:50%;background:#2B32FF;color:#fff;font:700 16px/22px Archivo;text-align:center;font-style:normal}
+.slot{height:44px;overflow:hidden;border-radius:12px 12px 0 0;margin-bottom:0}
+.slot.last{height:auto}
+.slot .pass{zoom:.675 !important;width:286px !important}
+.bank{height:150px;border-radius:12px;background:linear-gradient(135deg,#3B3F4A,#15161A);padding:12px;box-sizing:border-box;color:#fff;font:600 12px Archivo}
 .shadow{position:absolute;height:22px;border-radius:50%;background:rgba(30,34,90,.22);filter:blur(12px)}
 </style>
 </head>
@@ -72,6 +82,22 @@ body{margin:0;background:#fff}
     ${phone(O, 7, 'left:205px;top:10px;transform:rotate(1deg) scale(.92)')}
     ${phone(S, 6, 'right:22px;top:24px;transform:rotate(7deg) scale(.92)')}
   </div>`;
+  const pass = (card, n) => UI.renderPass(card, { id: 'K7M2QX', name: 'Ola K.', stamps: n }, { platform: 'apple', compact: true });
+  const bankName = { pl: 'Karta płatnicza', it: 'Carta di pagamento', en: 'Debit card' }[lang];
+  document.getElementById('out').insertAdjacentHTML('beforeend', `
+  <div class="art stk" id="stack">
+    <div class="ring" style="width:140px;height:140px;left:40px;top:60px;opacity:.12"></div>
+    <div class="dot" style="width:14px;height:14px;right:80px;top:80px"></div>
+    <div class="ring" style="width:26px;height:26px;right:110px;bottom:80px"></div>
+    <div class="shadow" style="left:170px;bottom:6px;width:260px"></div>
+    <div class="ph big"><div class="scr"><div class="isl"></div><div class="bar"><span>9:41</span><span>●●● ▮</span></div>
+      <div class="wal"><b>${wallet}<i>+</i></b>
+        <div class="slot"><div class="bank">${bankName}<br><span style="opacity:.6;font-weight:400">•••• 4821</span></div></div>
+        <div class="slot">${pass(Z, 5)}</div>
+        <div class="slot">${pass(S, 6)}</div>
+        <div class="slot last">${pass(O, 7)}</div>
+      </div></div></div>
+  </div>`);
   await new Promise(r => setTimeout(r, 600));
   window.READY = true;
 })();
