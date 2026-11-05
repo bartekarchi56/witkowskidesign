@@ -155,7 +155,14 @@ const P = {
     price: '30 days free', priceSub: 'Then from €19 a month. Cancel any time.', cta: 'Design my card', ctaBody: 'I would like a loyalty card for our place.',
     feats: ['No app', 'Apple and Google Wallet', 'Ready in a few days'], hello: (n: string) => `Hello, thank you for your reply! Here is, in short, how a card for ${n} could look.` }
 };
-function proposal(l: any) {
+// The first e-mail is the same page, opening with an introduction instead of "thanks for your reply",
+// and ending with the promise not to write again.
+const FIRST: Record<string, { hello: (n: string) => string; optout: string }> = {
+  pl: { hello: n => `Dzień dobry! Nazywam się Bartek Witkowski (Witkowski Design) i projektuję karty lojalnościowe w telefonie. Tak mogłaby wyglądać karta dla ${n}.`, optout: 'Jeśli to nie dla Was, proszę zignorować tę wiadomość: nie napiszę ponownie.' },
+  it: { hello: n => `Buongiorno! Sono Bartek Witkowski (Witkowski Design) e disegno carte fedeltà nel telefono. Ecco come potrebbe essere la carta per ${n}.`, optout: 'Se non fa per voi, ignorate pure questo messaggio: non scriverò di nuovo.' },
+  en: { hello: n => `Hello! I'm Bartek Witkowski (Witkowski Design) and I design phone loyalty cards. This is how a card for ${n} could look.`, optout: 'If it is not for you, please ignore this message: I will not write again.' }
+};
+function proposal(l: any, first = false) {
   const lang = /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) || !/,.*,/.test(l.address) ? 'pl' : 'en';
   const t = (P as any)[lang], img = (n: string) => `${SITE}/assets/email/${n}-${lang}.png`;
   const H = { pl: ['Karta lojalnościowa, której nikt', 'nie gubi.'], it: ['La carta fedeltà che nessuno', 'perde.'], en: ['The loyalty card nobody', 'loses.'] }[lang]!;
@@ -182,7 +189,7 @@ function proposal(l: any) {
 <tr><td style="padding:18px 32px 0">
   ${kicker(`${t.label} ${esc(l.name)}`)}
   <div style="${F};${W};font-size:42px;line-height:1;color:${INK};margin:14px 0 16px">${H[0]} <span style="color:${BLUE}">${H[1]}</span></div>
-  <p style="${F};font-size:16px;line-height:1.55;color:${MUTED};margin:0 0 22px">${esc(t.hello(l.name))} ${t.intro}</p>
+  <p style="${F};font-size:16px;line-height:1.55;color:${MUTED};margin:0 0 22px">${esc(first ? FIRST[lang].hello(l.name) : t.hello(l.name))} ${t.intro}</p>
   ${pill(yes, t.cta)}&nbsp;&nbsp;${pill(demo, t.demo, false)}</td></tr>
 <tr><td style="padding:22px 0 0"><img src="${img('hero')}" width="600" alt="" style="display:block;width:100%;height:auto;border:0"></td></tr>
 <tr><td style="padding:6px 32px 30px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
@@ -205,10 +212,11 @@ function proposal(l: any) {
   <div style="${F};${W};font-size:34px;line-height:1;color:#fff">${t.price}</div>
   <p style="${F};font-size:15px;line-height:1.5;color:#DADCFF;margin:12px 0 22px">${t.priceSub}</p>
   <a href="${yes}" style="display:inline-block;padding:14px 28px;border-radius:999px;background:#fff;color:${BLUE};${F};font-size:15px;font-weight:800;text-decoration:none">${t.cta}</a></div></td></tr>
+${first ? `<tr><td style="padding:4px 32px 14px;${F};font-size:13px;line-height:1.6;color:#8A8A90">${FIRST[lang].optout}</td></tr>` : ''}
 <tr><td style="padding:6px 32px 30px;${F};font-size:13px;line-height:1.7;color:#8A8A90">
   <b style="color:${INK}">${SIGN[0]}</b><br>${esc(SIGN[1])}<br>${SIGN[2]}</td></tr>
 </table></td></tr></table></body></html>`;
-  const text = [t.hello(l.name), '', t.intro, '', t.made, '', ...t.steps.map((s: string[], i: number) => `${i + 1}. ${s[0]}: ${s[1]}`), '', `${t.price}. ${t.priceSub}`, '', demo, '', ...SIGN].join('\n');
+  const text = [first ? FIRST[lang].hello(l.name) : t.hello(l.name), '', t.intro, '', t.made, '', ...t.steps.map((s: string[], i: number) => `${i + 1}. ${s[0]}: ${s[1]}`), '', `${t.price}. ${t.priceSub}`, '', demo, '', ...(first ? [FIRST[lang].optout, ''] : []), ...SIGN].join('\n');
   return { subject: t.subject(l.name), text, html };
 }
 
@@ -244,7 +252,7 @@ Deno.serve(async req => {
       case 'preview': case 'send': {
         const { data: l } = await db.rpc('leads_get', { p_place: place });
         if (!l) return reply({ error: 'Not found.' }, 404);
-        const mail = draft(l);
+        const mail = proposal(l, true);
         if (b.action === 'preview') return reply(mail);
         if (l.status === 'sent') return reply({ error: 'Already sent.' }, 409);
         if (!l.email) return reply({ error: 'No e-mail for this place.' }, 400);
