@@ -121,12 +121,24 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     try { const r = await Remote.leads({ action: 'recheck' }); toast(r.found ? `Znalezione nowe maile: ${r.found}` : 'Nie znalazłem nowych maili'); setTab(status); } catch (err) { toast(err.message); }
     b.disabled = false; b.textContent = 'Szukaj maili jeszcze raz na stronach';
   });
+  // Only the places of the city in the box (all of them when it's empty); remembered on this device.
+  let all = [];
+  const norm = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ł/g, 'l').trim();
+  function filterCity(render) {
+    const c = norm($('city').value);
+    leads = c ? all.filter(l => norm(l.city).includes(c) || norm(l.address).includes(c)) : all.slice();
+    if (status === 'new') $('c-new').textContent = leads.length ? ' ' + leads.length : '';
+    if (render) status === 'new' ? renderStack() : renderList();
+  }
+  try { const saved = localStorage.getItem('timbro:leads-city'); if (saved !== null) $('city').value = saved; } catch (e) { /* not saved */ }
+  $('city').addEventListener('input', () => { try { localStorage.setItem('timbro:leads-city', $('city').value); } catch (e) { /* not saved */ } filterCity(true); });
   $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-s]'); if (b) setTab(b.dataset.s); });
   async function setTab(s) {
     status = s;
     $('tabs').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.s === s)));
     $('search').hidden = s !== 'new';
-    try { leads = await Remote.leads({ action: 'list', status: s }); } catch (err) { leads = []; toast(err.message); }
+    try { all = await Remote.leads({ action: 'list', status: s }); } catch (err) { all = []; toast(err.message); }
+    filterCity();
     if (s === 'new') $('c-new').textContent = leads.length ? ' ' + leads.length : '';
     s === 'new' ? renderStack() : renderList();
   }
