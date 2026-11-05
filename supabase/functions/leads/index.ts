@@ -7,7 +7,7 @@
 // Resend) and LEADS_REPLY_TO (default bartek.archi56@gmail.com).
 //   POST { action: 'find', query: 'kawiarnia', city: 'Bydgoszcz' }   → { added, found }
 //   POST { action: 'list', status: 'new' }                          → leads
-//   POST { action: 'skip' | 'manual' | 'replied', place: id }
+//   POST { action: 'skip' | 'manual' | 'replied' | 'sent', place: id }   (sent: written by hand, e.g. on Instagram)
 //   POST { action: 'preview', place: id } / { action: 'send', place: id }   → { subject, text } / { sent }
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
@@ -36,7 +36,9 @@ async function page(url: string) {
 }
 // The website's public e-mail (homepage, then a contact page) and any loyalty programme it mentions.
 async function readSite(site: string) {
-  if (!/^https?:\/\//.test(site) || /facebook\.com|instagram\.com/i.test(site)) return { email: '', loyalty: '' };
+  const igOf = (t: string) => (/instagram\.com\/([A-Za-z0-9_.]{2,30})/i.exec(t)?.[1] ?? '').replace(/^(p|reel|explore|accounts|stories)$/i, '');
+  if (/instagram\.com/i.test(site)) return { email: '', loyalty: '', instagram: igOf(site) };
+  if (!/^https?:\/\//.test(site) || /facebook\.com/i.test(site)) return { email: '', loyalty: '', instagram: '' };
   let html = await page(site);
   const find = (h: string) => [...new Set([...h.matchAll(/mailto:([^"'?\s>]+)/gi)].map(m => decodeURIComponent(m[1])).concat(h.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi) ?? []))]
     .map(e => e.toLowerCase().trim()).filter(e => !BAD_MAIL.test(e));
@@ -49,7 +51,7 @@ async function readSite(site: string) {
   const email = mails.find(e => e.endsWith(host)) ?? mails[0] ?? '';
   const text = html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ');
   const loyalty = LOYALTY.find(([re]) => re.test(text))?.[1] ?? '';
-  return { email, loyalty };
+  return { email, loyalty, instagram: igOf(html) };
 }
 
 async function find(query: string, city: string) {
@@ -71,7 +73,7 @@ async function find(query: string, city: string) {
     const site = await readSite(p.websiteUri ?? '');
     return { place_id: p.id, name: p.displayName?.text ?? '', kind: p.primaryTypeDisplayName?.text ?? query, address: p.formattedAddress ?? '', city,
       rating: p.rating ?? '', reviews: p.userRatingCount ?? '', website: p.websiteUri ?? '', email: site.email, phone: p.nationalPhoneNumber ?? '',
-      maps_url: p.googleMapsUri ?? '', summary: p.editorialSummary?.text ?? '', photos, loyalty: site.loyalty };
+      maps_url: p.googleMapsUri ?? '', summary: p.editorialSummary?.text ?? '', photos, loyalty: site.loyalty, instagram: site.instagram };
   }));
   const { data: added, error } = await db.rpc('leads_add', { p_leads: leads });
   if (error) throw error;
@@ -111,7 +113,7 @@ Deno.serve(async req => {
     switch (b.action) {
       case 'find': return reply(await find(String(b.query ?? 'kawiarnia').slice(0, 60), String(b.city ?? '').slice(0, 60)));
       case 'list': { const { data } = await db.rpc('leads_list', { p_status: ['new', 'sent', 'skipped', 'manual', 'replied'].includes(b.status) ? b.status : 'new' }); return reply(data ?? []); }
-      case 'skip': case 'manual': case 'replied':
+      case 'skip': case 'manual': case 'replied': case 'sent':
         await db.rpc('leads_set', { p_place: place, p_status: b.action === 'skip' ? 'skipped' : b.action }); return reply({ ok: true });
       case 'preview': case 'send': {
         const { data: l } = await db.rpc('leads_get', { p_place: place });

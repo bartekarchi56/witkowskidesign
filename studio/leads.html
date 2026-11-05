@@ -52,7 +52,7 @@ h1{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:8px 0 12px}
 .links a{color:var(--blue);text-decoration:none}
 details{margin-top:10px;font-size:14px}
 summary{color:var(--blue);cursor:pointer;font-size:15px}
-pre{white-space:pre-wrap;font:14px/1.4 inherit;background:var(--bg);border-radius:10px;padding:10px;margin:8px 0 0;color:var(--ink2)}
+pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;background:var(--bg);border-radius:10px;padding:10px;margin:8px 0 0;color:var(--ink2)}
 .actions{display:flex;justify-content:center;gap:28px;margin-top:16px}
 .round{width:64px;height:64px;border-radius:50%;border:0;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.12);font-size:28px;cursor:pointer;display:grid;place-items:center}
 .round.no{color:var(--red)} .round.yes{color:#fff;background:var(--blue)}
@@ -120,14 +120,30 @@ pre{white-space:pre-wrap;font:14px/1.4 inherit;background:var(--bg);border-radiu
     s === 'new' ? renderStack() : renderList();
   }
 
+  // ---------- Instagram: places without an e-mail ----------
+  // Instagram doesn't let apps start conversations, so the message is copied and their chat opened:
+  // paste and tap Send. Same question as the e-mail (permission first), in the place's language.
+  const langOf = l => /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) || !/,.*,/.test(l.address) ? 'pl' : 'en';
+  const dm = l => ({
+    pl: `Dzień dobry! Jestem Bartek z Witkowski Design. Projektuję karty lojalnościowe w telefonie (Apple i Google Wallet) dla lokali takich jak ${l.name}: klient zbiera pieczątki w telefonie, bez aplikacji i kartoników. Czy mogę przesłać krótką propozycję z projektem karty dla Was?`,
+    it: `Ciao! Sono Bartek di Witkowski Design. Disegno carte fedeltà nel telefono (Apple e Google Wallet) per locali come ${l.name}: i clienti raccolgono i timbri nel telefono, senza app né cartoncini. Posso mandarvi una breve proposta con il design della vostra carta?`,
+    en: `Hi! I'm Bartek from Witkowski Design. I design phone loyalty cards (Apple and Google Wallet) for places like ${l.name}: customers collect stamps on their phone, no app and no paper cards. May I send you a short proposal with a card design for you?`
+  })[langOf(l)];
+  async function instagram(l) {
+    try { await navigator.clipboard.writeText(dm(l)); } catch (e) { /* the clipboard may be blocked */ }
+    window.open(l.instagram ? `https://ig.me/m/${encodeURIComponent(l.instagram)}` : `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(l.name + ' ' + (l.city || ''))}`, '_blank', 'noopener');
+    toast(l.instagram ? 'Wiadomość skopiowana: wklej ją na Instagramie i wyślij' : 'Wiadomość skopiowana. Nie znalazłem ich Instagrama: szukam po nazwie');
+  }
+
   // ---------- the other tabs: a plain list ----------
   function renderList() {
     const label = { sent: 'Odpisali', manual: 'Pominięte', skipped: 'Przywróć' }[status];
-    $('view').innerHTML = leads.length ? `<div class="list">${leads.slice().reverse().map(l => `<div class="item"><div><b>${esc(l.name)}</b><small>${esc(l.kind)} · ${esc(l.email || l.phone || l.address)}</small></div>
-      ${status === 'sent' ? `<button data-a="replied" data-p="${esc(l.place_id)}">${label}</button>` : status === 'manual' ? `<a class="btn" style="font-size:13px;padding:6px 10px" href="${esc(l.maps_url)}" target="_blank">Mapy</a>` : ''}</div>`).join('')}</div>`
+    $('view').innerHTML = leads.length ? `<div class="list">${leads.slice().reverse().map(l => `<div class="item"><div><b>${esc(l.name)}</b><small>${esc(l.kind)} · ${esc(l.email || (l.instagram ? '@' + l.instagram : '') || l.phone || l.address)}</small></div>
+      ${status === 'sent' ? `<button data-a="replied" data-p="${esc(l.place_id)}">${label}</button>` : status === 'manual' ? `<span style="display:flex;gap:6px"><button data-ig="${esc(l.place_id)}">Instagram</button><button data-a="sent" data-p="${esc(l.place_id)}">Wysłane ✓</button></span>` : ''}</div>`).join('')}</div>`
       : '<p class="hint">Pusto.</p>';
   }
   $('view').addEventListener('click', async e => {
+    const ig = e.target.closest('[data-ig]'); if (ig) return instagram(leads.find(l => l.place_id === ig.dataset.ig));
     const b = e.target.closest('[data-a]'); if (!b) return;
     await Remote.leads({ action: b.dataset.a, place: b.dataset.p }); toast('Zapisano'); setTab(status);
   });
@@ -139,25 +155,25 @@ pre{white-space:pre-wrap;font:14px/1.4 inherit;background:var(--bg);border-radiu
     return `<div class="lead${back ? ' back' : ''}" data-p="${esc(l.place_id)}">
       <div class="pics">${pics}</div>
       ${(l.photos || []).length > 1 ? `<div class="dots">${l.photos.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}
-      <div class="stampbadge yes">${l.email ? 'WYŚLIJ' : 'NA PÓŹNIEJ'}</div><div class="stampbadge no">POMIŃ</div>
+      <div class="stampbadge yes">${l.email ? 'WYŚLIJ' : 'INSTAGRAM'}</div><div class="stampbadge no">POMIŃ</div>
       <div class="info">
         <h2>${esc(l.name)}</h2>
         <p class="sub">${esc(l.kind)}${l.rating ? ` · ★ ${l.rating}${l.reviews ? ` (${l.reviews})` : ''}` : ''}</p>
         <p class="sub">${esc(l.address)}</p>
         ${l.summary ? `<p class="desc">${esc(l.summary)}</p>` : ''}
-        <div class="tags">${loyal}${l.email ? `<span class="tag blue">${esc(l.email)}</span>` : '<span class="tag">Brak e-maila</span>'}${l.phone ? `<span class="tag">${esc(l.phone)}</span>` : ''}</div>
+        <div class="tags">${loyal}${l.email ? `<span class="tag blue">${esc(l.email)}</span>` : `<span class="tag">Brak e-maila</span>${l.instagram ? `<span class="tag blue">Instagram @${esc(l.instagram)}</span>` : ''}`}${l.phone ? `<span class="tag">${esc(l.phone)}</span>` : ''}</div>
         <div class="links">${l.website ? `<a href="${esc(l.website)}" target="_blank" rel="noopener">Strona</a>` : ''}${l.maps_url ? `<a href="${esc(l.maps_url)}" target="_blank" rel="noopener">Mapy Google</a>` : ''}</div>
-        ${l.email ? '<details><summary>Treść maila</summary><pre>…</pre></details>' : ''}
+        ${l.email ? '<details><summary>Treść maila</summary><pre>…</pre></details>' : `<details open><summary>Wiadomość na Instagram</summary><pre>${esc(dm(l))}</pre></details>`}
       </div></div>`;
   }
   function renderStack() {
     $('view').innerHTML = `<div class="stack" id="stack">${leads.length ? leads.slice(0, 2).reverse().map((l, i, a) => card(l, i < a.length - 1)).join('') : '<div class="empty">Brak nowych miejsc.<br>Wybierz rodzaj i miasto, potem „Szukaj”.</div>'}</div>
-      ${leads.length ? `<div class="actions"><button class="round no" id="b-no" aria-label="Pomiń">✕</button><button class="round yes" id="b-yes" aria-label="Wyślij">✓</button></div><p class="hint">W prawo: wyślij pytanie o zgodę · w lewo: pomiń</p>` : ''}`;
+      ${leads.length ? `<div class="actions"><button class="round no" id="b-no" aria-label="Pomiń">✕</button><button class="round yes" id="b-yes" aria-label="Wyślij">✓</button></div><p class="hint">W prawo: wyślij mail (bez maila: Instagram) · w lewo: pomiń</p>` : ''}`;
     if (!leads.length) return;
     const top = $('stack').querySelector('.lead:not(.back)');
     top.querySelector('.pics').addEventListener('scroll', e => { const p = e.target, i = Math.round(p.scrollLeft / p.clientWidth); top.querySelectorAll('.dots i').forEach((d, k) => d.classList.toggle('on', k === i)); });
     const det = top.querySelector('details');
-    if (det) det.addEventListener('toggle', async () => { if (!det.open || det.dataset.done) return; det.dataset.done = 1; try { const m = await Remote.leads({ action: 'preview', place: top.dataset.p }); det.querySelector('pre').textContent = `Temat: ${m.subject}\n\n${m.text}`; } catch (err) { det.querySelector('pre').textContent = err.message; } });
+    if (det && leads[0].email) det.addEventListener('toggle', async () => { if (!det.open || det.dataset.done) return; det.dataset.done = 1; try { const m = await Remote.leads({ action: 'preview', place: top.dataset.p }); det.querySelector('pre').textContent = `Temat: ${m.subject}\n\n${m.text}`; } catch (err) { det.querySelector('pre').textContent = err.message; } });
     drag(top);
     $('b-no').onclick = () => decide(top, -1);
     $('b-yes').onclick = () => decide(top, 1);
@@ -188,7 +204,7 @@ pre{white-space:pre-wrap;font:14px/1.4 inherit;background:var(--bg);border-radiu
     try {
       if (dir < 0) { await Remote.leads({ action: 'skip', place: l.place_id }); }
       else if (l.email) { await Remote.leads({ action: 'send', place: l.place_id }); toast(`Wysłano do ${l.name}`); }
-      else { await Remote.leads({ action: 'manual', place: l.place_id }); toast(`${l.name}: do kontaktu ręcznie (Bez maila)`); }
+      else { instagram(l); await Remote.leads({ action: 'manual', place: l.place_id }); }
       leads.shift();
     } catch (err) { toast(err.message); }
     $('c-new').textContent = leads.length ? ' ' + leads.length : '';

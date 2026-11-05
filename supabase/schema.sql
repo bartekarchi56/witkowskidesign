@@ -981,6 +981,7 @@ create table if not exists leads (
   created_at  timestamptz not null default now(),
   sent_at     timestamptz
 );
+alter table leads add column if not exists instagram text not null default '';   -- handle from their website
 alter table leads enable row level security;
 
 -- New places only; the ones already seen keep their status.
@@ -989,10 +990,11 @@ language plpgsql security definer set search_path = timbro
 as $$
 declare n int;
 begin
-  insert into leads (place_id, name, kind, address, city, rating, reviews, website, email, phone, maps_url, summary, photos, loyalty)
+  insert into leads (place_id, name, kind, address, city, rating, reviews, website, email, phone, maps_url, summary, photos, loyalty, instagram)
   select l->>'place_id', coalesce(l->>'name', ''), coalesce(l->>'kind', ''), coalesce(l->>'address', ''), coalesce(l->>'city', ''),
          nullif(l->>'rating', '')::numeric, nullif(l->>'reviews', '')::int, coalesce(l->>'website', ''), coalesce(l->>'email', ''),
-         coalesce(l->>'phone', ''), coalesce(l->>'maps_url', ''), coalesce(l->>'summary', ''), coalesce(l->'photos', '[]'::jsonb), coalesce(l->>'loyalty', '')
+         coalesce(l->>'phone', ''), coalesce(l->>'maps_url', ''), coalesce(l->>'summary', ''), coalesce(l->'photos', '[]'::jsonb), coalesce(l->>'loyalty', ''),
+         left(coalesce(l->>'instagram', ''), 30)
   from jsonb_array_elements(p_leads) l where coalesce(l->>'place_id', '') <> ''
   on conflict (place_id) do nothing;
   get diagnostics n = row_count;
