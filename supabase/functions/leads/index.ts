@@ -96,7 +96,7 @@ async function readSite(site: string) {
   return { email, loyalty, instagram: igOf(html) };
 }
 
-async function find(query: string, city: string) {
+async function find(query: string, city: string, kindLabel = '') {
   if (!GKEY) throw new Error('Add the GOOGLE_MAPS_KEY secret first.');
   // Only places inside the city: its area on the map first, then the search limited to it.
   let area: any = null;
@@ -124,7 +124,7 @@ async function find(query: string, city: string) {
     }))).filter(Boolean);
     const site = await readSite(p.websiteUri ?? '');
     if (!site.email && !site.instagram) site.instagram = await findInstagram(p.displayName?.text ?? '', city);
-    return { place_id: p.id, name: p.displayName?.text ?? '', kind: p.primaryTypeDisplayName?.text ?? query, address: p.formattedAddress ?? '', city,
+    return { place_id: p.id, name: p.displayName?.text ?? '', kind: kindLabel || p.primaryTypeDisplayName?.text || query, address: p.formattedAddress ?? '', city,
       rating: p.rating ?? '', reviews: p.userRatingCount ?? '', website: p.websiteUri ?? '', email: site.email, phone: p.nationalPhoneNumber ?? '',
       maps_url: p.googleMapsUri ?? '', summary: p.editorialSummary?.text ?? '', photos, loyalty: site.loyalty, instagram: site.instagram };
   }));
@@ -283,21 +283,24 @@ Deno.serve(async req => {
     const b = await req.json().catch(() => ({}));
     const place = String(b.place ?? '');
     switch (b.action) {
-      case 'find': return reply(await find(String(b.query ?? 'kawiarnia').slice(0, 60), String(b.city ?? '').slice(0, 60)));
+      case 'find': return reply(await find(String(b.query ?? 'cafe').slice(0, 60), String(b.city ?? '').slice(0, 60), String(b.kind ?? '').slice(0, 40)));
       case 'list': { const { data } = await db.rpc('leads_list', { p_status: ['new', 'sent', 'skipped', 'manual', 'replied'].includes(b.status) ? b.status : 'new' }); return reply(data ?? []); }
-      case 'recheck': {   // read the websites again for places shown without an e-mail
+      case 'recheck': {   // read the websites again for places shown without an e-mail (10 at a time, under 2 minutes)
         let found = 0;
+        const stop = Date.now() + 100000, todo: [any, string][] = [];
         for (const st of ['new', 'manual']) {
           const { data: list } = await db.rpc('leads_list', { p_status: st });
-          for (const l of (list ?? []).filter((x: any) => !x.email && x.website).slice(0, 25)) {
-            const site = await readSite(l.website);
-            if (site.email || (site.instagram && !l.instagram)) {
-              await db.rpc('leads_update', { p_place: l.place_id, p_email: site.email, p_instagram: site.instagram || l.instagram, p_loyalty: site.loyalty || l.loyalty });
-              if (site.email) { found++; if (st === 'manual') await db.rpc('leads_set', { p_place: l.place_id, p_status: 'new' }); }
-            }
-          }
+          for (const l of (list ?? []).filter((x: any) => !x.email && x.website)) todo.push([l, st]);
         }
-        return reply({ found });
+        for (let k = 0; k < todo.length && k < 40 && Date.now() < stop; k += 10) {
+          await Promise.all(todo.slice(k, k + 10).map(async ([l, st]) => {
+            const site = await readSite(l.website);
+            if (!site.email && !(site.instagram && !l.instagram)) return;
+            await db.rpc('leads_update', { p_place: l.place_id, p_email: site.email, p_instagram: site.instagram || l.instagram, p_loyalty: site.loyalty || l.loyalty });
+            if (site.email) { found++; if (st === 'manual') await db.rpc('leads_set', { p_place: l.place_id, p_status: 'new' }); }
+          }));
+        }
+        return reply({ found, checked: Math.min(todo.length, 40) });
       }
       case 'skip': case 'manual': case 'replied': case 'sent':
         await db.rpc('leads_set', { p_place: place, p_status: b.action === 'skip' ? 'skipped' : b.action }); return reply({ ok: true });

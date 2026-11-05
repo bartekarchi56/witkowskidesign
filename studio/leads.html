@@ -108,18 +108,22 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     if (status === 'new' && !leads.length && $('city').value.trim()) $('search').requestSubmit();
   });
 
+  let searching = false;
   $('search').addEventListener('submit', async e => {
     e.preventDefault();
+    if (searching) return; searching = true;
     $('go').disabled = true; $('go').textContent = 'Szukam…';
     try {
       // Google understands English kinds in every country ("kawiarnia Milano" finds little).
       const EN = { kawiarnia: 'cafe', pizzeria: 'pizzeria', barber: 'barber shop', fryzjer: 'hair salon', piekarnia: 'bakery', cukiernia: 'pastry shop', lodziarnia: 'ice cream shop', restauracja: 'restaurant', kosmetyczka: 'beauty salon', 'myjnia samochodowa': 'car wash' };
       const city = $('city').value.trim();
-      const r = await Remote.leads({ action: 'find', query: /bydgoszcz|warszaw|krak|gda|pozna|wroc|łód|lodz|toru|polsk/i.test(city) ? kind : EN[kind] || kind, city });
+      if (!city) { toast('Wpisz miasto'); return; }
+      // The places are saved under the chosen kind, so the chips always find them again.
+      const r = await Remote.leads({ action: 'find', query: EN[kind] || kind, kind, city });
       toast(r.added ? `Nowe miejsca: ${r.added} (z ${r.found})` : `Brak nowych: ${r.found} już widzianych`);
       setTab('new');
     } catch (err) { toast(err.message); }
-    $('go').disabled = false; $('go').textContent = 'Szukaj';
+    finally { searching = false; $('go').disabled = false; $('go').textContent = 'Szukaj'; }
   });
 
   // Places already shown without an e-mail: read their websites again (contact, about, legal pages).
@@ -134,7 +138,8 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   function filterCity(render) {
     const c = norm($('city').value);
     const kre = KIND_RE[kind];
-    leads = all.filter(l => (!c || norm(l.city).includes(c) || norm(l.address).includes(c)) && (!kre || kre.test(norm(l.kind + ' ' + l.name))));
+    const ofKind = l => l.kind === kind || (!KINDS.includes(l.kind) && kre && kre.test(norm(l.kind + ' ' + l.name)));
+    leads = all.filter(l => (!c || norm(l.city).includes(c) || norm(l.address).includes(c)) && (status !== 'new' || ofKind(l)));
     if (status === 'new') $('c-new').textContent = leads.length ? ' ' + leads.length : '';
     if (render) status === 'new' ? renderStack() : renderList();
   }
@@ -176,12 +181,12 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   async function instagram(l) {
     waiting = l;
     try { await navigator.clipboard.writeText(dm(l)); } catch (e) { /* the clipboard may be blocked */ }
-    // Their profile when the website links it; otherwise a Google search for their Instagram
-    // (Instagram's own search shows posts, not profiles). On the profile: Message, paste, Send.
+    // Their Instagram when known; otherwise their own website (opens in Safari / the browser), then
+    // their Google Maps page, and only as a last resort a Google search.
     // On a phone, ig.me opens the chat with them in the Instagram app; on a computer, their profile.
     const phone = /iPhone|iPad|Android/i.test(navigator.userAgent);
-    window.open(l.instagram ? (phone ? `https://ig.me/m/${encodeURIComponent(l.instagram)}` : `https://www.instagram.com/${encodeURIComponent(l.instagram)}/`) : `https://www.google.com/search?q=${encodeURIComponent(`${l.name} ${l.city || ''} instagram`)}`, '_blank', 'noopener');
-    toast(l.instagram ? 'Wiadomość skopiowana: wklej ją w rozmowie i wyślij' : 'Wiadomość skopiowana. Ich Instagrama nie było na stronie: kliknij ich profil w wynikach Google');
+    window.open(l.instagram ? (phone ? `https://ig.me/m/${encodeURIComponent(l.instagram)}` : `https://www.instagram.com/${encodeURIComponent(l.instagram)}/`) : (l.website || l.maps_url || `https://www.google.com/search?q=${encodeURIComponent(`${l.name} ${l.city || ''} instagram`)}`), '_blank', 'noopener');
+    toast(l.instagram ? 'Wiadomość skopiowana: wklej ją w rozmowie i wyślij' : (l.website ? 'Wiadomość skopiowana. Otwieram ich stronę: znajdź link do Instagrama (zwykle na dole) albo kontakt' : 'Wiadomość skopiowana. Otwieram ich miejsce w Mapach: tam jest link do strony lub Instagrama'));
   }
 
   // ---------- the other tabs: a plain list ----------
@@ -235,7 +240,11 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     $('b-no').onclick = () => decide(top, -1);
     $('b-yes').onclick = () => decide(top, 1);
   }
+  // One set of window listeners at a time: the previous card's are removed when a new card is drawn.
+  let dragOff = null;
   function drag(el) {
+    if (dragOff) dragOff.abort();
+    dragOff = new AbortController(); const opt = { signal: dragOff.signal };
     let x0 = null, y0 = 0, dx = 0, horizontal = null;
     const yes = el.querySelector('.yes'), no = el.querySelector('.no');
     el.addEventListener('pointerdown', e => { if (e.target.closest('a,summary,pre,.pics')) return; x0 = e.clientX; y0 = e.clientY; dx = 0; horizontal = null; });
@@ -246,26 +255,31 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
       if (!horizontal) return;
       el.classList.add('drag'); el.style.transform = `translateX(${dx}px) rotate(${dx / 20}deg)`;
       yes.style.opacity = Math.max(0, dx / 100); no.style.opacity = Math.max(0, -dx / 100);
-    });
+    }, opt);
     window.addEventListener('pointerup', () => {
       if (x0 === null) return; x0 = null; el.classList.remove('drag');
       if (horizontal && Math.abs(dx) > 110) decide(el, Math.sign(dx));
       else { el.style.transform = ''; yes.style.opacity = no.style.opacity = 0; }
-    });
+    }, opt);
   }
   let busy = false;
   async function decide(el, dir) {
     if (busy) return; busy = true;
     const l = leads[0];
     el.style.transform = `translateX(${dir * 600}px) rotate(${dir * 25}deg)`; el.style.opacity = 0;
-    try {
-      if (dir < 0) { await Remote.leads({ action: 'skip', place: l.place_id }); }
-      else if (l.email) { await Remote.leads({ action: 'send', place: l.place_id }); toast(`Wysłano do ${l.name}`); }
-      else { instagram(l); await Remote.leads({ action: 'manual', place: l.place_id }); }
-      leads.shift();
-    } catch (err) { toast(err.message); }
+    // The next card shows right away; the e-mail goes out in the background (a failure puts the place back).
+    leads.shift(); all = all.filter(x => x.place_id !== l.place_id);
     $('c-new').textContent = leads.length ? ' ' + leads.length : '';
     setTimeout(() => { busy = false; renderStack(); }, 220);
+    if (dir > 0 && !l.email) instagram(l);
+    try {
+      if (dir < 0) await Remote.leads({ action: 'skip', place: l.place_id });
+      else if (l.email) { await Remote.leads({ action: 'send', place: l.place_id }); toast(`Wysłano do ${l.name}`); }
+      else await Remote.leads({ action: 'manual', place: l.place_id });
+    } catch (err) {
+      toast(`${l.name}: ${err.message}`);
+      if (!/already sent/i.test(err.message)) { all.unshift(l); leads.unshift(l); if (status === 'new') renderStack(); }
+    }
   }
   setTab('new');
 })();
