@@ -128,8 +128,8 @@ ${paras.map(p => `<p style="margin:0 0 16px">${esc(p).replace(/\n/g, '<br>')}</p
 }
 
 // The long e-mail for places that said yes, in the website's style: white, Archivo, a wide bold
-// headline with a blue word, blue pills, floating iPhones with real cards (Parzymy Tutaj, Orsonero,
-// Sowa), the three steps and the free month on a blue card. Pictures: print/email-art.html → assets/email/.
+// headline with a blue word, blue pills, floating iPhones (Parzymy Tutaj's real card, and simple
+// white cards with blue stamps), the three steps and the free month on a blue card. Pictures: print/email-art.html → assets/email/.
 const P = {
   pl: { subject: (n: string) => `Karta lojalnościowa dla ${n}`, label: 'Propozycja dla', title: 'Karta lojalnościowa', sub: 'w telefonie Twoich klientów', demo: 'Zobacz demo',
     closer: 'Z bliska', intro: 'Klient skanuje kod QR przy kasie i karta trafia do Apple Wallet lub Google Wallet. Bez aplikacji do pobrania i bez kartoników. Obsługa dodaje pieczątkę telefonem w dwie sekundy, a telefon sam przypomina klientom o nagrodzie.',
@@ -154,7 +154,7 @@ function proposal(l: any) {
   const lang = /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) || !/,.*,/.test(l.address) ? 'pl' : 'en';
   const t = (P as any)[lang], img = (n: string) => `${SITE}/assets/email/${n}-${lang}.png`;
   const H = { pl: ['Karta lojalnościowa, której nikt', 'nie gubi.'], it: ['La carta fedeltà che nessuno', 'perde.'], en: ['The loyalty card nobody', 'loses.'] }[lang]!;
-  const SHOW = { pl: ['Prawdziwe karty naszych kawiarni', 'Parzymy Tutaj, Orsonero i Cukiernia Sowa: każda zaprojektowana od zera.'], it: ['Carte vere dei nostri caffè', 'Parzymy Tutaj, Orsonero e Cukiernia Sowa: ognuna disegnata da zero.'], en: ['Real cards from our cafés', 'Parzymy Tutaj, Orsonero and Cukiernia Sowa: each one designed from scratch.'] }[lang]!;
+  const SHOW = { pl: ['Prosto i w Twoim stylu', 'Biała karta z niebieskimi pieczątkami albo w kolorach Twojego lokalu: każdą projektujemy od zera. Parzymy Tutaj z Bydgoszczy już dołączyło do Timbro.'], it: ['Semplice, nel tuo stile', 'Una carta bianca con timbri blu o con i colori del tuo locale: ognuna disegnata da zero. Parzymy Tutaj di Bydgoszcz è già entrato in Timbro.'], en: ['Simple, in your style', 'A white card with blue stamps or in your colours: each one designed from scratch. Parzymy Tutaj from Bydgoszcz has already joined Timbro.'] }[lang]!;
   const F = "font-family:Archivo,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif";
   const W = 'font-stretch:125%;font-weight:800;letter-spacing:-.03em';
   const BLUE = '#2B32FF', INK = '#0B0B0C', MUTED = '#5A5A60';

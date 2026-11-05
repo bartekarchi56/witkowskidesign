@@ -48,9 +48,13 @@ body{margin:0;background:#fff}
     black: { ...base, id: 'k', color: '#0E0E10', ink: '#D9C6F2', strip: '#0E0E10', stamp: 'fiore' },
     blue: { ...base, id: 'u', color: '#2B32FF', ink: '#FFFFFF', strip: '#2B32FF', stamp: 'sole' }
   };
-  // Real cards from the demo (Parzymy Tutaj, Orsonero, Sowa), name only on the front.
+  // Parzymy Tutaj's real card (a client), name only on the front.
   const real = id => ({ ...Store.getCard(id), hideCount: true, hideReward: true });
-  const P = real('parzymy'), O = real('orsonero'), S = real('sowa');
+  const P = real('parzymy');
+  // Simple white cards with blue stamps (examples, no real café).
+  const white = (stamp, nm) => ({ ...base, id: stamp, business: nm, color: '#FFFFFF', ink: '#2B32FF', strip: '#FFFFFF', stamp });
+  const N = { pl: ['Kawiarnia', 'Piekarnia', 'Barber'], it: ['Caffè', 'Panificio', 'Barbiere'], en: ['Café', 'Bakery', 'Barber'] }[lang];
+  const O = white('punto', N[0]), S = white('stella', N[1]), Z = white('ziarno', N[2]);
   const phone = (card, n, css) => `<div class="ph" style="${css}"><div class="scr"><div class="isl"></div><div class="bar"><span>9:41</span><span>●●● ▮</span></div><div class="wal"><b>${wallet}</b>${UI.renderPass(card, { id: 'K7M2QX', name: 'Ola K.', stamps: n }, { platform: 'apple', compact: true })}</div></div></div>`;
   await document.fonts.load('800 17px Archivo');
   document.getElementById('out').innerHTML = `
@@ -65,9 +69,9 @@ body{margin:0;background:#fff}
   </div>
   <div class="art phones" id="phones">
     <div class="shadow" style="left:60px;bottom:22px;width:480px"></div>
-    ${phone(S, 4, 'left:22px;top:24px;transform:rotate(-6deg) scale(.92)')}
-    ${phone(P, 7, 'left:205px;top:10px;transform:rotate(1deg) scale(.92)')}
-    ${phone(O, 2, 'right:22px;top:24px;transform:rotate(7deg) scale(.92)')}
+    ${phone(O, 4, 'left:22px;top:24px;transform:rotate(-6deg) scale(.92)')}
+    ${phone(S, 6, 'left:205px;top:10px;transform:rotate(1deg) scale(.92)')}
+    ${phone(Z, 2, 'right:22px;top:24px;transform:rotate(7deg) scale(.92)')}
   </div>`;
   await new Promise(r => setTimeout(r, 600));
   window.READY = true;
