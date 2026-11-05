@@ -54,20 +54,40 @@ async function page(url: string) {
   } catch { return ''; }
 }
 // The website's public e-mail (homepage, then a contact page) and any loyalty programme it mentions.
+// E-mails in a page: mailto links, plain addresses, "name [at] domain [dot] pl" spellings, HTML
+// entities, Cloudflare's hidden addresses (data-cfemail) and schema.org "email" fields.
+function mailsIn(h: string) {
+  const cf = [...h.matchAll(/data-cfemail="([0-9a-f]+)"/gi)].map(m => { const k = parseInt(m[1].slice(0, 2), 16); let o = ''; for (let i = 2; i < m[1].length; i += 2) o += String.fromCharCode(parseInt(m[1].slice(i, i + 2), 16) ^ k); return o; });
+  const t = h.replace(/&#0*64;|&#x0*40;|&commat;/gi, '@').replace(/&#0*46;|&#x0*2e;/gi, '.')
+    .replace(/\s*[\[\(\{]\s*(at|małpa|malpa|chiocciola)\s*[\]\)\}]\s*/gi, '@').replace(/\s*[\[\(\{]\s*(dot|kropka|punto)\s*[\]\)\}]\s*/gi, '.');
+  const found = [...t.matchAll(/mailto:([^"'?\s>]+)/gi)].map(m => { try { return decodeURIComponent(m[1]); } catch { return m[1]; } })
+    .concat(t.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi) ?? [], cf, [...t.matchAll(/"email"\s*:\s*"([^"]+)"/gi)].map(m => m[1].replace(/^mailto:/i, '')));
+  return [...new Set(found.map(e => e.toLowerCase().trim().replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, '')))].filter(e => /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(e) && !BAD_MAIL.test(e));
+}
+// Reads the website before a place is shown: the homepage, then its contact, about and legal pages
+// (and the usual addresses for them), until an e-mail turns up. Also any loyalty programme and
+// the Instagram it links.
 async function readSite(site: string) {
   const igOf = (t: string) => (/instagram\.com\/([A-Za-z0-9_.]{2,30})/i.exec(t)?.[1] ?? '').replace(/^(p|reel|explore|accounts|stories)$/i, '');
   if (/instagram\.com/i.test(site)) return { email: '', loyalty: '', instagram: igOf(site) };
   if (!/^https?:\/\//.test(site) || /facebook\.com/i.test(site)) return { email: '', loyalty: '', instagram: '' };
   let html = await page(site);
-  const find = (h: string) => [...new Set([...h.matchAll(/mailto:([^"'?\s>]+)/gi)].map(m => decodeURIComponent(m[1])).concat(h.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi) ?? []))]
-    .map(e => e.toLowerCase().trim()).filter(e => !BAD_MAIL.test(e));
-  let mails = find(html);
+  let mails = mailsIn(html);
   if (!mails.length) {
-    const link = /href=["']([^"']*(kontakt|contact)[^"']*)["']/i.exec(html)?.[1];
-    if (link) { const more = await page(new URL(link, site).href); html += more; mails = find(more); }
+    const base = new URL(site);
+    const linked = [...html.matchAll(/href=["']([^"'#]+)["']/gi)].map(m => m[1])
+      .filter(h => /kontakt|contact|contatt|impressum|regulamin|polityka|privacy|o-nas|onas|about|chi-siamy|rezerw|reserv|footer/i.test(h))
+      .map(h => { try { return new URL(h, base).href; } catch { return ''; } }).filter(h => h && new URL(h).hostname === base.hostname);
+    const guesses = ['/kontakt', '/kontakt/', '/contact', '/contact/', '/contatti', '/o-nas', '/about'].map(p => new URL(p, base.origin).href);
+    for (const url of [...new Set([...linked, ...guesses])].slice(0, 8)) {
+      const more = await page(url);
+      if (!more) continue;
+      html += more; mails = mailsIn(more);
+      if (mails.length) break;
+    }
   }
   const host = new URL(site).hostname.replace(/^www\./, '');
-  const email = mails.find(e => e.endsWith(host)) ?? mails[0] ?? '';
+  const email = mails.find(e => e.endsWith(host)) ?? mails.find(e => !/wordpress|wix|godaddy|domain|hosting/.test(e)) ?? '';
   const text = html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ');
   const loyalty = LOYALTY.find(([re]) => re.test(text))?.[1] ?? '';
   return { email, loyalty, instagram: igOf(html) };
@@ -252,6 +272,20 @@ Deno.serve(async req => {
     switch (b.action) {
       case 'find': return reply(await find(String(b.query ?? 'kawiarnia').slice(0, 60), String(b.city ?? '').slice(0, 60)));
       case 'list': { const { data } = await db.rpc('leads_list', { p_status: ['new', 'sent', 'skipped', 'manual', 'replied'].includes(b.status) ? b.status : 'new' }); return reply(data ?? []); }
+      case 'recheck': {   // read the websites again for places shown without an e-mail
+        let found = 0;
+        for (const st of ['new', 'manual']) {
+          const { data: list } = await db.rpc('leads_list', { p_status: st });
+          for (const l of (list ?? []).filter((x: any) => !x.email && x.website).slice(0, 25)) {
+            const site = await readSite(l.website);
+            if (site.email || (site.instagram && !l.instagram)) {
+              await db.rpc('leads_update', { p_place: l.place_id, p_email: site.email, p_instagram: site.instagram || l.instagram, p_loyalty: site.loyalty || l.loyalty });
+              if (site.email) { found++; if (st === 'manual') await db.rpc('leads_set', { p_place: l.place_id, p_status: 'new' }); }
+            }
+          }
+        }
+        return reply({ found });
+      }
       case 'skip': case 'manual': case 'replied': case 'sent':
         await db.rpc('leads_set', { p_place: place, p_status: b.action === 'skip' ? 'skipped' : b.action }); return reply({ ok: true });
       case 'proposal': {   // the long e-mail, for a place that answered yes

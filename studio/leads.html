@@ -79,6 +79,7 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   <form class="search" id="search">
     <div class="chips" id="kinds"></div>
     <div class="row"><input id="city" value="Bydgoszcz" placeholder="Miasto" autocomplete="off"><button class="btn" id="go">Szukaj</button></div>
+    <button type="button" class="chip" id="recheck" style="margin-top:8px">Szukaj maili jeszcze raz na stronach</button>
   </form>
   <div id="view"></div>
 </div>
@@ -114,6 +115,12 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     $('go').disabled = false; $('go').textContent = 'Szukaj';
   });
 
+  // Places already shown without an e-mail: read their websites again (contact, about, legal pages).
+  $('recheck').addEventListener('click', async () => {
+    const b = $('recheck'); b.disabled = true; b.textContent = 'Sprawdzam strony…';
+    try { const r = await Remote.leads({ action: 'recheck' }); toast(r.found ? `Znalezione nowe maile: ${r.found}` : 'Nie znalazłem nowych maili'); setTab(status); } catch (err) { toast(err.message); }
+    b.disabled = false; b.textContent = 'Szukaj maili jeszcze raz na stronach';
+  });
   $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-s]'); if (b) setTab(b.dataset.s); });
   async function setTab(s) {
     status = s;

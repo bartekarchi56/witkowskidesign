@@ -49,6 +49,10 @@ create or replace function leads_get(p_place text) returns jsonb
 language sql stable security definer set search_path = timbro
 as $$ select to_jsonb(l) from leads l where l.place_id = p_place $$;
 
+create or replace function leads_update(p_place text, p_email text, p_instagram text, p_loyalty text) returns void
+language sql security definer set search_path = timbro
+as $$ update leads set email = left(coalesce(p_email, ''), 200), instagram = left(coalesce(p_instagram, ''), 30), loyalty = left(coalesce(p_loyalty, ''), 60) where place_id = p_place $$;
+
 create or replace function leads_set(p_place text, p_status text) returns void
 language sql security definer set search_path = timbro
 as $$ update leads set status = p_status, sent_at = case when p_status = 'sent' then now() else sent_at end where place_id = p_place $$;
@@ -74,4 +78,4 @@ grant usage on schema timbro to service_role;
 
 grant execute on function stripe_business(uuid), stripe_set_customer(uuid, text),
   stripe_sync(text, text, text, text, text, bigint, boolean), stripe_is_admin(uuid), alert_key_ok(text),
-  leads_add(jsonb), leads_list(text), leads_get(text), leads_set(text, text) to service_role;
+  leads_add(jsonb), leads_list(text), leads_get(text), leads_set(text, text), leads_update(text, text, text, text) to service_role;
