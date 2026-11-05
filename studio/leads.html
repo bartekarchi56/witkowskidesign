@@ -98,8 +98,12 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
 
   const KINDS = ['kawiarnia', 'pizzeria', 'barber', 'fryzjer', 'piekarnia', 'cukiernia', 'lodziarnia', 'restauracja', 'kosmetyczka', 'myjnia samochodowa'];
   let kind = KINDS[0], status = 'new', leads = [];
+  // Which saved places belong to each kind (Google's type and the name, in any language).
+  const KIND_RE = { kawiarnia: /kawiar|cafe|caff|coffee|kaw|espresso|herbaciar/, pizzeria: /pizz/, barber: /barber|barbier/, fryzjer: /fryzj|hair|parrucch|coiff|salon fryz/,
+    piekarnia: /piekar|baker|panific|forno|boulang|chleb/, cukiernia: /cukier|pastr|pasticc|patiss|ciast|dessert|deser/, lodziarnia: /lod|gelat|ice cream|glac/,
+    restauracja: /restaur|ristor|bistro|trattor|osteria|bar /, kosmetyczka: /kosmet|beauty|estetic|nail|paznok|spa/, 'myjnia samochodowa': /myjni|car wash|lavaggio|lavage/ };
   $('kinds').innerHTML = KINDS.map(k => `<button type="button" class="chip" data-k="${k}" aria-pressed="${k === kind}">${k[0].toUpperCase() + k.slice(1)}</button>`).join('');
-  $('kinds').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; kind = b.dataset.k; $('kinds').querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); });
+  $('kinds').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; kind = b.dataset.k; $('kinds').querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); filterCity(true); });
 
   $('search').addEventListener('submit', async e => {
     e.preventDefault();
@@ -126,7 +130,8 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   const norm = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ł/g, 'l').trim();
   function filterCity(render) {
     const c = norm($('city').value);
-    leads = c ? all.filter(l => norm(l.city).includes(c) || norm(l.address).includes(c)) : all.slice();
+    const kre = KIND_RE[kind];
+    leads = all.filter(l => (!c || norm(l.city).includes(c) || norm(l.address).includes(c)) && (!kre || kre.test(norm(l.kind + ' ' + l.name))));
     if (status === 'new') $('c-new').textContent = leads.length ? ' ' + leads.length : '';
     if (render) status === 'new' ? renderStack() : renderList();
   }
