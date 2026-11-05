@@ -95,11 +95,21 @@ async function readSite(site: string) {
 
 async function find(query: string, city: string) {
   if (!GKEY) throw new Error('Add the GOOGLE_MAPS_KEY secret first.');
+  // Only places inside the city: its area on the map first, then the search limited to it.
+  let area: any = null;
+  if (city) {
+    const g = await fetch('https://places.googleapis.com/v1/places:searchText', {
+      method: 'POST', headers: { 'content-type': 'application/json', 'X-Goog-Api-Key': GKEY, 'X-Goog-FieldMask': 'places.viewport' },
+      body: JSON.stringify({ textQuery: city, includedType: 'locality', pageSize: 1 })
+    }).then(x => x.json()).catch(() => null);
+    const v = g?.places?.[0]?.viewport;
+    if (v?.low && v?.high) area = { low: v.low, high: v.high };
+  }
   const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'X-Goog-Api-Key': GKEY,
       'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.websiteUri,places.nationalPhoneNumber,places.googleMapsUri,places.editorialSummary,places.primaryTypeDisplayName,places.photos,places.businessStatus' },
-    body: JSON.stringify({ textQuery: `${query} ${city}`.trim(), languageCode: 'pl', pageSize: 20 })
+    body: JSON.stringify({ textQuery: `${query} ${city}`.trim(), languageCode: 'pl', pageSize: 20, ...(area ? { locationRestriction: { rectangle: area } } : {}) })
   });
   if (!r.ok) throw new Error('Google Maps: ' + (await r.text()).slice(0, 200));
   const places = ((await r.json()).places ?? []).filter((p: any) => p.businessStatus !== 'CLOSED_PERMANENTLY');
