@@ -136,13 +136,13 @@ const SIGN = ['Bartek Witkowski', 'Witkowski Design · timbro.witkowskidesign.co
 function draft(l: any) {
   const lang = /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) || !/,.*,/.test(l.address) ? 'pl' : 'en';
   const T = {
-    pl: [`Pytanie do ${l.name}`, ['Dzień dobry,', '', `nazywam się Bartek Witkowski, jestem projektantem (Witkowski Design). Projektuję karty lojalnościowe w telefonie dla lokali takich jak ${l.name}: klient zapisuje kartę w Apple Wallet lub Google Wallet, a obsługa dodaje pieczątkę telefonem w dwie sekundy.`, '',
+    pl: [`Pytanie do ${l.name}`, ['Witam,', '', `z tej strony Timbro. Projektujemy karty lojalnościowe w telefonie dla lokali takich jak ${l.name}: klient zapisuje kartę w Apple Wallet lub Google Wallet, a obsługa dodaje pieczątkę telefonem w dwie sekundy. Bez aplikacji i bez papierowych kartoników.`, '', `Zobacz, jak to działa: ${SITE}`, '',
       'Czy mogę przesłać Państwu krótką propozycję z projektem karty dla Państwa lokalu? Wystarczy odpowiedzieć „tak” na tego maila.', '',
       'Jeśli nie są Państwo zainteresowani, proszę zignorować tę wiadomość: nie napiszę ponownie.', '', 'Pozdrawiam']],
-    it: [`Una domanda per ${l.name}`, ['Buongiorno,', '', `sono Bartek Witkowski, designer (Witkowski Design). Disegno carte fedeltà nel telefono per locali come ${l.name}: il cliente salva la carta in Apple Wallet o Google Wallet e lo staff aggiunge il timbro con il telefono in due secondi.`, '',
+    it: [`Una domanda per ${l.name}`, ['Salve,', '', `qui è Timbro. Disegniamo carte fedeltà nel telefono per locali come ${l.name}: il cliente salva la carta in Apple Wallet o Google Wallet e lo staff aggiunge il timbro con il telefono in due secondi. Senza app e senza cartoncini.`, '', `Guarda come funziona: ${SITE}/?lang=it`, '',
       'Posso inviarvi una breve proposta con il design della carta per il vostro locale? Basta rispondere “sì” a questa mail.', '',
       'Se non siete interessati, ignorate pure questo messaggio: non scriverò di nuovo.', '', 'Cordiali saluti']],
-    en: [`A question for ${l.name}`, ['Hello,', '', `I'm Bartek Witkowski, a designer (Witkowski Design). I design phone loyalty cards for places like ${l.name}: customers save the card to Apple Wallet or Google Wallet and staff add a stamp with their phone in two seconds.`, '',
+    en: [`A question for ${l.name}`, ['Hello,', '', `this is Timbro. We design phone loyalty cards for places like ${l.name}: customers save the card to Apple Wallet or Google Wallet and staff add a stamp with their phone in two seconds. No app and no paper cards.`, '', `See how it works: ${SITE}/?lang=en`, '',
       'May I send you a short proposal with a card design for your place? Just reply “yes” to this e-mail.', '',
       'If you are not interested, please ignore this message: I will not write again.', '', 'Best regards']]
   }[lang] as [string, string[]];
@@ -171,7 +171,7 @@ function html(lang: string, subject: string, lines: string[]) {
 <tr><td style="padding:6px 32px 0"><div style="${F};font-stretch:125%;font-weight:800;letter-spacing:-.03em;font-size:38px;line-height:1;color:${INK}">${H[0]} <span style="color:${BLUE}">${H[1]}</span></div></td></tr>
 <tr><td style="padding:16px 0 0"><a href="${SITE}/?lang=${lang}"><img src="${SITE}/assets/email/hero-${lang}.png" width="600" alt="Timbro" style="display:block;width:100%;height:auto;border:0"></a></td></tr>
 <tr><td style="padding:22px 32px 8px;${F};font-size:16px;line-height:1.6;color:#2A2A2E">
-${paras.map(p => `<p style="margin:0 0 16px">${esc(p).replace(/\n/g, '<br>')}</p>`).join('')}
+${paras.map(p => `<p style="margin:0 0 16px">${esc(p).replace(/\n/g, '<br>').replace(/(https:\/\/[^\s<]+)/g, `<a href="$1" style="color:${BLUE};font-weight:700;text-decoration:none">$1</a>`)}</p>`).join('')}
 <div style="margin:10px 0 26px"><a href="${yes}" style="display:inline-block;padding:14px 26px;border-radius:999px;background:${BLUE};color:#fff;${F};font-size:15px;font-weight:700;text-decoration:none">${B[0]}</a>&nbsp;&nbsp;
 <a href="${SITE}/?lang=${lang}" style="${F};font-size:15px;font-weight:700;color:${BLUE};text-decoration:none">${B[1]} →</a></div>
 <p style="margin:0 0 4px">${esc(close)}</p>
