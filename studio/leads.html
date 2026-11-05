@@ -151,8 +151,10 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     try { await navigator.clipboard.writeText(dm(l)); } catch (e) { /* the clipboard may be blocked */ }
     // Their profile when the website links it; otherwise a Google search for their Instagram
     // (Instagram's own search shows posts, not profiles). On the profile: Message, paste, Send.
-    window.open(l.instagram ? `https://www.instagram.com/${encodeURIComponent(l.instagram)}/` : `https://www.google.com/search?q=${encodeURIComponent(`${l.name} ${l.city || ''} instagram`)}`, '_blank', 'noopener');
-    toast(l.instagram ? 'Wiadomość skopiowana: na profilu kliknij „Wyślij wiadomość”, wklej i wyślij' : 'Wiadomość skopiowana. Ich Instagrama nie było na stronie: kliknij ich profil w wynikach Google');
+    // On a phone, ig.me opens the chat with them in the Instagram app; on a computer, their profile.
+    const phone = /iPhone|iPad|Android/i.test(navigator.userAgent);
+    window.open(l.instagram ? (phone ? `https://ig.me/m/${encodeURIComponent(l.instagram)}` : `https://www.instagram.com/${encodeURIComponent(l.instagram)}/`) : `https://www.google.com/search?q=${encodeURIComponent(`${l.name} ${l.city || ''} instagram`)}`, '_blank', 'noopener');
+    toast(l.instagram ? 'Wiadomość skopiowana: wklej ją w rozmowie i wyślij' : 'Wiadomość skopiowana. Ich Instagrama nie było na stronie: kliknij ich profil w wynikach Google');
   }
 
   // ---------- the other tabs: a plain list ----------

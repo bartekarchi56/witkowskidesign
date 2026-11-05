@@ -16,6 +16,23 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const serverKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || (() => { try { return Object.values(JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}'))[0] as string; } catch { return ''; } })();
 const db = createClient(Deno.env.get('SUPABASE_URL')!, serverKey, { db: { schema: 'timbro' } });
 const GKEY = Deno.env.get('GOOGLE_MAPS_KEY') ?? '';
+// Optional: a Programmable Search Engine (programmablesearchengine.google.com, "Search the entire web")
+// with the Custom Search API on the same key, to find the Instagram of places whose website doesn't
+// link it. 100 searches a day are free.
+const CSE = Deno.env.get('GOOGLE_CSE_ID') ?? '';
+async function findInstagram(name: string, city: string) {
+  if (!CSE || !GKEY) return '';
+  try {
+    const q = encodeURIComponent(`site:instagram.com ${name} ${city}`);
+    const r = await fetch(`https://www.googleapis.com/customsearch/v1?key=${GKEY}&cx=${CSE}&num=3&q=${q}`, { signal: AbortSignal.timeout(6000) });
+    const items = (await r.json()).items ?? [];
+    for (const it of items) {
+      const m = /instagram\.com\/([A-Za-z0-9_.]{2,30})\/?(?:$|\?)/.exec(it.link ?? '');
+      if (m && !/^(p|reel|reels|explore|accounts|stories|tv)$/i.test(m[1])) return m[1];
+    }
+  } catch { /* none found */ }
+  return '';
+}
 const FROM = Deno.env.get('LEADS_FROM') || 'Timbro · Bartek Witkowski <timbro@witkowskidesign.com>';
 const REPLY_TO = Deno.env.get('LEADS_REPLY_TO') || 'bartek.archi56@gmail.com';
 const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, x-client-info, apikey, content-type' };
@@ -73,6 +90,7 @@ async function find(query: string, city: string) {
       return m?.photoUri ?? '';
     }))).filter(Boolean);
     const site = await readSite(p.websiteUri ?? '');
+    if (!site.email && !site.instagram) site.instagram = await findInstagram(p.displayName?.text ?? '', city);
     return { place_id: p.id, name: p.displayName?.text ?? '', kind: p.primaryTypeDisplayName?.text ?? query, address: p.formattedAddress ?? '', city,
       rating: p.rating ?? '', reviews: p.userRatingCount ?? '', website: p.websiteUri ?? '', email: site.email, phone: p.nationalPhoneNumber ?? '',
       maps_url: p.googleMapsUri ?? '', summary: p.editorialSummary?.text ?? '', photos, loyalty: site.loyalty, instagram: site.instagram };
