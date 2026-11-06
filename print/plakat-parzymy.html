@@ -10,7 +10,7 @@
    (print/make-plakat-parzymy.js saves print/kit-parzymy/plakat-parzymy-A4.pdf and -A3.pdf). */
 :root{--dark:#2F4A2B;--green:#528E36;--light:#C9E3A3;--brick:#BB4F35;--cream:#F7F5EF}
 html,body{margin:0;background:var(--cream)}
-.poster{box-sizing:border-box;width:210mm;height:297mm;padding:16mm 18mm 13mm;display:flex;flex-direction:column;align-items:center;text-align:center;color:var(--dark);background:var(--cream);position:relative;overflow:hidden}
+.poster{box-sizing:border-box;width:210mm;height:297mm;padding:16mm 18mm 13mm;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:var(--dark);background:var(--cream);position:relative;overflow:hidden}
 body.A3 .poster{width:297mm;height:420mm;padding:24mm 26mm 20mm}
 .logo{width:62%;max-width:130mm;height:auto;display:block;margin:0 auto}
 body.A3 .logo{max-width:170mm}
@@ -55,15 +55,8 @@ window.WAIT_READY = true;
     <img class="logo" src="kit-parzymy/logo-parzymy-black.png" alt="Parzymy Tutaj">
     <div class="bar"></div>
     <h1>Zbieraj pieczątki<br>w telefonie.</h1>
-    <p class="lede">Po 8 wizytach kawa gratis.</p>
     <div class="qr">${UI.qrSvg(url)}</div>
-    <p class="cta">Zeskanuj kod aparatem telefonu</p>
-    <div class="steps">
-      <div class="step"><b>1</b>Zeskanuj kod QR</div>
-      <div class="step"><b>2</b>Zapisz kartę w Wallet</div>
-      <div class="step"><b>3</b>Pokaż kartę przy kasie</div>
-    </div>
-    <div class="foot">Parzymy Tutaj · Długa 61 · Bydgoszcz</div>`;
+    `;
   window.READY = true;
 })();
 </script>
