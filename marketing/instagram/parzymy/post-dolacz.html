@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Parzymy Tutaj · post: dołącz do programu</title>
+<link rel="stylesheet" href="../../../assets/css/base.css">
+<style>
+/* Instagram post 4:5 (1080 x 1350): solid green, headline, phone with the card, QR with Wallet buttons.
+   node marketing/instagram/parzymy/make.js saves post-dolacz.png */
+:root{--dark:#2F4A2B;--green:#528E36;--brick:#BB4F35;--cream:#F7F5EF}
+html,body{margin:0;background:var(--green)}
+.post{width:1080px;height:1350px;position:relative;overflow:hidden;background:var(--green);color:var(--cream);font-family:var(--font)}
+.logo{position:absolute;left:50%;top:60px;width:300px;transform:translateX(-50%)}
+h1{position:absolute;left:0;right:0;top:330px;margin:0;text-align:center;font:800 68px/1.1 var(--font);letter-spacing:.02em;text-transform:uppercase}
+.sub{position:absolute;left:0;right:0;top:520px;margin:0;text-align:center;font:600 36px/1.2 var(--font)}
+.sub b{color:#fff;background:var(--brick);padding:6px 18px;border-radius:12px}
+.phone{position:absolute;left:70px;top:640px;width:470px;height:900px;border-radius:72px;padding:13px;box-sizing:border-box;background:#2A2A2C;
+  box-shadow:0 0 0 1.5px #8E8E93 inset,0 0 0 3px #1C1C1E inset,0 40px 70px -30px rgba(15,25,10,.6)}
+.bezel{width:100%;height:100%;border-radius:60px;background:#050505;padding:8px;box-sizing:border-box}
+.scr{position:relative;width:100%;height:100%;border-radius:52px;background:#F2F2F7;overflow:hidden}
+.isl{position:absolute;top:14px;left:50%;width:120px;height:34px;margin-left:-60px;border-radius:18px;background:#000;z-index:3}
+.bar{display:flex;justify-content:space-between;padding:22px 34px 0;font:600 18px/1 -apple-system,Archivo,sans-serif;color:#000}
+.wal{padding:44px 16px 0}
+.wal .pass{max-width:none;width:100%;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.14)}
+.side{position:absolute;right:70px;top:630px;width:400px;display:flex;flex-direction:column;align-items:center}
+.qrbox{width:400px;background:#fff;border-radius:34px;padding:30px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:18px;box-shadow:0 30px 50px -30px rgba(15,25,10,.55)}
+.qrbox .qr{width:260px;height:260px}
+.qrbox .qr svg{width:100%;height:100%;display:block}
+.wb{width:100%;height:68px;border-radius:16px;background:#000;color:#fff;display:flex;align-items:center;gap:14px;padding:0 20px;box-sizing:border-box}
+.wb i{width:38px;height:28px;border-radius:6px;flex:0 0 auto;background:linear-gradient(180deg,#3FA9F5 0 25%,#FBB03B 25% 50%,#7AC943 50% 75%,#FF5E5E 75%)}
+.wb.g i{background:conic-gradient(#4285F4 0 25%,#34A853 0 50%,#FBBC05 0 75%,#EA4335 0)}
+.wb span{font:500 15px/1.1 var(--font)}
+.wb span b{display:block;font:700 22px/1.1 var(--font)}
+.how{margin:26px 0 0;width:400px}
+.how h3{margin:0 0 18px;text-align:center;font:600 24px/1 var(--font);letter-spacing:.06em;text-transform:uppercase;opacity:.9}
+.how ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center}
+.how li{font:600 19px/1.25 var(--font)}
+.how li b{display:grid;place-items:center;width:52px;height:52px;margin:0 auto 10px;border-radius:50%;background:var(--cream);color:var(--brick);font-size:24px}
+.foot{position:absolute;right:70px;bottom:40px;font:600 18px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+</style>
+</head>
+<body>
+<div class="post" id="post"></div>
+<script src="../../../assets/vendor/qrcode.js"></script>
+<script src="../../../assets/js/config.js"></script>
+<script src="../../../assets/js/i18n.js"></script>
+<script src="../../../assets/js/stamps.js"></script>
+<script src="../../../assets/js/ui.js"></script>
+<script>
+window.WAIT_READY = true;
+(async () => {
+  I18N.lang = 'pl';
+  const K = '../../../print/kit-parzymy/';
+  const card = { id: 'parzymy-pokaz', business: 'Parzymy Tutaj', title: 'Karta kawowa', reward: 'kawa gratis', stampsNeeded: 8, lang: 'pl', font: 'sans',
+    color: '#FFFFFF', ink: '#1A1A1A', strip: '#528E36', hideReward: true, hideCount: true, noShift: true,
+    logo: K + 'logo-parzymy-black-wide.png', stampImage: K + 'pieczatka-parzymy.png', emptyImage: K + 'pusta-pieczatka-parzymy.png', stripImage: K + 'karta-pasek-parzymy.png' };
+  const who = { id: 'P4RZ7Y', name: 'Ola K.', stamps: 3 };
+  const url = UI.publicJoinUrl('parzymy-pokaz') + '&lang=pl';
+  document.getElementById('post').innerHTML = `
+    <img class="logo" src="${K}logo-parzymy-cream.png" alt="Parzymy Tutaj">
+    <h1>DOŁĄCZ DO PROGRAMU<br>LOJALNOŚCIOWEGO</h1>
+    <p class="sub">Po 8 pieczątkach <b>kawa gratis</b></p>
+    <div class="phone"><div class="bezel"><div class="scr"><div class="isl"></div><div class="bar"><span>9:41</span><span>●●● ▮</span></div><div class="wal">${UI.renderPass(card, who, { platform: 'apple' })}</div></div></div></div>
+    <div class="side">
+      <div class="qrbox">
+        <div class="qr">${UI.qrSvg(url)}</div>
+        <div class="wb"><i></i><span>Dodaj do<b>Apple Wallet</b></span></div>
+        <div class="wb g"><i></i><span>Dodaj do<b>Google Wallet</b></span></div>
+      </div>
+      <div class="how"><h3>Jak dołączyć</h3><ol>
+        <li><b>1</b>Zeskanuj kod</li><li><b>2</b>Zapisz kartę w Wallet</li><li><b>3</b>Odbieraj kawę gratis</li>
+      </ol></div>
+    </div>`;
+  await Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(ok => { i.onload = i.onerror = ok; })));
+  await document.fonts.ready;
+  window.READY = true;
+})();
+</script>
+</body>
+</html>

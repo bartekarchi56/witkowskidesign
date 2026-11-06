@@ -11,7 +11,7 @@ const server = http.createServer((req, res) => {
 });
 server.listen(0, async () => {
   const b = await chromium.launch();
-  for (const name of ['post', 'post-karta']) {
+  for (const name of ['post', 'post-karta', 'post-dolacz']) {
     const p = await b.newPage({ viewport: { width: 1080, height: 1350 } });
     await p.goto(`http://localhost:${server.address().port}/marketing/instagram/parzymy/${name}.html`);
     await p.waitForFunction(() => window.READY === true, null, { timeout: 15000 });
@@ -19,5 +19,5 @@ server.listen(0, async () => {
     await p.close();
   }
   await b.close(); server.close();
-  console.log('✓ marketing/instagram/parzymy/post.png, post-karta.png');
+  console.log('✓ marketing/instagram/parzymy/post.png, post-karta.png, post-dolacz.png');
 });
