@@ -85,7 +85,8 @@ input[type=text],input[type=date],input[type=email],input[type=tel],input[type=n
 textarea{min-height:120px;resize:vertical;line-height:1.5}
 /* iPhone date fields are wider than their box unless they shrink with it */
 input[type=date]{-webkit-appearance:none;appearance:none;display:block;box-sizing:border-box;max-width:100%;min-width:0}
-.field{min-width:0}
+.field{min-width:0;grid-template-columns:minmax(0,1fr)}
+.field > input,.field > select{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
 input:hover,select:hover,textarea:hover{border-color:#C9C9C6}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
