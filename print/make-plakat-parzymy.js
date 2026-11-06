@@ -11,12 +11,12 @@ const server = http.createServer((req, res) => {
 });
 server.listen(0, async () => {
   const b = await chromium.launch();
-  for (const size of ['A4', 'A3']) {
+  for (const [size, bg] of [['A4', ''], ['A3', ''], ['A4', 'tlo'], ['A3', 'tlo']]) {
     const p = await b.newPage({ viewport: { width: 1000, height: 1400 } });
-    await p.goto(`http://localhost:${server.address().port}/print/plakat-parzymy.html?size=${size}`);
+    await p.goto(`http://localhost:${server.address().port}/print/plakat-parzymy.html?size=${size}${bg ? '&bg=' + bg : ''}`);
     await p.waitForFunction(() => window.READY === true, null, { timeout: 15000 });
-    await p.pdf({ path: path.join(__dirname, 'kit-parzymy', `plakat-parzymy-${size}.pdf`), width: size === 'A4' ? '210mm' : '297mm', height: size === 'A4' ? '297mm' : '420mm', printBackground: true, pageRanges: '1' });
-    console.log(`✓ print/kit-parzymy/plakat-parzymy-${size}.pdf`);
+    await p.pdf({ path: path.join(__dirname, 'kit-parzymy', `plakat-parzymy-${size}${bg ? '-' + bg : ''}.pdf`), width: size === 'A4' ? '210mm' : '297mm', height: size === 'A4' ? '297mm' : '420mm', printBackground: true, pageRanges: '1' });
+    console.log(`✓ print/kit-parzymy/plakat-parzymy-${size}${bg ? '-' + bg : ''}.pdf`);
     await p.close();
   }
   await b.close(); server.close();

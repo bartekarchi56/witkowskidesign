@@ -34,6 +34,14 @@ body.A3 .step b{font-size:32pt}
 body.A3 .foot{font-size:12pt;margin-top:8mm}
 .stamp{width:22mm;height:22mm;position:absolute;right:16mm;top:16mm;transform:rotate(-8deg)}
 body.A3 .stamp{width:38mm;height:38mm;right:24mm;top:24mm}
+
+/* ?bg=tlo: the card's own swirl as the background, with a cream panel for the logo and headline. */
+body.tlo .poster{background-size:cover;background-position:center}
+body.tlo.A4 .poster{background-image:url(kit-parzymy/tlo-wir-A4.png)}
+body.tlo.A3 .poster{background-image:url(kit-parzymy/tlo-wir-A3.png)}
+body.tlo .head{background:var(--cream);color:var(--dark);border-radius:8mm;padding:12mm 14mm 10mm;margin-bottom:10mm}
+body.tlo .head .logo{margin-bottom:12mm}
+body.tlo .head h1{margin:0}
 @page{margin:0}
 @media print{html,body{background:var(--green)}}
 </style>
@@ -49,12 +57,15 @@ body.A3 .stamp{width:38mm;height:38mm;right:24mm;top:24mm}
 window.WAIT_READY = true;
 (async () => {
   const size = new URLSearchParams(location.search).get('size') === 'A3' ? 'A3' : 'A4';
-  document.body.className = size;
+  const tlo = new URLSearchParams(location.search).get('bg') === 'tlo';
+  document.body.className = size + (tlo ? ' tlo' : '');
   const url = UI.publicJoinUrl('parzymy-pokaz') + '&lang=pl';
   document.getElementById('poster').innerHTML = `
-    <img class="logo" src="kit-parzymy/logo-parzymy-cream.png" alt="Parzymy Tutaj">
+    <div class="head">
+    <img class="logo" src="${tlo ? 'kit-parzymy/logo-parzymy-black.png' : 'kit-parzymy/logo-parzymy-cream.png'}" alt="Parzymy Tutaj">
     <div class="bar"></div>
     <h1>Zbieraj pieczątki<br>w telefonie.</h1>
+    </div>
     <div class="qr">${UI.qrSvg(url)}</div>
     `;
   window.READY = true;
