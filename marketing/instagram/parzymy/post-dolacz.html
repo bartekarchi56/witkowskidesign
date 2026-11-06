@@ -31,6 +31,7 @@ h1{position:absolute;left:0;right:0;top:330px;margin:0;text-align:center;font:80
 .wb.g i{background:conic-gradient(#4285F4 0 25%,#34A853 0 50%,#FBBC05 0 75%,#EA4335 0)}
 .wb span{font:500 15px/1.1 var(--font)}
 .wb span b{display:block;font:700 22px/1.1 var(--font)}
+.badge{display:block;height:74px;width:auto}
 .how{margin:26px 0 0;width:400px}
 .how h3{margin:0 0 18px;text-align:center;font:600 24px/1 var(--font);letter-spacing:.06em;text-transform:uppercase;opacity:.9}
 .how ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center}
@@ -64,8 +65,8 @@ window.WAIT_READY = true;
     <div class="side">
       <div class="qrbox">
         <div class="qr">${UI.qrSvg(url)}</div>
-        <div class="wb"><i></i><span>Dodaj do<b>Apple Wallet</b></span></div>
-        <div class="wb g"><i></i><span>Dodaj do<b>Google Wallet</b></span></div>
+        <img class="badge" src="../../../assets/wallet/apple-wallet-pl.svg" alt="Dodaj do Apple Wallet">
+        <img class="badge" src="../../../assets/wallet/google-wallet-pl.svg" alt="Dodaj do Google Wallet">
       </div>
       <div class="how"><h3>Jak dołączyć</h3><ol>
         <li><b>1</b>Zeskanuj kod</li><li><b>2</b>Zapisz kartę w Wallet</li><li><b>3</b>Odbieraj kawę gratis</li>
