@@ -39,6 +39,9 @@ body.A3 .stamp{width:38mm;height:38mm;right:24mm;top:24mm}
 body.tlo .poster{background-size:cover;background-position:center}
 body.tlo.A4 .poster{background-image:url(kit-parzymy/tlo-wir-A4.png)}
 body.tlo.A3 .poster{background-image:url(kit-parzymy/tlo-wir-A3.png)}
+body.tlo.A5 .poster{background-image:url(kit-parzymy/tlo-wir-A4.png)}
+/* A5 is the A4 layout scaled to 148 x 210 mm */
+body.A5 .poster{zoom:.7048}
 body.tlo .head{background:var(--cream);color:var(--dark);border-radius:8mm;padding:12mm 14mm 10mm;margin-bottom:10mm}
 body.tlo .head .logo{margin-bottom:12mm}
 body.tlo .head h1{margin:0}
@@ -56,7 +59,8 @@ body.tlo .head h1{margin:0}
 <script>
 window.WAIT_READY = true;
 (async () => {
-  const size = new URLSearchParams(location.search).get('size') === 'A3' ? 'A3' : 'A4';
+  const q = new URLSearchParams(location.search).get('size');
+  const size = q === 'A3' || q === 'A5' ? q : 'A4';
   const tlo = new URLSearchParams(location.search).get('bg') === 'tlo';
   document.body.className = size + (tlo ? ' tlo' : '');
   const url = UI.publicJoinUrl('parzymy-pokaz') + '&lang=pl';
