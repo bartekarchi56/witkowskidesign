@@ -41,11 +41,11 @@ window.WAIT_READY = true;
 (async () => {
   I18N.lang = 'pl';
   const K = '../../../print/kit-parzymy/';
-  const card = { id: 'parzymy-pokaz', business: 'Parzymy Tutaj', title: 'Karta kawowa', reward: 'kawa gratis', stampsNeeded: 8, lang: 'pl', font: 'sans',
+  const card = { id: '8dvur7', business: 'Parzymy Tutaj', title: 'Karta kawowa', reward: 'kawa gratis', stampsNeeded: 8, lang: 'pl', font: 'sans',
     color: '#FFFFFF', ink: '#1A1A1A', strip: '#528E36', hideReward: true, hideCount: false, noShift: true,
     logo: K + 'logo-parzymy-black-wide.png', stampImage: K + 'pieczatka-parzymy.png', emptyImage: K + 'pusta-pieczatka-parzymy.png', stripImage: K + 'karta-pasek-parzymy.png' };
   const who = { id: 'P4RZ7Y', name: 'Ola K.', stamps: 3 };
-  const url = UI.publicJoinUrl('parzymy-pokaz') + '&lang=pl';
+  const url = UI.publicJoinUrl('8dvur7') + '&lang=pl';
   const short = CONFIG.siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
   document.getElementById('post').innerHTML = `
     <img class="logo" src="${K}logo-parzymy-cream-wide.png" alt="Parzymy Tutaj">

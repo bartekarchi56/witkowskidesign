@@ -66,7 +66,7 @@ window.WAIT_READY = true;
 (async () => {
   I18N.lang = 'pl';
   const K = '../../../print/kit-parzymy/';
-  const card = { id: 'parzymy-pokaz', business: 'Parzymy Tutaj', title: 'Karta kawowa', reward: 'kawa gratis', stampsNeeded: 8, lang: 'pl', font: 'sans',
+  const card = { id: '8dvur7', business: 'Parzymy Tutaj', title: 'Karta kawowa', reward: 'kawa gratis', stampsNeeded: 8, lang: 'pl', font: 'sans',
     color: '#FFFFFF', ink: '#1A1A1A', strip: '#528E36', hideReward: true, hideCount: true, noShift: true,
     logo: K + 'logo-parzymy-black-wide.png', stampImage: K + 'pieczatka-parzymy.png', emptyImage: K + 'pusta-pieczatka-parzymy.png', stripImage: K + 'karta-pasek-parzymy.png' };
   const who = { id: 'P4RZ7Y', name: 'Ola K.', stamps: 5 };
@@ -76,7 +76,7 @@ window.WAIT_READY = true;
     <h1>Karta kawowa<br><em>w telefonie.</em></h1>
     <p class="lede">Koniec z kartonikami, które giną w kieszeni. Twoja karta Parzymy Tutaj jest teraz w Apple i Google Wallet, a pieczątkę dostajesz przy kasie.</p>
     <p class="prize">Po 8 pieczątkach kawa gratis.</p>
-    <div class="join"><div class="qr">${UI.qrSvg(UI.publicJoinUrl('parzymy-pokaz') + '&lang=pl')}</div><p>Zeskanuj i załóż kartę</p></div>
+    <div class="join"><div class="qr">${UI.qrSvg(UI.publicJoinUrl('8dvur7') + '&lang=pl')}</div><p>Zeskanuj i załóż kartę</p></div>
     <div class="shade"></div><div class="phone"><i class="sb b1"></i><i class="sb b2"></i><i class="sb b3"></i><i class="sb b4"></i><div class="bezel"><div class="scr"><div class="isl"></div><div class="bar"><span>9:41</span><span>●●● ▮</span></div><div class="wal"><b>Portfel <i>+</i></b>${UI.renderPass(card, who, { platform: 'apple' })}<div class="stack"><div style="background:linear-gradient(135deg,#C9A15B,#8E6A2C)">Karta podarunkowa<small>•••• 2048</small></div><div style="background:linear-gradient(135deg,#2E5BD8,#1A3A99)">Bilet miejski<small>MIESIĘCZNY</small></div><div style="background:linear-gradient(135deg,#3B3F4A,#15161A)">Karta płatnicza<small>•••• 4821</small></div></div></div></div></div></div>
     <div class="steps">
       <div class="step"><b>1</b>Zeskanuj kod przy kasie</div>
