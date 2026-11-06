@@ -9,12 +9,12 @@
 /* Poster for the counter in Parzymy Tutaj's colours. The size comes from ?size=A4 or A3
    (print/make-plakat-parzymy.js saves print/kit-parzymy/plakat-parzymy-A4.pdf and -A3.pdf). */
 :root{--dark:#2F4A2B;--green:#528E36;--light:#C9E3A3;--brick:#BB4F35;--cream:#F7F5EF}
-html,body{margin:0;background:var(--cream)}
-.poster{box-sizing:border-box;width:210mm;height:297mm;padding:16mm 18mm 13mm;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:var(--dark);background:var(--cream);position:relative;overflow:hidden}
+html,body{margin:0;background:var(--green)}
+.poster{box-sizing:border-box;width:210mm;height:297mm;padding:16mm 18mm 13mm;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:var(--cream);background:var(--green);position:relative;overflow:hidden}
 body.A3 .poster{width:297mm;height:420mm;padding:24mm 26mm 20mm}
-.logo{width:62%;max-width:130mm;height:auto;display:block;margin:0 auto}
+.logo{width:62%;max-width:130mm;height:auto;display:block;margin:0 auto 9mm}
 body.A3 .logo{max-width:170mm}
-.bar{width:40mm;height:2.2mm;background:var(--brick);border-radius:2mm;margin:7mm 0 6mm}
+.bar{display:none}
 body.A3 .bar{width:60mm;height:3mm;margin:10mm 0 9mm}
 h1{font-family:"EB Garamond",Georgia,serif;font-weight:600;font-size:34pt;line-height:1.05;margin:0 0 4mm;letter-spacing:-.01em}
 body.A3 h1{font-size:54pt}
@@ -35,7 +35,7 @@ body.A3 .foot{font-size:12pt;margin-top:8mm}
 .stamp{width:22mm;height:22mm;position:absolute;right:16mm;top:16mm;transform:rotate(-8deg)}
 body.A3 .stamp{width:38mm;height:38mm;right:24mm;top:24mm}
 @page{margin:0}
-@media print{html,body{background:var(--cream)}}
+@media print{html,body{background:var(--green)}}
 </style>
 </head>
 <body class="A4" id="body">
@@ -52,7 +52,7 @@ window.WAIT_READY = true;
   document.body.className = size;
   const url = UI.publicJoinUrl('parzymy-pokaz') + '&lang=pl';
   document.getElementById('poster').innerHTML = `
-    <img class="logo" src="kit-parzymy/logo-parzymy-black.png" alt="Parzymy Tutaj">
+    <img class="logo" src="kit-parzymy/logo-parzymy-cream.png" alt="Parzymy Tutaj">
     <div class="bar"></div>
     <h1>Zbieraj pieczątki<br>w telefonie.</h1>
     <div class="qr">${UI.qrSvg(url)}</div>
