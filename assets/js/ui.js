@@ -66,6 +66,7 @@
   // The picture a stamp prints: the café's own artwork, else one of the standard stamps in its ink.
   const stampArt = (card, look = lookOf(card)) => card.stampImage || (look.stamp ? STAMPS.dataUrl(look.stamp, card.ink || '#2B32FF') : '');
   // An empty box: the stamp's own empty drawing (the dot's circle), else a faint print of the stamp.
+  // noShift: stamps only turn a little, they stay centred on their box.
   // A card can bring its own picture for empty boxes (emptyImage), e.g. plain white circles on a photo.
   const stampEmpty = (card, look = lookOf(card)) => card.emptyImage ? { src: card.emptyImage, cls: 'st-own' } : !card.stampImage && look.stamp && STAMPS.hasEmpty(look.stamp)
     ? { src: STAMPS.dataUrl(look.stamp, card.ink || '#2B32FF', true), cls: 'st-empty' }
@@ -100,7 +101,7 @@
       const on = i < have;
       // Empty boxes show a faint print of the same stamp, waiting to be inked.
       dots += art && card.emptyImage
-        ? `<span class="wp-dot s-art s-box${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}"><img src="${esc(card.emptyImage)}" alt="" class="st-own">${on ? `<img src="${esc(art)}" alt="" class="st-in" style="transform:translate(${JITTER[i][0]}%,${JITTER[i][1]}%) rotate(${ANGLES[i] * 3}deg)">` : ''}</span>`
+        ? `<span class="wp-dot s-art s-box${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}"><img src="${esc(card.emptyImage)}" alt="" class="st-own">${on ? `<img src="${esc(art)}" alt="" class="st-in" style="transform:translate(${card.noShift ? 0 : JITTER[i][0]}%,${card.noShift ? 0 : JITTER[i][1]}%) rotate(${ANGLES[i] * 3}deg)">` : ''}</span>`
         : art
         ? `<span class="wp-dot s-art${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}" style="--r:${ANGLES[i]}deg"><img src="${esc(on ? art : off.src)}" alt=""${on ? '' : ` class="${off.cls}"`}></span>`
         : `<span class="wp-dot s-${look.shape} e-${look.empty}${on ? ' on' : ''}${opts.pop === i ? ' pop' : ''}" style="--r:${ANGLES[i]}deg">${on ? markHtml : ''}</span>`;
