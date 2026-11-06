@@ -10,7 +10,7 @@ const server = http.createServer((req, res) => {
   fs.readFile(file, (err, data) => { if (err || !file.startsWith(ROOT)) { res.writeHead(404); return res.end(); } res.writeHead(200, { 'content-type': TYPES[path.extname(file)] || 'application/octet-stream' }); res.end(data); });
 });
 server.listen(0, async () => {
-  const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 900, height: 900 }, deviceScaleFactor: 2 });
+  const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 900, height: 1300 }, deviceScaleFactor: 2 });
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   await p.goto(`http://localhost:${server.address().port}/print/parzymy-logo-board.html`);
   await p.waitForFunction(() => window.READY === true, null, { timeout: 15000 });
