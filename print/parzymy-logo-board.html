@@ -40,7 +40,7 @@ body{margin:0;background:#EDEBE4}
   const mk = svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="${R}"/><g transform="translate(26 22) scale(.48)" fill="none" stroke="${W}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">${MARK}</g></svg>`);
   const base = { id: 'parzymy', business: 'Parzymy Tutaj', title: 'Karta kawowa', reward: 'kawa gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee', stampsNeeded: 8, lang: 'pl', font: 'sans', hideReward: true, hideCount: true, color: W, ink: '#1A1A1A', strip: G, stripImage: swirl(G, W), stampImage: mk };
   const who = { id: 'P4RZ7Y', name: 'Anna Nowak', stamps: 3 };
-  const card1 = { ...base, logo: 'kit-parzymy/logo-parzymy-black.png' };
+  const card1 = { ...base, logo: 'kit-parzymy/logo-parzymy-black-wide.png' };
   const card2 = { ...base, logo: 'kit-parzymy/logo-parzymy-blue-wide.png' };
   document.getElementById('o1').innerHTML = `<h2>1 · Wir zielono-biały, logo czarne</h2>${UI.renderPass(card1, who, { platform: 'apple' })}`;
   document.getElementById('o2').innerHTML = `<h2>2 · Logo niebieskie, napis u góry</h2>${UI.renderPass(card2, who, { platform: 'apple' })}`;
