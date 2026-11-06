@@ -11,7 +11,7 @@ const server = http.createServer((req, res) => {
 });
 server.listen(0, async () => {
   const b = await chromium.launch();
-  for (const [size, bg] of [['A4', ''], ['A3', ''], ['A5', ''], ['A4', 'tlo'], ['A3', 'tlo'], ['A5', 'tlo']]) {
+  for (const [size, bg] of [['A4', 'tlo'], ['A5', 'tlo']]) {
     const p = await b.newPage({ viewport: { width: 1000, height: 1400 } });
     await p.goto(`http://localhost:${server.address().port}/print/plakat-parzymy.html?size=${size}${bg ? '&bg=' + bg : ''}`);
     await p.waitForFunction(() => window.READY === true, null, { timeout: 15000 });
