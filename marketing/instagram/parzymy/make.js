@@ -1,4 +1,4 @@
-// Renders marketing/instagram/parzymy/post.html into parzymy/post.png (1080 x 1350):
+// Renders marketing/instagram/parzymy/post.html and post-karta.html into PNGs (1080 x 1350):
 //   node marketing/instagram/parzymy/make.js
 const http = require('http'), fs = require('fs'), path = require('path');
 let chromium;
@@ -11,10 +11,13 @@ const server = http.createServer((req, res) => {
 });
 server.listen(0, async () => {
   const b = await chromium.launch();
-  const p = await b.newPage({ viewport: { width: 1080, height: 1350 } });
-  await p.goto(`http://localhost:${server.address().port}/marketing/instagram/parzymy/post.html`);
-  await p.waitForFunction(() => window.READY === true, null, { timeout: 15000 });
-  await p.locator('#post').screenshot({ path: path.join(__dirname, 'post.png') });
+  for (const name of ['post', 'post-karta']) {
+    const p = await b.newPage({ viewport: { width: 1080, height: 1350 } });
+    await p.goto(`http://localhost:${server.address().port}/marketing/instagram/parzymy/${name}.html`);
+    await p.waitForFunction(() => window.READY === true, null, { timeout: 15000 });
+    await p.locator('#post').screenshot({ path: path.join(__dirname, name + '.png') });
+    await p.close();
+  }
   await b.close(); server.close();
-  console.log('✓ marketing/instagram/parzymy/post.png');
+  console.log('✓ marketing/instagram/parzymy/post.png, post-karta.png');
 });
