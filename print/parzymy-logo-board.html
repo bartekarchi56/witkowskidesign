@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Parzymy Tutaj · karta z nowym logo</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* Two Apple Wallet cards with the logo from Parzymy's file (print/make-parzymy-logo-board.js). */
+body{margin:0;background:#EDEBE4}
+#board{width:900px;padding:40px;box-sizing:border-box;font-family:var(--font);display:grid;grid-template-columns:1fr 1fr;gap:40px}
+#board h2{font:700 15px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#2F4A2B;margin:0 0 14px}
+.pass{width:400px;max-width:400px;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.16),0 26px 50px -26px rgba(0,0,0,.5)}
+</style>
+</head>
+<body>
+<div id="board"><div id="o1"></div><div id="o2"></div></div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+(async () => {
+  I18N.lang = 'pl';
+  const svgUrl = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+  const R = '#BB4F35', G = '#528E36', W = '#FFFFFF';
+  const swirl = (bg, line) => {
+    let p = '';
+    for (let r = 30; r < 700; r += 34) {
+      let d = '';
+      for (let a = 0; a <= 360; a += 6) {
+        const t = a * Math.PI / 180, rr = r + 9 * Math.sin(t * 5 + r / 40);
+        d += `${a ? 'L' : 'M'}${(510 + rr * Math.cos(t)).toFixed(1)},${(225 + rr * Math.sin(t) * .8).toFixed(1)}`;
+      }
+      p += `<path d="${d}Z"/>`;
+    }
+    return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 450"><rect width="1020" height="450" fill="${bg}"/><g fill="none" stroke="${line}" stroke-width="11">${p}</g></svg>`);
+  };
+  const MARK = '<path d="M27 74 V43 C27 14 73 14 73 43 V66 Q73 71 77 73"/><path d="M40 46 V87"/><path d="M50 46 V96"/><path d="M60 46 V80"/>';
+  const mk = svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="${R}"/><g transform="translate(26 22) scale(.48)" fill="none" stroke="${W}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">${MARK}</g></svg>`);
+  const base = { id: 'parzymy', business: 'Parzymy Tutaj', title: 'Karta kawowa', reward: 'kawa gratis', titleEn: 'Coffee card', rewardEn: 'a free coffee', stampsNeeded: 8, lang: 'pl', font: 'sans', hideReward: true, hideCount: true, color: W, ink: '#1A1A1A', strip: G, stripImage: swirl(G, W), stampImage: mk };
+  const who = { id: 'P4RZ7Y', name: 'Anna Nowak', stamps: 3 };
+  const card1 = { ...base, logo: 'kit-parzymy/logo-parzymy-blue.png' };
+  const card2 = { ...base, logo: 'kit-parzymy/logo-parzymy-blue-wide.png' };
+  document.getElementById('o1').innerHTML = `<h2>1 · Wir zielono-biały, nowe logo</h2>${UI.renderPass(card1, who, { platform: 'apple' })}`;
+  document.getElementById('o2').innerHTML = `<h2>2 · Logo niebieskie, napis u góry</h2>${UI.renderPass(card2, who, { platform: 'apple' })}`;
+  await new Promise(r => setTimeout(r, 800));
+  await Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(ok => { i.onload = i.onerror = ok; })));
+  window.READY = true;
+})();
+</script>
+</body>
+</html>
