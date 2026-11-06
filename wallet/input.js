@@ -30,6 +30,8 @@ export function readPassRequest(raw) {
     // hideCount: no "3/8" (the stamps say it); hideReward: only the customer's name on the front.
     emptyImage: typeof card.emptyImage === 'string' && card.emptyImage.length < 200000 ? card.emptyImage : '',
     hideCount: card.hideCount === true, hideReward: card.hideReward === true,
+    // noShift: stamps only turn a little and stay centred on their box.
+    noShift: card.noShift === true,
     messages: readMessages(card.messages),
     // A message the café sent to all its customers, and when (ms): shown for NEWS_HOURS.
     news: str(card.news, 140), newsAt: Math.max(0, parseInt(card.newsAt, 10) || 0),
