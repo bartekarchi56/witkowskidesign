@@ -9,11 +9,11 @@
 :root{--dark:#2F4A2B;--green:#528E36;--brick:#BB4F35;--cream:#F7F5EF}
 html,body{margin:0;background:var(--green)}
 .post{width:1080px;height:1350px;box-sizing:border-box;position:relative;overflow:hidden;background:var(--green) url(../../../print/kit-parzymy/tlo-wir-A4.png) center/cover;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--dark)}
-.panel{background:var(--cream);border-radius:44px;padding:64px 80px 56px;width:820px;box-sizing:border-box;box-shadow:0 30px 60px -30px rgba(0,0,0,.4)}
-.logo{width:460px;display:block;margin:0 auto 34px}
-h1{font-family:"EB Garamond",Georgia,serif;font-weight:600;font-size:86px;line-height:1.08;margin:0 0 26px}
+.panel{background:var(--cream);border-radius:44px;padding:70px 80px 64px;width:760px;box-sizing:border-box;box-shadow:0 30px 60px -30px rgba(0,0,0,.4)}
+.logo{width:400px;display:block;margin:0 auto 56px}
+h1{font-family:"EB Garamond",Georgia,serif;font-weight:600;font-size:80px;line-height:1.3;margin:0}
 .lede{font:500 38px/1.35 var(--font);margin:0}
-.qr{margin:54px auto 0;width:400px;height:400px;background:#fff;border-radius:36px;padding:28px;box-sizing:border-box;box-shadow:0 20px 40px -20px rgba(0,0,0,.35)}
+.qr{margin:56px auto 0;width:420px;height:420px;background:#fff;border-radius:36px;padding:28px;box-sizing:border-box;box-shadow:0 20px 40px -20px rgba(0,0,0,.35)}
 .qr svg{width:100%;height:100%;display:block}
 .cta{margin:40px 0 0;font:700 40px/1.2 var(--font);color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.25)}
 </style>
@@ -33,11 +33,9 @@ window.WAIT_READY = true;
   document.getElementById('post').innerHTML = `
     <div class="panel">
       <img class="logo" src="../../../print/kit-parzymy/logo-parzymy-black.png" alt="Parzymy Tutaj">
-      <h1>Nowa karta<br>w telefonie.</h1>
-      <p class="lede">Zbieraj pieczątki w Wallet. Po 8 wizytach kawa gratis.</p>
-      <div class="qr">${UI.qrSvg(url)}</div>
+      <h1>Zbieraj pieczątki<br>w telefonie.</h1>
     </div>
-    <p class="cta">Zeskanuj i dołącz</p>`;
+    <div class="qr">${UI.qrSvg(url)}</div>`;
   await Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(ok => { i.onload = i.onerror = ok; })));
   await document.fonts.ready;
   window.READY = true;
