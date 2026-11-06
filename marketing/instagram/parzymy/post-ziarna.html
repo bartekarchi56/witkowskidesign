@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Parzymy Tutaj · post: karta na tle ziaren</title>
+<link rel="stylesheet" href="../../../assets/css/base.css">
+<style>
+/* Instagram post 4:5 (1080 x 1350): coffee beans, headline, phone with the card and its QR, Wallet badges.
+   node marketing/instagram/parzymy/make.js saves post-ziarna.png */
+html,body{margin:0;background:#2a1a10}
+.post{width:1080px;height:1350px;position:relative;overflow:hidden;color:#fff;font-family:var(--font);
+  background:linear-gradient(rgba(25,15,8,.35),rgba(25,15,8,.55)),url(ziarna.jpg) center/cover}
+.logo{position:absolute;left:50%;top:44px;width:340px;transform:translateX(-50%)}
+h1{position:absolute;left:60px;right:60px;top:205px;margin:0;text-align:center;font:800 62px/1.12 var(--font);letter-spacing:-.01em;text-shadow:0 4px 24px rgba(0,0,0,.45)}
+.phone{position:absolute;left:50%;top:385px;width:460px;height:800px;margin-left:-235px;border-radius:72px;padding:13px;box-sizing:border-box;background:#2A2A2C;
+  box-shadow:0 0 0 1.5px #8E8E93 inset,0 0 0 3px #1C1C1E inset,0 50px 90px -30px rgba(0,0,0,.8)}
+.bezel{width:100%;height:100%;border-radius:60px;background:#050505;padding:8px;box-sizing:border-box}
+.scr{position:relative;width:100%;height:100%;border-radius:52px;background:#F2F2F7;overflow:hidden}
+.isl{position:absolute;top:14px;left:50%;width:120px;height:34px;margin-left:-60px;border-radius:18px;background:#000;z-index:3}
+.wal{padding:66px 16px 0}
+.wal .pass{max-width:none;width:100%;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.14)}
+.wal .pass .wp-code,.wal .pass .wp-tap{display:none}
+.save{margin:16px 0 0;background:#fff;border-radius:16px;padding:18px 18px 16px;text-align:center;color:#1A1A1A;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.save p{margin:0 0 12px;font:700 18px/1.2 var(--font)}
+.save .qr{width:200px;height:200px;margin:0 auto}
+.save .qr svg{width:100%;height:100%;display:block}
+.save small{display:block;margin-top:10px;font:500 13px/1.2 var(--mono);color:#6b6b70}
+.badges{position:absolute;left:0;right:0;bottom:44px;display:flex;justify-content:center;gap:22px}
+.badges img{height:74px;width:auto;display:block}
+</style>
+</head>
+<body>
+<div class="post" id="post"></div>
+<script src="../../../assets/vendor/qrcode.js"></script>
+<script src="../../../assets/js/config.js"></script>
+<script src="../../../assets/js/i18n.js"></script>
+<script src="../../../assets/js/stamps.js"></script>
+<script src="../../../assets/js/ui.js"></script>
+<script>
+window.WAIT_READY = true;
+(async () => {
+  I18N.lang = 'pl';
+  const K = '../../../print/kit-parzymy/';
+  const card = { id: 'parzymy-pokaz', business: 'Parzymy Tutaj', title: 'Karta kawowa', reward: 'kawa gratis', stampsNeeded: 8, lang: 'pl', font: 'sans',
+    color: '#FFFFFF', ink: '#1A1A1A', strip: '#528E36', hideReward: true, hideCount: false, noShift: true,
+    logo: K + 'logo-parzymy-black-wide.png', stampImage: K + 'pieczatka-parzymy.png', emptyImage: K + 'pusta-pieczatka-parzymy.png', stripImage: K + 'karta-pasek-parzymy.png' };
+  const who = { id: 'P4RZ7Y', name: 'Ola K.', stamps: 3 };
+  const url = UI.publicJoinUrl('parzymy-pokaz') + '&lang=pl';
+  const short = CONFIG.siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  document.getElementById('post').innerHTML = `
+    <img class="logo" src="${K}logo-parzymy-cream-wide.png" alt="Parzymy Tutaj">
+    <h1>Nasza karta lojalnościowa,<br>teraz w telefonie</h1>
+    <div class="phone"><div class="bezel"><div class="scr"><div class="isl"></div><div class="wal">
+      ${UI.renderPass(card, who, { platform: 'apple' })}
+      <div class="save"><p>Zeskanuj, aby zapisać kartę</p><div class="qr">${UI.qrSvg(url)}</div><small>${short}</small></div>
+    </div></div></div></div>
+    <div class="badges"><img src="../../../assets/wallet/apple-wallet-pl.svg" alt="Dodaj do Portfela Apple"><img src="../../../assets/wallet/google-wallet-pl.svg" alt="Dodaj do Portfela Google"></div>`;
+  await Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(ok => { i.onload = i.onerror = ok; })));
+  await document.fonts.ready;
+  window.READY = true;
+})();
+</script>
+</body>
+</html>
