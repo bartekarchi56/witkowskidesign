@@ -68,7 +68,8 @@ export async function strip(card, have, { w = 375, h = 123, scale = 1 } = {}) {
     const box = artData(card.emptyImage);
     if (box) {   // the box stays under the stamp, which lands a little off-centre
       const img = `<image href="${box}" x="${x}" y="${y}" width="${d}" height="${d}" preserveAspectRatio="xMidYMid meet"/>`;
-      const dx = JITTER[i][0] / 100 * d, dy = JITTER[i][1] / 100 * d;
+      const sh = card.noShift ? (i === 4 ? [-3, 0] : [0, 0]) : JITTER[i];
+      const dx = sh[0] / 100 * d, dy = sh[1] / 100 * d;
       out += img + (i < have ? `<g transform="translate(${dx} ${dy}) rotate(${ANGLES[i] * 3} ${x + d / 2} ${y + d / 2})">${stampAt(card, ink, x, y, d)}</g>` : '');
       continue;
     }
