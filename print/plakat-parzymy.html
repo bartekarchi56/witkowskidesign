@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parzymy Tutaj · plakat z kodem QR</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* Poster for the counter in Parzymy Tutaj's colours. The size comes from ?size=A4 or A3
+   (print/make-plakat-parzymy.js saves print/kit-parzymy/plakat-parzymy-A4.pdf and -A3.pdf). */
+:root{--dark:#2F4A2B;--green:#528E36;--light:#C9E3A3;--brick:#BB4F35;--cream:#F7F5EF}
+html,body{margin:0;background:var(--cream)}
+.poster{box-sizing:border-box;width:210mm;height:297mm;padding:16mm 18mm 13mm;display:flex;flex-direction:column;align-items:center;text-align:center;color:var(--dark);background:var(--cream);position:relative;overflow:hidden}
+body.A3 .poster{width:297mm;height:420mm;padding:24mm 26mm 20mm}
+.logo{width:62%;max-width:130mm;height:auto;display:block;margin:0 auto}
+body.A3 .logo{max-width:170mm}
+.bar{width:40mm;height:2.2mm;background:var(--brick);border-radius:2mm;margin:7mm 0 6mm}
+body.A3 .bar{width:60mm;height:3mm;margin:10mm 0 9mm}
+h1{font-family:"EB Garamond",Georgia,serif;font-weight:600;font-size:34pt;line-height:1.05;margin:0 0 4mm;letter-spacing:-.01em}
+body.A3 h1{font-size:54pt}
+.lede{font:500 15pt/1.4 var(--font);margin:0;opacity:.85}
+body.A3 .lede{font-size:21pt}
+.qr{margin:9mm auto 7mm;width:96mm;height:96mm;background:#fff;padding:7mm;box-sizing:border-box;border-radius:8mm}
+body.A3 .qr{width:150mm;height:150mm;padding:12mm;margin:12mm auto 10mm;border-radius:10mm}
+.qr svg{width:100%;height:100%;display:block}
+.cta{font:700 15pt/1.2 var(--font);color:var(--green);letter-spacing:.01em;margin:0}
+body.A3 .cta{font-size:26pt}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm;width:100%;margin-top:auto}
+.step{background:#fff;border-radius:5mm;padding:5mm 4mm;font-size:11pt;line-height:1.35}
+body.A3 .step{font-size:14pt;padding:6mm 5mm}
+.step b{display:block;font:700 22pt/1 var(--font);color:var(--brick);margin-bottom:2mm}
+body.A3 .step b{font-size:32pt}
+.foot{margin-top:6mm;font:500 9.5pt/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+body.A3 .foot{font-size:12pt;margin-top:8mm}
+.stamp{width:22mm;height:22mm;position:absolute;right:16mm;top:16mm;transform:rotate(-8deg)}
+body.A3 .stamp{width:38mm;height:38mm;right:24mm;top:24mm}
+@page{margin:0}
+@media print{html,body{background:var(--cream)}}
+</style>
+</head>
+<body class="A4" id="body">
+<div class="poster" id="poster"></div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+window.WAIT_READY = true;
+(async () => {
+  const size = new URLSearchParams(location.search).get('size') === 'A3' ? 'A3' : 'A4';
+  document.body.className = size;
+  const url = UI.publicJoinUrl('parzymy-pokaz') + '&lang=pl';
+  document.getElementById('poster').innerHTML = `
+    <img class="logo" src="kit-parzymy/logo-parzymy-black.png" alt="Parzymy Tutaj">
+    <div class="bar"></div>
+    <h1>Zbieraj pieczątki<br>w telefonie.</h1>
+    <p class="lede">Po 8 wizytach kawa gratis.</p>
+    <div class="qr">${UI.qrSvg(url)}</div>
+    <p class="cta">Zeskanuj kod aparatem telefonu</p>
+    <div class="steps">
+      <div class="step"><b>1</b>Zeskanuj kod QR</div>
+      <div class="step"><b>2</b>Zapisz kartę w Wallet</div>
+      <div class="step"><b>3</b>Pokaż kartę przy kasie</div>
+    </div>
+    <div class="foot">Parzymy Tutaj · Długa 61 · Bydgoszcz</div>`;
+  window.READY = true;
+})();
+</script>
+</body>
+</html>
