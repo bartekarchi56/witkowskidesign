@@ -14,6 +14,9 @@ const db = createClient(Deno.env.get('SUPABASE_URL')!, serverKey, { db: { schema
 const SITE = (Deno.env.get('SITE_URL') ?? 'https://timbro.witkowskidesign.com/').replace(/\/?$/, '/');
 const TRIAL = Number(Deno.env.get('TRIAL_DAYS') ?? 30);
 const PLANS = ['start', 'plus', 'pro'], INTERVALS = ['month', 'year'];
+// Black Friday 2026: whoever subscribes by 30 November gets the coupon (50% off, forever) without a
+// code. After the end date, or if the coupon is missing in Stripe, checkout works as before.
+const PROMO = { coupon: Deno.env.get('PROMO_COUPON') ?? 'TIMBRO_BF_2026', until: Date.parse('2026-11-30T23:59:59+01:00') };
 const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, x-client-info, apikey, content-type' };
 const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'content-type': 'application/json' } });
 
@@ -48,6 +51,11 @@ Deno.serve(async req => {
     const prices = await stripe.prices.list({ lookup_keys: [`timbro_${plan}_${interval}`], active: true, limit: 1 });
     if (!prices.data.length) return reply({ error: 'This plan is not available yet.' }, 400);
 
+    let promo = '';
+    if (Date.now() < PROMO.until && PROMO.coupon) {
+      try { const c = await stripe.coupons.retrieve(PROMO.coupon); if (c.valid) promo = c.id; } catch { /* no coupon: no discount */ }
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       customer: biz.customer,
@@ -59,7 +67,8 @@ Deno.serve(async req => {
       billing_address_collection: 'required',
       customer_update: { name: 'auto', address: 'auto' },
       automatic_tax: { enabled: Deno.env.get('AUTOMATIC_TAX') === 'true' },
-      allow_promotion_codes: true,
+      // Stripe takes either an automatic discount or a field for codes, not both.
+      ...(promo ? { discounts: [{ coupon: promo }] } : { allow_promotion_codes: true }),
       locale: 'auto',
       integration_identifier: 'timbro-dashboard-qkzvmhra',
       success_url: SITE + 'app/dashboard.html?billing=success#plan',

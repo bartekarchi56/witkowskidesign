@@ -452,6 +452,12 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
           <button type="button" data-bill="year" aria-pressed="false"><span data-i18n="p.yearly"></span><em data-i18n="p.save"></em></button>
         </div>
       </div>
+      <!-- Black Friday 2026: shown until 30 November (Stripe coupon TIMBRO_BF_2026, applied by stripe-checkout). -->
+      <div id="bf" hidden style="margin:0 0 26px;padding:22px 26px;border-radius:20px;background:#111;color:#fff;flex-wrap:wrap;gap:6px 18px;align-items:baseline">
+        <b data-i18n="bf.t" style="font-size:22px;letter-spacing:-.01em"></b>
+        <span data-i18n="bf.p" style="flex:1 1 320px;opacity:.9;line-height:1.5"></span>
+        <small data-i18n="bf.low" style="flex-basis:100%;opacity:.6;font-size:12px"></small>
+      </div>
       <div class="plans" id="plans"></div>
       <p class="all" data-i18n="p.all"></p>
     </div>
@@ -512,6 +518,7 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
 <script>
 I18N.add({
   it: {
+    'bf.t': 'Black Friday: −50% per sempre', 'bf.p': 'Abbonati entro il 30 novembre e paghi metà prezzo ogni mese, finché resti con noi: Start 9,50 €, Plus 19,50 €, Pro 39,50 € al mese (anche l\'annuale a metà). Lo sconto si applica da solo al pagamento.', 'bf.low': 'Prezzo più basso degli ultimi 30 giorni prima dello sconto: Start 19 €, Plus 39 €, Pro 79 € al mese.',
     'nav.how': 'Come funziona', 'nav.try': 'Prova', 'nav.help': 'Design su misura', 'nav.numbers': 'Numeri', 'nav.pricing': 'Prezzi',
     'nav.login': 'Accedi', 'nav.start': 'Prova gratis', 'nav.startShort': 'Prova',
     'hero.a': 'La carta fedeltà che nessuno', 'hero.b': 'perde.',
@@ -573,6 +580,7 @@ I18N.add({
     'ft.dash': 'Area locale', 'ft.stamper': 'Timbratore per baristi', 'ft.example': 'Esempio: The Coffee', 'ft.terms': 'Termini e disdetta', 'ft.privacy': 'Privacy', 'ft.by': 'Un progetto Witkowski Design'
   },
   en: {
+    'bf.t': 'Black Friday: 50% off for life', 'bf.p': 'Subscribe by 30 November and pay half price every month for as long as you stay: Start €9.50, Plus €19.50, Pro €39.50 a month (yearly is half price too). Applied automatically at checkout.', 'bf.low': 'Lowest price in the 30 days before the discount: Start €19, Plus €39, Pro €79 a month.',
     'nav.how': 'How it works', 'nav.try': 'Try it', 'nav.help': 'Custom design', 'nav.numbers': 'Numbers', 'nav.pricing': 'Pricing',
     'nav.login': 'Log in', 'nav.start': 'Try it free', 'nav.startShort': 'Try free',
     'hero.a': 'The loyalty card nobody', 'hero.b': 'loses.',
@@ -634,6 +642,7 @@ I18N.add({
     'ft.dash': 'Business login', 'ft.stamper': 'Stamper for staff', 'ft.example': 'Example: The Coffee', 'ft.terms': 'Terms and cancellation', 'ft.privacy': 'Privacy', 'ft.by': 'A Witkowski Design project'
   },
   pl: {
+    'bf.t': 'Black Friday: −50% na zawsze', 'bf.p': 'Zapisz się do 30 listopada i płać połowę ceny co miesiąc, tak długo, jak jesteś z nami: Start 9,50 €, Plus 19,50 €, Pro 39,50 € miesięcznie (rocznie też o połowę taniej). Zniżka nalicza się sama przy płatności.', 'bf.low': 'Najniższa cena z 30 dni przed obniżką: Start 19 €, Plus 39 €, Pro 79 € miesięcznie.',
     'nav.how': 'Jak to działa', 'nav.try': 'Wypróbuj', 'nav.help': 'Projekt na miarę', 'nav.numbers': 'Liczby', 'nav.pricing': 'Cennik',
     'nav.login': 'Zaloguj się', 'nav.start': 'Wypróbuj za darmo', 'nav.startShort': 'Wypróbuj',
     'hero.a': 'Karta lojalnościowa, której nikt', 'hero.b': 'nie gubi.',
@@ -902,5 +911,6 @@ I18N.add({
   all();
 })();
 </script>
+<script>if (Date.now() < Date.parse('2026-11-30T23:59:59+01:00')) { const bf = document.getElementById('bf'); bf.hidden = false; bf.style.display = 'flex'; }</script>
 </body>
 </html>
