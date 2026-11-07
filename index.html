@@ -237,6 +237,17 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 </head>
 <body>
+<!-- Black Friday 2026: a strip of text moving right to left, until 30 November; links to the prices. -->
+<style>
+.bft{display:none;background:#111;color:#fff;overflow:hidden;white-space:nowrap;text-decoration:none;border-bottom:1.5px solid #111}
+.bft.on{display:block}
+.bft .run{display:inline-flex;animation:bft 22s linear infinite;padding:11px 0}
+.bft span{font:800 15px/1 var(--font);letter-spacing:.14em;padding:0 22px}
+.bft i{font-style:normal;color:#FFD23F}
+@keyframes bft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.bft .run{animation:none}}
+</style>
+<a class="bft" id="bft" href="#prezzi" aria-label="Black Friday 50%"><div class="run" aria-hidden="true"><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i><span>BLACK FRIDAY 50%</span><i>✦</i></div></a>
 <header class="nav">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Timbro"><span class="brand-mark" aria-hidden="true"></span>Timbro</a>
@@ -911,6 +922,6 @@ I18N.add({
   all();
 })();
 </script>
-<script>if (Date.now() < Date.parse('2026-11-30T23:59:59+01:00')) { const bf = document.getElementById('bf'); bf.hidden = false; bf.style.display = 'flex'; }</script>
+<script>if (Date.now() < Date.parse('2026-11-30T23:59:59+01:00')) { const bf = document.getElementById('bf'); bf.hidden = false; bf.style.display = 'flex'; document.getElementById('bft').classList.add('on'); }</script>
 </body>
 </html>
