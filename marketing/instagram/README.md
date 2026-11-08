@@ -966,3 +966,17 @@ Polish reel for Polish cafés: what a customer sees on their phone, from scannin
 > Napisz TIMBRO w komentarzu, a zaprojektujemy kartę dla Twojej kawiarni 👇
 >
 > #kartalojalnosciowa #kawiarnia #kawa #bydgoszcz #małybiznes
+
+### post-blackfriday, reel-blackfriday
+Black Friday 2026 (`blackfriday/`, made by `blackfriday/make.js`): 50% off for life for cafés that subscribe by 30 November. Stripe coupon applied automatically at checkout. The story (`story-blackfriday`) has no caption.
+
+**EN**
+> BLACK FRIDAY: 50% off for life ✦
+> A loyalty card in Apple and Google Wallet for your café. Subscribe by 30 November and pay half price every month, for as long as you stay: Start €9.50 · Plus €19.50 · Pro €39.50 a month. 30 days free first.
+>
+> 🇵🇱 −50% na zawsze dla kawiarni, które dołączą do 30 listopada: Start 9,50 € · Plus 19,50 € · Pro 39,50 € miesięcznie.
+> 🇮🇹 −50% per sempre per i bar che si abbonano entro il 30 novembre: Start 9,50 € · Plus 19,50 € · Pro 39,50 € al mese.
+>
+> Prices exclude VAT. Lowest price in the 30 days before the discount: €19 / €39 / €79 a month.
+>
+> #blackfriday #loyaltycard #coffeeshop #kawiarnia #bar #applewallet #googlewallet
