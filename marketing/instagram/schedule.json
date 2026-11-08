@@ -278,9 +278,24 @@
       "type": "reel"
     },
     {
+      "at": "2026-11-09 08:30",
+      "post": "post-blackfriday",
+      "type": "image"
+    },
+    {
+      "at": "2026-11-09 08:40",
+      "post": "story-blackfriday",
+      "type": "story"
+    },
+    {
       "at": "2026-11-09 09:00",
       "post": "carousel-rewards",
       "type": "carousel"
+    },
+    {
+      "at": "2026-11-09 10:30",
+      "post": "reel-blackfriday",
+      "type": "reel"
     },
     {
       "at": "2026-11-09 13:00",
