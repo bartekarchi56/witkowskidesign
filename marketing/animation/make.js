@@ -32,7 +32,7 @@ const server = http.createServer((req, res) => {
   await browser.close(); server.close();
   const out = path.join(__dirname, `timbro-${anim}-${lang}.mp4`);
   const wav = path.join(dir, 'sound.wav');
-  require('./sound.js').write(wav, anim);
+  require('./sound.js').write(wav, anim.replace(/-bf$/, ''));   // a -bf version keeps the original's soundtrack
   execFileSync(FFMPEG, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(dir, 'f%04d.jpg'), '-i', wav,
     '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '20', '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', out]);
   fs.rmSync(dir, { recursive: true });

@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tre fatti sui clienti · Black Friday</title>
+<link rel="stylesheet" href="../../assets/css/base.css">
+<style>
+/* Black Friday 2026 version of tre-fatti.html: a moving "BLACK FRIDAY 50%" strip on top all along,
+   and the ending sells the offer (50% off for life, until 30 November, 30 days free). ?lang=it|en|pl.
+   "3 facts about regulars": a 37-second reel in 3D (three.js) set in a cut-away café on a warm
+   paper background. Each fact comes from a published study, named on screen:
+   1. Endowed progress (Nunes & Drèze 2006, car wash cards): 8 stamps to go, but the card that
+      starts with 2 stamps already in is finished by 34% of customers against 19%.
+   2. Goal gradient (Kivetz, Urminsky & Zheng 2006, a Columbia University café): the closer to the
+      free coffee, the more often they come. A walker on stepping stones that get closer together.
+   3. A new customer costs 5 to 25 times more than keeping one (Harvard Business Review, 2014):
+      coins on a balance.
+   Then the Wallet card and "Comment TIMBRO". Vertical 540 x 960 (1080 x 1920 at 2x). ?lang=it|en.
+   make.js calls window.renderAt(t). */
+html,body{margin:0;background:#111}
+body{display:grid;place-items:center;min-height:100vh;font-family:var(--font)}
+.stage{width:540px;height:960px;position:relative;overflow:hidden;background:radial-gradient(120% 75% at 50% 52%,#fbf4e8 0%,#f3e5d0 50%,#e3cdb0 100%)}
+canvas{position:absolute;inset:0;width:540px;height:960px;display:block}
+#c{transition:none}
+.ov{position:absolute;left:0;right:0;pointer-events:none}
+.top{top:78px;text-align:center;padding:0 26px}
+.chip{display:inline-flex;align-items:center;gap:9px;font:500 12.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:#fff;background:#16152b;padding:8px 13px 7px;border-radius:99px;margin-bottom:14px;box-shadow:0 6px 16px rgba(40,25,10,.18)}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--pop);box-shadow:0 0 0 2px #fff}
+.cap{font-size:35px;line-height:1.12;font-weight:800;font-stretch:112%;letter-spacing:-.015em;color:#16152b;text-wrap:balance}
+.cap mark{background:var(--pop);color:#fff;padding:0 9px;border-radius:10px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.cap mark.y{background:#FFC24B;color:#16152b}
+.src{margin:14px auto 0;display:inline-flex;align-items:center;gap:8px;font:500 11px/1.35 var(--mono);color:#6d5c49;letter-spacing:.02em;background:rgba(255,255,255,.6);padding:6px 11px;border-radius:8px}
+.src svg{flex:none}
+.lab{position:absolute;left:0;top:0;transform:translate(-50%,-100%);text-align:center;white-space:nowrap;opacity:0;will-change:transform}
+.lab .pill{display:inline-block;background:#fff;color:#16152b;border-radius:14px;padding:9px 15px 10px;box-shadow:0 12px 26px rgba(60,35,10,.22);position:relative}
+.lab .pill::after{content:'';position:absolute;left:50%;bottom:-6px;width:12px;height:12px;background:inherit;transform:translateX(-50%) rotate(45deg);border-radius:2px}
+.lab b{display:block;font-size:36px;line-height:1;font-weight:800;font-stretch:110%;letter-spacing:-.02em}
+.lab span{display:block;font:500 10.5px/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#7a6a58;margin-top:5px}
+.lab.blue .pill{background:var(--pop);color:#fff}
+.lab.blue span{color:rgba(255,255,255,.82)}
+.lab.dark .pill{background:#16152b;color:#fff}
+.lab.dark span{color:rgba(255,255,255,.7)}
+.notif{top:262px;padding:0 22px;opacity:0}
+.nb{display:flex;gap:13px;align-items:flex-start;background:rgba(255,255,255,.95);border-radius:24px;padding:15px 17px 16px;box-shadow:0 20px 44px rgba(50,30,10,.3);text-align:left}
+.nb .app{width:46px;height:46px;border-radius:12px;background:var(--pop);flex:none;display:grid;place-items:center}
+.nb .app i{width:22px;height:22px;border-radius:50%;background:var(--pop);box-shadow:0 0 0 4px #fff}
+.nb .tt{display:flex;justify-content:space-between;align-items:baseline;font-size:16px;font-weight:700;color:#111}
+.nb .tt span{font-size:13px;font-weight:500;color:#8a8a8f}
+.nb p{margin:3px 0 0;font-size:16px;line-height:1.32;color:#2a2a2e;font-weight:500}
+.end{bottom:205px;text-align:center;opacity:0}
+.end span{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#16152b;font-size:19px;font-weight:700;padding:13px 18px;border-radius:16px;box-shadow:0 14px 30px rgba(60,35,10,.25)}
+.end span i{width:20px;height:20px;border-radius:50%;background:var(--pop);box-shadow:inset 0 0 0 5px var(--pop),inset 0 0 0 7px #fff;flex:none}
+.band{top:0;height:330px;background:linear-gradient(#f8efe2 0%,rgba(248,239,226,.92) 45%,rgba(248,239,226,0) 100%)}
+.vig{inset:0;background:radial-gradient(140% 90% at 50% 45%,transparent 55%,rgba(90,55,20,.22) 100%)}
+.grain{inset:0;opacity:.09;mix-blend-mode:multiply}
+.flash{inset:0;background:#fff8ee;opacity:0}
+.bfs{position:absolute;left:0;right:0;top:0;height:34px;background:#FFD23F;color:#16152b;overflow:hidden;white-space:nowrap;display:flex;align-items:center;z-index:5}
+.bfs .run{display:inline-flex;align-items:center;will-change:transform}
+.bfs span{font:800 13.5px/1 var(--font);letter-spacing:.14em;padding:0 13px;display:block}
+.bfs i{font-style:normal;font-size:13px;line-height:1;display:block}
+.offer{position:absolute;left:24px;right:24px;bottom:290px;text-align:center;opacity:0;z-index:4}
+.offer .o1{display:inline-block;background:#16152b;color:#fff;border-radius:18px;padding:14px 20px 12px;box-shadow:0 18px 36px rgba(20,15,40,.35)}
+.offer .o1 small{display:block;font:800 13px/1 var(--font);letter-spacing:.16em;color:#FFD23F;margin-bottom:6px}
+.offer .o1 b{display:block;font-size:44px;line-height:1;font-weight:800;font-stretch:112%;letter-spacing:-.03em}
+.offer .o1 b em{font-style:normal;color:#8E93FF}
+.offer .o2{margin-top:8px;font:600 13px/1.35 var(--font);color:#16152b;background:rgba(255,255,255,.85);display:inline-block;padding:7px 12px;border-radius:10px}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <canvas id="c"></canvas>
+  <canvas id="p"></canvas>
+  <div class="ov vig"></div>
+  <div class="ov band" id="band"></div>
+  <div id="labs"></div>
+  <div class="ov top" id="top"><div class="chip" id="chip"><i></i><span id="chipT"></span></div><div class="cap" id="cap"></div><div><div class="src" id="src"></div></div></div>
+  <div class="ov notif" id="notif"><div class="nb"><div class="app"><i></i></div><div style="flex:1"><div class="tt"><b id="nbT"></b><span id="nbW"></span></div><p id="nbP"></p></div></div></div>
+  <div class="ov end" id="end"><span><i></i><b id="endT"></b></span></div>
+  <div class="offer" id="offer"><div class="o1"><small>BLACK FRIDAY</small><b id="offB"></b></div><br><div class="o2" id="offS"></div></div>
+  <div class="bfs" id="bfs"><div class="run" id="bfr"></div></div>
+  <div class="ov grain" id="grain"></div>
+  <div class="ov flash" id="flash"></div>
+</div>
+<script src="../../assets/js/config.js"></script>
+<script type="module">
+import * as THREE from '../../assets/vendor/three.module.min.js';
+import { buildCafe } from './cafe3d.js';
+
+const q = new URLSearchParams(location.search);
+const lang = ['en', 'pl'].includes(q.get('lang')) ? q.get('lang') : 'it';
+document.documentElement.lang = lang;
+// Timeline (seconds)
+const F1 = 3.6, F2 = 13.6, F3 = 23.0, END = 29.0, DURATION = 37.0;
+const T = {
+  it: {
+    // [start, chip, caption, source]
+    caps: [
+      [0.3, '', 'Ci sono <mark>3 fatti</mark> sui clienti abituali…', ''],
+      [1.9, '', '…che quasi nessun bar <mark>conosce.</mark>', ''],
+      [F1 + .2, 'Fatto 1 / 3', 'Due carte fedeltà. Per tutte e due servono <mark>8 timbri.</mark>', ''],
+      [6.4, 'Fatto 1 / 3', 'Ma la B parte con <mark>2 timbri già fatti.</mark>', ''],
+      [8.6, 'Fatto 1 / 3', 'Quanti arrivano al premio?', 'Nunes & Drèze, 2006 · carte fedeltà di un autolavaggio'],
+      [11.0, 'Fatto 1 / 3', '<mark class="y">Quasi il doppio.</mark> Stesso premio.', 'Nunes & Drèze, 2006 · carte fedeltà di un autolavaggio'],
+      [F2 + .2, 'Fatto 2 / 3', 'Più si avvicinano al caffè gratis…', 'Kivetz, Urminsky & Zheng, 2006 · bar della Columbia University'],
+      [16.4, 'Fatto 2 / 3', '…<mark>più spesso tornano.</mark>', 'Kivetz, Urminsky & Zheng, 2006 · bar della Columbia University'],
+      [19.6, 'Fatto 2 / 3', 'Per questo Timbro li avvisa quando <mark>manca 1 timbro.</mark>', ''],
+      [F3 + .2, 'Fatto 3 / 3', 'Trovare un cliente nuovo costa…', 'Harvard Business Review, 2014'],
+      [25.2, 'Fatto 3 / 3', '<mark>da 5 a 25 volte di più</mark> che tenerne uno.', 'Harvard Business Review, 2014'],
+      [END + .2, '', 'Il cliente più facile? <mark>Quello che hai già.</mark>', ''],
+      [32.6, '', 'Commenta <mark>TIMBRO</mark> 👇', '']
+    ],
+    card: 'CARTA', reward: 'PREMIO', rewardV: '1 GRATIS', reach: 'arriva al premio', newC: 'cliente nuovo', oldC: 'cliente che torna',
+    menu: ['Espresso', '1,30', 'Cappuccino', '1,80', 'Cornetto', '1,50', 'Matcha latte', '3,50', 'Spremuta', '3,00'],
+    qr: ['Scansiona', 'per la carta fedeltà'], end: 'Ti mandiamo il design della tua carta ☕', offB: '−50% <em>per sempre</em>', offS: 'Per i bar che si abbonano entro il 30 novembre · prima 30 giorni gratis',
+    bar: 'Bar Aurora', stamps: 'TIMBRI', rewardW: 'un caffè gratis', customer: 'CLIENTE', ready: 'Premio pronto: mostralo alla cassa',
+    notif: 'Ancora 1 timbro per un caffè gratis! Ti aspettiamo da Bar Aurora.', now: 'ora', date: 'giovedì 23 ottobre'
+  },
+  en: {
+    caps: [
+      [0.3, '', 'There are <mark>3 facts</mark> about regulars…', ''],
+      [1.9, '', '…that most cafés <mark>don’t know.</mark>', ''],
+      [F1 + .2, 'Fact 1 / 3', 'Two loyalty cards. Both need <mark>8 stamps.</mark>', ''],
+      [6.4, 'Fact 1 / 3', 'But card B starts with <mark>2 stamps already in.</mark>', ''],
+      [8.6, 'Fact 1 / 3', 'How many reach the reward?', 'Nunes & Drèze, 2006 · a car wash’s loyalty cards'],
+      [11.0, 'Fact 1 / 3', '<mark class="y">Almost twice as many.</mark> Same reward.', 'Nunes & Drèze, 2006 · a car wash’s loyalty cards'],
+      [F2 + .2, 'Fact 2 / 3', 'The closer they get to the free coffee…', 'Kivetz, Urminsky & Zheng, 2006 · a Columbia University café'],
+      [16.4, 'Fact 2 / 3', '…<mark>the more often they come.</mark>', 'Kivetz, Urminsky & Zheng, 2006 · a Columbia University café'],
+      [19.6, 'Fact 2 / 3', 'That’s why Timbro reminds them when <mark>one stamp is left.</mark>', ''],
+      [F3 + .2, 'Fact 3 / 3', 'Winning a new customer costs…', 'Harvard Business Review, 2014'],
+      [25.2, 'Fact 3 / 3', '<mark>5 to 25 times more</mark> than keeping one.', 'Harvard Business Review, 2014'],
+      [END + .2, '', 'The easiest customer? <mark>The one you already have.</mark>', ''],
+      [32.6, '', 'Comment <mark>TIMBRO</mark> 👇', '']
+    ],
+    card: 'CARD', reward: 'REWARD', rewardV: '1 FREE', reach: 'reach the reward', newC: 'new customer', oldC: 'regular',
+    menu: ['Espresso', '1.30', 'Cappuccino', '1.80', 'Croissant', '1.50', 'Matcha latte', '3.50', 'Orange juice', '3.00'],
+    qr: ['Scan', 'for your loyalty card'], end: 'We’ll send you your card’s design ☕', offB: '50% off <em>for life</em>', offS: 'For cafés that subscribe by 30 November · 30 days free first',
+    bar: 'Bar Aurora', stamps: 'STAMPS', rewardW: 'a free coffee', customer: 'MEMBER', ready: 'Reward ready: show it at the till',
+    notif: 'Just 1 stamp to go for a free coffee! See you at Bar Aurora.', now: 'now', date: 'Thursday 23 October'
+  },
+  pl: {
+    caps: [
+      [0.3, '', 'Są <mark>3 fakty</mark> o stałych klientach…', ''],
+      [1.9, '', '…o których większość kawiarni <mark>nie wie.</mark>', ''],
+      [F1 + .2, 'Fakt 1 / 3', 'Dwie karty lojalnościowe. Na obu trzeba <mark>8 pieczątek.</mark>', ''],
+      [6.4, 'Fakt 1 / 3', 'Ale karta B startuje z <mark>2 pieczątkami w prezencie.</mark>', ''],
+      [8.6, 'Fakt 1 / 3', 'Ilu klientów dochodzi do nagrody?', 'Nunes & Drèze, 2006 · karty myjni samochodowej'],
+      [11.0, 'Fakt 1 / 3', '<mark class="y">Prawie dwa razy więcej.</mark> Ta sama nagroda.', 'Nunes & Drèze, 2006 · karty myjni samochodowej'],
+      [F2 + .2, 'Fakt 2 / 3', 'Im bliżej darmowej kawy…', 'Kivetz, Urminsky & Zheng, 2006 · kawiarnia Columbia University'],
+      [16.4, 'Fakt 2 / 3', '…<mark>tym częściej wracają.</mark>', 'Kivetz, Urminsky & Zheng, 2006 · kawiarnia Columbia University'],
+      [19.6, 'Fakt 2 / 3', 'Dlatego Timbro przypomina, gdy <mark>brakuje 1 pieczątki.</mark>', ''],
+      [F3 + .2, 'Fakt 3 / 3', 'Zdobycie nowego klienta kosztuje…', 'Harvard Business Review, 2014'],
+      [25.2, 'Fakt 3 / 3', '<mark>od 5 do 25 razy więcej</mark> niż zatrzymanie obecnego.', 'Harvard Business Review, 2014'],
+      [END + .2, '', 'Najłatwiejszy klient? <mark>Ten, którego już masz.</mark>', ''],
+      [32.6, '', 'Napisz <mark>TIMBRO</mark> w komentarzu 👇', '']
+    ],
+    card: 'KARTA', reward: 'NAGRODA', rewardV: '1 GRATIS', reach: 'dochodzi do nagrody', newC: 'nowy klient', oldC: 'stały klient',
+    menu: ['Espresso', '9 zł', 'Cappuccino', '13 zł', 'Croissant', '9 zł', 'Matcha latte', '18 zł', 'Sok', '14 zł'],
+    qr: ['Zeskanuj', 'i odbierz kartę'], end: 'Wyślemy Ci projekt Twojej karty ☕', offB: '−50% <em>na zawsze</em>', offS: 'Dla kawiarni, które dołączą do 30 listopada · najpierw 30 dni za darmo',
+    bar: 'Kawiarnia Aurora', stamps: 'PIECZĄTKI', rewardW: 'kawa gratis', customer: 'KLIENT', ready: 'Nagroda gotowa: pokaż kartę przy kasie',
+    notif: 'Jeszcze 1 pieczątka do darmowej kawy! Czekamy w Kawiarni Aurora.', now: 'teraz', date: 'czwartek, 23 października'
+  }
+}[lang];
+const $ = id => document.getElementById(id);
+$('endT').textContent = T.end; $('offB').innerHTML = T.offB; $('offS').textContent = T.offS; $('bfr').innerHTML = '<span>BLACK FRIDAY 50%</span><i>✦</i>'.repeat(14); $('nbT').textContent = T.bar; $('nbW').textContent = T.now; $('nbP').textContent = T.notif;
+await Promise.all(['800 40px Archivo', '700 40px Archivo', '600 40px Archivo', '500 40px Archivo', 'italic 600 40px "EB Garamond"', '500 20px "Spline Sans Mono"'].map(f => document.fonts.load(f)));
+
+const BLUE = '#2B32FF', INK = '#16152b';
+const W = 540, H = 960, DPR = +(q.get('dpr') || 2);
+const renderer = new THREE.WebGLRenderer({ canvas: $('c'), antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(DPR); renderer.setSize(W, H, false); renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = q.has("soft") ? THREE.PCFSoftShadowMap : THREE.PCFShadowMap;
+
+const K = buildCafe(THREE, renderer, T);
+const { clamp01, ease, easeOut, backOut, hash, lerp, V, mat, tex, canvas, rr, CHROME, BRASS, BLACK, GLASS, drawQR, scene, CZ, TOP, TABLES, add, box, cyl, sph, lathe, roundedShape, rbox, face, makeCup, steamTex, croissant, person } = K;
+
+// ---------------- people ----------------
+const barista = person({ i: 6, apron: '#2f4a3a', shirt: '#f3efe6', hair: 1 });
+barista.g.position.set(.5, 0, -2.55);
+const counterGuest = person({ i: 2, phone: true, hair: 2, capColor: BLUE });
+counterGuest.g.position.set(2.45, 0, -1.38); counterGuest.g.rotation.y = Math.PI + .1;
+const seated = [
+  [person({ i: 0, cup: true, hair: 3 }), TABLES[0][0] + .55, TABLES[0][1] + .05, -Math.PI / 2],
+  [person({ i: 4, glasses: true, hair: 0 }), TABLES[0][0] - .55, TABLES[0][1] - .05, Math.PI / 2],
+  [person({ i: 5, cup: true, hair: 4 }), TABLES[1][0] + .55, TABLES[1][1] + .05, -Math.PI / 2]
+];
+seated.forEach(([p, x, z, ry]) => { p.sit(); p.g.position.set(x, .07, z); p.g.rotation.y = ry; });
+
+// ---------------- fact 1: two cards, two glasses ----------------
+const fact1 = new THREE.Group(); scene.add(fact1);
+const CARD_W = .98, CARD_H = .62, CTW = 1024, CTH = 650;
+const slotsOf = which => which === 'A' ? [...Array(8)].map((_, i) => [150 + (i % 4) * 241, i < 4 ? 300 : 470, 66]) : [...Array(10)].map((_, i) => [128 + (i % 5) * 192, i < 5 ? 300 : 470, 60]);
+function cardCanvas(which) {
+  const c = document.createElement('canvas'); c.width = CTW; c.height = CTH;
+  const draw = n => {
+    const g = c.getContext('2d'), w = CTW, h = CTH;
+    g.fillStyle = '#fffdf8'; g.fillRect(0, 0, w, h);
+    g.fillStyle = which === 'B' ? BLUE : INK; g.fillRect(0, 0, w, 150);
+    g.fillStyle = '#fff'; g.font = '800 64px Archivo'; g.textAlign = 'left'; g.fillText(`${T.card} ${which}`, 60, 100);
+    g.textAlign = 'right'; g.font = '500 44px "Spline Sans Mono"'; g.fillText(`${n}/${which === 'A' ? 8 : 10}`, w - 60, 98);
+    slotsOf(which).forEach(([x, y, r], i) => {
+      if (i < n) { g.fillStyle = BLUE; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.strokeStyle = '#fff'; g.lineWidth = 9; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); g.moveTo(x - r * .38, y + 2); g.lineTo(x - r * .08, y + r * .3); g.lineTo(x + r * .42, y - r * .3); g.stroke(); }
+      else { g.setLineDash([14, 10]); g.strokeStyle = '#a99c88'; g.lineWidth = 7; g.beginPath(); g.arc(x, y, r - 3, 0, 7); g.stroke(); g.setLineDash([]); }
+    });
+    g.fillStyle = '#8a7a66'; g.textAlign = 'left'; g.font = '500 34px "Spline Sans Mono"'; g.fillText(T.reward, 60, 600);
+    g.textAlign = 'right'; g.fillStyle = INK; g.font = '800 40px Archivo'; g.fillText(T.rewardV, w - 60, 602);
+    if (c.tex) c.tex.needsUpdate = true;
+  };
+  c.draw = draw; return c;
+}
+function makeCard(which, n) {
+  const g = new THREE.Group();
+  const body = rbox(CARD_W + .02, CARD_H + .02, .025, .05, mat('#ffffff', .4)); add(body, g);
+  const cv = cardCanvas(which); cv.draw(n); cv.tex = tex(cv);
+  const f = face(CARD_W, CARD_H, .045, cv.tex); f.material = new THREE.MeshBasicMaterial({ map: cv.tex, toneMapped: false }); f.position.z = .014; g.add(f);
+  g.userData = { which, cv, n }; fact1.add(g); return g;
+}
+const cardA = makeCard('A', 0), cardB = makeCard('B', 0);
+const CARD_POS = { A: V(.02, 1.74, .45), B: V(1.24, 1.74, .45) };
+function makeGlass(x, z) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); fact1.add(g);
+  const gl = lathe([[0, 0], [.27, 0], [.28, .03], [.29, 1.2], [.275, 1.2], [.265, .04], [0, .04]], GLASS, 48); g.add(gl);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(.283, .006, 8, 48), mat('#ffffff', .1, { transparent: true, opacity: .6 })); rim.rotation.x = Math.PI / 2; rim.position.y = 1.2; g.add(rim);
+  const base = cyl(.3, .3, .04, mat('#f6efe4', .3), 0, .02, 0, g, 48);
+  const liquid = cyl(.258, .258, 1, mat('#4a2a16', .25), 0, .5, 0, g, 48); liquid.castShadow = false;
+  const crema = cyl(.259, .259, .03, mat('#c78d55', .4), 0, 0, 0, g, 48); crema.castShadow = false;
+  for (let k = 1; k < 10; k++) { const tick = new THREE.Mesh(new THREE.PlaneGeometry(k % 5 ? .05 : .09, .006), new THREE.MeshBasicMaterial({ color: '#8a7a66', transparent: true, opacity: .5 })); tick.position.set(-.21, .05 + k * .115, .26); g.add(tick); }
+  g.userData = { liquid, crema }; return g;
+}
+const glassA = makeGlass(.02, 1.05), glassB = makeGlass(1.24, 1.05);
+const setLevel = (gl, lv) => { const h = Math.max(.001, lv * 1.15), { liquid, crema } = gl.userData; liquid.scale.y = h; liquid.position.y = .04 + h / 2; crema.position.y = .04 + h + .012; crema.visible = lv > .005; liquid.visible = lv > .002; };
+// a rubber stamp that presses card B's first two stamps
+const rubber = new THREE.Group(); fact1.add(rubber);
+const TILT = new THREE.Quaternion().setFromEuler(new THREE.Euler(-.75, .55, 0));
+{ const k = new THREE.Group(); rubber.add(k); k.rotation.x = Math.PI / 2;   // its own axis points along +z (the stamp's face looks at -z)
+  const base = rbox(.24, .16, .07, .02, mat(BLUE, .4)); base.rotation.x = -Math.PI / 2; base.position.y = -.0; add(base, k);
+  cyl(.1, .1, .02, mat('#1c1b20', .8), 0, -.045, 0, k, 24);
+  cyl(.035, .045, .16, mat('#8a5a33', .5), 0, .11, 0, k, 16);
+  sph(.07, mat('#8a5a33', .45), 0, .22, 0, k); }
+
+// ---------------- fact 2: stepping stones to the free coffee ----------------
+const fact2 = new THREE.Group(); scene.add(fact2);
+const PS = V(-1.25, 0, -.8), PE = V(1.85, 0, 1.55), PDIR = PE.clone().sub(PS), PLEN = PDIR.length(); PDIR.normalize();
+const GAPS = [.5, .62, .58, .54, .5, .46, .42, .38, .34, .3], GSUM = GAPS.reduce((a, b) => a + b);
+const STONES = []; { let d = 0; GAPS.forEach(gp => { d += gp * PLEN / GSUM; STONES.push(PS.clone().addScaledVector(PDIR, d)); }); }
+const stoneMats = STONES.map(() => mat('#efe4d3', .5));
+const stones = STONES.map((p, i) => { const s = cyl(.12, .13, .04, stoneMats[i], p.x, .02, p.z, fact2, 32); const ring = new THREE.Mesh(new THREE.TorusGeometry(.125, .008, 6, 32), mat('#c9bfb0', .6)); ring.rotation.x = Math.PI / 2; ring.position.set(p.x, .042, p.z); fact2.add(ring); return s; });
+const bursts = STONES.map(p => { const b = new THREE.Mesh(new THREE.RingGeometry(.13, .16, 40), new THREE.MeshBasicMaterial({ color: BLUE, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide })); b.rotation.x = -Math.PI / 2; b.position.set(p.x, .05, p.z); fact2.add(b); return b; });
+const PED = PE.clone().addScaledVector(PDIR, .5);
+const pedestal = new THREE.Group(); pedestal.position.set(PED.x, 0, PED.z); fact2.add(pedestal);
+cyl(.26, .3, .42, mat('#fbf7f0', .3), 0, .21, 0, pedestal, 40);
+cyl(.31, .31, .03, BRASS, 0, .43, 0, pedestal, 40); cyl(.31, .31, .03, BRASS, 0, .015, 0, pedestal, 40);
+const prizeCup = makeCup(2.6, '#ffffff'); prizeCup.position.y = .445; pedestal.add(prizeCup);
+const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: steamTex, color: '#ffd57a', transparent: true, opacity: 0, depthWrite: false })); halo.scale.setScalar(1.1); halo.position.y = .7; pedestal.add(halo);
+const walker = person({ i: 7, phone: true, hair: 3, shirt: '#FF8C42' }); walker.g.parent.remove(walker.g); fact2.add(walker.g);
+const CONF = [BLUE, '#FFC24B', '#FF5C7A', '#2EC4B6', '#ffffff'];
+const confetti = [...Array(70)].map((_, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.05, .085), new THREE.MeshBasicMaterial({ color: CONF[i % 5], side: THREE.DoubleSide })); m.visible = false; fact2.add(m); return m; });
+// stone k (1..10) reached at ARR[k-1]; gaps shrink as the free coffee gets close
+const ARR = [14.6, 15.55, 16.37, 17.09, 17.71, 18.25, 18.72, 19.14, 19.51, 21.0];
+
+// ---------------- fact 3: a balance with coins ----------------
+const fact3 = new THREE.Group(); fact3.position.set(.75, 0, .55); scene.add(fact3);
+const POLE = 1.3, ARM = .6, HANG = .52;
+cyl(.36, .4, .07, mat('#1f1e24', .4), 0, .035, 0, fact3, 40);
+cyl(.33, .33, .012, BRASS, 0, .075, 0, fact3, 40);
+cyl(.035, .045, POLE, BRASS, 0, POLE / 2 + .07, 0, fact3, 16);
+sph(.065, BRASS, 0, POLE + .1, 0, fact3);
+const beam = new THREE.Group(); beam.position.y = POLE + .1; fact3.add(beam);
+{ const b = box(ARM * 2 + .08, .04, .045, BRASS, 0, 0, 0, beam); for (const x of [-ARM, ARM]) sph(.035, BRASS, x, 0, 0, beam); const needle = box(.018, .26, .018, BRASS, 0, .13, 0, beam); }
+const pans = [-1, 1].map(sd => {
+  const g = new THREE.Group(); fact3.add(g);
+  const pan = lathe([[0, 0], [.15, 0], [.25, .06], [.26, .075], [.245, .075], [.14, .013], [0, .013]], BRASS, 40); add(pan, g);
+  const chains = [0, 1, 2].map(k => { const c = new THREE.Mesh(new THREE.CylinderGeometry(.005, .005, 1, 6), BRASS); fact3.add(c); return c; });
+  return { g, chains, sd, coins: new THREE.Group() };
+});
+pans.forEach(p => p.g.add(p.coins));
+const COIN = new THREE.CylinderGeometry(.068, .068, .018, 28), COINM = new THREE.MeshStandardMaterial({ color: '#f2c14e', roughness: .28, metalness: 1 });
+const STACKS = [[0, 0, 5], [.11, 0, 4], [-.11, 0, 4], [.055, .095, 3], [-.055, .095, 3], [.055, -.095, 3], [-.055, -.095, 3]];
+const coinSpots = []; STACKS.forEach(([x, z, n]) => { for (let k = 0; k < n; k++) coinSpots.push([x + (hash(coinSpots.length) - .5) * .015, .025 + k * .019, z + (hash(coinSpots.length + 9) - .5) * .02]); });
+coinSpots.sort((a, b) => a[1] - b[1]);
+const leftCoins = coinSpots.map(([x, y, z], k) => { const c = new THREE.Mesh(COIN, COINM); c.castShadow = true; c.userData = { x, y, z, t: F3 + .7 + k * .085 }; pans[0].coins.add(c); return c; });
+const rightCoin = new THREE.Mesh(COIN, COINM); rightCoin.castShadow = true; rightCoin.userData = { x: 0, y: .03, z: 0, t: F3 + .6 }; pans[1].coins.add(rightCoin);
+const between = (mesh, a, b) => { const d = b.clone().sub(a); mesh.position.copy(a).addScaledVector(d, .5); mesh.scale.set(1, d.length(), 1); mesh.quaternion.setFromUnitVectors(V(0, 1, 0), d.normalize()); };
+
+// ---------------- labels pinned to points in the scene ----------------
+function label(cls) { const e = document.createElement('div'); e.className = 'lab ' + cls; e.innerHTML = '<div class="pill"><b></b><span></span></div>'; $('labs').appendChild(e); return e; }
+const LAB = { a: label(''), b: label('blue'), n: label('dark'), r: label('blue') };
+LAB.a.querySelector('span').textContent = LAB.b.querySelector('span').textContent = T.reach;
+LAB.n.querySelector('span').textContent = T.newC; LAB.r.querySelector('span').textContent = T.oldC;
+const camera = new THREE.PerspectiveCamera(40, W / H, .1, 100);
+function pin(e, p, vis, txt) {
+  const v = p.clone().project(camera);
+  e.style.transform = `translate(${(v.x * .5 + .5) * W}px, ${(-v.y * .5 + .5) * H}px) translate(-50%,-100%) scale(${.6 + .4 * backOut(vis)})`;
+  e.style.opacity = clamp01(vis * 3); if (txt !== undefined && e._t !== txt) { e.querySelector('b').textContent = txt; e._t = txt; }
+}
+
+// ---------------- the phone, drawn on its own canvas on top ----------------
+const pr = new THREE.WebGLRenderer({ canvas: $('p'), antialias: true, alpha: true, preserveDrawingBuffer: true });
+pr.setPixelRatio(DPR); pr.setSize(W, H, false); pr.setClearColor(0x000000, 0); pr.outputColorSpace = THREE.SRGBColorSpace;
+const phoneScene = new THREE.Scene();
+phoneScene.add(new THREE.HemisphereLight('#ffffff', '#6b5a4a', 1.5));
+{ const k = new THREE.DirectionalLight('#ffffff', 1.8); k.position.set(2, 3, 5); phoneScene.add(k); }
+const phone = new THREE.Group();
+{ const b = new THREE.Mesh(new THREE.ExtrudeGeometry(roundedShape(1, 2.05, .14), { depth: .08, bevelEnabled: true, bevelThickness: .02, bevelSize: .02, bevelSegments: 3 }), new THREE.MeshStandardMaterial({ color: '#1d1d1f', roughness: .35, metalness: .4 })); b.position.z = -.04; phone.add(b); }
+const scr = document.createElement('canvas'); scr.width = 540; scr.height = Math.round(540 * 1.98 / .93);
+const scrTex = tex(scr), sg = scr.getContext('2d');
+{ const s = new THREE.Mesh(new THREE.ShapeGeometry(roundedShape(.93, 1.98, .11)), new THREE.MeshBasicMaterial({ map: scrTex, toneMapped: false })); const uv = s.geometry.attributes.uv, pos = s.geometry.attributes.position; for (let i = 0; i < uv.count; i++) uv.setXY(i, pos.getX(i) / .93 + .5, pos.getY(i) / 1.98 + .5); s.position.z = .065; phone.add(s); }
+phoneScene.add(phone);
+const pconf = [...Array(60)].map((_, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.06, .1), new THREE.MeshBasicMaterial({ color: CONF[i % 5], side: THREE.DoubleSide })); m.visible = false; phoneScene.add(m); return m; });
+const phoneCam = new THREE.PerspectiveCamera(30, W / H, .1, 50); phoneCam.position.set(0, 0, 6.2); phoneCam.lookAt(0, 0, 0);
+function statusBar(g, w, dark) { g.fillStyle = dark ? '#fff' : '#111'; g.font = '600 26px Archivo'; g.textAlign = 'left'; g.fillText('9:41', 44, 52); g.fillStyle = '#000'; rr(g, w / 2 - 80, 22, 160, 44, 22); g.fill(); }
+function banner(g, w, y) {
+  g.fillStyle = 'rgba(250,250,252,.96)'; g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 30; rr(g, 24, y, w - 48, 150, 30); g.fill(); g.shadowColor = 'transparent';
+  g.fillStyle = BLUE; rr(g, 46, y + 30, 58, 58, 14); g.fill(); g.fillStyle = '#fff'; g.beginPath(); g.arc(75, y + 59, 14, 0, 7); g.fill(); g.fillStyle = BLUE; g.beginPath(); g.arc(75, y + 59, 9, 0, 7); g.fill();
+  g.textAlign = 'left'; g.fillStyle = '#111'; g.font = '700 24px Archivo'; g.fillText(T.bar, 122, y + 52);
+  g.fillStyle = '#888'; g.textAlign = 'right'; g.font = '500 20px Archivo'; g.fillText(T.now, w - 50, y + 52);
+  g.textAlign = 'left'; g.fillStyle = '#333'; g.font = '500 21px Archivo';
+  const words = T.notif.split(' '); let line = '', yy = y + 88;
+  for (const wd of words) { if (g.measureText(line + wd).width > w - 190) { g.fillText(line.trim(), 122, yy); line = ''; yy += 28; } line += wd + ' '; } g.fillText(line.trim(), 122, yy);
+}
+function drawLock(b) {
+  const g = sg, w = scr.width, h = scr.height;
+  const gr = g.createLinearGradient(0, 0, w * .4, h); gr.addColorStop(0, '#3a42ff'); gr.addColorStop(.55, '#7a5cff'); gr.addColorStop(1, '#ff9a6b'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  statusBar(g, w, true);
+  g.fillStyle = 'rgba(255,255,255,.85)'; g.textAlign = 'center'; g.font = '500 30px Archivo'; g.fillText(T.date, w / 2, 190);
+  g.fillStyle = '#fff'; g.font = '700 170px Archivo'; g.fillText('9:41', w / 2, 350);
+  if (b > 0) banner(g, w, 440 + (1 - easeOut(b)) * 60);
+  scrTex.needsUpdate = true;
+}
+function drawWallet(n, pop) {
+  const g = sg, w = scr.width, h = scr.height;
+  g.fillStyle = '#F2F2F7'; g.fillRect(0, 0, w, h); statusBar(g, w, false);
+  g.fillStyle = '#111'; g.font = '800 46px Archivo'; g.textAlign = 'left'; g.fillText('Wallet', 40, 150);
+  const x = 36, y = 200, pw = w - 72;
+  g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.18)'; g.shadowBlur = 30; g.shadowOffsetY = 10; rr(g, x, y, pw, 560, 26); g.fill(); g.shadowColor = 'transparent'; g.shadowOffsetY = 0;
+  g.fillStyle = '#111'; g.font = '600 30px Archivo'; g.fillText(T.bar.toUpperCase().split('').join(' '), x + 30, y + 58);
+  g.textAlign = 'right'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.stamps, x + pw - 30, y + 44);
+  g.fillStyle = '#111'; g.font = '600 32px Archivo'; g.fillText(`${n}/10`, x + pw - 30, y + 80);
+  g.fillStyle = '#F1F1F4'; g.fillRect(x, y + 104, pw, 210);
+  for (let i = 0; i < 10; i++) { const cx = x + pw * (.14 + (i % 5) * .18), cy = y + 104 + (i < 5 ? 62 : 148), on = i < n; let r = 26; if (on && i === n - 1) r *= .6 + .4 * backOut(pop); g.fillStyle = on ? BLUE : '#D9D9DE'; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill(); }
+  g.textAlign = 'left'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.reward, x + 30, y + 352);
+  g.fillStyle = '#111'; g.font = '500 28px Archivo'; g.fillText(T.rewardW, x + 30, y + 388);
+  g.textAlign = 'right'; g.fillStyle = '#777'; g.font = '600 18px Archivo'; g.fillText(T.customer, x + pw - 30, y + 352);
+  g.fillStyle = '#111'; g.font = '500 28px Archivo'; g.fillText('Giulia R.', x + pw - 30, y + 388);
+  if (n >= 10) { g.fillStyle = BLUE; rr(g, x + 24, y + 430, pw - 48, 74, 16); g.fill(); g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '700 23px Archivo'; g.fillText(T.ready, x + pw / 2, y + 476); }
+  else drawQR(g, x + pw / 2 - 70, y + 410, 140);
+  scrTex.needsUpdate = true;
+}
+
+// ---------------- camera path ----------------
+function track(keys, t) {
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) { const [t0, a] = keys[i - 1], [t1, b] = keys[i]; const x = ease((t - t0) / (t1 - t0)); return a.map((v, k) => lerp(v, b[k], x)); }
+  return keys[keys.length - 1][1];
+}
+// [time, [x, y, z, lookX, lookY, lookZ]]
+const CAM = [
+  [0, [5.9, 9.0, 18.0, -.1, .45, .3]], [3.2, [3.9, 7.9, 16.6, 0, .5, .3]],
+  [F1 + 1.1, [1.25, 2.3, 7.7, .63, 1.15, .6]], [F2 - .1, [.95, 2.4, 7.5, .63, 1.15, .6]],
+  [F2 + 1.1, [2.75, 5.6, 8.4, .5, .25, .62]], [F3 - .1, [2.5, 5.4, 8.1, .5, .25, .66]],
+  [F3 + 1.1, [1.2, 1.7, 5.9, .75, .88, .55]], [END - .1, [1.0, 1.65, 5.7, .75, .88, .55]],
+  [END + 1.6, [4.0, 8.4, 17.8, 0, .55, .3]], [DURATION, [5.2, 9.0, 18.8, 0, .55, .3]]
+];
+const appear = (t, a, b) => backOut((t - a) / .6) * (1 - ease((t - b) / .45));
+
+// grain, still (grain that moves every frame makes the video four times bigger)
+{ const c = canvas(256, 256, (g, w, h) => { const d = g.createImageData(w, h); for (let i = 0; i < d.data.length; i += 4) { const v = 128 + (hash(i * .13) - .5) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } g.putImageData(d, 0, 0); }); $('grain').style.backgroundImage = `url(${c.toDataURL()})`; }
+const SRC_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 19.5V5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2.5z"/><path d="M8 7h6"/></svg>';
+
+function renderAt(t) {
+  const c = track(CAM, t);
+  camera.position.set(c[0] + Math.sin(t * .37) * .06, c[1] + Math.sin(t * .29) * .04, c[2]); camera.lookAt(c[3], c[4], c[5]);
+  camera.updateMatrixWorld();
+  // captions: the latest one that has started; the chip and the source stay while they repeat
+  const ci = T.caps.findLastIndex(([s]) => t >= s), cap = T.caps[ci];
+  if (renderAt.ci !== ci) {
+    $('cap').innerHTML = cap ? cap[2] : '';
+    if (cap) { $('chipT').textContent = cap[1]; $('src').innerHTML = cap[3] ? SRC_ICON + cap[3] : ''; }
+    renderAt.ci = ci;
+  }
+  const st = cap ? cap[0] : 0, k = backOut((t - st) / .35);
+  $('cap').style.transform = `translateY(${(1 - k) * 14}px)`; $('cap').style.opacity = clamp01((t - st) / .18);
+  const firstOfChip = cap && T.caps.findIndex(c => c[1] === cap[1]);
+  const chipStart = cap ? T.caps[firstOfChip][0] : 0;
+  $('chip').style.display = cap && cap[1] ? '' : 'none';
+  $('chip').style.transform = `scale(${.7 + .3 * backOut((t - chipStart) / .4)})`;
+  const srcStart = cap && cap[3] ? T.caps.find(c => c[3] === cap[3])[0] : 0;
+  $('src').style.display = cap && cap[3] ? '' : 'none'; $('src').style.opacity = clamp01((t - srcStart - .3) / .3);
+  $('flash').style.opacity = Math.max(0, 1 - Math.abs(t - END - .9) / .25) * 0;
+
+  // the café's life: the barista works, the guest at the counter scans, steam and dust drift
+  barista.arms[0].rotation.x = -.9 + Math.sin(t * 3.1) * .25; barista.arms[1].rotation.x = -1.1 + Math.sin(t * 2.3 + 1) * .3;
+  barista.g.rotation.y = Math.sin(t * .7) * .35; barista.g.position.set(.5 + Math.sin(t * .45) * .25, 0, -2.55);
+  counterGuest.g.position.y = Math.abs(Math.sin(t * 1.6)) * .01;
+  seated.forEach(([p, x, z], i) => { p.g.position.y = .07; p.head.rotation.y = Math.sin(t * .9 + i * 2) * .3; p.head.rotation.x = Math.sin(t * 1.3 + i) * .06; if (p.arms) p.arms[0].rotation.x = -.9 + Math.max(0, Math.sin(t * .8 + i * 3)) * -.5; });
+  K.drift(t);
+
+  // fact 1
+  const a1 = appear(t, F1 + .15, F2 - .1);
+  fact1.visible = a1 > .001;
+  if (fact1.visible) {
+    [[cardA, 'A', 0], [cardB, 'B', .12]].forEach(([c, w, d]) => {
+      const s = backOut((t - F1 - .15 - d) / .6) * (1 - ease((t - F2 + .1) / .45));
+      c.scale.setScalar(Math.max(.001, s)); c.position.copy(CARD_POS[w]); c.position.y += Math.sin(t * 1.3 + d * 9) * .03; c.rotation.set(-.05, (w === 'A' ? .16 : -.16) + Math.sin(t * .8 + d * 5) * .04, 0);
+    });
+    // the rubber stamp comes in, presses slots 1 and 2 of card B, and leaves
+    const PRESS = [6.75, 7.35]; let n = 0; let push = 0, slot = 0;
+    PRESS.forEach((p, i) => { const u = t - p; if (u > .22) n = i + 1; if (u > -.3 && u < .5) { slot = i; push = u < 0 ? 0 : u < .22 ? easeOut(u / .22) : 1 - ease((u - .3) / .2); } });
+    if (t > PRESS[1] + .5) slot = 1;
+    if (cardB.userData.n !== n) { cardB.userData.n = n; cardB.userData.cv.draw(n); }
+    const show = ease((t - 6.3) / .35) * (1 - ease((t - 7.95) / .3));
+    rubber.visible = show > .01;
+    if (rubber.visible) {
+      const [px, py] = slotsOf('B')[slot], lp = V((px / CTW - .5) * CARD_W, (.5 - py / CTH) * CARD_H, 0);
+      cardB.updateMatrixWorld(); const wp = cardB.localToWorld(lp.clone()), nrm = V(0, 0, 1).applyQuaternion(cardB.quaternion);
+      const dist = .03 + (1 - push) * .45 + (1 - show) * .6;
+      // tilted up and to the right so the camera sees it as a stamp, pressing along its own axis
+      rubber.quaternion.copy(cardB.quaternion).multiply(TILT); const ax = V(0, 0, 1).applyQuaternion(rubber.quaternion);
+      rubber.position.copy(wp).addScaledVector(ax, dist).add(V(0, (1 - show) * .4, 0)); rubber.scale.setScalar(1.35);
+    }
+    [glassA, glassB].forEach((gl, i) => { const s = backOut((t - 8.3 - i * .12) / .6) * (1 - ease((t - F2 + .1) / .45)); gl.scale.setScalar(Math.max(.001, s)); });
+    const fillU = easeOut((t - 8.9) / 1.9);
+    setLevel(glassA, .19 * fillU); setLevel(glassB, .34 * fillU);
+    const lv = ease((t - 8.75) / .4) * (1 - ease((t - F2 + .2) / .3));
+    pin(LAB.a, V(.02, .04 + .19 * fillU * 1.15 + .22, 1.05), lv, Math.round(19 * fillU) + '%');
+    pin(LAB.b, V(1.24, .04 + .34 * fillU * 1.15 + .22, 1.05), lv, Math.round(34 * fillU) + '%');
+  } else { LAB.a.style.opacity = LAB.b.style.opacity = 0; }
+
+  // fact 2
+  const a2 = appear(t, F2 + .1, F3 - .1);
+  fact2.visible = a2 > .001;
+  if (fact2.visible) {
+    const out = 1 - ease((t - F3 + .1) / .45);
+    stones.forEach((s, i) => { const sc = backOut((t - F2 - .1 - i * .05) / .5) * out; s.scale.setScalar(Math.max(.001, sc)); const on = t >= ARR[i]; stoneMats[i].color.set(on ? BLUE : '#efe4d3'); stoneMats[i].emissive.set(on ? '#1a1fff' : '#000000'); stoneMats[i].emissiveIntensity = on ? .25 : 0;
+      const bu = (t - ARR[i]) / .6; bursts[i].visible = bu > 0 && bu < 1; if (bursts[i].visible) { bursts[i].scale.setScalar(1 + bu * 1.6); bursts[i].material.opacity = (1 - bu) * .8; } });
+    fact2.children.forEach(c => { if (c.geometry && c.geometry.type === 'TorusGeometry') c.scale.setScalar(Math.max(.001, backOut((t - F2 - .2) / .5) * out)); });
+    pedestal.scale.setScalar(Math.max(.001, backOut((t - F2 - .4) / .6) * out));
+    // the walker hops stone to stone, faster as the free coffee gets close
+    let pos = PS.clone().addScaledVector(PDIR, -.3), hop = 0, moving = false;
+    const pts = [PS.clone().addScaledVector(PDIR, -.3), ...STONES, PED.clone().addScaledVector(PDIR, -.42)];
+    for (let k = 0; k < ARR.length; k++) {
+      const dt = k ? ARR[k] - ARR[k - 1] : .6, hd = Math.min(.36, dt * .62), s0 = ARR[k] - hd;
+      if (t >= ARR[k]) pos = pts[k + 1].clone();
+      else if (t > s0) { const u = (t - s0) / hd; pos = pts[k].clone().lerp(pts[k + 1], ease(u)); hop = Math.sin(Math.PI * u) * (.1 + dt * .05); moving = true; break; }
+      else break;
+    }
+    walker.g.position.set(pos.x, hop, pos.z);
+    walker.g.rotation.y = Math.atan2(PDIR.x, PDIR.z) - .35;
+    walker.walk(t, moving, 13);
+    const won = t - ARR[9];
+    if (won > .1) { walker.arms[0].rotation.set(0, 0, -2.5 - Math.sin(won * 8) * .2); walker.g.rotation.y = .5; }
+    else { walker.arms[0].rotation.z = -.12; }
+    walker.g.scale.setScalar(1.15 * Math.max(.001, backOut((t - F2 - .3) / .5) * out));
+    halo.material.opacity = clamp01(won * 2) * .8 * out; prizeCup.position.y = .445 + (won > 0 ? Math.sin(clamp01(won / .5) * Math.PI) * .12 : 0); prizeCup.rotation.y = won > 0 ? won * 2 : 0;
+    confetti.forEach((m, i) => { const ct = won - .05; m.visible = ct > 0 && ct < 2.2; if (!m.visible) return; const a = hash(i) * Math.PI * 2, sp = .8 + hash(i + 50) * 1.2; m.position.set(PED.x + Math.cos(a) * sp * ct * .7, .8 + 2.4 * ct - 2.6 * ct * ct + hash(i + 7) * .3, PED.z + Math.sin(a) * sp * ct * .7); m.rotation.set(ct * 8 + i, ct * 6 + i * 2, 0); });
+  }
+
+  // fact 3
+  const a3 = appear(t, F3 + .1, END - .1);
+  fact3.visible = a3 > .001;
+  if (fact3.visible) {
+    fact3.scale.setScalar(Math.max(.001, a3));
+    let landed = 0, wob = 0;
+    leftCoins.forEach(c => { const { x, y, z, t: ct } = c.userData, u = (t - ct) / .42; c.visible = u > 0; if (!c.visible) return; if (u >= 1) { landed++; c.position.set(x, y, z); wob += Math.exp(-(t - ct - .42) * 6) * Math.sin((t - ct - .42) * 22) * .012; } else c.position.set(x, y + (1 - u * u) * 1.4, z); c.rotation.set(0, (1 - clamp01(u)) * 6 + x * 9, (1 - clamp01(u)) * 3); });
+    { const { y, t: ct } = rightCoin.userData, u = (t - ct) / .42; rightCoin.visible = u > 0; rightCoin.position.set(0, u >= 1 ? y : y + (1 - u * u) * 1.4, 0); }
+    const tilt = .3 * ease(landed / leftCoins.length) + wob;
+    beam.rotation.z = tilt;
+    pans.forEach(p => {
+      const end = V(p.sd * ARM * Math.cos(tilt), POLE + .1 + p.sd * ARM * Math.sin(tilt), 0);
+      p.g.position.set(end.x, end.y - HANG, end.z);
+      p.chains.forEach((c, k) => { const a = k / 3 * Math.PI * 2 + .5, rim = V(end.x + Math.cos(a) * .24, end.y - HANG + .075, Math.sin(a) * .24); between(c, end, rim); });
+    });
+    const lv = ease((t - F3 + .2 - 1.2) / .4) * (1 - ease((t - END + .3) / .3));
+    const lp = pans[0].g.position.clone().add(V(0, .62, 0)), rp = pans[1].g.position.clone().add(V(0, .5, 0));
+    fact3.updateMatrixWorld();
+    pin(LAB.n, fact3.localToWorld(lp), lv, t < 25.2 ? '×' + Math.max(1, landed) : '×5–25');
+    pin(LAB.r, fact3.localToWorld(rp), lv, '×1');
+  } else { LAB.n.style.opacity = LAB.r.style.opacity = 0; }
+
+  // the opening: the café builds itself, then its people drop in
+  K.dropIn(t, [barista, counterGuest, ...seated.map(x => x[0])]);
+  renderer.render(scene, camera);
+
+  // the phone: a lock screen with the reminder in fact 2, the Wallet card at the end
+  const pN = 0, pE = ease((t - 30.0) / .5);
+  const nb = ease((t - 19.5) / .35) * (1 - ease((t - 22.6) / .3));
+  $('notif').style.opacity = nb; $('notif').style.transform = `translateY(${(1 - backOut((t - 19.5) / .5)) * -30}px) scale(${.92 + .08 * backOut((t - 19.5) / .5)})`;
+  const blur = pE * 7;
+  $('c').style.filter = blur > .05 ? `blur(${blur.toFixed(2)}px) saturate(${1 - pE * .2})` : 'none';
+  pr.clear();
+  if (pN > .001 || pE > .001) {
+    if (pE > .001) {
+      const st = [30.5, 30.8, 31.1, 31.35, 31.6, 31.82, 32.04], tenth = 32.3; let n = 3, pop = 1;
+      st.forEach((s, i) => { if (t >= s) { n = i + 4; pop = (t - s) / .3; } });
+      if (t >= tenth) { n = 10; pop = (t - tenth) / .35; }
+      drawWallet(n, pop);
+      const u = t - 30.0;
+      phone.position.set(0, -.25 - (1 - backOut(u / .7)) * 2.2 + Math.sin(u * 1.4) * .04, 0); phone.rotation.set(-.08 + Math.sin(u * .9) * .04, Math.sin(u * .7) * .2, 0); phone.scale.setScalar(.92);
+      const ct = t - tenth;
+      pconf.forEach((m, i) => { m.visible = ct > 0 && ct < 2.6; if (!m.visible) return; const a = hash(i) * Math.PI * 2, sp = 1.2 + hash(i + 50) * 1.4; m.position.set(Math.cos(a) * sp * ct * .8, .9 + Math.sin(a) * .3 + 2 * ct - 2.2 * ct * ct, .8 + Math.sin(a) * .4); m.rotation.set(ct * 8 + i, ct * 6 + i * 2, 0); });
+    } else {
+      drawLock(ease((t - 19.75) / .4));
+      pconf.forEach(m => { m.visible = false; });
+      phone.position.set(.78 + (1 - pN) * 1.2, .55 + Math.sin(t * 1.2) * .03, 0); phone.rotation.set(-.05, -.32 + Math.sin(t * .8) * .04, .06); phone.scale.setScalar(.52 * (.7 + .3 * pN));
+    }
+    pr.render(phoneScene, phoneCam);
+  }
+  $('bfr').style.transform = `translateX(${-((t * 38) % ($('bfr').scrollWidth / 2))}px)`;
+  $('offer').style.opacity = ease((t - 32.9) / .4);
+  $('offer').style.transform = `scale(${.85 + .15 * backOut((t - 32.9) / .55)})`;
+  $('end').style.opacity = ease((t - 33.4) / .4);
+  $('end').style.transform = `translateY(${(1 - backOut((t - 33.4) / .5)) * 20}px)`;
+}
+window.renderAt = renderAt;
+window.DURATION = DURATION;
+renderAt(0);
+window.READY = true;
+if (!q.has('capture')) {
+  const t0 = performance.now() - (+(q.get('t') || 0)) * 1000;
+  const loop = () => { renderAt(((performance.now() - t0) / 1000) % (DURATION + .5)); requestAnimationFrame(loop); };
+  loop();
+}
+</script>
+</body>
+</html>
