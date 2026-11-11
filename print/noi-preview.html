@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="it">
+<head><meta charset="utf-8"><title>NOÏ · demo card</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>body{margin:0;background:#EDEBE4}#b{display:flex;gap:40px;padding:40px;width:max-content}.pass{width:380px;max-width:380px;border-radius:14px;box-shadow:0 26px 50px -26px rgba(0,0,0,.5)}</style></head>
+<body><div id="b"></div>
+<script src="../assets/vendor/qrcode.js"></script><script src="../assets/js/config.js"></script><script src="../assets/js/i18n.js"></script><script src="../assets/js/stamps.js"></script><script src="../assets/js/ui.js"></script>
+<script>
+// Preview of the NOÏ Milano demo card (supabase/updates/30-noi-demo.sql uses the same pictures).
+I18N.lang = 'it';
+const D = '../assets/demo/noi/';
+const card = { id: 'noi-pokaz', business: 'NOÏ Milano', title: 'Carta tè', reward: 'un tè gratis', stampsNeeded: 8, lang: 'it', font: 'sans',
+  color: '#FFFFFF', ink: '#111111', strip: '#FFFFFF', hideCount: true, hideReward: true, noShift: true,
+  logo: D + 'logo.png', iconLogo: D + 'icon.png', stampImage: D + 'stamp.png', emptyImage: D + 'empty.png', stripImage: D + 'strip.png' };
+document.getElementById('b').innerHTML = [3, 8].map(n => UI.renderPass(card, { id: 'N01M1L', name: 'Giulia R.', stamps: n }, { platform: 'apple' })).join('');
+setTimeout(() => { window.READY = true; }, 600);
+</script></body></html>
