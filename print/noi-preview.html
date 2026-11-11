@@ -10,7 +10,7 @@
 I18N.lang = 'it';
 const D = '../assets/demo/noi/';
 const card = { id: 'noi-pokaz', business: 'NOÏ Milano', title: 'Carta tè', reward: 'un tè gratis', stampsNeeded: 8, lang: 'it', font: 'sans',
-  color: '#FFFFFF', ink: '#111111', strip: '#FFFFFF', hideCount: true, hideReward: true, noShift: true,
+  color: '#FFFFFF', ink: '#111111', strip: '#FFFFFF', hideCount: true, hideReward: true, noShift: true, noTurn: true,
   logo: D + 'logo.png', iconLogo: D + 'icon.png', stampImage: D + 'stamp.png', emptyImage: D + 'empty.png', stripImage: D + 'strip.png' };
 document.getElementById('b').innerHTML = [3, 8].map(n => UI.renderPass(card, { id: 'N01M1L', name: 'Giulia R.', stamps: n }, { platform: 'apple' })).join('');
 setTimeout(() => { window.READY = true; }, 600);
