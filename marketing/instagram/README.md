@@ -998,3 +998,72 @@ Black Friday version of reel-3-facts (`marketing/animation/tre-fatti-bf.html`, `
 > Prices exclude VAT. Lowest price in the 30 days before the discount: €19 / €39 / €79 a month.
 >
 > #blackfriday #loyaltycard #coffeeshop #cafeowner #smallbusiness #applewallet #googlewallet
+
+### reel-iso-no-app
+Isometric café series 1/6 (made in Higgsfield, 4:5, 9.5 s): no app, the customer shows a QR and staff scan it.
+
+**EN**
+> No app. Just a code. 📱
+> Your customer saves the loyalty card to Apple or Google Wallet in one scan. At the till they show the QR, and you scan it with a phone or tablet. No paper cards, nothing to download.
+>
+> ✦ Black Friday: 50% off for life for cafés that join by 30 November. 30 days free first.
+>
+> #loyaltycard #coffeeshop #cafeowner #applewallet #googlewallet #smallbusiness
+
+### reel-iso-every-coffee
+Isometric café series 2/6: every coffee is a stamp, the tenth is free.
+
+**EN**
+> Every coffee, a stamp. ☕
+> The tenth is on the house. That's why they come back. With Timbro the stamps live in your customers' phone wallet, so the card is always with them.
+>
+> ✦ Black Friday: 50% off for life for cafés that join by 30 November. 30 days free first.
+>
+> #loyaltycard #coffeeshop #regulars #cafeowner #applewallet #smallbusiness
+
+### reel-iso-reminder
+Isometric café series 3/6: an automatic reminder to customers who haven't come back.
+
+**EN**
+> Gone 3 weeks? We remind them. 🔔
+> Timbro sends an automatic message to customers who haven't visited in a while, with your café's name. No mailing list, no work for you.
+>
+> ✦ Black Friday: 50% off for life for cafés that join by 30 November. 30 days free first.
+>
+> #loyaltycard #coffeeshop #customerretention #cafeowner #applewallet #smallbusiness
+
+### reel-iso-double-stamps
+Isometric café series 4/6: double stamps in quiet hours.
+
+**EN**
+> Quiet afternoon? Double stamps. ⚡
+> Pick the hours, and Timbro tells your customers that stamps count double. Fill the empty tables when you need it most.
+>
+> ✦ Black Friday: 50% off for life for cafés that join by 30 November. 30 days free first.
+>
+> #loyaltycard #coffeeshop #cafemarketing #cafeowner #applewallet #smallbusiness
+
+### reel-iso-bring-a-friend
+Isometric café series 5/6: bring a friend, both get a stamp.
+
+**EN**
+> Bring a friend. Both get stamps. 👯
+> Every customer has an invite link. When their friend gets a first stamp, both get an extra one. Your regulars bring you new regulars.
+>
+> ✦ Black Friday: 50% off for life for cafés that join by 30 November. 30 days free first.
+>
+> #loyaltycard #coffeeshop #referral #cafeowner #applewallet #smallbusiness
+
+### reel-iso-black-friday
+Isometric café series 6/6: the Black Friday offer.
+
+**EN**
+> BLACK FRIDAY: 50% off for life ✦
+> Subscribe by 30 November and pay half, for as long as you stay: Start €9.50 · Plus €19.50 · Pro €39.50 a month. 30 days free first.
+>
+> 🇵🇱 −50% na zawsze dla kawiarni, które dołączą do 30 listopada.
+> 🇮🇹 −50% per sempre per i bar che si abbonano entro il 30 novembre.
+>
+> Prices exclude VAT. Lowest price in the 30 days before the discount: €19 / €39 / €79 a month.
+>
+> #blackfriday #loyaltycard #coffeeshop #kawiarnia #bar #applewallet #googlewallet

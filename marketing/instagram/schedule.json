@@ -348,8 +348,18 @@
       "type": "story"
     },
     {
+      "at": "2026-11-14 08:00",
+      "post": "reel-iso-no-app",
+      "type": "reel"
+    },
+    {
       "at": "2026-11-15 08:00",
       "post": "reel-showcase-voice",
+      "type": "reel"
+    },
+    {
+      "at": "2026-11-16 08:00",
+      "post": "reel-iso-every-coffee",
       "type": "reel"
     },
     {
@@ -358,9 +368,24 @@
       "type": "story"
     },
     {
+      "at": "2026-11-18 08:00",
+      "post": "reel-iso-reminder",
+      "type": "reel"
+    },
+    {
       "at": "2026-11-19 08:00",
       "post": "story-blackfriday",
       "type": "story"
+    },
+    {
+      "at": "2026-11-20 08:00",
+      "post": "reel-iso-double-stamps",
+      "type": "reel"
+    },
+    {
+      "at": "2026-11-22 08:00",
+      "post": "reel-iso-bring-a-friend",
+      "type": "reel"
     },
     {
       "at": "2026-11-23 08:00",
@@ -371,6 +396,11 @@
       "at": "2026-11-25 08:00",
       "post": "story-blackfriday",
       "type": "story"
+    },
+    {
+      "at": "2026-11-26 08:00",
+      "post": "reel-iso-black-friday",
+      "type": "reel"
     },
     {
       "at": "2026-11-27 08:00",
