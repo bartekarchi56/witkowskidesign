@@ -125,7 +125,7 @@ Use it as the pinned post, for paid promotion, and as a story with a link sticke
 >
 > #loyaltycard #coffeeshopowner #smallbusiness #cafe #milan
 
-### reel-showcase
+### reel-showcase, reel-showcase-voice
 Add a punchy track with a clear beat: the shots change at about 2.6, 5.1, 7.7, 9.9, 12.4 and 14.8 seconds.
 
 **Voiceover (ElevenLabs).** Model Multilingual v2 (it reads the `<break>` tags), a warm, relaxed voice, Stability 50, Similarity 75, Style 20, speed 1.0. Paste one block, then nudge the clip in the editor so each line starts on its shot. Keep the music about 15 dB under the voice. If the voice says "Tim-bro", write "Teembro".
@@ -980,3 +980,21 @@ Black Friday 2026 (`blackfriday/`, made by `blackfriday/make.js`): 50% off for l
 > Prices exclude VAT. Lowest price in the 30 days before the discount: €19 / €39 / €79 a month.
 >
 > #blackfriday #loyaltycard #coffeeshop #kawiarnia #bar #applewallet #googlewallet
+
+### reel-3-facts-bf
+Black Friday version of reel-3-facts (`marketing/animation/tre-fatti-bf.html`, `node marketing/animation/make.js tre-fatti-bf en`): a moving BLACK FRIDAY 50% strip on top, and the offer at the end.
+
+**EN**
+> 3 facts about regulars that most cafés don't know ☕
+>
+> 1️⃣ A card that starts with 2 free stamps gets finished almost twice as often.
+> 2️⃣ The closer customers get to the free coffee, the more often they come.
+> 3️⃣ Winning a new customer costs 5 to 25 times more than keeping one.
+>
+> Timbro puts your loyalty card in Apple and Google Wallet and reminds customers when one stamp is left.
+>
+> ✦ BLACK FRIDAY: 50% off for life for cafés that subscribe by 30 November. 30 days free first.
+>
+> Prices exclude VAT. Lowest price in the 30 days before the discount: €19 / €39 / €79 a month.
+>
+> #blackfriday #loyaltycard #coffeeshop #cafeowner #smallbusiness #applewallet #googlewallet

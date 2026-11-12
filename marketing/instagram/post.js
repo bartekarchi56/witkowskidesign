@@ -146,7 +146,13 @@ async function publish(item, files, caption) {
   }
   if (!dry && !USER) { console.log('Instagram is not connected yet (IG_USER_ID secret). Nothing posted.'); return; }
   let failed = problems.length > 0;
+  // Never at night (a late GitHub run once posted at 3 am): wait for the morning instead.
+  const hour = +new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', hourCycle: 'h23' }).format(now);
+  if (!dry && (hour < 7 || hour >= 22)) { console.log(`Night in ${tz} (${hour}:00): posting waits for the morning.`); process.exit(0); }
+  // One post per run, so posts that were due together don't all go out in the same minute.
+  let done = 0;
   for (const p of due) {
+    if (done >= 1 && !dry) break;
     if (now - utcOf(p.at, tz) > LATE) { console.log(`skip  ${p.at} ${p.post} (more than 2 days late)`); if (!dry) posted[key(p)] = { skipped: true }; continue; }
     try {
       const files = filesFor(p), caption = p.type === 'story' ? '' : captionFor(p.post, all, p);
@@ -155,6 +161,7 @@ async function publish(item, files, caption) {
       posted[key(p)] = { id, postedAt: new Date().toISOString() };
       fs.writeFileSync(POSTED, JSON.stringify(posted, null, 2) + '\n');
       console.log(`posted ${p.at} ${p.type} ${p.post} → ${id}`);
+      done++;
     } catch (e) { failed = true; console.error(`FAILED ${p.at} ${p.post}: ${e.message}`); }
   }
   if (!dry) fs.writeFileSync(POSTED, JSON.stringify(posted, null, 2) + '\n');
