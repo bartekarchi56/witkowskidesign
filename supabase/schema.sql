@@ -650,14 +650,6 @@ alter table businesses add column if not exists trial_used          boolean not 
 alter table businesses add column if not exists billing_canceling   boolean not null default false;  -- cancelled, ends at billing_period_end
 create unique index if not exists businesses_stripe_customer on businesses(stripe_customer);
 
-create or replace function _billing_json(b businesses) returns jsonb
-language sql stable
-as $$
-  select jsonb_build_object('status', b.billing_status, 'plan', b.billing_plan, 'interval', b.billing_interval,
-    'periodEnd', (extract(epoch from b.billing_period_end) * 1000)::bigint, 'trialUsed', b.trial_used,
-    'customer', b.stripe_customer is not null, 'canceling', b.billing_canceling)
-$$;
-
 -- For the checkout function: the logged-in owner's café and Stripe customer.
 create or replace function stripe_business(p_user uuid) returns jsonb
 language sql stable security definer set search_path = timbro
@@ -695,6 +687,58 @@ begin
   end if;
   return v_biz;
 end $$;
+
+-- A café chooses a plan (the free trial included) before its card works (update 31).
+alter table businesses add column if not exists billing_free boolean not null default false;
+
+create or replace function _biz_live(p_biz uuid) returns boolean
+language sql stable security definer set search_path = timbro
+as $$
+  select exists (select 1 from businesses b where b.id = p_biz and (
+    b.billing_free
+    or b.billing_status in ('trialing', 'active', 'past_due', 'unpaid', 'paused')
+    or not exists (select 1 from auth.users u where u.id = b.owner_id)
+    or exists (select 1 from admins a where a.user_id = b.owner_id)
+    or exists (select 1 from cards c where c.business_id = b.id and c.plan = 'chain')))
+$$;
+
+-- The dashboard reads billing.live to show the link and QR code, or the plans first.
+create or replace function _billing_json(b businesses) returns jsonb
+language sql stable
+as $$
+  select jsonb_build_object('status', b.billing_status, 'plan', b.billing_plan, 'interval', b.billing_interval,
+    'periodEnd', (extract(epoch from b.billing_period_end) * 1000)::bigint, 'trialUsed', b.trial_used,
+    'customer', b.stripe_customer is not null, 'canceling', b.billing_canceling, 'live', _biz_live(b.id))
+$$;
+
+-- One guard for joins, stamps, rewards, gifts and till links, whatever function writes them.
+create or replace function _need_plan() returns trigger
+language plpgsql security definer set search_path = timbro
+as $$
+declare v_biz uuid;
+begin
+  if tg_table_name = 'customers' then
+    select business_id into v_biz from cards where id = new.card_id;
+  elsif tg_table_name = 'events' then
+    if new.type not in ('stamp', 'redeem', 'gift', 'bonus', 'friend') then return new; end if;
+    select c.business_id into v_biz from customers m join cards c on c.id = m.card_id where m.id = new.customer_id;
+  else
+    v_biz := new.business_id;
+  end if;
+  if v_biz is not null and not _biz_live(v_biz) then
+    raise exception 'PLAN_REQUIRED: the café must choose a plan before using the card';
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists need_plan on customers;
+create trigger need_plan before insert on customers for each row execute function _need_plan();
+drop trigger if exists need_plan on events;
+create trigger need_plan before insert on events for each row execute function _need_plan();
+drop trigger if exists need_plan on devices;
+create trigger need_plan before insert on devices for each row execute function _need_plan();
+drop trigger if exists need_plan on link_codes;
+create trigger need_plan before insert on link_codes for each row execute function _need_plan();
 
 -- ---------------------------------------------------------- wallet updates --
 -- Apple Wallet asks the wallet server (wallet/) for a fresh pass after each stamp.

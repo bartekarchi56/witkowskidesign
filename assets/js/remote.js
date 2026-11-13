@@ -28,7 +28,15 @@
 
   async function rpc(fn, args = {}) {
     const { data, error } = await sb.rpc(fn, args);
-    if (error) throw new Error(error.message || 'Something went wrong. Try again.');
+    if (error) {
+      // The café hasn't chosen a plan yet (supabase/updates/31): a clear message instead of the database's.
+      if (/PLAN_REQUIRED/.test(error.message || '')) throw new Error(({
+        it: 'Questa carta non è ancora attiva: il locale deve prima scegliere un piano.',
+        en: 'This card isn\'t active yet: the café needs to choose a plan first.',
+        pl: 'Ta karta nie jest jeszcze aktywna: lokal musi najpierw wybrać plan.'
+      })[(window.I18N && I18N.lang) || 'en'] || 'This card isn\'t active yet.');
+      throw new Error(error.message || 'Something went wrong. Try again.');
+    }
     return data;
   }
   // Calls a Supabase Edge Function (supabase/functions/), as the logged-in user.

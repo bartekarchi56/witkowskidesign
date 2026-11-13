@@ -196,6 +196,10 @@ details.en[open]{padding-bottom:4px}
 .cust-tools{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin:0 0 12px}
 td.contact a{display:block;color:inherit;font-size:14px;white-space:nowrap}
 .tag-ok{display:inline-block;font:500 11px/1 var(--mono);padding:3px 6px;border-radius:999px;background:#E7F3EC;color:#22663F;vertical-align:middle}
+.locked > :not(.lockbox){display:none !important}
+.lockbox{max-width:620px;margin:8px auto;padding:34px 30px;border:1.5px solid var(--ink);border-radius:22px;text-align:center;background:#fff}
+.lockbox h2{margin:0 0 10px;font-size:26px;letter-spacing:-.01em}
+.lockbox p{margin:0 0 20px;color:var(--muted);line-height:1.5}
 .bill-plans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 @media (max-width:1100px){.bill-plans{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .bill-plan{border:1.5px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:6px}
@@ -651,6 +655,7 @@ I18N.add({
     'd.billChain': 'Il tuo locale è nel piano Catene: si paga con fattura, come da contratto. Domande? Scrivici.',
     'd.from': 'da', 'd.perLoc': '/ sede al mese', 'd.talk': 'Parliamone', 'd.chainWa': 'Ciao! Sono {business}: vorrei parlare del piano Catene di Timbro.',
     'd.choose': 'Scegli {plan}', 'd.mine': 'Il tuo piano', 'd.perMonth': '/ mese', 'd.perYear': '/ anno', 'd.vat': 'IVA esclusa',
+    'd.lockT': 'Scegli un piano per ricevere link e QR', 'd.lockP': 'La tua carta è pronta. Scegli un piano per ricevere il link, il codice QR, il poster e lo scanner per la cassa. I primi {days} giorni sono gratis e puoi disdire quando vuoi.', 'd.lockBtn': 'Scegli il piano',
     'd.billFine': 'Il pagamento è gestito da Stripe: i dati della carta non passano da noi. Ricevi la fattura via email; inserisci la partita IVA al pagamento.',
     'd.billTerms': 'Termini, disdetta e rimborsi', 'd.billThanks': 'Grazie! L\'abbonamento si attiva in pochi secondi.', 'd.billCancelled': 'Pagamento annullato: nessun addebito.',
     'd.logout': 'Esci', 'd.tTill': 'Cassa', 'd.loadErr': 'Non riesco a caricare i dati: {msg}', 'd.planFixed': 'Piano: {plan}',
@@ -771,6 +776,7 @@ I18N.add({
     'd.billChain': 'Your café is on the Chains plan: billed by invoice under your contract. Questions? Write to us.',
     'd.from': 'from', 'd.perLoc': '/ location a month', 'd.talk': 'Let\'s talk', 'd.chainWa': 'Hi! This is {business}: I\'d like to talk about the Timbro Chains plan.',
     'd.choose': 'Choose {plan}', 'd.mine': 'Your plan', 'd.perMonth': '/ month', 'd.perYear': '/ year', 'd.vat': 'excluding VAT',
+    'd.lockT': 'Choose a plan to get your link and QR code', 'd.lockP': 'Your card is ready. Choose a plan to get the link, the QR code, the poster and the till scanner. The first {days} days are free and you can cancel anytime.', 'd.lockBtn': 'Choose a plan',
     'd.billFine': 'Payments are handled by Stripe: your card details never pass through us. Invoices arrive by email; add your VAT number at checkout.',
     'd.billTerms': 'Terms, cancellation and refunds', 'd.billThanks': 'Thank you! Your subscription switches on in a few seconds.', 'd.billCancelled': 'Payment cancelled: nothing was charged.',
     'd.logout': 'Log out', 'd.tTill': 'Till', 'd.loadErr': 'Can\'t load your data: {msg}', 'd.planFixed': 'Plan: {plan}',
@@ -892,6 +898,7 @@ I18N.add({
     'd.billChain': 'Twój lokal jest w planie Sieci: rozliczenie fakturą według umowy. Pytania? Napisz do nas.',
     'd.choose': 'Wybierz {plan}', 'd.mine': 'Twój plan', 'd.perMonth': '/ miesiąc', 'd.perYear': '/ rok', 'd.vat': 'netto',
     'd.from': 'od', 'd.perLoc': '/ lokal miesięcznie', 'd.talk': 'Porozmawiajmy', 'd.chainWa': 'Dzień dobry! Tu {business}. Chcemy porozmawiać o planie Sieci w Timbro.',
+    'd.lockT': 'Wybierz plan, aby otrzymać link i kod QR', 'd.lockP': 'Twoja karta jest gotowa. Wybierz plan, aby otrzymać link, kod QR, plakat i skaner przy kasie. Pierwsze {days} dni są za darmo i możesz zrezygnować w każdej chwili.', 'd.lockBtn': 'Wybierz plan',
     'd.billFine': 'Płatności obsługuje Stripe: dane Twojej karty nie trafiają do nas. Faktury przychodzą e-mailem; NIP podasz przy płatności.',
     'd.billTerms': 'Regulamin, rezygnacja i zwroty', 'd.billThanks': 'Dziękujemy! Subskrypcja włączy się za kilka sekund.', 'd.billCancelled': 'Płatność anulowana: nic nie zostało pobrane.',
     'd.logout': 'Wyloguj się', 'd.tTill': 'Kasa', 'd.loadErr': 'Nie udało się wczytać danych: {msg}', 'd.planFixed': 'Plan: {plan}',
@@ -1648,7 +1655,23 @@ I18N.add({
   let billing = null, interval = 'month';
   const LIVE = ['trialing', 'active', 'past_due', 'unpaid', 'paused'];
   const fmtDate = ms => new Date(ms).toLocaleDateString(I18N.locale(), { day: 'numeric', month: 'long', year: 'numeric' });
+  // Link, QR code, poster and till only once the café has chosen a plan (trial included). Cards made
+  // by Witkowski Design (no owner login), chains and admins are never locked: billing.live says so.
+  const isLocked = () => Store.remote && !Remote.demo && !isAdmin && !(billing && billing.live);
+  function applyLock() {
+    const locked = isLocked();
+    ['tab-print', 'tab-promote', 'tab-till'].forEach(id => {
+      const sec = $(id); sec.classList.toggle('locked', locked);
+      let box = sec.querySelector('.lockbox');
+      if (locked && !box) { box = document.createElement('div'); box.className = 'lockbox'; sec.prepend(box); }
+      if (box) box.innerHTML = locked ? `<h2>${UI.esc(I18N.t('d.lockT'))}</h2><p>${UI.esc(I18N.t('d.lockP', { days: CONFIG.trialDays }))}</p><button class="btn pop" type="button" data-go-plan>${UI.esc(I18N.t('d.lockBtn'))}</button>` : '';
+      if (box && !locked) box.remove();
+    });
+    document.querySelectorAll('a[href^="stamper.html"]').forEach(a => { a.style.display = locked ? 'none' : ''; });
+  }
+  document.addEventListener('click', e => { if (e.target.closest('[data-go-plan]')) showTab('plan'); });
   function renderBilling() {
+    applyLock();
     const b = billing || {}, live = LIVE.includes(b.status), canPay = Store.remote && !Remote.demo;
     // Already subscribed: show their own billing period; changes happen in Stripe's portal.
     if (live && b.interval) interval = b.interval;

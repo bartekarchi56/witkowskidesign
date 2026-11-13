@@ -1,4 +1,4 @@
--- Timbro database, part 2 of 11. Run the parts in order.
+-- Timbro database, part 2 of 12. Run the parts in order.
 set search_path = timbro, extensions;
 
 create table if not exists link_codes (                        -- one-time codes to link a phone

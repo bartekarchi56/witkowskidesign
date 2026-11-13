@@ -30,6 +30,13 @@ ok('another owner cannot overwrite it');
 // ---- a customer joins ----
 assert.equal((await call(anon, 'get_card', { p_card_id: id })).title, 'Carta caffè');
 const who = { p_card_id: id, p_name: 'Giulia  Rossi', p_email: 'Giulia@Example.com', p_phone: '+39 333 123 4567', p_birth: '1995-04-12', p_marketing: true };
+// ---- no plan yet: the card can be designed, but nobody can join and the till can't be linked ----
+await rejects(call(anon, 'join_card', who), /PLAN_REQUIRED/);
+await rejects(call(users.ownerA, 'owner_link_code'), /PLAN_REQUIRED/);
+assert.equal((await call(users.ownerA, 'owner_data')).billing.live, false);
+await pool.query(`update timbro.businesses set billing_status = 'trialing' where owner_id = $1`, [users.ownerA.sub]);
+assert.equal((await call(users.ownerA, 'owner_data')).billing.live, true);
+ok('without a plan nobody can join and the till cannot be linked; the free trial unlocks it');
 await rejects(call(anon, 'join_card', { ...who, p_name: 'Giulia' }), /full name/);
 await rejects(call(anon, 'join_card', { ...who, p_email: 'giulia@' }), /email/);
 await rejects(call(anon, 'join_card', { ...who, p_phone: '123' }), /mobile/);
@@ -68,6 +75,7 @@ ok('cashier stamps (capped at the goal), removes a stamp and gives the reward');
 // ---- a phone from another café sees nothing ----
 const cardB = 'testb-' + Date.now().toString(36);
 await call(users.ownerB, 'owner_save_card', { p_card: { id: cardB, business: 'Other', title: 'X', reward: 'Y', stampsNeeded: 5 } });
+await pool.query(`update timbro.businesses set billing_status = 'active' where owner_id = $1`, [users.ownerB.sub]);   // ownerB pays too
 const devB = await call(anon, 'device_link', { p_code: (await call(users.ownerB, 'owner_link_code')).code, p_name: 'B' });
 assert.equal(await call(anon, 'stamper_lookup', { p_token: devB.token, p_code: joined.id }), null);
 await rejects(call(anon, 'stamper_stamp', { p_token: devB.token, p_code: joined.id, p_delta: 1 }), /No customer/);
@@ -157,6 +165,9 @@ await call(service, 'stripe_sync', { ...syncArgs, p_status: 'canceled' });
 assert.equal((await call(users.ownerA, 'owner_data')).cards[0].plan, 'pro');   // cancelling keeps the cards; you decide
 assert.equal((await call(users.designer, 'admin_cards')).find(c => c.id === id).billing.status, 'canceled');
 ok('only the Stripe functions change billing; a paid plan reaches the cards; you see the status in the Studio');
+await rejects(call(anon, 'join_card', { ...who, p_name: 'Late Comer' }), /PLAN_REQUIRED/);   // cancelled: no new customers
+await call(service, 'stripe_sync', { ...syncArgs, p_status: 'active' });
+ok('a cancelled subscription stops new customers until the café subscribes again');
 
 // ---- notification messages: owners save their own, cleaned ----
 const msgs = { close: { on: true, left: 9, it: 'Ancora {left}!', en: 'x'.repeat(500) }, remind: { on: true, days: 2 }, near: { on: true, lat: '45.47', lng: '9.2' }, evil: { on: true } };
