@@ -1,4 +1,4 @@
--- Timbro database, part 5 of 11. Run the parts in order.
+-- Timbro database, part 5 of 12. Run the parts in order.
 set search_path = timbro, extensions;
 
 create or replace function stamper_gift(p_token text, p_code text) returns jsonb
