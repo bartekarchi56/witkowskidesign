@@ -52,9 +52,11 @@ section{padding:96px 0}
 .why h3{margin:0 0 8px;font-size:19px}
 .why p{margin:0;color:var(--ink-2)}
 /* pictures: an AI image goes here (wizytowki/img/<name>) */
-.pics{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .pic{border-radius:20px;overflow:hidden;aspect-ratio:16/10;background:#fff}
-.pic:first-child{grid-column:1/-1;aspect-ratio:2/1}
+.pic.wide{aspect-ratio:2/1}
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
+.why-grid .pic{aspect-ratio:auto;min-height:100%}
+.why-grid .why{grid-template-columns:1fr}
 .pic img{width:100%;height:100%;object-fit:cover;display:block}
 .pic.empty{border:2px dashed #B9B9C3;display:grid;place-items:center;text-align:center;padding:22px;color:var(--muted);font-size:14px;line-height:1.45}
 .pic.empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:6px}
@@ -82,11 +84,13 @@ footer a{color:#fff}
   .hero,.order{grid-template-columns:1fr}
   .steps,.why{grid-template-columns:1fr}
   .prices{grid-template-columns:1fr 1fr}
-  .pic:first-child{aspect-ratio:16/10}
+  .pic.wide{aspect-ratio:16/10}
+  .why-grid{grid-template-columns:1fr}
+  .why-grid .pic{aspect-ratio:16/10;min-height:0}
 }
 @media (max-width:560px){
   section{padding:68px 0}
-  .prices,.order .two,.pics{grid-template-columns:1fr}
+  .prices,.order .two{grid-template-columns:1fr}
   .ph{width:200px}.ph .scr{min-height:390px}.ph:nth-child(2){display:none}
 }
 </style>
@@ -130,24 +134,19 @@ footer a{color:#fff}
     </div>
   </section>
 
-  <section id="pics" style="padding-top:0">
-    <div class="wrap">
-      <div class="pics">
-        <div class="pic" data-img="hero.jpg" data-hint="b.p1"></div>
-        <div class="pic" data-img="scan.jpg" data-hint="b.p2"></div>
-        <div class="pic" data-img="team.jpg" data-hint="b.p3"></div>
-      </div>
-    </div>
-  </section>
+  <section class="shot" style="padding-top:0"><div class="wrap"><div class="pic wide" data-img="hero.jpg" data-hint="b.p1"></div></div></section>
 
   <section id="why" style="padding-top:0">
     <div class="wrap">
       <div class="head"><span class="label" data-i18n="b.whyL"></span><h2 class="display" data-i18n="b.whyT"></h2></div>
+      <div class="why-grid">
+      <div class="pic" data-img="scan.jpg" data-hint="b.p2"></div>
       <div class="why">
         <div><h3 data-i18n="b.w1"></h3><p data-i18n="b.w1p"></p></div>
         <div><h3 data-i18n="b.w2"></h3><p data-i18n="b.w2p"></p></div>
         <div><h3 data-i18n="b.w3"></h3><p data-i18n="b.w3p"></p></div>
         <div><h3 data-i18n="b.w4"></h3><p data-i18n="b.w4p"></p></div>
+      </div>
       </div>
     </div>
   </section>
@@ -166,6 +165,7 @@ footer a{color:#fff}
         <span class="label" data-i18n="b.orL"></span>
         <h2 class="display" data-i18n="b.orT"></h2>
         <p data-i18n="b.orP"></p>
+        <div class="pic" data-img="team.jpg" data-hint="b.p3" style="margin-top:28px"></div>
       </div>
       <div>
         <form id="form">
