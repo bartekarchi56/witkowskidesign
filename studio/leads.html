@@ -147,13 +147,16 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
       const leads = rows.map(r => ({ place_id: 'dibs26-' + (r.profile.split('/ExbDetails/')[1] || r.name).split('/')[0],
         name: r.name, kind: 'Dubai Boat Show', city: 'Dubaj', address: `Dubai International Boat Show 2026, ${r.stand}, ${r.country}`,
         website: r.website, instagram: r.instagram, email: r.email, summary: r.about }));
-      let added = 0, found = 0;
-      for (let k = 0; k < leads.length; k += 25) {
-        b.textContent = `Importuję i szukam maili… ${k}/${leads.length}`;
-        const r = await Remote.leads({ action: 'import', leads: leads.slice(k, k + 25) });
-        added += r.added || 0; found += r.found || 0;
+      // First save them all (fast), then read the websites 6 at a time; a batch that fails is skipped
+      // (those places stay without an e-mail, "Szukaj maili jeszcze raz" can try them again).
+      b.textContent = 'Zapisuję listę…';
+      const added = (await Remote.leads({ action: 'import', leads })).added || 0;
+      let found = 0, failed = 0;
+      for (let k = 0; k < leads.length; k += 6) {
+        b.textContent = `Szukam maili na stronach… ${k}/${leads.length}`;
+        try { found += (await Remote.leads({ action: 'import', read: true, leads: leads.slice(k, k + 6) })).found || 0; } catch (e) { failed++; }
       }
-      toast(`Dodane: ${added}, znalezione maile: ${found}`);
+      toast(`Dodane: ${added}, znalezione maile: ${found}` + (failed ? `, nieudane paczki: ${failed}` : ''));
       // Show them: UAE, Dubai, "Dealer łodzi" (its filter matches "Dubai Boat Show").
       $('country').value = 'ZEA|United Arab Emirates'; fillCities('Dubaj'); remember(); kind = 'dealer łodzi';
       $('kinds').querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.k === kind))); setTab('new');
