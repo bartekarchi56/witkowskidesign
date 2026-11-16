@@ -12,7 +12,9 @@
 html,body{margin:0;background:#021422;color:#FAFAF8;font-family:var(--font)}
 main{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box;text-align:center}
 .card{width:100%;max-width:360px;background:#0A2233;border-radius:22px;padding:28px 24px;box-sizing:border-box;box-shadow:0 30px 60px -30px rgba(0,0,0,.8);text-align:left}
-.card img{height:44px;display:block;margin-bottom:34px}
+.card{overflow:hidden}
+.ph{height:190px;margin:-28px -24px 22px;background:linear-gradient(180deg,rgba(10,34,51,0) 45%,#0A2233),url(../lamare-photo.jpg) center/cover}
+.card img{height:44px;display:block;margin-bottom:30px}
 .card small{display:block;font:600 11px/1 var(--font);letter-spacing:.12em;color:#FFAE3A;text-transform:uppercase;margin-bottom:6px}
 .card h1{margin:0 0 18px;font-size:30px;line-height:1.1;letter-spacing:-.02em}
 .card p{margin:0 0 4px;font-size:15px;color:#C9D3DA}
@@ -26,6 +28,7 @@ main{min-height:100vh;display:flex;flex-direction:column;align-items:center;just
 <body>
 <main>
   <div class="card">
+    <div class="ph" role="img" aria-label="Domy na wodzie La Mare"></div>
     <img src="../lamare-white.png" alt="La Mare Houseboats">
     <small>CEO</small>
     <h1>Witold Witkowski</h1>
