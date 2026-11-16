@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Business cards in Wallet · reel</title>
+<link rel="stylesheet" href="../../../assets/css/base.css">
+<style>
+/* 9:16 reel (1080 x 1920, 12 s) for the Wallet business cards. make.js renders it frame by frame.
+   Scenes: paper cards rain down and get binned, a phone rises, the card drops into Wallet,
+   another phone scans it, "contact saved", then price and call to action. */
+html,body{margin:0;background:#0B0B0C}
+#post{width:1080px;height:1920px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#1E2147 0%,#0B0B0C 65%);color:#fff;font-family:var(--font)}
+.t{position:absolute;z-index:4;left:70px;right:70px;text-align:center;font:800 92px/1.02 var(--font);letter-spacing:-.03em;opacity:0}
+.t em{font-style:normal;color:#FFD23F}
+.t1{top:190px}.t2{top:190px}.t3{top:190px}.t4{top:170px}
+.sub{position:absolute;z-index:4;left:90px;right:90px;top:430px;text-align:center;font:500 38px/1.35 var(--font);color:#C9CAD8;opacity:0}
+/* paper cards */
+.pc{position:absolute;width:300px;height:172px;border-radius:10px;background:#F4F1EA;color:#333;box-shadow:0 20px 40px -10px rgba(0,0,0,.6);padding:22px;box-sizing:border-box;font:700 26px/1.2 Georgia,serif;opacity:0}
+.pc small{display:block;font:400 18px/1.4 Georgia,serif;color:#777;margin-top:10px}
+/* phones */
+.ph{position:absolute;width:520px;height:1060px;border-radius:84px;padding:16px;box-sizing:border-box;background:#2A2A2C;box-shadow:0 0 0 2px #8E8E93 inset,0 60px 100px -40px rgba(43,50,255,.6);opacity:0}
+.ph .scr{width:100%;height:100%;border-radius:68px;background:#F2F2F7;overflow:hidden;position:relative}
+.ph .isl{position:absolute;top:18px;left:50%;width:150px;height:42px;margin-left:-75px;border-radius:22px;background:#000;z-index:3}
+.ph .wal{position:absolute;top:90px;left:24px;font:800 50px/1 var(--font);color:#000;letter-spacing:-.02em}
+#A{left:280px;top:620px}
+.bc{position:absolute;left:24px;right:24px;top:180px;border-radius:22px;background:#1B1B19;color:#FAFAF8;padding:30px;box-sizing:border-box;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.bc .lg{display:flex;align-items:center;gap:12px;font:800 44px/1 var(--font);letter-spacing:-.03em;margin-bottom:40px}
+.bc .lg i{width:30px;height:30px;border-radius:50%;background:#FAFAF8}
+.bc small{display:block;font:600 16px/1 var(--font);letter-spacing:.14em;text-transform:uppercase;color:#969692;margin-bottom:8px}
+.bc b{display:block;font-size:40px;line-height:1.1;margin-bottom:26px}
+.bc .r{font-size:22px;margin-bottom:16px}
+.bc .qr{width:230px;height:230px;margin:20px auto 0;background:#fff;border-radius:14px;padding:14px;box-sizing:border-box}
+.bc .qr svg{width:100%;height:100%;display:block}
+.bank{position:absolute;left:24px;right:24px;top:900px;height:140px;border-radius:22px;background:linear-gradient(135deg,#3B3F4A,#15161A)}
+/* scanner phone */
+#B{left:-120px;top:980px;width:420px;height:860px;transform:rotate(-14deg)}
+#B .scr{background:#111}
+.frame{position:absolute;left:70px;top:250px;width:250px;height:250px;border:6px solid #FFD23F;border-radius:26px}
+.laser{position:absolute;left:80px;width:230px;height:5px;background:#FFD23F;box-shadow:0 0 20px #FFD23F;top:260px}
+.saved{position:absolute;left:150px;right:150px;top:470px;background:#fff;color:#0B0B0C;border-radius:30px;padding:28px 32px;display:flex;align-items:center;gap:22px;font:700 34px/1.2 var(--font);box-shadow:0 30px 60px -20px rgba(0,0,0,.6);opacity:0;z-index:5}
+.saved i{flex:0 0 64px;height:64px;border-radius:50%;background:#2ECC71;display:grid;place-items:center;font-style:normal;color:#fff;font-size:40px}
+.saved small{display:block;font:500 24px/1.3 var(--font);color:#6B6B70}
+.price{position:absolute;left:0;right:0;top:620px;text-align:center;opacity:0}
+.price .big{font:800 220px/1 var(--font);letter-spacing:-.06em;color:#FFD23F}
+.price .once{font:700 46px/1 var(--font);margin-top:10px}
+.badges{position:absolute;left:0;right:0;top:1060px;display:flex;justify-content:center;gap:26px;opacity:0}
+.badges img{height:96px;display:block}
+.cta{position:absolute;left:120px;right:120px;top:1300px;text-align:center;opacity:0}
+.cta div{display:inline-block;background:#2B32FF;color:#fff;border-radius:999px;padding:30px 56px;font:800 46px/1 var(--font)}
+.cta p{margin:30px 0 0;font:600 30px/1.3 var(--mono);color:#C9CAD8}
+.endlogo{position:absolute;left:0;right:0;bottom:90px;text-align:center;opacity:0}
+.endlogo img{height:70px;display:block;margin:0 auto}
+</style>
+</head>
+<body>
+<div id="post">
+  <div class="t t1">Still handing out<br><em>paper</em> cards?</div>
+  <div class="sub s1">Most of them end up in a drawer. Or the bin.</div>
+  <div id="cards"></div>
+  <div class="t t2">Put your card<br>in their <em>Wallet.</em></div>
+  <div class="ph" id="A"><div class="scr"><div class="isl"></div><div class="wal">Wallet</div>
+    <div class="bc" id="bc"><div class="lg"><i></i>abit.</div><small>Founder</small><b>Bartosz Witkowski</b>
+      <div class="r">+48 530 340 988</div><div class="r">abit@witkowskidesign.com</div><div class="qr" id="qr"></div></div>
+    <div class="bank"></div></div></div>
+  <div class="ph" id="B"><div class="scr"><div class="isl"></div><div class="frame"></div><div class="laser" id="laser"></div></div></div>
+  <div class="saved" id="saved"><i>✓</i><div>Contact saved<small>Bartosz Witkowski · abit.</small></div></div>
+  <div class="t t3">One scan.<br>Saved in <em>5 seconds.</em></div>
+  <div class="t t4">Your business card,<br><em>in the phone.</em></div>
+  <div class="price"><div class="big">€12</div><div class="once">one-time · no subscription</div></div>
+  <div class="badges"><img src="../../../assets/wallet/apple-wallet-en.svg" alt=""><img src="../../../assets/wallet/google-wallet-en.svg" alt=""></div>
+  <div class="cta"><div>Get yours</div><p>timbro.witkowskidesign.com/wizytowki</p></div>
+  <div class="endlogo"><img src="../../../wizytowka/abit-white.png" alt="abit."></div>
+</div>
+<script src="../../../assets/vendor/qrcode.js"></script>
+<script src="../../../assets/js/config.js"></script>
+<script src="../../../assets/js/i18n.js"></script>
+<script src="../../../assets/js/stamps.js"></script>
+<script src="../../../assets/js/ui.js"></script>
+<script>
+// Timeline in seconds. renderAt(t) draws one frame (make.js); without ?capture it plays in a loop.
+const D = 12.5, $ = id => document.getElementById(id);
+$('qr').innerHTML = UI.qrSvg(CONFIG.siteUrl.replace(/\/$/, '') + '/wizytowka/');
+const names = [['Marco Rossi', 'Sales Director'], ['Anna Novak', 'Architect'], ['J. Smith', 'Broker'], ['L. Weber', 'CEO'], ['Sofia Lindqvist', 'Yacht Charter'], ['Omar Haddad', 'Partner'], ['K. Tanaka', 'Designer']];
+$('cards').innerHTML = names.map(([n, r]) => `<div class="pc">${n}<small>${r}<br>+00 000 000 000</small></div>`).join('');
+const pcs = [...document.querySelectorAll('.pc')];
+const cl = x => Math.max(0, Math.min(1, x)), ease = x => { x = cl(x); return x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; };
+const out = x => 1 - Math.pow(1 - cl(x), 3), back = x => { x = cl(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const fade = (t, a, b, f = .35) => cl((t - a) / f) * (1 - cl((t - b) / f));
+function set(el, o, tr = '') { el.style.opacity = o; el.style.transform = tr; }
+function renderAt(t) {
+  // 1. hook: paper cards rain, then get swept away (0-3)
+  set(document.querySelector('.t1'), fade(t, .1, 2.8), `translateY(${(1 - out((t - .1) / .5)) * 60}px)`);
+  set(document.querySelector('.s1'), fade(t, .9, 2.8));
+  pcs.forEach((c, i) => {
+    const s = .5 + i * .16, fall = out((t - s) / .8), x = 60 + (i * 137) % 760, y = -300 + fall * (1000 + (i % 3) * 190), r = (i % 2 ? 1 : -1) * (10 + i * 4) + (1 - fall) * 40;
+    const gone = ease((t - 2.4 - i * .03) / .6);
+    c.style.left = x + 'px'; c.style.top = (y + gone * 1500) + 'px';
+    set(c, t > s && gone < .95 ? 1 - gone * .3 : 0, `rotate(${r + gone * 60}deg) scale(${1 - gone * .3})`);
+  });
+  // 2. the phone rises, the card drops into Wallet (3-6)
+  set(document.querySelector('.t2'), fade(t, 3, 5.6), `scale(${.9 + .1 * back((t - 3) / .5)})`);
+  const pA = out((t - 3.2) / .8), fl = Math.sin((t - 3.2) * 1.6) * 14;
+  set($('A'), cl((t - 3.2) / .3), `translateY(${(1 - pA) * 900 + fl}px) rotate(${(1 - pA) * 8}deg)`);
+  const drop = back((t - 4.1) / .6);
+  set($('bc'), cl((t - 4.1) / .2), `translateY(${(1 - drop) * -500}px) scale(${.8 + .2 * drop})`);
+  // 3. scan: second phone slides in, laser, toast (6-8.6)
+  set(document.querySelector('.t3'), fade(t, 6, 8.6), `translateY(${(1 - out((t - 6) / .5)) * 40}px)`);
+  const pB = out((t - 6) / .6);
+  set($('B'), cl((t - 6) / .3) * (1 - cl((t - 8.6) / .3)), `translateX(${(1 - pB) * -500}px) rotate(-14deg)`);
+  $('laser').style.top = (260 + Math.abs(Math.sin((t - 6) * 3.2)) * 230) + 'px';
+  set($('saved'), fade(t, 7.2, 8.6, .25), `scale(${.6 + .4 * back((t - 7.2) / .4)})`);
+  // phone A steps aside for the end
+  if (t > 8.6) { const k = ease((t - 8.6) / .6); $('A').style.opacity = 1 - k; }
+  // 4. price and call to action (8.8-12.5)
+  set(document.querySelector('.t4'), cl((t - 8.8) / .4), `translateY(${(1 - out((t - 8.8) / .5)) * 40}px)`);
+  set(document.querySelector('.price'), cl((t - 9.3) / .3), `scale(${.4 + .6 * back((t - 9.3) / .5)})`);
+  set(document.querySelector('.badges'), cl((t - 10) / .4), `translateY(${(1 - out((t - 10) / .5)) * 40}px)`);
+  const pulse = t > 11 ? 1 + .04 * Math.sin((t - 11) * 6) : 1;
+  set(document.querySelector('.cta'), cl((t - 10.5) / .4), `translateY(${(1 - out((t - 10.5) / .5)) * 40}px) scale(${pulse})`);
+  set(document.querySelector('.endlogo'), cl((t - 11.2) / .4));
+}
+window.renderAt = renderAt; window.DURATION = D; renderAt(0);
+document.fonts.ready.then(() => { window.READY = true; });
+if (!location.search.includes('capture')) { const t0 = performance.now(); const loop = () => { renderAt(((performance.now() - t0) / 1000) % (D + .5)); requestAnimationFrame(loop); }; loop(); }
+</script>
+</body>
+</html>
