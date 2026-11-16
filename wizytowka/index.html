@@ -36,6 +36,7 @@ main{min-height:100vh;display:flex;flex-direction:column;align-items:center;just
   </div>
   <div class="btns">
     <a id="apple" href="#"><img src="../assets/wallet/apple-wallet-pl.svg" alt="Dodaj do Portfela Apple"></a>
+    <a id="google" href="#"><img src="../assets/wallet/google-wallet-pl.svg" alt="Dodaj do Portfela Google"></a>
     <a class="vcf" id="vcf" href="#">Zapisz kontakt</a>
   </div>
   <p class="foot">Karta lojalnościowa w telefonie dla kawiarni: Timbro</p>
@@ -44,6 +45,7 @@ main{min-height:100vh;display:flex;flex-direction:column;align-items:center;just
 <script>
   const api = CONFIG.walletApi.replace(/\/$/, '');
   document.getElementById('apple').href = api + '/bizcard.pkpass';
+  document.getElementById('google').href = api + '/bizcard-google';
   document.getElementById('vcf').href = api + '/bizcard.vcf';
 </script>
 </body>

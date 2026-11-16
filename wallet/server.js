@@ -8,7 +8,7 @@
 //   POST /news  {card}, Authorization: Bearer <owner's login>            → the café's message to all customers
 //   GET  /health
 import http from 'node:http';
-import { buildBizcard, vcard } from './bizcard.js';
+import { buildBizcard, vcard, bizcardGoogleUrl } from './bizcard.js';
 import { settings, appleReady, googleReady, googleProblem } from './settings.js';
 import { readPassRequest } from './input.js';
 import { buildApplePass } from './apple.js';
@@ -172,6 +172,10 @@ export const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && url.pathname === '/bizcard.pkpass') {
       if (!appleReady()) return send(res, 503, 'Apple Wallet is not set up yet.');
       return send(res, 200, await buildBizcard(), { 'content-type': 'application/vnd.apple.pkpass', 'content-disposition': 'attachment; filename="bartosz-witkowski.pkpass"' });
+    }
+    if (req.method === 'GET' && url.pathname === '/bizcard-google') {
+      if (!googleReady()) return send(res, 503, 'Google Wallet is not set up yet.');
+      return send(res, 303, '', { location: bizcardGoogleUrl('https://timbro.witkowskidesign.com') });
     }
     if (req.method === 'GET' && url.pathname === '/bizcard.vcf') {
       return send(res, 200, vcard(), { 'content-type': 'text/vcard; charset=utf-8', 'content-disposition': 'attachment; filename="bartosz-witkowski.vcf"' });
