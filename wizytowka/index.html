@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bartek Witkowski · abit.</title>
+<meta name="description" content="Bartek Witkowski, Founder · abit. · Timbro. Dodaj wizytówkę do Apple Wallet albo zapisz kontakt.">
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* Bartek's business card: add it to Apple Wallet (wallet server /bizcard.pkpass) or save the contact (.vcf). */
+html,body{margin:0;background:#1B1B19;color:#FAFAF8;font-family:var(--font)}
+main{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box;text-align:center}
+.card{width:100%;max-width:360px;background:#242422;border-radius:22px;padding:28px 24px;box-sizing:border-box;box-shadow:0 30px 60px -30px rgba(0,0,0,.7);text-align:left}
+.card img{height:34px;display:block;margin-bottom:34px}
+.card small{display:block;font:600 11px/1 var(--font);letter-spacing:.12em;color:#969692;text-transform:uppercase;margin-bottom:6px}
+.card h1{margin:0 0 18px;font-size:30px;line-height:1.1;letter-spacing:-.02em}
+.card p{margin:0 0 4px;font-size:15px;color:#D6D6D2}
+.card a{color:#FAFAF8;text-decoration:none}
+.btns{display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px;margin-top:22px}
+.btns a{display:flex;justify-content:center}
+.btns img{height:52px}
+.vcf{display:block;padding:15px;border-radius:14px;border:1.5px solid #4A4A46;color:#FAFAF8;text-decoration:none;font-weight:700}
+.foot{margin-top:28px;font:500 12px/1.5 var(--mono);color:#7A7A76}
+</style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <img src="abit-white.png" alt="abit.">
+    <small>Founder</small>
+    <h1>Bartek Witkowski</h1>
+    <p>abit. · Timbro</p>
+    <p><a href="tel:+48530340988">+48 530 340 988</a></p>
+    <p><a href="mailto:timbro@witkowskidesign.com">timbro@witkowskidesign.com</a></p>
+    <p><a href="https://timbro.witkowskidesign.com">timbro.witkowskidesign.com</a></p>
+  </div>
+  <div class="btns">
+    <a id="apple" href="#"><img src="../assets/wallet/apple-wallet-pl.svg" alt="Dodaj do Portfela Apple"></a>
+    <a class="vcf" id="vcf" href="#">Zapisz kontakt</a>
+  </div>
+  <p class="foot">Karta lojalnościowa w telefonie dla kawiarni: Timbro</p>
+</main>
+<script src="../assets/js/config.js"></script>
+<script>
+  const api = CONFIG.walletApi.replace(/\/$/, '');
+  document.getElementById('apple').href = api + '/bizcard.pkpass';
+  document.getElementById('vcf').href = api + '/bizcard.vcf';
+</script>
+</body>
+</html>
