@@ -36,7 +36,7 @@ section{padding:96px 0}
 .bc .lg i{width:16px;height:16px;border-radius:50%;background:currentColor;opacity:.9}
 .bc small{display:block;font:600 9px/1 var(--font);letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:5px}
 .bc b{display:block;font-size:20px;line-height:1.1;margin-bottom:14px}
-.bc .row{display:flex;justify-content:space-between;gap:8px;font-size:11px;margin-bottom:10px;word-break:break-all}
+.bc .row{display:flex;justify-content:space-between;gap:8px;font-size:11px;margin-bottom:10px;overflow-wrap:anywhere}
 .bc .row span{display:block}
 .bc .qr{width:110px;height:110px;margin:6px auto 0;background:#fff;border-radius:8px;padding:7px;box-sizing:border-box}
 .bc .qr svg{width:100%;height:100%;display:block}
@@ -91,7 +91,7 @@ footer a{color:#fff}
 @media (max-width:560px){
   section{padding:68px 0}
   .prices,.order .two{grid-template-columns:1fr}
-  .ph{width:200px}.ph .scr{min-height:390px}.ph:nth-child(2){display:none}
+  .ph{width:min(250px,72vw)}.ph:nth-child(2){display:none}
 }
 </style>
 </head>

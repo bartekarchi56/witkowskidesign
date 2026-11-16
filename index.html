@@ -145,6 +145,19 @@ details[open] summary::after{background:var(--pop) linear-gradient(#fff,#fff) ce
 details p{color:var(--ink-2);padding:0 0 22px;max-width:40em}
 
 /* ---------- visit ---------- */
+/* business cards (wizytowki/): a short section on the home page */
+.bizsec .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.bizsec h2{font-size:clamp(34px,5vw,64px)}
+.bizsec .lede{font-size:19px;color:var(--ink-2);margin:18px 0 0;max-width:30em}
+.bizsec ul{list-style:none;padding:0;margin:24px 0 28px;display:grid;gap:10px}
+.bizsec li{display:flex;gap:10px;align-items:flex-start;font-size:17px}
+.bizsec li::before{content:"";flex:none;width:9px;height:9px;border-radius:50%;background:var(--pop);margin-top:8px}
+.bizsec .price{font-weight:800;font-size:22px;margin:0 0 20px}
+.bizsec .price small{font-weight:500;font-size:15px;color:var(--ink-2);margin-left:6px}
+.bizsec .ctas{display:flex;gap:10px;flex-wrap:wrap}
+.bizsec figure{margin:0;border-radius:24px;overflow:hidden;aspect-ratio:16/11;background:#eee}
+.bizsec figure img{width:100%;height:100%;object-fit:cover;display:block}
+@media (max-width:960px){.bizsec .wrap{grid-template-columns:1fr;gap:32px}.bizsec figure{order:-1}}
 .visit{border-top:1.5px solid var(--ink);padding:88px 0}
 .visit .wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:end}
 .visit h2{font-size:clamp(36px,5.4vw,72px)}
@@ -258,7 +271,7 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
       <li><a href="#design" data-i18n="nav.help"></a></li>
       <li><a href="#prezzi" data-i18n="nav.pricing"></a></li>
       <li><a href="#faq">FAQ</a></li>
-      <li><a href="wizytowki/" data-i18n="nav.biz"></a></li>
+      <li><a href="#wizytowki" data-i18n="nav.biz"></a></li>
     </ul>
     <div class="right">
       <div class="lang"></div>
@@ -475,6 +488,21 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
     </div>
   </section>
 
+  <!-- Business cards (wizytowki/) -->
+  <section id="wizytowki" class="bizsec">
+    <div class="wrap">
+      <div>
+        <span class="label" data-i18n="bz.label"></span>
+        <h2 class="display" data-i18n="bz.title"></h2>
+        <p class="lede" data-i18n="bz.lede"></p>
+        <ul><li data-i18n="bz.l1"></li><li data-i18n="bz.l2"></li><li data-i18n="bz.l3"></li></ul>
+        <p class="price"><span data-i18n="bz.price"></span><small data-i18n="bz.once"></small></p>
+        <div class="ctas"><a class="btn pop" href="wizytowki/" data-i18n="bz.cta"></a><a class="btn line" href="wizytowka/" data-i18n="bz.ex"></a></div>
+      </div>
+      <figure><img src="wizytowki/img/scan.jpg" alt="" loading="lazy"></figure>
+    </div>
+  </section>
+
   <!-- FAQ -->
   <section id="faq">
     <div class="wrap faq">
@@ -532,6 +560,9 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
 I18N.add({
   it: {
     'bf.t': 'Black Friday: −50% per sempre', 'bf.p': 'Abbonati entro il 30 novembre e paghi metà prezzo ogni mese, finché resti con noi: Start 9,50 €, Plus 19,50 €, Pro 39,50 € al mese (anche l\'annuale a metà). Lo sconto si applica da solo al pagamento.', 'bf.low': 'Prezzo più basso degli ultimi 30 giorni prima dello sconto: Start 19 €, Plus 39 €, Pro 79 € al mese.',
+    'bz.label': 'Biglietti da visita', 'bz.title': 'Il biglietto da visita, nel telefono.', 'bz.lede': 'Con la stessa tecnologia della carta fedeltà facciamo biglietti da visita per Apple Wallet e Google Wallet, con il logo e i colori della tua azienda.',
+    'bz.l1': 'Mostri un QR: il cliente salva il biglietto in 5 secondi', 'bz.l2': 'iPhone e Android, più il contatto in rubrica', 'bz.l3': 'Numero o ruolo nuovo? Il biglietto si aggiorna da solo',
+    'bz.price': 'Da 12 €', 'bz.once': 'una tantum, senza abbonamento', 'bz.cta': 'Scopri i biglietti', 'bz.ex': 'Vedi un esempio', 'bz.alt': 'Un telefono con un biglietto da visita in Wallet',
     'nav.biz': 'Biglietti da visita', 'nav.how': 'Come funziona', 'nav.try': 'Prova', 'nav.help': 'Design su misura', 'nav.numbers': 'Numeri', 'nav.pricing': 'Prezzi',
     'nav.login': 'Accedi', 'nav.start': 'Prova gratis', 'nav.startShort': 'Prova',
     'hero.a': 'La carta fedeltà che nessuno', 'hero.b': 'perde.',
@@ -594,6 +625,9 @@ I18N.add({
   },
   en: {
     'bf.t': 'Black Friday: 50% off for life', 'bf.p': 'Subscribe by 30 November and pay half price every month for as long as you stay: Start €9.50, Plus €19.50, Pro €39.50 a month (yearly is half price too). Applied automatically at checkout.', 'bf.low': 'Lowest price in the 30 days before the discount: Start €19, Plus €39, Pro €79 a month.',
+    'bz.label': 'Business cards', 'bz.title': 'Your business card, in the phone.', 'bz.lede': 'With the same technology as the loyalty card we make business cards for Apple Wallet and Google Wallet, in your company\'s logo and colours.',
+    'bz.l1': 'Show a QR code: the other person saves your card in 5 seconds', 'bz.l2': 'iPhone and Android, plus the contact in their address book', 'bz.l3': 'New number or role? The card updates itself',
+    'bz.price': 'From €12', 'bz.once': 'one-time, no subscription', 'bz.cta': 'See business cards', 'bz.ex': 'See an example', 'bz.alt': 'A phone with a business card in Wallet',
     'nav.biz': 'Business cards', 'nav.how': 'How it works', 'nav.try': 'Try it', 'nav.help': 'Custom design', 'nav.numbers': 'Numbers', 'nav.pricing': 'Pricing',
     'nav.login': 'Log in', 'nav.start': 'Try it free', 'nav.startShort': 'Try free',
     'hero.a': 'The loyalty card nobody', 'hero.b': 'loses.',
@@ -656,6 +690,9 @@ I18N.add({
   },
   pl: {
     'bf.t': 'Black Friday: −50% na zawsze', 'bf.p': 'Zapisz się do 30 listopada i płać połowę ceny co miesiąc, tak długo, jak jesteś z nami: Start 9,50 €, Plus 19,50 €, Pro 39,50 € miesięcznie (rocznie też o połowę taniej). Zniżka nalicza się sama przy płatności.', 'bf.low': 'Najniższa cena z 30 dni przed obniżką: Start 19 €, Plus 39 €, Pro 79 € miesięcznie.',
+    'bz.label': 'Wizytówki', 'bz.title': 'Wizytówka w telefonie.', 'bz.lede': 'Tą samą technologią co kartę lojalnościową robimy wizytówki do Apple Wallet i Google Wallet, z logo i w kolorach Twojej firmy.',
+    'bz.l1': 'Pokazujesz kod QR: rozmówca zapisuje wizytówkę w 5 sekund', 'bz.l2': 'iPhone i Android, do tego kontakt w telefonie', 'bz.l3': 'Nowy numer lub stanowisko? Wizytówka sama się aktualizuje',
+    'bz.price': 'Od 49 zł', 'bz.once': 'jednorazowo, bez abonamentu', 'bz.cta': 'Zobacz wizytówki', 'bz.ex': 'Zobacz przykład', 'bz.alt': 'Telefon z wizytówką w Wallet',
     'nav.biz': 'Wizytówki', 'nav.how': 'Jak to działa', 'nav.try': 'Wypróbuj', 'nav.help': 'Projekt na miarę', 'nav.numbers': 'Liczby', 'nav.pricing': 'Cennik',
     'nav.login': 'Zaloguj się', 'nav.start': 'Wypróbuj za darmo', 'nav.startShort': 'Wypróbuj',
     'hero.a': 'Karta lojalnościowa, której nikt', 'hero.b': 'nie gubi.',
