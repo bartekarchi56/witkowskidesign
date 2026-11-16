@@ -96,12 +96,16 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   if (!Remote.enabled) { $('view').innerHTML = '<p class="hint">Ta strona działa tylko z bazą danych.</p>'; return; }
   if (!await Remote.requireLogin()) return;
 
-  const KINDS = ['kawiarnia', 'pizzeria', 'barber', 'fryzjer', 'piekarnia', 'cukiernia', 'lodziarnia', 'restauracja', 'kosmetyczka', 'myjnia samochodowa'];
+  // The last five (yachts) get the business-card e-mail and message instead of the loyalty card one.
+  const KINDS = ['kawiarnia', 'pizzeria', 'barber', 'fryzjer', 'piekarnia', 'cukiernia', 'lodziarnia', 'restauracja', 'kosmetyczka', 'myjnia samochodowa',
+    'czarter jachtów', 'broker jachtów', 'stocznia', 'marina', 'dealer łodzi'];
+  const BIZ = /czarter|broker|stocznia|marina|dealer/;
   let kind = KINDS[0], status = 'new', leads = [];
   // Which saved places belong to each kind (Google's type and the name, in any language).
   const KIND_RE = { kawiarnia: /kawiar|cafe|caff|coffee|kaw|espresso|herbaciar/, pizzeria: /pizz/, barber: /barber|barbier/, fryzjer: /fryzj|hair|parrucch|coiff|salon fryz/,
     piekarnia: /piekar|baker|panific|forno|boulang|chleb/, cukiernia: /cukier|pastr|pasticc|patiss|ciast|dessert|deser/, lodziarnia: /lod|gelat|ice cream|glac/,
-    restauracja: /restaur|ristor|bistro|trattor|osteria|bar /, kosmetyczka: /kosmet|beauty|estetic|nail|paznok|spa/, 'myjnia samochodowa': /myjni|car wash|lavaggio|lavage/ };
+    restauracja: /restaur|ristor|bistro|trattor|osteria|bar /, kosmetyczka: /kosmet|beauty|estetic|nail|paznok|spa/, 'myjnia samochodowa': /myjni|car wash|lavaggio|lavage/,
+    'czarter jachtów': /charter|czarter|noleggio/, 'broker jachtów': /broker/, stocznia: /shipyard|stocznia|cantier|boatyard/, marina: /marina|harbou?r|port/, 'dealer łodzi': /boat|yacht|dealer|jacht/ };
   $('kinds').innerHTML = KINDS.map(k => `<button type="button" class="chip" data-k="${k}" aria-pressed="${k === kind}">${k[0].toUpperCase() + k.slice(1)}</button>`).join('');
   $('kinds').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; kind = b.dataset.k; $('kinds').querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); filterCity(true);
     // Nothing of this kind saved yet in this city: look for it on Google right away.
@@ -115,7 +119,8 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     $('go').disabled = true; $('go').textContent = 'Szukam…';
     try {
       // Google understands English kinds in every country ("kawiarnia Milano" finds little).
-      const EN = { kawiarnia: 'cafe', pizzeria: 'pizzeria', barber: 'barber shop', fryzjer: 'hair salon', piekarnia: 'bakery', cukiernia: 'pastry shop', lodziarnia: 'ice cream shop', restauracja: 'restaurant', kosmetyczka: 'beauty salon', 'myjnia samochodowa': 'car wash' };
+      const EN = { kawiarnia: 'cafe', pizzeria: 'pizzeria', barber: 'barber shop', fryzjer: 'hair salon', piekarnia: 'bakery', cukiernia: 'pastry shop', lodziarnia: 'ice cream shop', restauracja: 'restaurant', kosmetyczka: 'beauty salon', 'myjnia samochodowa': 'car wash',
+        'czarter jachtów': 'yacht charter', 'broker jachtów': 'yacht broker', stocznia: 'shipyard', marina: 'marina', 'dealer łodzi': 'boat dealer' };
       // Saved under the city's label from the menu and the chosen kind, so the menus always find them again.
       const c = cityOf();
       const r = await Remote.leads({ action: 'find', query: EN[kind] || kind, kind, city: c[0], place: `${googleCity(c)}, ${cgoogle($('country').value)}` });
@@ -200,7 +205,11 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   const langOf = l => /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) ? 'pl' : 'en';
   // Google names often carry slogans ("LAGACCA Cafe | dobra kawa Stary Rynek"): keep the part before | or -.
   const short = n => n.split(/\s[|\-–·]\s?|\|/)[0].trim() || n;
-  const dm = l0 => { const l = { ...l0, name: short(l0.name) }; return ({
+  const dm = l0 => { const l = { ...l0, name: short(l0.name) }; return BIZ.test(l.kind || '') ? ({
+    pl: `Witam, z tej strony Bartosz Witkowski! Robię wizytówki w Apple i Google Wallet z logo i kolorami firmy: handlowiec pokazuje kod QR, klient zapisuje wizytówkę w telefonie w 5 sekund. Jednorazowa opłata. Zobaczcie: timbro.witkowskidesign.com/wizytowki. Czy mogę przygotować bezpłatny podgląd dla zespołu ${l.name}?`,
+    it: `Salve, sono Bartosz Witkowski! Realizzo biglietti da visita in Apple e Google Wallet con logo e colori dell'azienda: il team mostra un QR e il cliente salva il biglietto nel telefono in 5 secondi. Pagamento unico. Guardate: timbro.witkowskidesign.com/wizytowki. Posso preparare un'anteprima gratuita per il team di ${l.name}?`,
+    en: `Hello, I'm Bartosz Witkowski! I make business cards for Apple and Google Wallet in your company's logo and colours: your team shows a QR code and clients save the card to their phone in 5 seconds. One-time payment. See: timbro.witkowskidesign.com/wizytowki. May I prepare a free preview for the ${l.name} team?`
+  })[langOf(l)] : ({
     pl: `Witam, z tej strony Timbro! Projektujemy karty lojalnościowe w telefonie (Apple i Google Wallet) dla lokali takich jak ${l.name}: klient zbiera pieczątki w telefonie, bez aplikacji i kartoników. Zobaczcie, jak to działa: timbro.witkowskidesign.com. Czy możemy przesłać krótką propozycję z projektem karty dla Was?`,
     it: `Salve, qui è Timbro! Disegniamo carte fedeltà nel telefono (Apple e Google Wallet) per locali come ${l.name}: i clienti raccolgono i timbri nel telefono, senza app né cartoncini. Guardate come funziona: timbro.witkowskidesign.com. Possiamo mandarvi una breve proposta con il design della vostra carta?`,
     en: `Hello, this is Timbro! We design phone loyalty cards (Apple and Google Wallet) for places like ${l.name}: customers collect stamps on their phone, no app and no paper cards. See how it works: timbro.witkowskidesign.com. May we send you a short proposal with a card design for you?`
