@@ -36,7 +36,7 @@ section{padding:96px 0}
 .bc .lg i{width:16px;height:16px;border-radius:50%;background:currentColor;opacity:.9}
 .bc small{display:block;font:600 9px/1 var(--font);letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:5px}
 .bc b{display:block;font-size:20px;line-height:1.1;margin-bottom:14px}
-.bc .row{display:flex;justify-content:space-between;gap:8px;font-size:11px;margin-bottom:14px}
+.bc .row{display:flex;justify-content:space-between;gap:8px;font-size:11px;margin-bottom:10px;word-break:break-all}
 .bc .row span{display:block}
 .bc .qr{width:110px;height:110px;margin:6px auto 0;background:#fff;border-radius:8px;padding:7px;box-sizing:border-box}
 .bc .qr svg{width:100%;height:100%;display:block}
@@ -296,13 +296,14 @@ I18N.add({
   const card = (bg, ink, logo, name, role, phone, mail) => `<div class="ph"><div class="scr"><div class="isl"></div>
     <div class="bc" style="background:${bg};color:${ink}"><div class="lg"><i></i>${logo}</div>
     <small>${role}</small><b>${name}</b>
-    <div class="row"><div><small>Tel.</small><span>${phone}</span></div><div style="text-align:right"><small>E-mail</small><span>${mail}</span></div></div>
+    <div class="row"><div><small>Tel.</small><span>${phone}</span></div></div>
+    <div class="row"><div><small>E-mail</small><span>${mail}</span></div></div>
     <div class="qr">${sampleQr}</div></div></div></div>`;
 
   function render() {
     const pl = I18N.lang === 'pl', pr = pl ? P.pl : P.other;
-    $('phones').innerHTML = card('#1B1B19', '#FAFAF8', 'abit.', 'Bartosz Witkowski', pl ? 'Założyciel' : 'Founder', '+48 530 340 988', 'abit@…')
-      + card('#2B32FF', '#FFFFFF', 'Timbro', 'Bartosz Witkowski', pl ? 'Założyciel' : 'Founder', '+48 530 340 988', 'timbro@…');
+    $('phones').innerHTML = card('#1B1B19', '#FAFAF8', 'abit.', 'Bartosz Witkowski', pl ? 'Założyciel' : 'Founder', '+48 530 340 988', 'abit@witkowskidesign.com')
+      + card('#2B32FF', '#FFFFFF', 'Timbro', 'Bartosz Witkowski', pl ? 'Założyciel' : 'Founder', '+48 530 340 988', 'timbro@witkowskidesign.com');
     $('price-list').innerHTML = [['b.pr1', 'b.pr1p', pr[0], 'b.per1'], ['b.pr2', 'b.pr2p', pr[1], 'b.per1'], ['b.pr3', 'b.pr3p', pr[2], 'b.perP'], ['b.pr4', 'b.pr4p', pr[3], 'b.perC']]
       .map(([h, p, a, per], i) => `<div class="price${i === 0 ? ' hl' : ''}"><h3>${t(h)}</h3><div class="amt">${a}</div><div class="per">${t(per)}</div><p>${t(p)}</p></div>`).join('');
     $('pack').innerHTML = [['b.pr1', pr[0]], ['b.pr2', pr[1]], ['b.pr3', pr[2] + ' ' + t('b.perP')]].map(([k, a]) => `<option>${t(k)} (${a})</option>`).join('');
