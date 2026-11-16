@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* E-mail banner for the Wallet business cards (?lang=en|pl|it), 1200 x 760, rendered by
+   print/make-email-biz.js into assets/email/biz-<lang>.jpg. Used by supabase/functions/leads. */
+html,body{margin:0;background:#fff}
+#b{width:1200px;height:760px;position:relative;overflow:hidden;font-family:var(--font);color:#fff;background:#0B0B0C}
+.photo{position:absolute;inset:0;background:url(../wizytowki/img/hero.jpg) 20% center/cover}
+.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,11,12,.92) 0%,rgba(11,11,12,.82) 42%,rgba(11,11,12,.15) 75%,rgba(11,11,12,0) 100%)}
+.txt{position:absolute;left:60px;top:64px;width:600px}
+.lbl{font:600 18px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#FFD23F}
+h1{margin:20px 0 0;font:800 58px/1.02 var(--font);font-stretch:112%;letter-spacing:-.035em}
+h1 em{font-style:normal;color:#8E93FF}
+p{margin:22px 0 0;font:500 22px/1.45 var(--font);color:#D6D7E2}
+.facts{display:flex;gap:10px;margin-top:28px;flex-wrap:nowrap}
+.facts span{border:1.5px solid rgba(255,255,255,.35);border-radius:999px;padding:11px 16px;font:700 17px/1 var(--font);white-space:nowrap}
+.price{position:absolute;left:60px;bottom:56px;display:flex;align-items:baseline;gap:14px}
+.price b{font:800 64px/1 var(--font);color:#FFD23F;letter-spacing:-.04em}
+.price span{font:600 22px/1.2 var(--font);color:#D6D7E2}
+.cards{position:absolute;right:40px;top:350px;width:470px;height:520px}
+.bc{position:absolute;width:250px;border-radius:20px;padding:20px;box-sizing:border-box;box-shadow:0 30px 60px -20px rgba(0,0,0,.7)}
+.bc .lg{display:flex;align-items:center;gap:8px;font:800 26px/1 var(--font);letter-spacing:-.03em;margin-bottom:24px}
+.bc .lg i{width:18px;height:18px;border-radius:50%;background:currentColor}
+.bc small{display:block;font:600 13px/1 var(--font);letter-spacing:.14em;text-transform:uppercase;opacity:.65;margin-bottom:7px}
+.bc b{display:block;font-size:22px;line-height:1.1;margin-bottom:14px}
+.bc .r{font-size:14px;margin-bottom:8px;opacity:.9}
+.bc .qr{width:120px;height:120px;margin:14px auto 0;background:#fff;border-radius:12px;padding:10px;box-sizing:border-box}
+.bc .qr svg{width:100%;height:100%;display:block}
+.c1{left:0;top:60px;background:#1B1B19;color:#FAFAF8;transform:rotate(-7deg)}
+.c2{right:0;top:0;background:#2B32FF;color:#fff;transform:rotate(6deg)}
+</style>
+</head>
+<body>
+<div id="b">
+  <div class="photo"></div><div class="shade"></div>
+  <div class="txt">
+    <div class="lbl" id="lbl"></div>
+    <h1 id="h1"></h1>
+    <p id="p"></p>
+    <div class="facts" id="facts"></div>
+  </div>
+  <div class="price"><b id="pr"></b><span id="once"></span></div>
+  <div class="cards">
+    <div class="bc c2"><div class="lg"><i></i>Timbro</div><small id="r2"></small><b>Bartosz Witkowski</b><div class="r">+48 530 340 988</div><div class="qr" id="q2"></div></div>
+    <div class="bc c1"><div class="lg"><i></i>abit.</div><small id="r1"></small><b>Bartosz Witkowski</b><div class="r">+48 530 340 988</div><div class="qr" id="q1"></div></div>
+  </div>
+</div>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+const lang = new URLSearchParams(location.search).get('lang') || 'en';
+const T = {
+  en: ['For businesses', 'Your business card, <em>in the phone.</em>', 'In Apple and Google Wallet, with your logo and colours. One QR scan and your client has it for good.', ['iPhone and Android', 'One-time payment', 'Ready in 48 h'], '€12', 'one-time · per card', 'Founder'],
+  pl: ['Dla firm', 'Wizytówka <em>w telefonie.</em>', 'W Apple i Google Wallet, z Twoim logo i kolorami. Jeden skan kodu QR i klient ma ją na zawsze.', ['iPhone i Android', 'Jednorazowa opłata', 'Gotowa w 48 h'], '49 zł', 'jednorazowo · za wizytówkę', 'Założyciel'],
+  it: ['Per le aziende', 'Il biglietto da visita <em>nel telefono.</em>', 'In Apple e Google Wallet, con il tuo logo e i tuoi colori. Una scansione del QR e il cliente lo tiene per sempre.', ['iPhone e Android', 'Pagamento unico', 'Pronto in 48 ore'], '€12', 'una volta · a biglietto', 'Fondatore']
+}[lang];
+const $ = id => document.getElementById(id);
+$('lbl').textContent = T[0]; $('h1').innerHTML = T[1]; $('p').textContent = T[2];
+$('facts').innerHTML = T[3].map(f => `<span>${f}</span>`).join(''); $('pr').textContent = T[4]; $('once').textContent = T[5];
+$('r1').textContent = $('r2').textContent = T[6];
+const qr = UI.qrSvg(CONFIG.siteUrl.replace(/\/$/, '') + '/wizytowka/'); $('q1').innerHTML = qr; $('q2').innerHTML = qr;
+Promise.all([document.fonts.ready, new Promise(r => { const i = new Image(); i.onload = i.onerror = r; i.src = '../wizytowki/img/hero.jpg'; })]).then(() => { window.READY = true; });
+</script>
+</body>
+</html>
