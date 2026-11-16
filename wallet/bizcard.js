@@ -13,7 +13,7 @@ const TIMBRO_TEXT = 'Karty lojalnościowe w Apple i Google Wallet dla kawiarni, 
 const LAMARE = {
   company: 'LA MARE Sp. z o.o.', web: 'https://lamare.pl', dir: 'lamare', page: 'lamare',
   bg: [2, 20, 34], fg: [250, 250, 248], label: [255, 174, 58], hex: '#021422',
-  logo: 'lamare-white.png', googleLogo: 'lamare-icon.png', hero: 'lamare-hero.png',
+  logo: 'lamare-white.png', googleLogo: 'lamare-icon.png', hero: 'lamare-photo-hero.jpg', strip: true,   // strip: Apple card with the houseboat photo
   about: ['La Mare Houseboats', 'Pływające domy na wodzie: producent houseboatów.']
 };
 // Each card: /bizcard/<id>.pkpass, /bizcard/<id>.vcf, /bizcard/<id>/google (Bartek's also at the old /bizcard.* paths).
@@ -57,13 +57,23 @@ export async function buildBizcard(id = 'bartosz-witkowski') {
     backgroundColor: rgb(ME.bg),
     foregroundColor: rgb(ME.fg),
     labelColor: rgb(ME.label),
-    generic: {
-      primaryFields: [{ key: 'name', label: ME.role.toUpperCase(), value: ME.name }],
-      secondaryFields: [{ key: 'company', label: 'FIRMA', value: ME.company }],
-      auxiliaryFields: [
-        { key: 'phone', label: 'TELEFON', value: ME.phone },
-        { key: 'email', label: 'E-MAIL', value: ME.email, textAlignment: 'PKTextAlignmentRight' }
-      ],
+    // With a photo (ME.strip): Apple's "store card" layout, the name over the photo; else the plain "generic" card.
+    [ME.strip ? 'storeCard' : 'generic']: {
+      ...(ME.strip ? {
+        headerFields: [{ key: 'role', label: '', value: ME.role.toUpperCase() }],
+        primaryFields: [{ key: 'name', label: '', value: ME.name }],
+        secondaryFields: [
+          { key: 'phone', label: 'TELEFON', value: ME.phone },
+          { key: 'email', label: 'E-MAIL', value: ME.email, textAlignment: 'PKTextAlignmentRight' }
+        ]
+      } : {
+        primaryFields: [{ key: 'name', label: ME.role.toUpperCase(), value: ME.name }],
+        secondaryFields: [{ key: 'company', label: 'FIRMA', value: ME.company }],
+        auxiliaryFields: [
+          { key: 'phone', label: 'TELEFON', value: ME.phone },
+          { key: 'email', label: 'E-MAIL', value: ME.email, textAlignment: 'PKTextAlignmentRight' }
+        ]
+      }),
       backFields: [
         { key: 'b-phone', label: 'Telefon', value: ME.phone, attributedValue: `<a href="tel:${tel}">${ME.phone}</a>` },
         { key: 'b-email', label: 'E-mail', value: ME.email, attributedValue: `<a href="mailto:${ME.email}">${ME.email}</a>` },
@@ -78,7 +88,7 @@ export async function buildBizcard(id = 'bartosz-witkowski') {
     barcodes: [{ format: 'PKBarcodeFormatQR', message: vcfUrl(id), messageEncoding: 'iso-8859-1' }]
   };
   const files = { 'pass.json': Buffer.from(JSON.stringify(passJson)) };
-  for (const n of ['icon.png', 'icon@2x.png', 'icon@3x.png', 'logo.png', 'logo@2x.png', 'logo@3x.png']) files[n] = file(ME.dir, n);
+  for (const n of ['icon.png', 'icon@2x.png', 'icon@3x.png', 'logo.png', 'logo@2x.png', 'logo@3x.png', ...(ME.strip ? ['strip.png', 'strip@2x.png', 'strip@3x.png'] : [])]) files[n] = file(ME.dir, n);
   const { signerCert, signerKey, signerKeyPassphrase, wwdr } = settings.apple;
   return new PKPass(files, { signerCert, signerKey, signerKeyPassphrase, wwdr }).getAsBuffer();
 }
