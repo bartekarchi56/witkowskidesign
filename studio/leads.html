@@ -80,6 +80,7 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
     <div class="chips" id="kinds"></div>
     <div class="row"><select id="country" aria-label="Kraj"></select><select id="city" aria-label="Miasto"></select><button class="btn" id="go">Szukaj</button></div>
     <button type="button" class="chip" id="recheck" style="margin-top:8px">Szukaj maili jeszcze raz na stronach</button>
+    <button type="button" class="chip" id="dibs" style="margin-top:8px">Importuj wystawców Dubai Boat Show 2026</button>
   </form>
   <div id="view"></div>
 </div>
@@ -99,7 +100,7 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   // The last five (yachts) get the business-card e-mail and message instead of the loyalty card one.
   const KINDS = ['kawiarnia', 'pizzeria', 'barber', 'fryzjer', 'piekarnia', 'cukiernia', 'lodziarnia', 'restauracja', 'kosmetyczka', 'myjnia samochodowa',
     'czarter jachtów', 'broker jachtów', 'stocznia', 'marina', 'dealer łodzi'];
-  const BIZ = /czarter|broker|stocznia|marina|dealer/;
+  const BIZ = /czarter|broker|stocznia|marina|dealer|boat|yacht|jacht/i;
   let kind = KINDS[0], status = 'new', leads = [];
   // Which saved places belong to each kind (Google's type and the name, in any language).
   const KIND_RE = { kawiarnia: /kawiar|cafe|caff|coffee|kaw|espresso|herbaciar/, pizzeria: /pizz/, barber: /barber|barbier/, fryzjer: /fryzj|hair|parrucch|coiff|salon fryz/,
@@ -131,6 +132,34 @@ pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.4;back
   });
 
   // Places already shown without an e-mail: read their websites again (contact, about, legal pages).
+  // Exhibitors list (sales/dubai/dibs-2026-exhibitors.csv): 25 per call, the function reads their websites for e-mails.
+  const csv = t => { const rows = []; let row = [], f = '', q = false;
+    for (let i = 0; i < t.length; i++) { const c = t[i];
+      if (q) { if (c === '"' && t[i + 1] === '"') { f += '"'; i++; } else if (c === '"') q = false; else f += c; }
+      else if (c === '"') q = true; else if (c === ',') { row.push(f); f = ''; } else if (c === '\n') { row.push(f); rows.push(row); row = []; f = ''; } else if (c !== '\r') f += c; }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    const [h, ...rest] = rows; return rest.filter(r => r.length > 1).map(r => Object.fromEntries(h.map((k, i) => [k, r[i] ?? ''])));
+  };
+  $('dibs').addEventListener('click', async () => {
+    const b = $('dibs'); b.disabled = true;
+    try {
+      const rows = csv(await (await fetch('../sales/dubai/dibs-2026-exhibitors.csv', { cache: 'no-store' })).text());
+      const leads = rows.map(r => ({ place_id: 'dibs26-' + (r.profile.split('/ExbDetails/')[1] || r.name).split('/')[0],
+        name: r.name, kind: 'Dubai Boat Show', city: 'Dubaj', address: `Dubai International Boat Show 2026, ${r.stand}, ${r.country}`,
+        website: r.website, instagram: r.instagram, email: r.email, summary: r.about }));
+      let added = 0, found = 0;
+      for (let k = 0; k < leads.length; k += 25) {
+        b.textContent = `Importuję i szukam maili… ${k}/${leads.length}`;
+        const r = await Remote.leads({ action: 'import', leads: leads.slice(k, k + 25) });
+        added += r.added || 0; found += r.found || 0;
+      }
+      toast(`Dodane: ${added}, znalezione maile: ${found}`);
+      // Show them: UAE, Dubai, "Dealer łodzi" (its filter matches "Dubai Boat Show").
+      $('country').value = 'ZEA|United Arab Emirates'; fillCities('Dubaj'); remember(); kind = 'dealer łodzi';
+      $('kinds').querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.k === kind))); setTab('new');
+    } catch (err) { toast(err.message); }
+    b.disabled = false; b.textContent = 'Importuj wystawców Dubai Boat Show 2026';
+  });
   $('recheck').addEventListener('click', async () => {
     const b = $('recheck'); b.disabled = true; b.textContent = 'Sprawdzam strony…';
     try { const r = await Remote.leads({ action: 'recheck' }); toast(r.found ? `Znalezione nowe maile: ${r.found}` : 'Nie znalazłem nowych maili'); setTab(status); } catch (err) { toast(err.message); }

@@ -326,6 +326,23 @@ Deno.serve(async req => {
         }
         return reply({ found, checked: Math.min(todo.length, 40) });
       }
+      case 'import': {   // a ready list (e.g. boat show exhibitors), up to 25 at a time: saved first, then their websites read for e-mails
+        const list = (Array.isArray(b.leads) ? b.leads : []).slice(0, 25).map((l: any) => ({
+          place_id: String(l.place_id ?? '').slice(0, 120), name: String(l.name ?? '').slice(0, 120), kind: String(l.kind ?? '').slice(0, 40),
+          address: String(l.address ?? '').slice(0, 200), city: String(l.city ?? '').slice(0, 60), website: String(l.website ?? '').slice(0, 300),
+          email: String(l.email ?? '').slice(0, 200), instagram: String(l.instagram ?? '').replace(/^.*instagram\.com\//i, '').replace(/[/?].*$/, '').slice(0, 30),
+          summary: String(l.summary ?? '').slice(0, 400), photos: [] })).filter((l: any) => l.place_id && l.name);
+        const { data: added, error } = await db.rpc('leads_add', { p_leads: list });
+        if (error) throw error;
+        let found = 0;
+        await Promise.all(list.filter((l: any) => !l.email && l.website).map(async (l: any) => {
+          const site = await Promise.race([readSite(l.website), new Promise<any>(ok => setTimeout(() => ok(null), 60000))]);
+          if (!site?.email && !(site?.instagram && !l.instagram)) return;
+          await db.rpc('leads_update', { p_place: l.place_id, p_email: site.email, p_instagram: l.instagram || site.instagram, p_loyalty: site.loyalty });
+          if (site.email) found++;
+        }));
+        return reply({ added, found, total: list.length });
+      }
       case 'skip': case 'manual': case 'replied': case 'sent':
         await db.rpc('leads_set', { p_place: place, p_status: b.action === 'skip' ? 'skipped' : b.action }); return reply({ ok: true });
       case 'proposal': {   // the long e-mail, for a place that answered yes
