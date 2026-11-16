@@ -8,6 +8,7 @@
 //   POST /news  {card}, Authorization: Bearer <owner's login>            → the café's message to all customers
 //   GET  /health
 import http from 'node:http';
+import { buildBizcard, vcard } from './bizcard.js';
 import { settings, appleReady, googleReady, googleProblem } from './settings.js';
 import { readPassRequest } from './input.js';
 import { buildApplePass } from './apple.js';
@@ -167,6 +168,14 @@ export const server = http.createServer(async (req, res) => {
     }
 
     // ---- Apple's PassKit web service: phones register passes and fetch new versions ----
+    // Bartek's business card (bizcard.js): the Wallet pass and the contact file.
+    if (req.method === 'GET' && url.pathname === '/bizcard.pkpass') {
+      if (!appleReady()) return send(res, 503, 'Apple Wallet is not set up yet.');
+      return send(res, 200, await buildBizcard(), { 'content-type': 'application/vnd.apple.pkpass', 'content-disposition': 'attachment; filename="bartek-witkowski.pkpass"' });
+    }
+    if (req.method === 'GET' && url.pathname === '/bizcard.vcf') {
+      return send(res, 200, vcard(), { 'content-type': 'text/vcard; charset=utf-8', 'content-disposition': 'attachment; filename="bartek-witkowski.vcf"' });
+    }
     if (url.pathname.startsWith('/passkit/v1/')) return await passkit(req, res, url);
 
     // ---- After a stamp the till asks us to wake the customer's phones ----
