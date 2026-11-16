@@ -34,7 +34,7 @@ export async function buildBizcard() {
     formatVersion: 1,
     passTypeIdentifier: settings.apple.passTypeIdentifier,
     teamIdentifier: settings.apple.teamIdentifier,
-    serialNumber: 'bizcard-bartek-witkowski',
+    serialNumber: 'bizcard-bartosz-witkowski',
     organizationName: ME.name,
     description: `${ME.name} · ${ME.company}`,
     backgroundColor: 'rgb(27, 27, 25)',

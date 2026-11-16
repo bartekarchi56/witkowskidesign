@@ -171,10 +171,10 @@ export const server = http.createServer(async (req, res) => {
     // Bartek's business card (bizcard.js): the Wallet pass and the contact file.
     if (req.method === 'GET' && url.pathname === '/bizcard.pkpass') {
       if (!appleReady()) return send(res, 503, 'Apple Wallet is not set up yet.');
-      return send(res, 200, await buildBizcard(), { 'content-type': 'application/vnd.apple.pkpass', 'content-disposition': 'attachment; filename="bartek-witkowski.pkpass"' });
+      return send(res, 200, await buildBizcard(), { 'content-type': 'application/vnd.apple.pkpass', 'content-disposition': 'attachment; filename="bartosz-witkowski.pkpass"' });
     }
     if (req.method === 'GET' && url.pathname === '/bizcard.vcf') {
-      return send(res, 200, vcard(), { 'content-type': 'text/vcard; charset=utf-8', 'content-disposition': 'attachment; filename="bartek-witkowski.vcf"' });
+      return send(res, 200, vcard(), { 'content-type': 'text/vcard; charset=utf-8', 'content-disposition': 'attachment; filename="bartosz-witkowski.vcf"' });
     }
     if (url.pathname.startsWith('/passkit/v1/')) return await passkit(req, res, url);
 
