@@ -1,10 +1,12 @@
-// Bartek's business card as an Apple Wallet pass ("generic" style): GET /bizcard.pkpass
+// Bartosz's business card as an Apple Wallet pass ("generic" style): GET /bizcard.pkpass,
+// a Google Wallet save link: GET /bizcard-google
 // and a contact file: GET /bizcard.vcf. The page /wizytowka/ on the website links to both.
 // Change the details here; the card in people's Wallets updates next time it is opened anew.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PKPass } from 'passkit-generator';
+import jwt from 'jsonwebtoken';
 import { settings } from './settings.js';
 
 export const ME = {
@@ -64,4 +66,39 @@ export async function buildBizcard() {
   for (const n of ['icon.png', 'icon@2x.png', 'icon@3x.png', 'logo.png', 'logo@2x.png', 'logo@3x.png']) files[n] = file(n);
   const { signerCert, signerKey, signerKeyPassphrase, wwdr } = settings.apple;
   return new PKPass(files, { signerCert, signerKey, signerKeyPassphrase, wwdr }).getAsBuffer();
+}
+
+// Google Wallet: a "generic" pass in a signed save link, nothing is created in advance.
+// The logo and banner are public files of the website (wizytowka/).
+const SITE = 'https://timbro.witkowskidesign.com/wizytowka';
+export function bizcardGoogleUrl(origin) {
+  const { issuerId, serviceAccount } = settings.google;
+  const id = `${issuerId}.bizcard_bartosz_witkowski`;
+  const img = (n, d) => ({ sourceUri: { uri: `${SITE}/${n}` }, contentDescription: { defaultValue: { language: 'pl', value: d } } });
+  const genericObject = {
+    id, classId: `${issuerId}.bizcard`, state: 'ACTIVE',
+    cardTitle: { defaultValue: { language: 'pl', value: ME.company } },
+    subheader: { defaultValue: { language: 'pl', value: ME.role } },
+    header: { defaultValue: { language: 'pl', value: ME.name } },
+    hexBackgroundColor: '#1B1B19',
+    logo: img('abit-icon.png', ME.company),
+    heroImage: img('abit-hero.png', ME.company),
+    textModulesData: [
+      { id: 'phone', header: 'Telefon', body: ME.phone },
+      { id: 'email', header: 'E-mail', body: ME.email },
+      { id: 'ig', header: 'Instagram', body: ME.instagram },
+      { id: 'timbro', header: 'Timbro', body: 'Karty lojalnościowe w Apple i Google Wallet dla kawiarni, piekarni i sklepów. Bez aplikacji i bez papieru.' }
+    ],
+    linksModuleData: { uris: [
+      { id: 'tel', uri: `tel:${ME.phone.replace(/\s/g, '')}`, description: 'Zadzwoń' },
+      { id: 'mail', uri: `mailto:${ME.email}`, description: 'Napisz e-mail' },
+      { id: 'web', uri: ME.web, description: 'timbro.witkowskidesign.com' }
+    ] },
+    barcode: { type: 'QR_CODE', value: `${settings.publicUrl}/bizcard.vcf`, alternateText: 'Zeskanuj, aby zapisać kontakt' }
+  };
+  const token = jwt.sign({
+    iss: serviceAccount.client_email, aud: 'google', typ: 'savetowallet', origins: origin ? [origin] : [],
+    payload: { genericClasses: [{ id: `${issuerId}.bizcard` }], genericObjects: [genericObject] }
+  }, serviceAccount.private_key, { algorithm: 'RS256' });
+  return `https://pay.google.com/gp/v/save/${token}`;
 }
