@@ -42,7 +42,7 @@ export async function buildBizcard() {
     labelColor: 'rgb(150, 150, 146)',
     generic: {
       primaryFields: [{ key: 'name', label: ME.role.toUpperCase(), value: ME.name }],
-      secondaryFields: [],
+      secondaryFields: [{ key: 'company', label: 'FIRMA', value: ME.company }],
       auxiliaryFields: [
         { key: 'phone', label: 'TELEFON', value: ME.phone },
         { key: 'email', label: 'E-MAIL', value: ME.email, textAlignment: 'PKTextAlignmentRight' }
@@ -51,6 +51,7 @@ export async function buildBizcard() {
         { key: 'b-phone', label: 'Telefon', value: ME.phone, attributedValue: `<a href="tel:${tel}">${ME.phone}</a>` },
         { key: 'b-email', label: 'E-mail', value: ME.email, attributedValue: `<a href="mailto:${ME.email}">${ME.email}</a>` },
         { key: 'b-web', label: 'Strona', value: ME.web, attributedValue: `<a href="${ME.web}">${ME.web.replace('https://', '')}</a>` },
+        { key: 'b-company', label: 'Firma', value: ME.company },
         { key: 'b-ig', label: 'Instagram', value: ME.instagram },
         { key: 'b-where', label: 'Gdzie', value: ME.city },
         { key: 'b-what', label: 'Timbro', value: 'Karty lojalnościowe w Apple i Google Wallet dla kawiarni, piekarni i sklepów. Bez aplikacji i bez papieru.' }
