@@ -1067,3 +1067,15 @@ Isometric café series 6/6: the Black Friday offer.
 > Prices exclude VAT. Lowest price in the 30 days before the discount: €19 / €39 / €79 a month.
 >
 > #blackfriday #loyaltycard #coffeeshop #kawiarnia #bar #applewallet #googlewallet
+
+### reel-wallet-business-card
+Business cards in Apple Wallet and Google Wallet (abit.), with voice-over. No Timbro call to action ("cta": false).
+
+**EN**
+> Still handing out paper business cards? 📇
+> Put your card straight into their Wallet: one scan of your QR code and your contact is saved on their phone in 5 seconds. Your logo, your colours, Apple Wallet and Google Wallet.
+>
+> €12 one-time, no subscription. Teams up to 10 people €59.
+> Order yours: timbro.witkowskidesign.com/wizytowki
+>
+> #businesscard #digitalbusinesscard #applewallet #googlewallet #networking #smallbusiness
