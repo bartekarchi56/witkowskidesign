@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timbro · Wizytówki w Apple i Google Wallet</title>
+<meta name="description" content="Wizytówka w telefonie: Apple Wallet i Google Wallet, z logo i kolorami Twojej firmy. Jednorazowa opłata, bez abonamentu.">
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* "For businesses": business cards in Apple and Google Wallet (served by wallet/bizcard.js), sold once.
+   Pictures: put files in wizytowki/img/ with the names in data-img (e.g. hero.jpg); until then the
+   page shows a dashed box saying what to make. The order form opens an e-mail (or WhatsApp). */
+.nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1.5px solid var(--ink)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:68px}
+.nav .right{display:flex;align-items:center;gap:10px}
+section{padding:96px 0}
+.head{max-width:720px;margin-bottom:44px}
+.head h2{font-size:clamp(32px,4.4vw,54px);margin:14px 0 0;line-height:1.02}
+.head p{font-size:19px;color:var(--ink-2);margin-top:18px}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center;padding:72px 0 88px}
+.hero h1{font-size:clamp(40px,6vw,80px);line-height:.98;margin:14px 0 0}
+.hero h1 em{font-style:normal;color:var(--pop)}
+.hero .lede{font-size:20px;color:var(--ink-2);margin:26px 0 32px;max-width:30em}
+.hero .ctas{display:flex;gap:10px;flex-wrap:wrap}
+.facts{display:flex;flex-wrap:wrap;gap:10px 26px;margin:36px 0 0;padding:24px 0 0;list-style:none;border-top:1.5px solid var(--ink);font-weight:600;font-size:15px}
+.facts li{display:flex;align-items:center;gap:8px}
+.facts li::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--pop)}
+/* phones with the business card, drawn like the real Wallet pass */
+.phones{display:flex;justify-content:center;gap:22px;align-items:flex-start}
+.ph{width:250px;border-radius:44px;padding:9px;background:#2A2A2C;box-shadow:0 0 0 1.5px #8E8E93 inset,0 40px 70px -34px rgba(11,11,12,.55)}
+.ph:nth-child(2){margin-top:46px}
+.ph .scr{border-radius:36px;background:#F2F2F7;overflow:hidden;padding:46px 10px 18px;position:relative;min-height:470px}
+.ph .isl{position:absolute;top:10px;left:50%;width:76px;height:22px;margin-left:-38px;border-radius:12px;background:#000}
+.bc{border-radius:14px;padding:16px 16px 18px;color:#FAFAF8;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.bc .lg{font:800 22px/1 var(--font);letter-spacing:-.03em;margin-bottom:26px;display:flex;align-items:center;gap:7px}
+.bc .lg i{width:16px;height:16px;border-radius:50%;background:currentColor;opacity:.9}
+.bc small{display:block;font:600 9px/1 var(--font);letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:5px}
+.bc b{display:block;font-size:20px;line-height:1.1;margin-bottom:14px}
+.bc .row{display:flex;justify-content:space-between;gap:8px;font-size:11px;margin-bottom:14px}
+.bc .row span{display:block}
+.bc .qr{width:110px;height:110px;margin:6px auto 0;background:#fff;border-radius:8px;padding:7px;box-sizing:border-box}
+.bc .qr svg{width:100%;height:100%;display:block}
+/* how it works */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{border:1.5px solid var(--ink);border-radius:20px;padding:26px 24px;background:#fff}
+.steps li::before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--pop);color:#fff;font-weight:800;margin-bottom:16px}
+.steps h3{margin:0 0 8px;font-size:21px}
+.steps p{margin:0;color:var(--ink-2)}
+/* why */
+.why{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.why div{background:var(--pop-wash);border-radius:20px;padding:24px}
+.why h3{margin:0 0 8px;font-size:19px}
+.why p{margin:0;color:var(--ink-2)}
+/* pictures: an AI image goes here (wizytowki/img/<name>) */
+.pics{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:16px}
+.pic{border-radius:20px;overflow:hidden;aspect-ratio:4/5;background:#fff}
+.pic:first-child{aspect-ratio:auto;grid-row:span 1}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.pic.empty{border:2px dashed #B9B9C3;display:grid;place-items:center;text-align:center;padding:22px;color:var(--muted);font-size:14px;line-height:1.45}
+.pic.empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:6px}
+.pic.empty code{font:500 12px var(--mono);color:var(--pop)}
+/* prices */
+.prices{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.price{border:1.5px solid var(--ink);border-radius:20px;padding:24px;background:#fff;display:flex;flex-direction:column}
+.price.hl{background:var(--ink);color:#fff}
+.price h3{margin:0 0 6px;font-size:20px}
+.price .amt{font:800 40px/1 var(--font);letter-spacing:-.03em;margin:14px 0 4px}
+.price .per{font-size:14px;opacity:.7}
+.price p{margin:14px 0 0;font-size:15px;opacity:.85}
+.once{margin-top:18px;color:var(--ink-2)}
+/* order form */
+.order{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:start}
+.order form{border:1.5px solid var(--ink);border-radius:24px;padding:28px;background:#fff;display:grid;gap:14px}
+.order label{display:grid;gap:6px;font-weight:600;font-size:15px;min-width:0}
+.order .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.order .alt{margin-top:14px;font-size:15px;color:var(--ink-2)}
+.order .alt a{color:var(--pop);font-weight:600}
+footer{background:var(--ink);color:#fff;padding:40px 0}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+footer a{color:#fff}
+@media (max-width:960px){
+  .hero,.order{grid-template-columns:1fr}
+  .steps,.why{grid-template-columns:1fr}
+  .prices{grid-template-columns:1fr 1fr}
+  .pics{grid-template-columns:1fr 1fr}
+  .pic:first-child{grid-column:1/-1;aspect-ratio:16/10}
+}
+@media (max-width:560px){
+  section{padding:68px 0}
+  .prices,.order .two{grid-template-columns:1fr}
+  .ph{width:200px}.ph .scr{min-height:390px}.ph:nth-child(2){display:none}
+}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>Timbro</a>
+    <div class="right">
+      <div class="lang"></div>
+      <a class="btn pop small" href="#order" data-i18n="b.navCta"></a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <span class="label" data-i18n="b.label"></span>
+        <h1 class="display" data-i18n-html="b.h1"></h1>
+        <p class="lede" data-i18n="b.lede"></p>
+        <div class="ctas">
+          <a class="btn pop" href="#order" data-i18n="b.cta1"></a>
+          <a class="btn line" href="../wizytowka/" target="_blank" rel="noopener" data-i18n="b.cta2"></a>
+        </div>
+        <ul class="facts"><li data-i18n="b.f1"></li><li data-i18n="b.f2"></li><li data-i18n="b.f3"></li></ul>
+      </div>
+      <div class="phones" id="phones"></div>
+    </div>
+  </div>
+
+  <section id="how" style="padding-top:24px">
+    <div class="wrap">
+      <div class="head"><span class="label" data-i18n="b.howL"></span><h2 class="display" data-i18n="b.howT"></h2></div>
+      <ol class="steps">
+        <li><h3 data-i18n="b.s1"></h3><p data-i18n="b.s1p"></p></li>
+        <li><h3 data-i18n="b.s2"></h3><p data-i18n="b.s2p"></p></li>
+        <li><h3 data-i18n="b.s3"></h3><p data-i18n="b.s3p"></p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="pics" style="padding-top:0">
+    <div class="wrap">
+      <div class="pics">
+        <div class="pic" data-img="hero.jpg" data-hint="b.p1"></div>
+        <div class="pic" data-img="scan.jpg" data-hint="b.p2"></div>
+        <div class="pic" data-img="team.jpg" data-hint="b.p3"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="why" style="padding-top:0">
+    <div class="wrap">
+      <div class="head"><span class="label" data-i18n="b.whyL"></span><h2 class="display" data-i18n="b.whyT"></h2></div>
+      <div class="why">
+        <div><h3 data-i18n="b.w1"></h3><p data-i18n="b.w1p"></p></div>
+        <div><h3 data-i18n="b.w2"></h3><p data-i18n="b.w2p"></p></div>
+        <div><h3 data-i18n="b.w3"></h3><p data-i18n="b.w3p"></p></div>
+        <div><h3 data-i18n="b.w4"></h3><p data-i18n="b.w4p"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="prices" style="padding-top:0">
+    <div class="wrap">
+      <div class="head"><span class="label" data-i18n="b.prL"></span><h2 class="display" data-i18n="b.prT"></h2></div>
+      <div class="prices" id="price-list"></div>
+      <p class="once" data-i18n="b.once"></p>
+    </div>
+  </section>
+
+  <section id="order" style="padding-top:0">
+    <div class="wrap order">
+      <div class="head" style="margin:0">
+        <span class="label" data-i18n="b.orL"></span>
+        <h2 class="display" data-i18n="b.orT"></h2>
+        <p data-i18n="b.orP"></p>
+      </div>
+      <div>
+        <form id="form">
+          <div class="two">
+            <label><span data-i18n="b.fName"></span><input type="text" name="name" required autocomplete="name"></label>
+            <label><span data-i18n="b.fCompany"></span><input type="text" name="company" required autocomplete="organization"></label>
+          </div>
+          <div class="two">
+            <label><span data-i18n="b.fEmail"></span><input name="email" type="email" required autocomplete="email"></label>
+            <label><span data-i18n="b.fPhone"></span><input name="phone" type="tel" autocomplete="tel"></label>
+          </div>
+          <label><span data-i18n="b.fPack"></span><select name="pack" id="pack"></select></label>
+          <label><span data-i18n="b.fMsg"></span><textarea name="msg" rows="4" data-i18n-attr="placeholder:b.fMsgPh"></textarea></label>
+          <button class="btn pop" type="submit" data-i18n="b.send"></button>
+        </form>
+        <p class="alt"><span data-i18n="b.alt"></span> <a id="wa" target="_blank" rel="noopener">WhatsApp</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap"><a class="brand" href="../index.html" style="color:#fff"><span class="brand-mark" aria-hidden="true"></span>Timbro</a><span>abit@witkowskidesign.com</span><div class="lang"></div></div></footer>
+
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/stamps.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+I18N.add({
+  it: {
+    'b.navCta': 'Ordina', 'b.label': 'Per le aziende',
+    'b.h1': 'Il biglietto da visita <em>nel telefono.</em>',
+    'b.lede': 'Un biglietto da visita in Apple Wallet e Google Wallet, con il logo e i colori della tua azienda. Lo condividi con un QR, nessuno lo perde e si aggiorna da solo.',
+    'b.cta1': 'Ordina il tuo', 'b.cta2': 'Guarda un esempio', 'b.f1': 'iPhone e Android', 'b.f2': 'Pagamento unico', 'b.f3': 'Pronto in 48 ore',
+    'b.howL': 'Come funziona', 'b.howT': 'Tre passi, poi lo condividi ovunque.',
+    'b.s1': 'Ci mandi i dati', 'b.s1p': 'Nome, ruolo, telefono, email e il logo. Per un team, una lista con tutti.',
+    'b.s2': 'Lo disegniamo', 'b.s2p': 'Nei colori del tuo marchio. Ricevi un link e un codice QR per ogni persona.',
+    'b.s3': 'Lo condividi', 'b.s3p': 'L\'altra persona scansiona il QR e salva il biglietto nel Wallet in 5 secondi. Il QR sul biglietto salva il contatto.',
+    'b.p1': 'Foto principale: due persone a un evento, una mostra il telefono con il biglietto, l\'altra lo scansiona.',
+    'b.p2': 'Primo piano: un telefono con il biglietto aperto in Wallet, luce morbida, sfondo ufficio.',
+    'b.p3': 'Un team in ufficio, ognuno con il telefono in mano, stile moderno e luminoso.',
+    'b.whyL': 'Perché', 'b.whyT': 'Meglio della carta, senza abbonamento.',
+    'b.w1': 'Non si perde', 'b.w1p': 'Resta nel Wallet accanto alle carte di pagamento, non in un cassetto.',
+    'b.w2': 'Sempre aggiornato', 'b.w2p': 'Cambi numero o ruolo? Il biglietto si aggiorna anche nei telefoni di chi lo ha già.',
+    'b.w3': 'Un solo QR', 'b.w3p': 'Agli eventi, sulla scrivania, in fondo alle email: lo scansionano e hanno tutto.',
+    'b.w4': 'Pagamento unico', 'b.w4p': 'Niente abbonamento mensile. Paghi una volta, il primo anno di modifiche è incluso.',
+    'b.prL': 'Prezzi', 'b.prT': 'Una volta sola.',
+    'b.pr1': 'Singolo', 'b.pr1p': '1 biglietto, Apple e Google Wallet, con il tuo logo, una pagina e il QR.',
+    'b.pr2': 'Team', 'b.pr2p': 'Fino a 10 persone, lo stesso design per tutti.',
+    'b.pr3': 'Azienda', 'b.pr3p': 'Da 11 persone in su, prezzo a persona.',
+    'b.pr4': 'Modifiche', 'b.pr4p': 'Il primo anno è incluso, poi a modifica.',
+    'b.per1': 'una volta', 'b.perP': 'a persona', 'b.perC': 'a modifica',
+    'b.once': 'Prezzi IVA esclusa. Nessun abbonamento.',
+    'b.orL': 'Ordina', 'b.orT': 'Ordina il tuo biglietto.', 'b.orP': 'Scrivici i dati: ti rispondiamo entro un giorno con la bozza e il link per pagare.',
+    'b.fName': 'Nome e cognome', 'b.fCompany': 'Azienda', 'b.fEmail': 'Email', 'b.fPhone': 'Telefono', 'b.fPack': 'Pacchetto', 'b.fMsg': 'Messaggio',
+    'b.fMsgPh': 'Quante persone, ruoli, link al logo…', 'b.send': 'Invia la richiesta', 'b.alt': 'Preferisci scrivere?',
+    'b.mailSubj': 'Biglietti da visita Wallet: {company}'
+  },
+  en: {
+    'b.navCta': 'Order', 'b.label': 'For businesses',
+    'b.h1': 'Your business card, <em>in the phone.</em>',
+    'b.lede': 'A business card in Apple Wallet and Google Wallet, with your company\'s logo and colours. Share it with a QR code, nobody loses it, and it updates itself.',
+    'b.cta1': 'Order yours', 'b.cta2': 'See an example', 'b.f1': 'iPhone and Android', 'b.f2': 'One-time payment', 'b.f3': 'Ready in 48 hours',
+    'b.howL': 'How it works', 'b.howT': 'Three steps, then share it anywhere.',
+    'b.s1': 'You send the details', 'b.s1p': 'Name, role, phone, email and your logo. For a team, one list with everyone.',
+    'b.s2': 'We design it', 'b.s2p': 'In your brand\'s colours. You get a link and a QR code for every person.',
+    'b.s3': 'You share it', 'b.s3p': 'The other person scans the QR and saves the card to their Wallet in 5 seconds. The QR on the card saves the contact.',
+    'b.p1': 'Main photo: two people at an event, one shows a phone with the card, the other scans it.',
+    'b.p2': 'Close-up: a phone with the card open in Wallet, soft light, office background.',
+    'b.p3': 'A team in an office, each with a phone in hand, modern and bright.',
+    'b.whyL': 'Why', 'b.whyT': 'Better than paper, with no subscription.',
+    'b.w1': 'Never lost', 'b.w1p': 'It stays in the Wallet next to the payment cards, not in a drawer.',
+    'b.w2': 'Always up to date', 'b.w2p': 'New number or role? The card updates on the phones of everyone who already has it.',
+    'b.w3': 'One QR code', 'b.w3p': 'At events, on your desk, at the end of your emails: they scan it and have everything.',
+    'b.w4': 'One-time payment', 'b.w4p': 'No monthly subscription. Pay once, the first year of changes is included.',
+    'b.prL': 'Prices', 'b.prT': 'Pay once.',
+    'b.pr1': 'Single', 'b.pr1p': '1 card, Apple and Google Wallet, with your logo, a page and the QR code.',
+    'b.pr2': 'Team', 'b.pr2p': 'Up to 10 people, the same design for everyone.',
+    'b.pr3': 'Company', 'b.pr3p': '11 people or more, priced per person.',
+    'b.pr4': 'Changes', 'b.pr4p': 'The first year is included, then per change.',
+    'b.per1': 'once', 'b.perP': 'per person', 'b.perC': 'per change',
+    'b.once': 'Prices exclude VAT. No subscription.',
+    'b.orL': 'Order', 'b.orT': 'Order your business card.', 'b.orP': 'Send us the details: we reply within a day with a draft and a payment link.',
+    'b.fName': 'Full name', 'b.fCompany': 'Company', 'b.fEmail': 'Email', 'b.fPhone': 'Phone', 'b.fPack': 'Package', 'b.fMsg': 'Message',
+    'b.fMsgPh': 'How many people, roles, a link to your logo…', 'b.send': 'Send the request', 'b.alt': 'Rather write directly?',
+    'b.mailSubj': 'Wallet business cards: {company}'
+  },
+  pl: {
+    'b.navCta': 'Zamów', 'b.label': 'Dla firm',
+    'b.h1': 'Wizytówka <em>w telefonie.</em>',
+    'b.lede': 'Wizytówka w Apple Wallet i Google Wallet, z logo i kolorami Twojej firmy. Udostępniasz ją kodem QR, nikt jej nie zgubi i aktualizuje się sama.',
+    'b.cta1': 'Zamów swoją', 'b.cta2': 'Zobacz przykład', 'b.f1': 'iPhone i Android', 'b.f2': 'Jednorazowa opłata', 'b.f3': 'Gotowa w 48 godzin',
+    'b.howL': 'Jak to działa', 'b.howT': 'Trzy kroki, a potem udostępniasz ją wszędzie.',
+    'b.s1': 'Wysyłasz dane', 'b.s1p': 'Imię, stanowisko, telefon, e-mail i logo. Dla zespołu jedna lista ze wszystkimi.',
+    'b.s2': 'Projektujemy ją', 'b.s2p': 'W kolorach Twojej marki. Dostajesz link i kod QR dla każdej osoby.',
+    'b.s3': 'Udostępniasz', 'b.s3p': 'Druga osoba skanuje QR i zapisuje wizytówkę w Portfelu w 5 sekund. Kod QR na wizytówce zapisuje kontakt.',
+    'b.p1': 'Główne zdjęcie: dwie osoby na wydarzeniu biznesowym, jedna pokazuje telefon z wizytówką, druga ją skanuje.',
+    'b.p2': 'Zbliżenie: telefon z wizytówką otwartą w Wallet, miękkie światło, tło biura.',
+    'b.p3': 'Zespół w biurze, każdy z telefonem w ręce, nowoczesny i jasny styl.',
+    'b.whyL': 'Dlaczego', 'b.whyT': 'Lepsza niż papierowa, bez abonamentu.',
+    'b.w1': 'Nie ginie', 'b.w1p': 'Zostaje w Portfelu obok kart płatniczych, a nie w szufladzie.',
+    'b.w2': 'Zawsze aktualna', 'b.w2p': 'Nowy numer albo stanowisko? Wizytówka zmienia się też w telefonach osób, które już ją mają.',
+    'b.w3': 'Jeden kod QR', 'b.w3p': 'Na wydarzeniach, na biurku, w stopce maila: skanują i mają wszystko.',
+    'b.w4': 'Jednorazowa opłata', 'b.w4p': 'Bez miesięcznego abonamentu. Płacisz raz, pierwszy rok zmian jest w cenie.',
+    'b.prL': 'Cennik', 'b.prT': 'Płacisz raz.',
+    'b.pr1': 'Pojedyncza', 'b.pr1p': '1 wizytówka w Apple i Google Wallet, z Twoim logo, stroną i kodem QR.',
+    'b.pr2': 'Zespół', 'b.pr2p': 'Do 10 osób, jeden projekt dla wszystkich.',
+    'b.pr3': 'Firma', 'b.pr3p': 'Od 11 osób, cena za osobę.',
+    'b.pr4': 'Zmiany', 'b.pr4p': 'Pierwszy rok w cenie, potem za każdą zmianę.',
+    'b.per1': 'jednorazowo', 'b.perP': 'za osobę', 'b.perC': 'za zmianę',
+    'b.once': 'Ceny netto (bez VAT). Bez abonamentu.',
+    'b.orL': 'Zamówienie', 'b.orT': 'Zamów swoją wizytówkę.', 'b.orP': 'Wyślij nam dane: odpowiemy w ciągu dnia z projektem i linkiem do płatności.',
+    'b.fName': 'Imię i nazwisko', 'b.fCompany': 'Firma', 'b.fEmail': 'E-mail', 'b.fPhone': 'Telefon', 'b.fPack': 'Pakiet', 'b.fMsg': 'Wiadomość',
+    'b.fMsgPh': 'Ile osób, stanowiska, link do logo…', 'b.send': 'Wyślij zapytanie', 'b.alt': 'Wolisz napisać od razu?',
+    'b.mailSubj': 'Wizytówki w Wallet: {company}'
+  }
+});
+
+(() => {
+  const $ = id => document.getElementById(id);
+  const t = (k, v) => I18N.t(k, v);
+  const MAIL = 'abit@witkowskidesign.com';
+  // Prices: złoty in Polish, euro otherwise.
+  const P = { pl: ['49 zł', '249 zł', '19 zł', '10 zł'], other: ['€12', '€59', '€5', '€3'] };
+  const sampleQr = UI.qrSvg(CONFIG.siteUrl.replace(/\/$/, '') + '/wizytowka/');
+  const card = (bg, ink, logo, name, role, phone, mail) => `<div class="ph"><div class="scr"><div class="isl"></div>
+    <div class="bc" style="background:${bg};color:${ink}"><div class="lg"><i></i>${logo}</div>
+    <small>${role}</small><b>${name}</b>
+    <div class="row"><div><small>Tel.</small><span>${phone}</span></div><div style="text-align:right"><small>E-mail</small><span>${mail}</span></div></div>
+    <div class="qr">${sampleQr}</div></div></div></div>`;
+
+  function render() {
+    const pl = I18N.lang === 'pl', pr = pl ? P.pl : P.other;
+    $('phones').innerHTML = card('#1B1B19', '#FAFAF8', 'abit.', 'Bartosz Witkowski', pl ? 'Założyciel' : 'Founder', '+48 530 340 988', 'abit@…')
+      + card('#2B32FF', '#FFFFFF', 'Studio Nova', 'Anna Kowalska', pl ? 'Architektka' : 'Architect', '+48 600 123 456', 'anna@…');
+    $('price-list').innerHTML = [['b.pr1', 'b.pr1p', pr[0], 'b.per1'], ['b.pr2', 'b.pr2p', pr[1], 'b.per1'], ['b.pr3', 'b.pr3p', pr[2], 'b.perP'], ['b.pr4', 'b.pr4p', pr[3], 'b.perC']]
+      .map(([h, p, a, per], i) => `<div class="price${i === 0 ? ' hl' : ''}"><h3>${t(h)}</h3><div class="amt">${a}</div><div class="per">${t(per)}</div><p>${t(p)}</p></div>`).join('');
+    $('pack').innerHTML = [['b.pr1', pr[0]], ['b.pr2', pr[1]], ['b.pr3', pr[2] + ' ' + t('b.perP')]].map(([k, a]) => `<option>${t(k)} (${a})</option>`).join('');
+    // Pictures: the file if it exists, otherwise a box saying what image to make.
+    document.querySelectorAll('.pic').forEach(box => {
+      const img = new Image();
+      img.onload = () => { box.className = 'pic'; box.innerHTML = ''; box.appendChild(img); };
+      img.onerror = () => { box.className = 'pic empty'; box.innerHTML = `<div><b>AI</b>${UI.esc(t(box.dataset.hint))}<br><code>wizytowki/img/${box.dataset.img}</code></div>`; };
+      img.alt = t(box.dataset.hint); img.src = 'img/' + box.dataset.img;
+    });
+    const wa = (CONFIG.contact.phone || '').replace(/\D/g, '');
+    $('wa').href = `https://wa.me/${wa}?text=${encodeURIComponent(t('b.mailSubj', { company: '' }))}`;
+  }
+
+  $('form').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = new FormData(e.target), g = k => (f.get(k) || '').toString().trim();
+    const body = [`${t('b.fName')}: ${g('name')}`, `${t('b.fCompany')}: ${g('company')}`, `${t('b.fEmail')}: ${g('email')}`,
+      `${t('b.fPhone')}: ${g('phone')}`, `${t('b.fPack')}: ${g('pack')}`, '', g('msg')].join('\n');
+    location.href = `mailto:${MAIL}?subject=${encodeURIComponent(t('b.mailSubj', { company: g('company') }))}&body=${encodeURIComponent(body)}`;
+  });
+
+  document.addEventListener('langchange', render);
+  I18N.switchers(); I18N.apply(); render();
+})();
+</script>
+</body>
+</html>
