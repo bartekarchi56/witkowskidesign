@@ -181,7 +181,7 @@ function html(lang: string, subject: string, lines: string[], biz = false) {
     : { pl: ['Karta lojalnościowa, której nikt', 'nie gubi.'], it: ['La carta fedeltà che nessuno', 'perde.'], en: ['The loyalty card nobody', 'loses.'] }[lang]!;
   if (biz) B[0] = { pl: 'Tak, przygotuj podgląd', it: 'Sì, preparate l\'anteprima', en: 'Yes, prepare a preview' }[lang]!;
   const page = biz ? `${SITE}/wizytowki/?lang=${lang}` : `${SITE}/?lang=${lang}`;
-  const hero = biz ? `${SITE}/wizytowki/img/scan.jpg` : `${SITE}/assets/email/hero-${lang}.png`;
+  const hero = biz ? `${SITE}/assets/email/biz-${lang}.jpg` : `${SITE}/assets/email/hero-${lang}.png`;   // biz: print/email-biz.html
   const who = biz ? ['Bartosz Witkowski', 'abit. · timbro.witkowskidesign.com/wizytowki', SIGN[2]] : SIGN;
   const yes = `mailto:${MAILTO}?subject=${encodeURIComponent('Re: ' + subject)}&body=${encodeURIComponent(B[2])}`;
   const paras = lines.join('\n').split('\n\n').map(p => p.trim()).filter(Boolean);
@@ -195,7 +195,7 @@ function html(lang: string, subject: string, lines: string[], biz = false) {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F4F4F6"><tr><td align="center" style="padding:24px 10px">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:24px;overflow:hidden">
 <tr><td style="padding:24px 32px;${F};font-size:18px;font-weight:800;color:${INK}"><span style="display:inline-block;width:12px;height:12px;border:4px solid ${BLUE};border-radius:50%;vertical-align:-2px;margin-right:8px"></span>Timbro</td></tr>
-<tr><td style="padding:6px 32px 0"><div style="${F};font-stretch:125%;font-weight:800;letter-spacing:-.03em;font-size:38px;line-height:1;color:${INK}">${H[0]} <span style="color:${BLUE}">${H[1]}</span></div></td></tr>
+${biz ? '' : `<tr><td style="padding:6px 32px 0"><div style="${F};font-stretch:125%;font-weight:800;letter-spacing:-.03em;font-size:38px;line-height:1;color:${INK}">${H[0]} <span style="color:${BLUE}">${H[1]}</span></div></td></tr>`}
 <tr><td style="padding:16px 0 0"><a href="${page}"><img src="${hero}" width="600" alt="Timbro" style="display:block;width:100%;height:auto;border:0"></a></td></tr>
 <tr><td style="padding:22px 32px 8px;${F};font-size:16px;line-height:1.6;color:#2A2A2E">
 ${paras.map(p => `<p style="margin:0 0 16px">${esc(p).replace(/\n/g, '<br>').replace(/(https:\/\/[^\s<]+)/g, `<a href="$1" style="color:${BLUE};font-weight:700;text-decoration:none">$1</a>`)}</p>`).join('')}
