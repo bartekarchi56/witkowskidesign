@@ -5,7 +5,7 @@
 // Deploy with "Verify JWT" ON. Secrets: GOOGLE_MAPS_KEY (Places API (New)), RESEND_API_KEY;
 // optional LEADS_FROM (default "Timbro · Bartek Witkowski <timbro@witkowskidesign.com>": Resend sends only
 // from the verified domain, not from a @gmail.com address) and LEADS_REPLY_TO, where replies go
-// (default bartek.archi56@gmail.com; e.g. timbro.witkowskidesign@gmail.com).
+// (default timbro@witkowskidesign.com, which Cloudflare forwards to the owner's inbox).
 //   POST { action: 'find', query: 'kawiarnia', city: 'Bydgoszcz' }   → { added, found }
 //   POST { action: 'list', status: 'new' }                          → leads
 //   POST { action: 'skip' | 'manual' | 'replied' | 'sent', place: id }   (sent: written by hand, e.g. on Instagram)
@@ -34,7 +34,8 @@ async function findInstagram(name: string, city: string) {
   return '';
 }
 const FROM = Deno.env.get('LEADS_FROM') || 'Timbro · Bartek Witkowski <timbro@witkowskidesign.com>';
-const REPLY_TO = Deno.env.get('LEADS_REPLY_TO') || 'bartek.archi56@gmail.com';
+// Replies go here: the LEADS_REPLY_TO secret (Supabase → Edge Functions → Secrets), else the timbro@ address.
+const REPLY_TO = Deno.env.get('LEADS_REPLY_TO') || 'timbro@witkowskidesign.com';
 // The "yes" buttons write to an address on the sending domain (spam filters dislike links to another
 // domain); forward it to your inbox with Cloudflare Email Routing.
 const MAILTO = Deno.env.get('LEADS_MAILTO') || 'timbro@witkowskidesign.com';
@@ -137,8 +138,25 @@ async function find(query: string, city: string, kindLabel = '', placeName = '')
 // The first e-mail: short, no offer, asks if a proposal may be sent. In the place's language
 // (from the country in its address): Polish, Italian, otherwise English.
 const SIGN = ['Bartek Witkowski', 'Witkowski Design · timbro.witkowskidesign.com', '+48 530 340 988'];
+// Leads in these kinds get the business-card e-mail (Wallet business cards, wizytowki/), not the loyalty card one.
+const BIZ = /czarter|broker|stocznia|marina|dealer|jacht|yacht|boat/i;
 function draft(l: any) {
   const lang = /W[łl]ochy|Itali[ae]|Italy/i.test(l.address) ? 'it' : /Polska|Poland/i.test(l.address) ? 'pl' : 'en';
+  if (BIZ.test(l.kind || '')) {
+    const B = {
+      pl: [`Wizytówki w telefonie dla ${l.name}`, ['Witam,', '', `z tej strony Bartosz Witkowski. Robię wizytówki w Apple Wallet i Google Wallet, z logo i kolorami firmy. Handlowiec pokazuje kod QR, klient zapisuje wizytówkę w telefonie w 5 sekund i już jej nie zgubi. Jednorazowa opłata, bez abonamentu.`, '', `Zobacz, jak to wygląda: ${SITE}/wizytowki/`, '',
+        'Czy mogę przygotować bezpłatny podgląd takiej wizytówki dla Państwa zespołu? Wystarczy odpowiedzieć „tak”.', '',
+        'Jeśli nie są Państwo zainteresowani, proszę zignorować tę wiadomość: nie napiszę ponownie.', '', 'Pozdrawiam']],
+      it: [`Biglietti da visita nel telefono per ${l.name}`, ['Salve,', '', `sono Bartosz Witkowski. Realizzo biglietti da visita in Apple Wallet e Google Wallet, con logo e colori dell'azienda. Il vostro team mostra un QR, il cliente salva il biglietto nel telefono in 5 secondi e non lo perde più. Pagamento unico, senza abbonamento.`, '', `Ecco come funziona: ${SITE}/wizytowki/?lang=it`, '',
+        'Posso preparare un\'anteprima gratuita per il vostro team? Basta rispondere “sì”.', '',
+        'Se non siete interessati, ignorate pure questo messaggio: non scriverò di nuovo.', '', 'Cordiali saluti']],
+      en: [`Digital business cards for ${l.name}`, ['Hello,', '', `I'm Bartosz Witkowski. I make business cards for Apple Wallet and Google Wallet, in your company's logo and colours. Your team shows a QR code, the client saves the card to their phone in 5 seconds and never loses it. Ideal for boat shows and client meetings. One-time payment, no subscription.`, '', `See how it works: ${SITE}/wizytowki/?lang=en`, '',
+        'May I prepare a free preview of a card for your team? Just reply “yes”.', '',
+        'If you are not interested, please ignore this message: I will not write again.', '', 'Best regards']]
+    }[lang] as [string, string[]];
+    const sign = ['Bartosz Witkowski', 'abit. · timbro.witkowskidesign.com/wizytowki', '+48 530 340 988'];
+    return { subject: B[0], text: [...B[1], ...sign].join('\n'), html: html(lang, B[0], B[1], true), lang };
+  }
   const T = {
     pl: [`Pytanie do ${l.name}`, ['Witam,', '', `z tej strony Timbro. Projektujemy karty lojalnościowe w telefonie dla lokali takich jak ${l.name}: klient zapisuje kartę w Apple Wallet lub Google Wallet, a obsługa dodaje pieczątkę telefonem w dwie sekundy. Bez aplikacji i bez papierowych kartoników.`, '', `Zobacz, jak to działa: ${SITE}`, '',
       'Czy mogę przesłać Państwu krótką propozycję z projektem karty dla Państwa lokalu? Wystarczy odpowiedzieć „tak” na tego maila.', '',
@@ -157,9 +175,14 @@ function draft(l: any) {
 // text, a blue "reply yes" button and the signature. Plain tables and inline styles, for e-mail apps.
 const SITE = 'https://timbro.witkowskidesign.com';
 const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-function html(lang: string, subject: string, lines: string[]) {
+function html(lang: string, subject: string, lines: string[], biz = false) {
   const B = { pl: ['Tak, wyślij propozycję', 'Zobacz, jak to działa', 'Tak, chętnie zobaczę propozycję.'], it: ['Sì, inviatemi la proposta', 'Guarda come funziona', 'Sì, vorrei vedere la proposta.'], en: ['Yes, send me the proposal', 'See how it works', 'Yes, I would like to see the proposal.'] }[lang]!;
-  const H = { pl: ['Karta lojalnościowa, której nikt', 'nie gubi.'], it: ['La carta fedeltà che nessuno', 'perde.'], en: ['The loyalty card nobody', 'loses.'] }[lang]!;
+  const H = biz ? { pl: ['Wizytówka', 'w telefonie.'], it: ['Il biglietto da visita', 'nel telefono.'], en: ['Your business card,', 'in the phone.'] }[lang]!
+    : { pl: ['Karta lojalnościowa, której nikt', 'nie gubi.'], it: ['La carta fedeltà che nessuno', 'perde.'], en: ['The loyalty card nobody', 'loses.'] }[lang]!;
+  if (biz) B[0] = { pl: 'Tak, przygotuj podgląd', it: 'Sì, preparate l\'anteprima', en: 'Yes, prepare a preview' }[lang]!;
+  const page = biz ? `${SITE}/wizytowki/?lang=${lang}` : `${SITE}/?lang=${lang}`;
+  const hero = biz ? `${SITE}/wizytowki/img/scan.jpg` : `${SITE}/assets/email/hero-${lang}.png`;
+  const who = biz ? ['Bartosz Witkowski', 'abit. · timbro.witkowskidesign.com/wizytowki', SIGN[2]] : SIGN;
   const yes = `mailto:${MAILTO}?subject=${encodeURIComponent('Re: ' + subject)}&body=${encodeURIComponent(B[2])}`;
   const paras = lines.join('\n').split('\n\n').map(p => p.trim()).filter(Boolean);
   const close = paras.pop() ?? '';
@@ -173,13 +196,13 @@ function html(lang: string, subject: string, lines: string[]) {
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:24px;overflow:hidden">
 <tr><td style="padding:24px 32px;${F};font-size:18px;font-weight:800;color:${INK}"><span style="display:inline-block;width:12px;height:12px;border:4px solid ${BLUE};border-radius:50%;vertical-align:-2px;margin-right:8px"></span>Timbro</td></tr>
 <tr><td style="padding:6px 32px 0"><div style="${F};font-stretch:125%;font-weight:800;letter-spacing:-.03em;font-size:38px;line-height:1;color:${INK}">${H[0]} <span style="color:${BLUE}">${H[1]}</span></div></td></tr>
-<tr><td style="padding:16px 0 0"><a href="${SITE}/?lang=${lang}"><img src="${SITE}/assets/email/hero-${lang}.png" width="600" alt="Timbro" style="display:block;width:100%;height:auto;border:0"></a></td></tr>
+<tr><td style="padding:16px 0 0"><a href="${page}"><img src="${hero}" width="600" alt="Timbro" style="display:block;width:100%;height:auto;border:0"></a></td></tr>
 <tr><td style="padding:22px 32px 8px;${F};font-size:16px;line-height:1.6;color:#2A2A2E">
 ${paras.map(p => `<p style="margin:0 0 16px">${esc(p).replace(/\n/g, '<br>').replace(/(https:\/\/[^\s<]+)/g, `<a href="$1" style="color:${BLUE};font-weight:700;text-decoration:none">$1</a>`)}</p>`).join('')}
 <div style="margin:10px 0 26px"><a href="${yes}" style="display:inline-block;padding:14px 26px;border-radius:999px;background:${BLUE};color:#fff;${F};font-size:15px;font-weight:700;text-decoration:none">${B[0]}</a>&nbsp;&nbsp;
-<a href="${SITE}/?lang=${lang}" style="${F};font-size:15px;font-weight:700;color:${BLUE};text-decoration:none">${B[1]} →</a></div>
+<a href="${page}" style="${F};font-size:15px;font-weight:700;color:${BLUE};text-decoration:none">${B[1]} →</a></div>
 <p style="margin:0 0 4px">${esc(close)}</p>
-<p style="margin:0 0 26px"><b>${SIGN[0]}</b><br><span style="color:#8A8A90;font-size:14px">${esc(SIGN[1])}<br>${SIGN[2]}</span></p>
+<p style="margin:0 0 26px"><b>${who[0]}</b><br><span style="color:#8A8A90;font-size:14px">${esc(who[1])}<br>${who[2]}</span></p>
 </td></tr></table>
 </td></tr></table></body></html>`;
 }
