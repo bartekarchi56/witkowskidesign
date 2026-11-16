@@ -60,7 +60,7 @@ export async function buildBizcard() {
       ]
     },
     // Scanning the code saves the contact.
-    barcodes: [{ format: 'PKBarcodeFormatQR', message: `${settings.publicUrl}/bizcard.vcf`, messageEncoding: 'iso-8859-1', altText: 'Zeskanuj, aby zapisać kontakt' }]
+    barcodes: [{ format: 'PKBarcodeFormatQR', message: `${settings.publicUrl}/bizcard.vcf`, messageEncoding: 'iso-8859-1' }]
   };
   const files = { 'pass.json': Buffer.from(JSON.stringify(passJson)) };
   for (const n of ['icon.png', 'icon@2x.png', 'icon@3x.png', 'logo.png', 'logo@2x.png', 'logo@3x.png']) files[n] = file(n);
@@ -94,7 +94,7 @@ export function bizcardGoogleUrl(origin) {
       { id: 'mail', uri: `mailto:${ME.email}`, description: 'Napisz e-mail' },
       { id: 'web', uri: ME.web, description: 'timbro.witkowskidesign.com' }
     ] },
-    barcode: { type: 'QR_CODE', value: `${settings.publicUrl}/bizcard.vcf`, alternateText: 'Zeskanuj, aby zapisać kontakt' }
+    barcode: { type: 'QR_CODE', value: `${settings.publicUrl}/bizcard.vcf` }
   };
   const token = jwt.sign({
     iss: serviceAccount.client_email, aud: 'google', typ: 'savetowallet', origins: origin ? [origin] : [],
