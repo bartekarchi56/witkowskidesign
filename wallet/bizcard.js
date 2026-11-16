@@ -8,11 +8,11 @@ import { PKPass } from 'passkit-generator';
 import { settings } from './settings.js';
 
 export const ME = {
-  name: 'Bartek Witkowski',
-  role: 'Founder',
-  company: 'abit. · Timbro',
+  name: 'Bartosz Witkowski',
+  role: 'Założyciel Timbro',
+  company: 'abit.',
   phone: '+48 530 340 988',
-  email: 'timbro@witkowskidesign.com',
+  email: 'abit@witkowskidesign.com',
   web: 'https://timbro.witkowskidesign.com',
   instagram: '@timbro.loyalty',
   city: 'Bydgoszcz · Milano'
@@ -42,22 +42,22 @@ export async function buildBizcard() {
     labelColor: 'rgb(150, 150, 146)',
     generic: {
       primaryFields: [{ key: 'name', label: ME.role.toUpperCase(), value: ME.name }],
-      secondaryFields: [{ key: 'company', label: 'COMPANY', value: ME.company }],
+      secondaryFields: [],
       auxiliaryFields: [
-        { key: 'phone', label: 'PHONE', value: ME.phone },
-        { key: 'email', label: 'EMAIL', value: ME.email, textAlignment: 'PKTextAlignmentRight' }
+        { key: 'phone', label: 'TELEFON', value: ME.phone },
+        { key: 'email', label: 'E-MAIL', value: ME.email, textAlignment: 'PKTextAlignmentRight' }
       ],
       backFields: [
-        { key: 'b-phone', label: 'Phone', value: ME.phone, attributedValue: `<a href="tel:${tel}">${ME.phone}</a>` },
-        { key: 'b-email', label: 'Email', value: ME.email, attributedValue: `<a href="mailto:${ME.email}">${ME.email}</a>` },
-        { key: 'b-web', label: 'Website', value: ME.web, attributedValue: `<a href="${ME.web}">${ME.web.replace('https://', '')}</a>` },
+        { key: 'b-phone', label: 'Telefon', value: ME.phone, attributedValue: `<a href="tel:${tel}">${ME.phone}</a>` },
+        { key: 'b-email', label: 'E-mail', value: ME.email, attributedValue: `<a href="mailto:${ME.email}">${ME.email}</a>` },
+        { key: 'b-web', label: 'Strona', value: ME.web, attributedValue: `<a href="${ME.web}">${ME.web.replace('https://', '')}</a>` },
         { key: 'b-ig', label: 'Instagram', value: ME.instagram },
-        { key: 'b-where', label: 'Where', value: ME.city },
-        { key: 'b-what', label: 'Timbro', value: 'Loyalty cards in Apple and Google Wallet for cafés, bakeries and shops. No app, no paper.' }
+        { key: 'b-where', label: 'Gdzie', value: ME.city },
+        { key: 'b-what', label: 'Timbro', value: 'Karty lojalnościowe w Apple i Google Wallet dla kawiarni, piekarni i sklepów. Bez aplikacji i bez papieru.' }
       ]
     },
     // Scanning the code saves the contact.
-    barcodes: [{ format: 'PKBarcodeFormatQR', message: `${settings.publicUrl}/bizcard.vcf`, messageEncoding: 'iso-8859-1', altText: 'Scan to save my contact' }]
+    barcodes: [{ format: 'PKBarcodeFormatQR', message: `${settings.publicUrl}/bizcard.vcf`, messageEncoding: 'iso-8859-1', altText: 'Zeskanuj, aby zapisać kontakt' }]
   };
   const files = { 'pass.json': Buffer.from(JSON.stringify(passJson)) };
   for (const n of ['icon.png', 'icon@2x.png', 'icon@3x.png', 'logo.png', 'logo@2x.png', 'logo@3x.png']) files[n] = file(n);
