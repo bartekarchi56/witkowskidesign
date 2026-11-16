@@ -302,7 +302,7 @@ I18N.add({
   function render() {
     const pl = I18N.lang === 'pl', pr = pl ? P.pl : P.other;
     $('phones').innerHTML = card('#1B1B19', '#FAFAF8', 'abit.', 'Bartosz Witkowski', pl ? 'Założyciel' : 'Founder', '+48 530 340 988', 'abit@…')
-      + card('#2B32FF', '#FFFFFF', 'Studio Nova', 'Anna Kowalska', pl ? 'Architektka' : 'Architect', '+48 600 123 456', 'anna@…');
+      + card('#2B32FF', '#FFFFFF', 'Timbro', 'Bartosz Witkowski', pl ? 'Założyciel' : 'Founder', '+48 530 340 988', 'timbro@…');
     $('price-list').innerHTML = [['b.pr1', 'b.pr1p', pr[0], 'b.per1'], ['b.pr2', 'b.pr2p', pr[1], 'b.per1'], ['b.pr3', 'b.pr3p', pr[2], 'b.perP'], ['b.pr4', 'b.pr4p', pr[3], 'b.perC']]
       .map(([h, p, a, per], i) => `<div class="price${i === 0 ? ' hl' : ''}"><h3>${t(h)}</h3><div class="amt">${a}</div><div class="per">${t(per)}</div><p>${t(p)}</p></div>`).join('');
     $('pack').innerHTML = [['b.pr1', pr[0]], ['b.pr2', pr[1]], ['b.pr3', pr[2] + ' ' + t('b.perP')]].map(([k, a]) => `<option>${t(k)} (${a})</option>`).join('');
