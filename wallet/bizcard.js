@@ -11,7 +11,8 @@ import { settings } from './settings.js';
 
 const TIMBRO_TEXT = 'Karty lojalnościowe w Apple i Google Wallet dla kawiarni, piekarni i sklepów. Bez aplikacji i bez papieru.';
 const LAMARE = {
-  company: 'LA MARE Sp. z o.o.', web: 'https://lamare.pl', dir: 'lamare', page: 'lamare',
+  company: 'LA MARE Sp. z o.o.', web: 'https://lamare.pl/', dir: 'lamare', page: 'lamare',
+  vcardOrg: 'La Mare Houseboats', note: 'Houseboats production from Poland',   // what the saved contact shows
   bg: [2, 20, 34], fg: [250, 250, 248], label: [255, 174, 58], hex: '#021422',
   logo: 'lamare-white.png', googleLogo: 'lamare-icon.png', hero: 'lamare-photo-hero.jpg', strip: true,   // strip: Apple card with the houseboat photo
   about: ['La Mare Houseboats', 'Pływające domy na wodzie: producent houseboatów.']
@@ -39,8 +40,8 @@ const file = (dir, n) => fs.readFileSync(path.join(DIR, dir, n));
 export function vcard(id = 'bartosz-witkowski') {
   const ME = person(id);
   const [first, ...rest] = ME.name.split(' ');
-  return ['BEGIN:VCARD', 'VERSION:3.0', `N:${rest.join(' ')};${first};;;`, `FN:${ME.name}`, `ORG:${ME.company}`, `TITLE:${ME.role}`,
-    `TEL;TYPE=CELL:${ME.phone.replace(/\s/g, '')}`, `EMAIL;TYPE=WORK:${ME.email}`, `URL:${ME.web}`,
+  return ['BEGIN:VCARD', 'VERSION:3.0', `N:${rest.join(' ')};${first};;;`, `FN:${ME.name}`, `ORG:${ME.vcardOrg || ME.company}`, `TITLE:${ME.role}`,
+    `TEL;TYPE=CELL:${ME.phone.replace(/\s/g, '')}`, `EMAIL;TYPE=WORK:${ME.email}`, `URL:${ME.web}`, ...(ME.note ? [`NOTE:${ME.note}`] : []),
     ...(ME.instagram ? [`X-SOCIALPROFILE;TYPE=instagram:https://instagram.com/${ME.instagram.replace('@', '')}`] : []), 'END:VCARD', ''].join('\r\n');
 }
 
