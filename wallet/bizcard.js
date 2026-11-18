@@ -62,7 +62,8 @@ export async function buildBizcard(id = 'bartosz-witkowski') {
       ...(ME.strip ? {
         headerFields: [{ key: 'role', label: '', value: ME.role.toUpperCase() }],
         primaryFields: [],   // the name is drawn into the photo, bottom left (bizcard/lamare/strip-<id>.png)
-        secondaryFields: [
+        secondaryFields: [{ key: 'company', label: 'FIRMA', value: ME.company }],
+        auxiliaryFields: [
           { key: 'phone', label: 'TELEFON', value: ME.phone },
           { key: 'email', label: 'E-MAIL', value: ME.email, textAlignment: 'PKTextAlignmentRight' }
         ]
