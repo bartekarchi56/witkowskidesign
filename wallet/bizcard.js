@@ -61,7 +61,7 @@ export async function buildBizcard(id = 'bartosz-witkowski') {
     [ME.strip ? 'storeCard' : 'generic']: {
       ...(ME.strip ? {
         headerFields: [{ key: 'role', label: '', value: ME.role.toUpperCase() }],
-        primaryFields: [{ key: 'name', label: '', value: ME.name }],
+        primaryFields: [],   // the name is drawn into the photo, bottom left (bizcard/lamare/strip-<id>.png)
         secondaryFields: [
           { key: 'phone', label: 'TELEFON', value: ME.phone },
           { key: 'email', label: 'E-MAIL', value: ME.email, textAlignment: 'PKTextAlignmentRight' }
@@ -78,6 +78,7 @@ export async function buildBizcard(id = 'bartosz-witkowski') {
         { key: 'b-phone', label: 'Telefon', value: ME.phone, attributedValue: `<a href="tel:${tel}">${ME.phone}</a>` },
         { key: 'b-email', label: 'E-mail', value: ME.email, attributedValue: `<a href="mailto:${ME.email}">${ME.email}</a>` },
         { key: 'b-web', label: 'Strona', value: ME.web, attributedValue: `<a href="${ME.web}">${ME.web.replace('https://', '')}</a>` },
+        { key: 'b-name', label: 'Imię i nazwisko', value: ME.name },
         { key: 'b-company', label: 'Firma', value: ME.company },
         ...(ME.instagram ? [{ key: 'b-ig', label: 'Instagram', value: ME.instagram }] : []),
         ...(ME.city ? [{ key: 'b-where', label: 'Gdzie', value: ME.city }] : []),
@@ -88,7 +89,7 @@ export async function buildBizcard(id = 'bartosz-witkowski') {
     barcodes: [{ format: 'PKBarcodeFormatQR', message: vcfUrl(id), messageEncoding: 'iso-8859-1' }]
   };
   const files = { 'pass.json': Buffer.from(JSON.stringify(passJson)) };
-  for (const n of ['icon.png', 'icon@2x.png', 'icon@3x.png', 'logo.png', 'logo@2x.png', 'logo@3x.png', ...(ME.strip ? ['strip.png', 'strip@2x.png', 'strip@3x.png'] : [])]) files[n] = file(ME.dir, n);
+  for (const n of ['icon.png', 'icon@2x.png', 'icon@3x.png', 'logo.png', 'logo@2x.png', 'logo@3x.png', ...(ME.strip ? ['strip.png', 'strip@2x.png', 'strip@3x.png'] : [])]) files[n] = file(ME.dir, n.startsWith('strip') ? n.replace('strip', `strip-${id}`) : n);
   const { signerCert, signerKey, signerKeyPassphrase, wwdr } = settings.apple;
   return new PKPass(files, { signerCert, signerKey, signerKeyPassphrase, wwdr }).getAsBuffer();
 }
