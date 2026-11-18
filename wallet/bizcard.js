@@ -57,10 +57,10 @@ export async function buildBizcard(id = 'bartosz-witkowski') {
     backgroundColor: rgb(ME.bg),
     foregroundColor: rgb(ME.fg),
     labelColor: rgb(ME.label),
-    // With a photo (ME.strip): Apple's "store card" layout, the name over the photo; else the plain "generic" card.
-    [ME.strip ? 'storeCard' : 'generic']: {
+    // With a photo (ME.strip): Apple's "event ticket" layout (company, then phone and e-mail, in two rows), the name over the photo; else the plain "generic" card.
+    [ME.strip ? 'eventTicket' : 'generic']: {
       ...(ME.strip ? {
-        headerFields: [{ key: 'role', label: '', value: ME.role.toUpperCase() }],
+        headerFields: [{ key: 'role', label: ME.role.toUpperCase(), value: ' ' }],
         primaryFields: [],   // the name is drawn into the photo, bottom left (bizcard/lamare/strip-<id>.png)
         secondaryFields: [{ key: 'company', label: 'FIRMA', value: ME.company }],
         auxiliaryFields: [
