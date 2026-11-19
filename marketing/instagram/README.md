@@ -1079,3 +1079,14 @@ Business cards in Apple Wallet and Google Wallet (abit.), with voice-over. No Ti
 > Order yours: timbro.witkowskidesign.com/wizytowki
 >
 > #businesscard #digitalbusinesscard #applewallet #googlewallet #networking #smallbusiness
+
+### reel-empty-table
+"If I opened a café, I'd never have an empty table." Animated, with voice-over (empty-table/).
+
+**EN**
+> If I opened a café, I'd never have an empty table. ☕
+> And no, not with discounts. A loyalty card in your regulars' phone: when they walk past, a message pops up. "Walking past? Your coffee is waiting." And they come back.
+>
+> Apple Wallet and Google Wallet, no app, no paper cards.
+>
+> #loyaltycard #coffeeshop #cafeowner #applewallet #smallbusiness #cafemarketing
