@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOÏ Milano · Demo Timbro</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<style>
+/* Demo for NOÏ: scan the card, then stamp it from the till page (card noi-pokaz, link code NOI1). */
+html,body{margin:0;background:#F5F3EE;color:#111;font-family:var(--font)}
+main{max-width:860px;margin:0 auto;padding:40px 20px 60px}
+h1{font-size:clamp(30px,6vw,48px);line-height:1.05;margin:0 0 10px;letter-spacing:-.02em}
+.lede{font-size:18px;color:#4A4F57;margin:0 0 32px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.box{background:#fff;border-radius:22px;padding:24px;border:1px solid #E4E0D8}
+.box b.n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#111;color:#fff;margin-bottom:12px}
+.box h2{font-size:22px;margin:0 0 8px}
+.box p{margin:0 0 14px;color:#4A4F57}
+.box img{width:100%;max-width:260px;display:block;margin:6px auto 12px}
+.box a.btn{display:block;text-align:center;padding:13px;border-radius:999px;background:#111;color:#fff;text-decoration:none;font-weight:700}
+.code{font:700 28px/1 var(--mono);letter-spacing:.2em;text-align:center;margin:8px 0 14px}
+.steps{margin-top:20px}
+@media (max-width:700px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+  <h1>NOÏ Milano: la carta fedeltà nel telefono</h1>
+  <p class="lede">Una prova in due minuti: un telefono fa il cliente, l'altro fa la cassa.</p>
+  <div class="grid">
+    <div class="box">
+      <b class="n">1</b>
+      <h2>Il cliente</h2>
+      <p>Inquadra il QR con la fotocamera e aggiungi la carta ad Apple Wallet o Google Wallet.</p>
+      <img src="../../print/kit-noi/qr-karta-noi.png" alt="QR della carta NOÏ">
+      <a class="btn" href="../../app/card.html?card=noi-pokaz&amp;lang=it">Apri la carta</a>
+    </div>
+    <div class="box">
+      <b class="n">2</b>
+      <h2>La cassa</h2>
+      <p>Sul telefono dello staff apri la pagina della cassa e inserisci il codice:</p>
+      <div class="code">NOI1</div>
+      <img src="qr-cassa.png" alt="QR della pagina cassa">
+      <a class="btn" href="../../app/stamper.html?lang=it">Apri la cassa</a>
+    </div>
+  </div>
+  <div class="box steps">
+    <b class="n">3</b>
+    <h2>Il timbro</h2>
+    <p>Con il telefono della cassa inquadra il QR sulla carta del cliente e tocca "Timbro". In pochi secondi il timbro appare sulla carta nel Wallet del cliente. Carta piena: il premio, e si ricomincia.</p>
+  </div>
+</main>
+</body>
+</html>
