@@ -183,7 +183,7 @@ function html(lang: string, subject: string, lines: string[], biz = false) {
   const page = biz ? `${SITE}/wizytowki/?lang=${lang}` : `${SITE}/?lang=${lang}`;
   const hero = biz ? `${SITE}/assets/email/biz-${lang}.jpg` : `${SITE}/assets/email/hero-${lang}.png`;   // biz: print/email-biz.html
   const who = biz ? ['Bartosz Witkowski', 'abit. · timbro.witkowskidesign.com/wizytowki', SIGN[2]] : SIGN;
-  const yes = `mailto:${MAILTO}?subject=${encodeURIComponent('Re: ' + subject)}&body=${encodeURIComponent(B[2])}`;
+  const yes = `mailto:${MAILTO}`;   // no ?subject: some mail apps (WP Poczta) put the whole link into the To field
   const paras = lines.join('\n').split('\n\n').map(p => p.trim()).filter(Boolean);
   const close = paras.pop() ?? '';
   const F = "font-family:Archivo,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif", BLUE = '#2B32FF', INK = '#0B0B0C';
@@ -250,7 +250,7 @@ function proposal(l: any, first = false) {
   const BLUE = '#2B32FF', INK = '#0B0B0C', MUTED = '#5A5A60';
   const kicker = (x: string) => `<div style="${F};font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:${BLUE}">${x}</div>`;
   const pill = (href: string, label: string, filled = true) => `<a href="${href}" style="display:inline-block;padding:14px 26px;border-radius:999px;${F};font-size:15px;font-weight:700;text-decoration:none;${filled ? `background:${BLUE};color:#fff` : `border:1.5px solid ${INK};color:${INK}`}">${label}</a>`;
-  const yes = `mailto:${MAILTO}?subject=${encodeURIComponent(t.subject(l.name))}&body=${encodeURIComponent(t.ctaBody)}`;
+  const yes = `mailto:${MAILTO}`;
   const demo = `${SITE}/app/card.html?card=the-coffee&lang=${lang}`;
   const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet"><title>${esc(t.subject(l.name))}</title></head>
