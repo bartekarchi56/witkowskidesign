@@ -361,7 +361,7 @@ Deno.serve(async req => {
       case 'preview': case 'send': {
         const { data: l } = await db.rpc('leads_get', { p_place: place });
         if (!l) return reply({ error: 'Not found.' }, 404);
-        const mail = draft(l);   // first contact: the short question with the phones banner (proposal(l, true) is the long one)
+        const mail = BIZ.test(l.kind || "") ? draft(l) : proposal(l, true);   // first contact: the full showcase page in their language (business cards: the short one)
         if (b.action === 'preview') return reply(mail);
         if (l.status === 'sent') return reply({ error: 'Already sent.' }, 409);
         if (!l.email) return reply({ error: 'No e-mail for this place.' }, 400);
