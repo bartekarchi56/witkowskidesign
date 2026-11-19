@@ -145,6 +145,14 @@ details[open] summary::after{background:var(--pop) linear-gradient(#fff,#fff) ce
 details p{color:var(--ink-2);padding:0 0 22px;max-width:40em}
 
 /* ---------- visit ---------- */
+/* clients strip: logos sliding right to left (assets/clients/) */
+.clients{padding:28px 0 36px;overflow:hidden}
+.clients p{text-align:center;font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);margin:0 0 18px}
+.clients .track{display:flex;width:max-content;animation:clients 28s linear infinite}
+.clients .set{display:flex;align-items:center;gap:80px;padding-right:80px}
+.clients img{height:44px;width:auto;display:block}
+@keyframes clients{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.clients .track{animation:none}}
 /* business cards (wizytowki/): a short section on the home page */
 .bizsec .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
 .bizsec h2{font-size:clamp(34px,5vw,64px)}
@@ -320,6 +328,11 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
   </div>
 
   <!-- HOW -->
+  <div class="clients" aria-label="Clients">
+    <p data-i18n="cl.title"></p>
+    <div class="track"><div class="set"><img src="assets/clients/parzymy-tutaj.png" alt="Parzymy Tutaj"><a href="https://lamare.pl/"><img src="assets/clients/lamare.png" alt="La Mare Houseboats"></a><img src="assets/clients/parzymy-tutaj.png" alt="Parzymy Tutaj"><a href="https://lamare.pl/"><img src="assets/clients/lamare.png" alt="La Mare Houseboats"></a><img src="assets/clients/parzymy-tutaj.png" alt="Parzymy Tutaj"><a href="https://lamare.pl/"><img src="assets/clients/lamare.png" alt="La Mare Houseboats"></a></div><div class="set" aria-hidden="true"><img src="assets/clients/parzymy-tutaj.png" alt="Parzymy Tutaj"><a href="https://lamare.pl/"><img src="assets/clients/lamare.png" alt="La Mare Houseboats"></a><img src="assets/clients/parzymy-tutaj.png" alt="Parzymy Tutaj"><a href="https://lamare.pl/"><img src="assets/clients/lamare.png" alt="La Mare Houseboats"></a><img src="assets/clients/parzymy-tutaj.png" alt="Parzymy Tutaj"><a href="https://lamare.pl/"><img src="assets/clients/lamare.png" alt="La Mare Houseboats"></a></div></div>
+  </div>
+
   <section id="come" style="padding-top:0">
     <div class="wrap">
       <div class="head">
@@ -573,6 +586,7 @@ I18N.add({
     'hero.h0': 'Questa è la carta di un cliente. Prova a timbrarla.',
     'hero.hLeft': 'Ancora {n} per il premio.', 'hero.hFull': 'Carta piena: il cliente vede "Premio pronto".',
     'hero.hDone': 'Premio dato. La carta riparte da zero, e il cliente torna.',
+    'cl.title': 'Lo usano già',
     'how.label': 'Come funziona', 'how.title': 'Tre passi e sei pronto.',
     'how.s1': 'Disegniamo la tua carta', 'how.s1p': 'Ci racconti il locale e il premio. Noi disegniamo carta, timbro e poster su misura.', 'how.s1w': 'Tu, una volta',
     'how.s2': 'Il cliente inquadra il QR', 'how.s2p': 'Il poster alla cassa fa il lavoro. In 10 secondi la carta è sul suo telefono.', 'how.s2w': 'Il cliente, 10 secondi',
@@ -638,6 +652,7 @@ I18N.add({
     'hero.h0': 'This is a customer\'s card. Try stamping it.',
     'hero.hLeft': '{n} more to the reward.', 'hero.hFull': 'Full card: the customer sees "Reward ready".',
     'hero.hDone': 'Reward given. The card starts again, and the customer comes back.',
+    'cl.title': 'Already using it',
     'how.label': 'How it works', 'how.title': 'Three steps and you\'re ready.',
     'how.s1': 'We design your card', 'how.s1p': 'Tell us about your place and the reward. We design the card, the stamp and the poster for you.', 'how.s1w': 'You, once',
     'how.s2': 'Customers scan the QR', 'how.s2p': 'The poster at the till does the work. In 10 seconds the card is on their phone.', 'how.s2w': 'Your customer, 10 seconds',
@@ -704,6 +719,7 @@ I18N.add({
     'hero.hLeft': ({ n }) => `Do nagrody brakuje jeszcze ${n} ${I18N.plural(+n, ['pieczątki', 'pieczątek', 'pieczątek'])}.`,
     'hero.hFull': 'Karta pełna: klient widzi komunikat „Nagroda gotowa”.',
     'hero.hDone': 'Nagroda wydana. Karta zaczyna się od nowa, a klient wraca.',
+    'cl.title': 'Już z nami',
     'how.label': 'Jak to działa', 'how.title': 'Trzy kroki i gotowe.',
     'how.s1': 'Projektujemy Twoją kartę', 'how.s1p': 'Opowiadasz nam o lokalu i nagrodzie. My projektujemy kartę, pieczątkę i plakat specjalnie dla Ciebie.', 'how.s1w': 'Ty, tylko raz',
     'how.s2': 'Klient skanuje kod QR', 'how.s2p': 'Wystarczy plakat przy kasie. Po 10 sekundach karta jest w telefonie klienta.', 'how.s2w': 'Klient, 10 sekund',
