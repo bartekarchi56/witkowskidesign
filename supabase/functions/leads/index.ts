@@ -269,7 +269,7 @@ function proposal(l: any, first = false) {
 <tr><td style="padding:22px 0 0"><img src="${img('hero')}" width="600" alt="" style="display:block;width:100%;height:auto;border:0"></td></tr>
 <tr><td style="padding:6px 32px 30px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
   ${t.feats.map((f: string) => `<td align="center" style="${F};font-size:13px;font-weight:600;color:${INK};padding:0 4px"><span style="color:${BLUE}">●</span>&nbsp;${f}</td>`).join('')}</tr></table></td></tr>
-${lang === 'pl' ? `<tr><td style="padding:18px 0 0"><img src="${SITE}/assets/email/photo-pl.jpg" width="600" alt="Karta Parzymy Tutaj w Portfelu na telefonie" style="display:block;width:100%;height:auto;border:0"></td></tr>` : ''}
+<tr><td style="padding:18px 0 0"><img src="${SITE}/assets/email/photo-${lang}.jpg" width="600" alt="" style="display:block;width:100%;height:auto;border:0"></td></tr>
 <tr><td style="padding:34px 32px 8px;border-top:1px solid #EDEDF0">${kicker(t.how)}
   <div style="${F};${W};font-size:30px;line-height:1.05;color:${INK};margin:10px 0 18px">${{ pl: 'Trzy kroki i gotowe.', it: 'Tre passi ed è fatta.', en: 'Three steps, done.' }[lang]}</div></td></tr>
 <tr><td style="padding:0 26px 30px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
