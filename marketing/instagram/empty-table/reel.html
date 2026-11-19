@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Empty table · reel</title>
+<style>
+/* "If I opened a café, I'd never have an empty table." 30 s, 1080 x 1920. make.js renders it frame by frame:
+   everything is drawn by renderAt(t) from the time, nothing runs on its own. */
+@font-face{font-family:Archivo;src:url(../../../assets/fonts/archivo-latin.woff2) format('woff2');font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:Archivo;src:url(../../../assets/fonts/archivo-latin-ext.woff2) format('woff2');font-weight:100 900;font-stretch:62% 125%;unicode-range:U+0100-024F}
+html,body{margin:0;background:#000}
+#post{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:Archivo,Arial,sans-serif;color:#fff;
+  background:radial-gradient(120% 70% at 50% 45%,#16205e 0%,#0a0f33 45%,#04061a 100%)}
+.floor{position:absolute;left:-10%;right:-10%;top:1260px;height:700px;
+  background:repeating-linear-gradient(90deg,rgba(80,100,255,.10) 0 2px,transparent 2px 120px),repeating-linear-gradient(0deg,rgba(80,100,255,.10) 0 2px,transparent 2px 120px);
+  transform:perspective(600px) rotateX(60deg);transform-origin:top}
+.glow{position:absolute;border-radius:50%;filter:blur(60px)}
+#scene,#world2,#world3,#end{position:absolute;inset:0}
+.arch{position:absolute;left:190px;top:560px;width:700px;height:1080px;border:6px solid rgba(140,160,255,.75);border-bottom:none;border-radius:350px 350px 0 0;
+  box-shadow:0 0 50px rgba(90,110,255,.6),inset 0 0 60px rgba(60,80,255,.35)}
+.lines{position:absolute;inset:0;font-weight:900;text-transform:uppercase;letter-spacing:-.02em}
+.ln{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.w{display:inline-block;margin:0 .12em}
+.b{color:#4F6BFF}
+.tag{position:absolute;width:260px;height:340px;border-radius:26px;background:linear-gradient(160deg,#fff,#d7dcf3);color:#0b0b0c;
+  box-shadow:0 30px 60px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;transform-origin:50% -320px}
+.tag:before{content:'';position:absolute;top:24px;width:34px;height:34px;border-radius:50%;background:#0a0f33}
+.tag:after{content:'';position:absolute;bottom:100%;left:50%;width:3px;height:320px;background:rgba(220,225,255,.8)}
+.tag small{font-weight:800;letter-spacing:.2em;font-size:22px;margin-top:40px}
+.tag b{font-size:110px;font-weight:900;letter-spacing:-.04em;line-height:1}
+.tag i{display:block;width:180px;height:56px;margin-top:14px;background:repeating-linear-gradient(90deg,#111 0 4px,transparent 4px 7px,#111 7px 9px,transparent 9px 14px)}
+.strike{position:absolute;left:-30px;top:170px;width:330px;height:16px;background:#ff2d3d;border-radius:8px;transform:rotate(-14deg);transform-origin:left}
+.num{width:150px;height:190px;transform-origin:50% -260px}
+.num:after{height:260px}
+.num b{font-size:110px;color:#2B32FF;margin-top:30px}
+/* the café table and cup */
+.table{position:absolute;left:290px;top:1080px;width:500px;height:40px;border-radius:50%;background:linear-gradient(#8fa0ff,#3c4cff);box-shadow:0 0 50px rgba(80,100,255,.7)}
+.leg{position:absolute;left:526px;top:1110px;width:28px;height:330px;background:linear-gradient(90deg,#aab4ff,#5060ff,#2a35b8)}
+.base{position:absolute;left:400px;top:1430px;width:280px;height:34px;border-radius:50%;background:#3c4cff;box-shadow:0 0 60px rgba(80,100,255,.8)}
+.cup{position:absolute;left:470px;top:960px;width:140px;height:120px;border-radius:0 0 60px 60px;background:linear-gradient(90deg,#e8ebff,#aeb7ff)}
+.cup:after{content:'';position:absolute;right:-48px;top:22px;width:44px;height:52px;border:14px solid #c8cfff;border-left:none;border-radius:0 40px 40px 0}
+.steam{position:absolute;width:16px;height:120px;border-radius:10px;background:linear-gradient(transparent,rgba(255,255,255,.5),transparent);filter:blur(4px)}
+.chair{position:absolute;top:1010px;width:150px;height:420px}
+.chair .bk{position:absolute;left:0;top:0;width:150px;height:200px;border-radius:30px 30px 10px 10px;background:linear-gradient(#5b6cff,#2B32FF)}
+.chair .st{position:absolute;left:-10px;top:200px;width:170px;height:40px;border-radius:12px;background:#4152ff}
+.chair .lg{position:absolute;left:66px;top:236px;width:18px;height:180px;background:#2a35b8}
+.label{position:absolute;left:0;right:0;top:1500px;text-align:center;font-weight:700;letter-spacing:.3em;font-size:30px;color:#c9d0ff}
+/* café front, wireframe */
+.dome{position:absolute;left:140px;top:820px;width:800px;height:520px;border-radius:400px 400px 0 0;border:4px solid rgba(120,140,255,.9);
+  background:repeating-linear-gradient(60deg,rgba(120,140,255,.25) 0 2px,transparent 2px 70px),repeating-linear-gradient(-60deg,rgba(120,140,255,.25) 0 2px,transparent 2px 70px);
+  box-shadow:0 0 70px rgba(80,100,255,.55)}
+.frame{position:absolute;left:160px;top:720px;width:760px;height:620px;border:4px solid rgba(160,175,255,.8)}
+.sign{position:absolute;left:0;right:0;top:640px;text-align:center;font-weight:900;font-size:64px;letter-spacing:.12em;color:#9fb0ff}
+.person{position:absolute;top:1060px;width:120px;height:300px}
+.person .hd{position:absolute;left:38px;top:0;width:46px;height:46px;border-radius:50%;background:#e7eaff}
+.person .bd{position:absolute;left:30px;top:52px;width:62px;height:120px;border-radius:24px;background:#e7eaff}
+.person .l1,.person .l2{position:absolute;top:160px;width:20px;height:130px;border-radius:10px;background:#cfd5ff;transform-origin:top}
+.person .l1{left:38px}.person .l2{left:64px}
+/* the phone */
+.phone{position:absolute;left:250px;width:580px;height:1180px;border-radius:84px;background:#05060d;border:10px solid #2a3170;box-shadow:0 0 90px rgba(80,100,255,.6)}
+.phone .scr{position:absolute;inset:16px;border-radius:66px;background:#F2F2F7;overflow:hidden}
+.phone .isl{position:absolute;left:50%;top:22px;width:150px;height:44px;margin-left:-75px;border-radius:24px;background:#000}
+.phone h4{margin:0;position:absolute;left:36px;top:96px;font-size:50px;color:#0b0b0c;font-weight:800}
+.pass{position:absolute;left:24px;right:24px;top:180px;border-radius:30px;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.12);overflow:hidden;color:#111}
+.pass .hdr{display:flex;justify-content:space-between;align-items:flex-start;padding:30px 30px 20px}
+.pass .nm{font-size:40px;font-weight:600;letter-spacing:.06em}
+.pass .ct{text-align:right;font-size:18px;font-weight:700;letter-spacing:.1em;color:#777}
+.pass .ct b{display:block;font-size:42px;color:#111;letter-spacing:0}
+.pass .strip{background:#111;padding:34px 30px;display:grid;grid-template-columns:repeat(5,1fr);gap:26px 0;justify-items:center}
+.dot{width:58px;height:58px;border-radius:50%;border:3px solid rgba(255,255,255,.45);box-sizing:border-box}
+.dot.on{background:#FAFAF8;border-color:#FAFAF8}
+.pass .qr{width:200px;height:200px;margin:34px auto 12px;background:
+  conic-gradient(#111 25%,#fff 0 50%,#111 0 75%,#fff 0) 0 0/40px 40px;border:14px solid #fff;outline:6px solid #111}
+.pass .code{text-align:center;font-size:24px;letter-spacing:.2em;color:#555;padding-bottom:30px}
+.notif{position:absolute;left:90px;right:90px;height:150px;border-radius:44px;background:rgba(255,255,255,.96);color:#111;display:flex;align-items:center;gap:24px;padding:0 30px;box-sizing:border-box;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.notif i{flex:none;width:80px;height:80px;border-radius:20px;background:#111;display:grid;place-items:center;color:#fff;font-style:normal;font-size:44px}
+.notif b{display:block;font-size:30px}
+.notif span{font-size:27px;color:#333;display:block}
+/* the end */
+.logo{position:absolute;left:0;right:0;top:700px;text-align:center;font-weight:800;font-size:150px;letter-spacing:-.03em}
+.logo em{display:inline-block;width:100px;height:100px;border:24px solid #4F6BFF;border-radius:50%;box-sizing:border-box;vertical-align:-6px;margin-right:30px}
+.sub{position:absolute;left:80px;right:80px;top:930px;text-align:center;font-size:50px;font-weight:600;color:#c9d0ff;line-height:1.25}
+.cta{position:absolute;left:0;right:0;top:1180px;text-align:center}
+.cta span{display:inline-block;padding:34px 64px;border-radius:999px;background:#2B32FF;font-size:52px;font-weight:800}
+.url{position:absolute;left:0;right:0;top:1360px;text-align:center;font-size:38px;color:#8e99d6}
+</style>
+</head>
+<body>
+<div id="post">
+  <div class="floor"></div>
+  <div class="glow" id="g1" style="left:240px;top:800px;width:600px;height:600px;background:rgba(60,80,255,.35)"></div>
+
+  <div id="scene">
+    <div class="arch" id="arch"></div>
+    <div class="chair" id="ch1" style="left:120px"><div class="bk"></div><div class="st"></div><div class="lg"></div></div>
+    <div class="chair" id="ch2" style="left:810px"><div class="bk"></div><div class="st"></div><div class="lg"></div></div>
+    <div class="leg"></div><div class="base"></div><div class="table"></div>
+    <div class="cup" id="cup"></div>
+    <div class="steam" id="s1" style="left:505px;top:830px"></div><div class="steam" id="s2" style="left:555px;top:820px"></div>
+    <div class="label" id="lab">TUESDAY · 10:00</div>
+    <div class="tag" id="tag"><small>DISCOUNT</small><b>-20%</b><i></i><div class="strike" id="strike"></div></div>
+    <div class="tag num" id="n1"><b>1</b></div><div class="tag num" id="n2"><b>2</b></div><div class="tag num" id="n3"><b>3</b></div>
+  </div>
+
+  <div id="world2">
+    <div class="sign">CAFÉ</div>
+    <div class="frame"></div>
+    <div class="dome"></div>
+    <div class="table" style="left:420px;top:1180px;width:240px;height:22px"></div>
+    <div class="person" id="per"><div class="hd"></div><div class="bd"></div><div class="l1" id="l1"></div><div class="l2" id="l2"></div></div>
+  </div>
+
+  <div id="world3">
+    <div class="notif" id="nt"><i>☕</i><div><b>Your Café</b><span>Walking past? Your coffee is waiting.</span></div></div>
+    <div class="phone" id="ph"><div class="scr"><div class="isl"></div><h4>Wallet</h4>
+      <div class="pass"><div class="hdr"><div class="nm">YOUR CAFÉ</div><div class="ct">STAMPS<b id="cnt">3/10</b></div></div>
+        <div class="strip" id="dots"></div><div class="qr"></div><div class="code">K7M2QX</div></div></div></div>
+  </div>
+
+  <div id="end">
+    <div class="logo"><em></em>Timbro</div>
+    <div class="sub">The loyalty card in your customers' phone.<br>Apple Wallet and Google Wallet.</div>
+    <div class="cta"><span>Comment TIMBRO</span></div>
+    <div class="url">timbro.witkowskidesign.com</div>
+  </div>
+
+  <div class="lines" id="lines"></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const cl = x => Math.max(0, Math.min(1, x));
+const ease = x => 1 - Math.pow(1 - cl(x), 3);
+const back = x => { x = cl(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const k = (t, a, b) => cl((t - a) / (b - a));
+window.DURATION = 30;
+
+// Text: [start, end, top, size, words]; each word arrives with a blur-and-rise, staggered.
+// Words starting with * are blue.
+const TEXT = [
+  [0.2, 2.6, 250, 70, 'IF I OPENED A'], [0.5, 2.6, 330, 110, 'CAFÉ,'],
+  [2.7, 5.6, 230, 70, "I'D *NEVER HAVE AN"], [3.2, 5.6, 310, 170, 'EMPTY'], [3.6, 5.6, 470, 170, 'TABLE.'],
+  [5.8, 10.2, 230, 70, "AND NO, IT'S *NOT WITH"], [7.4, 10.2, 310, 140, 'DISCOUNTS.'],
+  [10.4, 14.4, 230, 130, 'THIS IS HOW'], [11.0, 14.4, 360, 130, "I'D DO IT."],
+  [15.2, 19.6, 160, 96, 'WHEN A REGULAR'], [15.8, 19.6, 270, 96, 'WALKS PAST'], [16.6, 19.6, 380, 96, 'MY *CAFÉ,'],
+  [20.0, 25.4, 150, 110, 'A MESSAGE'], [20.6, 25.4, 270, 110, 'ON HIS *PHONE.'],
+  [25.6, 27.6, 1540, 80, 'HE COMES *BACK.']
+];
+$('lines').innerHTML = TEXT.map(([a, b, top, size, s], i) => `<div class="ln" style="top:${top}px;font-size:${size}px">${s.split(' ').map((w, j) =>
+  `<span class="w${w[0] === '*' ? ' b' : ''}" data-l="${i}" data-j="${j}">${w.replace('*', '')}</span>`).join(' ')}</div>`).join('');
+const words = [...document.querySelectorAll('.w')];
+$('dots').innerHTML = Array.from({ length: 10 }, (_, i) => `<div class="dot" id="d${i}"></div>`).join('');
+
+function show(el, o, tr, f = '') { el.style.opacity = o; el.style.transform = tr; el.style.filter = f; }
+
+window.renderAt = t => {
+  // words
+  for (const w of words) {
+    const [a, b] = TEXT[w.dataset.l], s = a + w.dataset.j * 0.14, inn = ease(k(t, s, s + 0.35)), out = k(t, b - 0.3, b);
+    show(w, inn * (1 - out), `translateY(${(1 - inn) * 60 - out * 40}px) scale(${0.9 + 0.1 * inn})`, `blur(${(1 - inn) * 14 + out * 16}px)`);
+  }
+  // scene 1 (0 to 14.6): table in the arch, slow push in
+  const s1 = t < 14.8;
+  $('scene').style.display = s1 ? '' : 'none';
+  if (s1) {
+    const intro = ease(k(t, 0, 1.2)), exit = k(t, 13.8, 14.8);
+    $('scene').style.transform = `scale(${0.82 + 0.18 * intro + 0.03 * k(t, 1.2, 13.8) + exit * 1.6}) rotate(${(1 - intro) * -6}deg)`;
+    $('scene').style.filter = `blur(${(1 - intro) * 10 + exit * 30}px)`;
+    $('scene').style.opacity = 1 - exit;
+    const sw = Math.sin(t * 3);
+    $('s1').style.opacity = 0.6 + 0.4 * sw; $('s1').style.transform = `translateY(${-(t * 40 % 60)}px)`;
+    $('s2').style.opacity = 0.6 - 0.4 * sw; $('s2').style.transform = `translateY(${-((t * 40 + 30) % 60)}px)`;
+    // empty chairs drift in on "EMPTY TABLE"
+    const ch = ease(k(t, 3.2, 4.2));
+    $('ch1').style.transform = `translateX(${(1 - ch) * -300}px)`; $('ch2').style.transform = `translateX(${(1 - ch) * 300}px)`;
+    $('ch1').style.opacity = $('ch2').style.opacity = ch;
+    $('lab').style.opacity = k(t, 3.6, 4.2) * (1 - k(t, 5.4, 5.8));
+    // the discount tag swings down, gets crossed out, falls
+    const drop = back(k(t, 5.9, 6.9)), swing = Math.sin((t - 5.9) * 5) * 14 * Math.exp(-(t - 5.9) * 1.2), fall = k(t, 9.0, 10.0);
+    $('tag').style.left = '410px';
+    $('tag').style.top = `${-400 + drop * 1130 + fall * fall * 1600}px`;
+    $('tag').style.transform = `rotate(${t > 5.9 ? swing + fall * 70 : 0}deg)`;
+    $('tag').style.opacity = t > 5.9 ? 1 : 0;
+    $('strike').style.transform = `rotate(-14deg) scaleX(${ease(k(t, 7.6, 8.1))})`;
+    // numbered tags 1, 2, 3
+    [['n1', 11.0, 170], ['n2', 11.6, 465], ['n3', 12.2, 760]].forEach(([id, a, x]) => {
+      const d = back(k(t, a, a + 0.8)), sw2 = Math.sin((t - a) * 5) * 10 * Math.exp(-(t - a) * 1.4);
+      const el = $(id); el.style.left = x + 'px'; el.style.top = `${-300 + d * 880}px`;
+      el.style.transform = `rotate(${t > a ? sw2 : 0}deg)`; el.style.opacity = t > a ? 1 : 0;
+    });
+  }
+  // scene 2 (14.8 to 20): the café front, a regular walks past
+  const s2 = t >= 14.6 && t < 20.4;
+  $('world2').style.display = s2 ? '' : 'none';
+  if (s2) {
+    const inn = ease(k(t, 14.6, 15.6)), out = k(t, 19.6, 20.4);
+    $('world2').style.opacity = inn * (1 - out);
+    $('world2').style.transform = `scale(${1.3 - 0.3 * inn + out * 0.4})`;
+    $('world2').style.filter = `blur(${(1 - inn) * 20 + out * 20}px)`;
+    const x = 1000 - k(t, 15.4, 19.6) * 1100;
+    $('per').style.left = x + 'px';
+    const st = Math.sin(t * 9) * 24;
+    $('l1').style.transform = `rotate(${st}deg)`; $('l2').style.transform = `rotate(${-st}deg)`;
+  }
+  // scene 3 (20 to 27.6): the phone, the message, a stamp
+  const s3 = t >= 20 && t < 28;
+  $('world3').style.display = s3 ? '' : 'none';
+  if (s3) {
+    const up = ease(k(t, 20.2, 21.2)), out = k(t, 27.2, 28);
+    $('ph').style.top = `${1920 - up * 1340}px`;
+    $('ph').style.transform = `rotate(${(1 - up) * 8}deg) scale(${1 - out * 0.2})`;
+    $('world3').style.opacity = 1 - out;
+    const n = back(k(t, 22.0, 22.7)) * (1 - k(t, 26.5, 27));
+    $('nt').style.top = `${420 + 60 * n}px`; $('nt').style.opacity = cl(n * 1.5);
+    $('nt').style.transform = `scale(${0.8 + 0.2 * n})`;
+    const have = t > 24.6 ? 4 : 3;
+    for (let i = 0; i < 10; i++) {
+      const d = $('d' + i); d.className = 'dot' + (i < have ? ' on' : '');
+      d.style.transform = i === 3 && t > 24.6 ? `scale(${1 + 0.4 * Math.sin(k(t, 24.6, 25.1) * Math.PI)})` : '';
+    }
+    $('cnt').textContent = have + '/10';
+  }
+  // end card
+  const e = k(t, 27.6, 28.4);
+  $('end').style.display = t >= 27.4 ? '' : 'none';
+  $('end').style.opacity = e; $('end').style.transform = `translateY(${(1 - ease(e)) * 60}px)`;
+  $('g1').style.opacity = 0.7 + 0.3 * Math.sin(t * 1.5);
+};
+document.fonts.ready.then(() => { window.renderAt(0); window.READY = true; });
+if (!location.search.includes('capture')) { const t0 = performance.now(); (function loop() { window.renderAt(((performance.now() - t0) / 1000) % 30); requestAnimationFrame(loop); })(); }
+</script>
+</body>
+</html>
