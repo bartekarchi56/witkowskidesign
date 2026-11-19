@@ -132,7 +132,10 @@ const cl = x => Math.max(0, Math.min(1, x));
 const ease = x => 1 - Math.pow(1 - cl(x), 3);
 const back = x => { x = cl(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
 const k = (t, a, b) => cl((t - a) / (b - a));
-window.DURATION = 30;
+window.DURATION = 23;
+// The voice (voice-en.mp3, played from 0.4 s) sets the pace: real time → animation time, so each scene lands on its sentence.
+const WARP = [[0,0],[0.4,0.2],[1.9,2.7],[3.6,4.6],[4.45,5.8],[5.8,7.4],[6.7,8.3],[7.27,10.4],[8.25,12.6],[8.76,15.2],[10.7,20.0],[12.65,21.7],[13.18,22.2],[15.23,24.2],[15.77,25.6],[16.44,26.6],[17.03,27.6],[20.75,29.0],[23,30]];
+const warp = t => { for (let i = 1; i < WARP.length; i++) { const [r0, a0] = WARP[i - 1], [r1, a1] = WARP[i]; if (t <= r1) return a0 + (a1 - a0) * (t - r0) / (r1 - r0); } return 30; };
 
 // Text: [start, end, top, size, words]; each word arrives with a blur-and-rise, staggered.
 // Words starting with * are blue.
@@ -152,7 +155,7 @@ $('dots').innerHTML = Array.from({ length: 10 }, (_, i) => `<div class="dot" id=
 
 function show(el, o, tr, f = '') { el.style.opacity = o; el.style.transform = tr; el.style.filter = f; }
 
-window.renderAt = t => {
+const renderAnim = t => {
   // words
   for (const w of words) {
     const [a, b] = TEXT[w.dataset.l], s = a + w.dataset.j * 0.14, inn = ease(k(t, s, s + 0.35)), out = k(t, b - 0.3, b);
@@ -225,8 +228,9 @@ window.renderAt = t => {
   $('end').style.opacity = e; $('end').style.transform = `translateY(${(1 - ease(e)) * 60}px)`;
   $('g1').style.opacity = 0.7 + 0.3 * Math.sin(t * 1.5);
 };
+window.renderAt = t => renderAnim(warp(t));
 document.fonts.ready.then(() => { window.renderAt(0); window.READY = true; });
-if (!location.search.includes('capture')) { const t0 = performance.now(); (function loop() { window.renderAt(((performance.now() - t0) / 1000) % 30); requestAnimationFrame(loop); })(); }
+if (!location.search.includes('capture')) { const t0 = performance.now(); (function loop() { window.renderAt(((performance.now() - t0) / 1000) % 23); requestAnimationFrame(loop); })(); }
 </script>
 </body>
 </html>

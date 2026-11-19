@@ -1,4 +1,4 @@
-// Renders reel.html into reel.mp4 (1080 x 1920, 30 fps, 30 s, no sound: add music in Instagram).
+// Renders reel.html into reel.mp4 (1080 x 1920, 30 fps, 23 s, no sound: add music in Instagram).
 //   node marketing/instagram/wizytowki/make.js
 const http = require('http'), fs = require('fs'), path = require('path'), { spawn } = require('child_process');
 let chromium;
