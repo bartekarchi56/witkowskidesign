@@ -177,7 +177,7 @@ I18N.add({
         ? `<form method="post" action="${UI.esc(CONFIG.walletApi.replace(/\/$/, ''))}/${kind}"><input type="hidden" name="data" value="${data}">${badge}</form>`
         : `<form method="post" action="${UI.esc(CONFIG.walletApi.replace(/\/$/, ''))}/${kind}"><input type="hidden" name="data" value="${data}"><button class="link other" type="submit">${label}</button></form>`;
     };
-    return one(mineFirst[0], true) + one(mineFirst[1], false);
+    return one(mineFirst[0], true) + one(mineFirst[1], true);   // both official badges, the phone's own first
   }
 
   function render(animate = true) {
