@@ -69,6 +69,16 @@ section{padding:96px 0}
 .price .amt{font:800 40px/1 var(--font);letter-spacing:-.03em;margin:14px 0 4px}
 .price .per{font-size:14px;opacity:.7}
 .price p{margin:14px 0 0;font-size:15px;opacity:.85}
+.price .buy{margin-top:auto;padding-top:18px}
+.price .buy a{display:block;text-align:center;padding:13px;border-radius:999px;background:var(--pop);color:#fff;font-weight:700;text-decoration:none}
+.price.hl .buy a{background:#fff;color:var(--ink)}
+.price .buy small{display:block;text-align:center;font-size:12px;opacity:.7;margin-top:8px}
+/* real client: LA MARE Houseboats */
+.client{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.client img{width:100%;height:auto;border-radius:24px;display:block;background:#021422}
+.client h2{margin:8px 0 14px}
+.client p{color:var(--ink-2);font-size:18px;margin:0 0 20px}
+@media (max-width:960px){.client{grid-template-columns:1fr}}
 .once{margin-top:18px;color:var(--ink-2)}
 /* order form */
 .order{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:start}
@@ -151,6 +161,18 @@ footer a{color:#fff}
     </div>
   </section>
 
+  <section id="client" style="padding-top:0">
+    <div class="wrap client">
+      <img src="../wizytowka/lamare/podglad.png" alt="La Mare Houseboats" loading="lazy">
+      <div>
+        <span class="label" data-i18n="b.clL"></span>
+        <h2 class="display" data-i18n="b.clT"></h2>
+        <p data-i18n="b.clP"></p>
+        <a class="btn line" href="../wizytowka/lamare/witold/" data-i18n="b.clCta"></a>
+      </div>
+    </div>
+  </section>
+
   <section id="prices" style="padding-top:0">
     <div class="wrap">
       <div class="head"><span class="label" data-i18n="b.prL"></span><h2 class="display" data-i18n="b.prT"></h2></div>
@@ -200,7 +222,9 @@ I18N.add({
     'b.navCta': 'Ordina', 'b.label': 'Per le aziende',
     'b.h1': 'Il biglietto da visita <em>nel telefono.</em>',
     'b.lede': 'Un biglietto da visita in Apple Wallet e Google Wallet, con il logo e i colori della tua azienda. Lo condividi con un QR, nessuno lo perde e si aggiorna da solo.',
-    'b.cta1': 'Ordina il tuo', 'b.cta2': 'Guarda un esempio', 'b.f1': 'iPhone e Android', 'b.f2': 'Pagamento unico', 'b.f3': 'Pronto in 48 ore',
+    'b.buy': 'Compra ora', 'b.buyNote': 'Dopo il pagamento ti scriviamo per logo e dati.',
+    'b.clL': 'Cliente reale', 'b.clT': 'La Mare Houseboats', 'b.clP': 'Produttore di case galleggianti dalla Polonia. Ogni persona del team ha il suo biglietto con la foto delle loro houseboat, in Apple e Google Wallet.', 'b.clCta': 'Apri il biglietto di Witold',
+    'b.cta1': 'Ordina il tuo', 'b.cta2': 'Guarda un esempio', 'b.f1': 'iPhone e Android', 'b.f2': 'Pagamento unico', 'b.f3': 'Nel telefono in 24 ore',
     'b.howL': 'Come funziona', 'b.howT': 'Tre passi, poi lo condividi ovunque.',
     'b.s1': 'Ci mandi i dati', 'b.s1p': 'Nome, ruolo, telefono, email e il logo. Per un team, una lista con tutti.',
     'b.s2': 'Lo disegniamo', 'b.s2p': 'Nei colori del tuo marchio. Ricevi un link e un codice QR per ogni persona.',
@@ -229,7 +253,9 @@ I18N.add({
     'b.navCta': 'Order', 'b.label': 'For businesses',
     'b.h1': 'Your business card, <em>in the phone.</em>',
     'b.lede': 'A business card in Apple Wallet and Google Wallet, with your company\'s logo and colours. Share it with a QR code, nobody loses it, and it updates itself.',
-    'b.cta1': 'Order yours', 'b.cta2': 'See an example', 'b.f1': 'iPhone and Android', 'b.f2': 'One-time payment', 'b.f3': 'Ready in 48 hours',
+    'b.buy': 'Buy now', 'b.buyNote': 'After payment we e-mail you for your logo and details.',
+    'b.clL': 'Real client', 'b.clT': 'La Mare Houseboats', 'b.clP': 'A houseboat maker from Poland. Each person on the team has their own card with a photo of their houseboats, in Apple and Google Wallet.', 'b.clCta': 'Open Witold\'s card',
+    'b.cta1': 'Order yours', 'b.cta2': 'See an example', 'b.f1': 'iPhone and Android', 'b.f2': 'One-time payment', 'b.f3': 'In your phone within 24 hours',
     'b.howL': 'How it works', 'b.howT': 'Three steps, then share it anywhere.',
     'b.s1': 'You send the details', 'b.s1p': 'Name, role, phone, email and your logo. For a team, one list with everyone.',
     'b.s2': 'We design it', 'b.s2p': 'In your brand\'s colours. You get a link and a QR code for every person.',
@@ -258,7 +284,9 @@ I18N.add({
     'b.navCta': 'Zamów', 'b.label': 'Dla firm',
     'b.h1': 'Wizytówka <em>w telefonie.</em>',
     'b.lede': 'Wizytówka w Apple Wallet i Google Wallet, z logo i kolorami Twojej firmy. Udostępniasz ją kodem QR, nikt jej nie zgubi i aktualizuje się sama.',
-    'b.cta1': 'Zamów swoją', 'b.cta2': 'Zobacz przykład', 'b.f1': 'iPhone i Android', 'b.f2': 'Jednorazowa opłata', 'b.f3': 'Gotowa w 48 godzin',
+    'b.buy': 'Kup teraz', 'b.buyNote': 'Po płatności napiszemy po logo i dane.',
+    'b.clL': 'Prawdziwy klient', 'b.clT': 'La Mare Houseboats', 'b.clP': 'Producent domów na wodzie z Polski. Każda osoba z zespołu ma swoją wizytówkę ze zdjęciem ich houseboatów, w Apple i Google Wallet.', 'b.clCta': 'Otwórz wizytówkę Witolda',
+    'b.cta1': 'Zamów swoją', 'b.cta2': 'Zobacz przykład', 'b.f1': 'iPhone i Android', 'b.f2': 'Jednorazowa opłata', 'b.f3': 'W telefonie w 24 godziny',
     'b.howL': 'Jak to działa', 'b.howT': 'Trzy kroki, a potem udostępniasz ją wszędzie.',
     'b.s1': 'Wysyłasz dane', 'b.s1p': 'Imię, stanowisko, telefon, e-mail i logo. Dla zespołu jedna lista ze wszystkimi.',
     'b.s2': 'Projektujemy ją', 'b.s2p': 'W kolorach Twojej marki. Dostajesz link i kod QR dla każdej osoby.',
@@ -290,6 +318,8 @@ I18N.add({
   const t = (k, v) => I18N.t(k, v);
   const MAIL = 'abit@witkowskidesign.com';
   // Prices: złoty in Polish, euro otherwise.
+  // Stripe payment links (PLN and EUR prices; wizytowki/odpowiedzi.md). Pay first, then we ask for the details.
+  const BUY = ['https://buy.stripe.com/14A8wO1QRazddYrelmgEg00', 'https://buy.stripe.com/4gMbJ0brr7n11bF1yAgEg01', 'https://buy.stripe.com/3cIeVcfHHqXB8E72CEgEg02'];
   const P = { pl: ['49 zł', '249 zł', '19 zł', '10 zł'], other: ['€12', '€59', '€5', '€3'] };
   const sampleQr = UI.qrSvg(CONFIG.siteUrl.replace(/\/$/, '') + '/wizytowka/');
   const card = (bg, ink, logo, name, role, phone, mail) => `<div class="ph"><div class="scr"><div class="isl"></div>
@@ -304,7 +334,7 @@ I18N.add({
     $('phones').innerHTML = card('#1B1B19', '#FAFAF8', 'abit.', 'Bartosz Witkowski', pl ? 'Założyciel' : 'Founder', '+48 530 340 988', 'abit@witkowskidesign.com')
       + card('#2B32FF', '#FFFFFF', 'Timbro', 'Bartosz Witkowski', pl ? 'Założyciel' : 'Founder', '+48 530 340 988', 'timbro@witkowskidesign.com');
     $('price-list').innerHTML = [['b.pr1', 'b.pr1p', pr[0], 'b.per1'], ['b.pr2', 'b.pr2p', pr[1], 'b.per1'], ['b.pr3', 'b.pr3p', pr[2], 'b.perP'], ['b.pr4', 'b.pr4p', pr[3], 'b.perC']]
-      .map(([h, p, a, per], i) => `<div class="price${i === 0 ? ' hl' : ''}"><h3>${t(h)}</h3><div class="amt">${a}</div><div class="per">${t(per)}</div><p>${t(p)}</p></div>`).join('');
+      .map(([h, p, a, per], i) => `<div class="price${i === 0 ? ' hl' : ''}"><h3>${t(h)}</h3><div class="amt">${a}</div><div class="per">${t(per)}</div><p>${t(p)}</p>${BUY[i] ? `<div class="buy"><a href="${BUY[i]}">${t('b.buy')}</a><small>${t('b.buyNote')}</small></div>` : ''}</div>`).join('');
     $('pack').innerHTML = [['b.pr1', pr[0]], ['b.pr2', pr[1]], ['b.pr3', pr[2] + ' ' + t('b.perP')]].map(([k, a]) => `<option>${t(k)} (${a})</option>`).join('');
     // Pictures: the file if it exists, otherwise a box saying what image to make.
     document.querySelectorAll('.pic').forEach(box => {
