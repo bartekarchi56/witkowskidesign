@@ -26,7 +26,8 @@ export const PEOPLE = {
     googleLogo: 'abit-icon.png', hero: 'abit-hero.png', about: ['Timbro', TIMBRO_TEXT]
   },
   'witold-witkowski': { ...LAMARE, name: 'Witold Witkowski', role: 'CEO', phone: '+48 516 005 998', email: 'biuro@lamare.pl' },
-  'michal-witkowski': { ...LAMARE, name: 'Michał Witkowski', role: 'Sprzedawca', phone: '+48 531 005 988', email: 'info@lamare.pl' }
+  'michal-witkowski': { ...LAMARE, name: 'Michał Witkowski', role: 'Sprzedawca', phone: '+48 531 005 988', email: 'info@lamare.pl' },
+  'malgorzata-witkowska': { ...LAMARE, name: 'Małgorzata Witkowska', role: 'Designer', phone: '+48 516 005 988', email: 'info@lamare.pl' }
 };
 export const ME = PEOPLE['bartosz-witkowski'];
 const person = id => PEOPLE[id] || ME;
