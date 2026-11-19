@@ -784,11 +784,9 @@ I18N.add({
   const fmt = (n, dec = 0) => new Intl.NumberFormat(L() === 'en' ? 'en-IE' : I18N.locale(), { style: 'currency', currency: 'EUR', minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
 
   // ---------- hero: a card you can stamp ----------
-  // The hero's card: Totoro House's real card (their rubber-stamp logo and Totoro stamp, as on
-  // card.html?card=totoro-house, supabase/updates/10). Its front shows only the logo and the stamps.
-  const heroCard = () => ({ id: 'hero', business: 'Totoro House', title: 'Stamp card', reward: 'a free drink', titleEn: 'Stamp card', rewardEn: 'a free drink',
-    lang: 'en', stampsNeeded: 10, style: 'minimal', color: '#E6DCCB', ink: '#4F5E3B', font: 'sans', strip: '#DDD1BC',
-    logo: '/assets/demo/totoro/logo.png', stampImage: '/assets/demo/totoro/stamp-bold.png', hideFields: true });
+  // The hero's card: a minimal white card with a black stripe and dot stamps.
+  const heroCard = () => ({ id: 'hero', business: 'THE COFFEE', title: 'Coffee card', reward: 'a free coffee', titleEn: 'Coffee card', rewardEn: 'a free coffee',
+    lang: 'en', stampsNeeded: 10, style: 'minimal', color: '#FFFFFF', ink: '#FAFAF8', font: 'sans', strip: '#111111', stamp: 'punto', hideFields: true });
   let n = 3, hint = 'hero.h0', hintVars;
   const heroBtn = document.getElementById('hero-stamp');
   function hero(pop) {
