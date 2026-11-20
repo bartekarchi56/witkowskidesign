@@ -52,10 +52,11 @@ I18N.add({
   function draw() {
     I18N.apply();
     if (!v) { $('app').innerHTML = `<p>${t('g.notFound')}</p>`; return; }
-    const c = v.card || {}, white = (c.color || '').toUpperCase() === '#FFFFFF';
+    const c = v.card || {}, d = v.design || {}, white = (c.color || '').toUpperCase() === '#FFFFFF';
     $('app').innerHTML = `
-      <div class="gc" style="background:${UI.esc(c.color || '#111')};color:${white ? '#111' : '#fff'}">
-        <small>${t('g.gift')}</small><b>${UI.esc(v.business)}</b>
+      <div class="gc" style="background:${UI.esc(d.color || c.color || '#111')};color:${UI.esc(d.text || (white ? '#111' : '#fff'))}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start"><div>${d.logo ? `<img src="${d.logo}" alt="" style="max-height:30px;max-width:150px">` : `<b>${UI.esc(v.business)}</b>`}</div><small>${t('g.gift')}</small></div>
+        ${d.bg ? `<div style="height:90px;margin:12px -26px;background:url(${d.bg}) center/cover"></div>` : ''}
         <div class="bal">${v.expired ? t('g.expired') : eur(v.balance)}</div>
         <div class="of">${t('g.left', { of: eur(v.amount + v.bonus), date: v.expires ? new Date(v.expires).toLocaleDateString(I18N.locale()) : '' })}</div>
         ${v.recipient ? `<div class="of" style="margin-top:6px">${UI.esc(t('g.for', { name: v.recipient }))}</div>` : ''}

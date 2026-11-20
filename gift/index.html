@@ -57,12 +57,13 @@ I18N.add({
   function draw() {
     I18N.apply();
     if (!shop || !shop.ready || !(shop.gift.amounts || []).length) { $('app').innerHTML = `<p class="off">${t('g.none')}</p>`; return; }
-    const c = shop.card || {}, am = shop.gift.amounts;
+    const c = shop.card || {}, d = shop.gift.design || {}, am = shop.gift.amounts;
     if (!pick) pick = am[Math.min(1, am.length - 1)];
     document.title = `${t('g.gift')} · ${shop.name}`;
     $('app').innerHTML = `
-      <div class="gc" style="background:${UI.esc(c.color || '#111')};color:${UI.esc(c.ink && c.color && c.color.toUpperCase() !== '#FFFFFF' ? '#fff' : (c.color || '').toUpperCase() === '#FFFFFF' ? '#111' : '#fff')}">
-        <div><small>${t('g.gift')}</small><br><b>${UI.esc(shop.name)}</b></div><div class="amt">${eur(pick.amount + (pick.bonus || 0))}</div></div>
+      <div class="gc" style="background:${UI.esc(d.color || c.color || '#111')};color:${UI.esc(d.text || '#fff')}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start"><div>${d.logo ? `<img src="${d.logo}" alt="" style="max-height:30px;max-width:150px">` : `<b>${UI.esc(shop.name)}</b>`}</div><small>${t('g.gift')}</small></div>
+        ${d.bg ? `<div style="height:90px;margin:12px -26px;background:url(${d.bg}) center/cover"></div>` : ''}<div class="amt">${eur(pick.amount + (pick.bonus || 0))}</div></div>
       <h1>${t('g.title')}</h1><p class="lead">${t('g.lead')}</p>
       <div class="amts">${am.map((a, i) => `<button type="button" data-i="${i}" aria-pressed="${a === pick}"><b>${eur(a.amount)}</b>${a.bonus ? `<span>${t('g.bonus', { x: eur(a.bonus) })}</span>` : ''}</button>`).join('')}</div>
       <form id="f">
