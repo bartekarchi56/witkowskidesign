@@ -50,6 +50,29 @@ body{overflow-x:clip}
 .step h3{font-size:24px;font-stretch:112%;font-weight:800}
 .step p{color:var(--ink-2);margin-top:10px}
 .step .who{display:inline-block;margin-top:18px;font:500 12px/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+/* step videos: tap to play (assets/video/how-<n>.mp4) */
+.vid{position:relative;margin:22px 0 6px;border-radius:22px;overflow:hidden;background:#0a0f33;aspect-ratio:9/16;max-width:300px;cursor:pointer}
+.vid video{width:100%;height:100%;object-fit:cover;display:block}
+.vid .play{position:absolute;left:50%;top:50%;width:84px;height:84px;margin:-42px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;border:0;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.vid .play::before{content:'';margin-left:6px;border-style:solid;border-width:16px 0 16px 26px;border-color:transparent transparent transparent var(--pop)}
+.vid.on .play{display:none}
+/* reward types */
+.types{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:8px}
+.type{border:1.5px solid var(--ink);border-radius:20px;padding:24px;background:#fff;position:relative}
+.type h3{font-size:21px;font-weight:800;margin:0 0 8px}
+.type p{color:var(--ink-2);margin:0;font-size:15px}
+.type .soon{position:absolute;top:14px;right:14px;font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--pop);color:#fff;padding:6px 9px;border-radius:999px}
+.type .ico{font-size:30px;margin-bottom:12px}
+/* locations slider */
+.loc{border:1.5px solid var(--ink);border-radius:22px;padding:26px 28px;margin:0 0 28px;background:#fff;display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center}
+.loc label{font-weight:700;display:block;margin-bottom:12px}
+.loc input{width:100%;accent-color:var(--pop)}
+.loc .n{font:800 34px/1 var(--font)}
+.loc .res{text-align:right}
+.loc .res b{display:block;font:800 40px/1 var(--font);letter-spacing:-.02em}
+.loc .res span{color:var(--ink-2);font-size:14px}
+@media (max-width:960px){.types{grid-template-columns:1fr 1fr}.loc{grid-template-columns:1fr}.loc .res{text-align:left}}
+@media (max-width:560px){.types{grid-template-columns:1fr}.vid{max-width:none}}
 
 /* ---------- builder (signature) ---------- */
 .builder{background:var(--ink);color:#fff}
@@ -345,10 +368,23 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
         <h2 class="display" data-i18n="how.title"></h2>
       </div>
       <ol class="steps">
-        <li class="step"><h3 data-i18n="how.s1"></h3><p data-i18n="how.s1p"></p><span class="who" data-i18n="how.s1w"></span></li>
-        <li class="step"><h3 data-i18n="how.s2"></h3><p data-i18n="how.s2p"></p><span class="who" data-i18n="how.s2w"></span></li>
-        <li class="step"><h3 data-i18n="how.s3"></h3><p data-i18n="how.s3p"></p><span class="who" data-i18n="how.s3w"></span></li>
+        <li class="step"><h3 data-i18n="how.s1"></h3><p data-i18n="how.s1p"></p><span class="who" data-i18n="how.s1w"></span><div class="vid"><video src="assets/video/how-1.mp4" poster="assets/video/how-1.jpg" muted playsinline preload="none"></video><button class="play" type="button" aria-label="Play"></button></div></li>
+        <li class="step"><h3 data-i18n="how.s2"></h3><p data-i18n="how.s2p"></p><span class="who" data-i18n="how.s2w"></span><div class="vid"><video src="assets/video/how-2.mp4" poster="assets/video/how-2.jpg" muted playsinline preload="none"></video><button class="play" type="button" aria-label="Play"></button></div></li>
+        <li class="step"><h3 data-i18n="how.s3"></h3><p data-i18n="how.s3p"></p><span class="who" data-i18n="how.s3w"></span><div class="vid"><video src="assets/video/how-3.mp4" poster="assets/video/how-3.jpg" muted playsinline preload="none"></video><button class="play" type="button" aria-label="Play"></button></div></li>
       </ol>
+    </div>
+  </section>
+
+  <!-- Reward types (gift cards: coming soon) -->
+  <section id="tipi" style="padding-top:0">
+    <div class="wrap">
+      <div class="head"><span class="label" data-i18n="ty.label"></span><h2 class="display" data-i18n="ty.title"></h2></div>
+      <div class="types">
+        <div class="type"><div class="ico">☕</div><h3 data-i18n="ty.t1"></h3><p data-i18n="ty.t1p"></p></div>
+        <div class="type"><div class="ico">%</div><h3 data-i18n="ty.t2"></h3><p data-i18n="ty.t2p"></p></div>
+        <div class="type"><div class="ico">🎂</div><h3 data-i18n="ty.t3"></h3><p data-i18n="ty.t3p"></p></div>
+        <div class="type"><span class="soon" data-i18n="ty.soon"></span><div class="ico">🎁</div><h3 data-i18n="ty.t4"></h3><p data-i18n="ty.t4p"></p></div>
+      </div>
     </div>
   </section>
 
@@ -501,6 +537,7 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
         <span data-i18n="bf.p" style="flex:1 1 320px;opacity:.9;line-height:1.5"></span>
         <small data-i18n="bf.low" style="flex-basis:100%;opacity:.6;font-size:12px"></small>
       </div>
+      <div class="loc"><div><label for="locn" data-i18n="lo.q"></label><input type="range" id="locn" min="1" max="30" value="1"><div class="n"><span id="locv">1</span> <small data-i18n="lo.unit" style="font-size:16px;font-weight:600"></small></div></div><div class="res"><span data-i18n="lo.best"></span><b id="locp"></b><span id="locw"></span></div></div>
       <div class="plans" id="plans"></div>
       <p class="all" data-i18n="p.all"></p>
     </div>
@@ -592,6 +629,8 @@ I18N.add({
     'hero.hLeft': 'Ancora {n} per il premio.', 'hero.hFull': 'Carta piena: il cliente vede "Premio pronto".',
     'hero.hDone': 'Premio dato. La carta riparte da zero, e il cliente torna.',
     'cl.title': 'Lo usano già',
+    'ty.label': 'Premi', 'ty.title': 'Il premio che vuoi tu.', 'ty.t1': 'Carta timbri', 'ty.t1p': 'La classica: 10 caffè, uno gratis. Senza cartoncino.', 'ty.t2': 'Sconto', 'ty.t2p': 'Carta piena = 50% di sconto, o lo sconto che scegli tu.', 'ty.t3': 'Compleanno e amici', 'ty.t3p': 'Un regalo per il compleanno e un timbro a chi porta un amico.', 'ty.t4': 'Carte regalo', 'ty.t4p': 'Credito prepagato da regalare, direttamente nel Wallet.', 'ty.soon': 'In arrivo',
+    'lo.q': 'Quante sedi hai?', 'lo.unit': 'sedi', 'lo.best': 'Il piano giusto', 'lo.m': 'al mese', 'lo.from': 'da', 'lo.per': 'a sede al mese',
     'how.label': 'Come funziona', 'how.title': 'Tre passi e sei pronto.',
     'how.s1': 'Disegniamo la tua carta', 'how.s1p': 'Ci racconti il locale e il premio. Noi disegniamo carta, timbro e poster su misura.', 'how.s1w': 'Tu, una volta',
     'how.s2': 'Il cliente inquadra il QR', 'how.s2p': 'Il poster alla cassa fa il lavoro. In 10 secondi la carta è sul suo telefono.', 'how.s2w': 'Il cliente, 10 secondi',
@@ -658,6 +697,8 @@ I18N.add({
     'hero.hLeft': '{n} more to the reward.', 'hero.hFull': 'Full card: the customer sees "Reward ready".',
     'hero.hDone': 'Reward given. The card starts again, and the customer comes back.',
     'cl.title': 'Already using it',
+    'ty.label': 'Rewards', 'ty.title': 'The reward you choose.', 'ty.t1': 'Stamp card', 'ty.t1p': 'The classic: 10 coffees, one free. Without the paper.', 'ty.t2': 'Discount', 'ty.t2p': 'A full card = 50% off, or any discount you choose.', 'ty.t3': 'Birthdays and friends', 'ty.t3p': 'A birthday treat, and a stamp for bringing a friend.', 'ty.t4': 'Gift cards', 'ty.t4p': 'Prepaid credit to give, straight into their Wallet.', 'ty.soon': 'Coming soon',
+    'lo.q': 'How many locations do you have?', 'lo.unit': 'locations', 'lo.best': 'Your plan', 'lo.m': 'a month', 'lo.from': 'from', 'lo.per': 'per location a month',
     'how.label': 'How it works', 'how.title': 'Three steps and you\'re ready.',
     'how.s1': 'We design your card', 'how.s1p': 'Tell us about your place and the reward. We design the card, the stamp and the poster for you.', 'how.s1w': 'You, once',
     'how.s2': 'Customers scan the QR', 'how.s2p': 'The poster at the till does the work. In 10 seconds the card is on their phone.', 'how.s2w': 'Your customer, 10 seconds',
@@ -725,6 +766,8 @@ I18N.add({
     'hero.hFull': 'Karta pełna: klient widzi komunikat „Nagroda gotowa”.',
     'hero.hDone': 'Nagroda wydana. Karta zaczyna się od nowa, a klient wraca.',
     'cl.title': 'Już z nami',
+    'ty.label': 'Nagrody', 'ty.title': 'Nagroda, jaką wybierzesz.', 'ty.t1': 'Karta pieczątek', 'ty.t1p': 'Klasyka: 10 kaw, jedna gratis. Bez kartonika.', 'ty.t2': 'Rabat', 'ty.t2p': 'Pełna karta = 50% zniżki albo dowolny rabat.', 'ty.t3': 'Urodziny i znajomi', 'ty.t3p': 'Prezent na urodziny i pieczątka za przyprowadzenie znajomego.', 'ty.t4': 'Karty podarunkowe', 'ty.t4p': 'Przedpłacona kwota na prezent, prosto do Portfela.', 'ty.soon': 'Wkrótce',
+    'lo.q': 'Ile masz lokali?', 'lo.unit': 'lokali', 'lo.best': 'Twój plan', 'lo.m': 'miesięcznie', 'lo.from': 'od', 'lo.per': 'za lokal miesięcznie',
     'how.label': 'Jak to działa', 'how.title': 'Trzy kroki i gotowe.',
     'how.s1': 'Projektujemy Twoją kartę', 'how.s1p': 'Opowiadasz nam o lokalu i nagrodzie. My projektujemy kartę, pieczątkę i plakat specjalnie dla Ciebie.', 'how.s1w': 'Ty, tylko raz',
     'how.s2': 'Klient skanuje kod QR', 'how.s2p': 'Wystarczy plakat przy kasie. Po 10 sekundach karta jest w telefonie klienta.', 'how.s2w': 'Klient, 10 sekund',
@@ -782,6 +825,25 @@ I18N.add({
 (() => {
   const L = () => I18N.lang;
   const fmt = (n, dec = 0) => new Intl.NumberFormat(L() === 'en' ? 'en-IE' : I18N.locale(), { style: 'currency', currency: 'EUR', minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
+
+
+  // ---------- step videos: tap to play ----------
+  document.querySelectorAll('.vid').forEach(v => v.addEventListener('click', () => {
+    const video = v.querySelector('video');
+    if (video.paused) { v.classList.add('on'); video.play(); } else { video.pause(); v.classList.remove('on'); }
+    video.onended = () => v.classList.remove('on');
+  }));
+  // ---------- how many locations → which plan ----------
+  function locPlan() {
+    const n = +document.getElementById('locn').value, eur = x => '€' + x;
+    document.getElementById('locv').textContent = n;
+    const plan = CONFIG.plans.find(p => !p.contact && n <= p.locations) || CONFIG.plans.find(p => p.contact);
+    const L = I18N.lang, name = (plan[L] || plan.en).name;
+    document.getElementById('locp').textContent = plan.contact ? `${I18N.t('lo.from')} ${eur(plan.month * n)}` : eur(plan.month);
+    document.getElementById('locw').textContent = plan.contact ? `${name} · ${eur(plan.month)} ${I18N.t('lo.per')}` : `${name} · ${I18N.t('lo.m')}`;
+  }
+  document.getElementById('locn').addEventListener('input', locPlan);
+  document.addEventListener('langchange', locPlan); setTimeout(locPlan, 0);
 
   // ---------- hero: a card you can stamp ----------
   // The hero's card: a minimal white card with a black stripe and dot stamps.
