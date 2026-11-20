@@ -85,6 +85,20 @@ h1{font-size:24px;font-stretch:112%;font-weight:800}
       </div>
     </div>
   </section>
+  <!-- Gift card scanned (codes starting with G): balance and what to take off -->
+  <section id="voucher" hidden>
+    <div class="box" style="text-align:center">
+      <p id="v-biz" style="margin:0;color:var(--muted)"></p>
+      <h2 id="v-bal" style="font-size:54px;margin:6px 0"></h2>
+      <p id="v-info" style="margin:0 0 18px;color:var(--muted)"></p>
+      <form id="v-form" style="display:flex;gap:8px;justify-content:center">
+        <input name="eur" inputmode="decimal" placeholder="0,00" style="max-width:140px;font-size:22px;text-align:right" aria-label="€">
+        <button class="btn pop" type="submit" data-i18n="s.vSpend"></button>
+      </form>
+      <p id="v-err" style="color:#c0392b"></p>
+      <button class="btn line" type="button" id="v-next" data-i18n="s.next"></button>
+    </div>
+  </section>
 </main>
 
 <script src="../assets/vendor/qrcode.js"></script>
@@ -98,6 +112,7 @@ h1{font-size:24px;font-stretch:112%;font-weight:800}
 <script>
 I18N.add({
   it: {
+    's.vTitle': 'Carta regalo', 's.vSpend': 'Scala', 's.vLeft': 'Credito rimasto su {of} · scade il {date}', 's.vExpired': 'Carta regalo scaduta', 's.vDone': 'Scalati {x}',
     's.title': 'Timbratore', 's.dash': 'Area locale', 's.scan': 'Inquadra la carta del cliente',
     's.camOn': 'Accendi la fotocamera', 's.camHint': 'Punta il QR sul telefono del cliente.', 's.or': 'oppure scrivi il codice',
     's.code': 'Codice cliente', 's.find': 'Cerca', 's.undo': 'Togli un timbro', 's.next': 'Prossimo cliente',
@@ -112,6 +127,7 @@ I18N.add({
     's.tAdded': 'Timbro aggiunto ({have}/{need})', 's.tFull': 'Carta piena. Dai il premio!', 's.tGiven': 'Premio dato. La carta riparte.', 's.tRemoved': 'Timbro tolto'
   },
   en: {
+    's.vTitle': 'Gift card', 's.vSpend': 'Deduct', 's.vLeft': 'Left of {of} · expires {date}', 's.vExpired': 'This gift card has expired', 's.vDone': '{x} deducted',
     's.title': 'Stamper', 's.dash': 'Dashboard', 's.scan': 'Scan the customer\'s card',
     's.camOn': 'Turn on the camera', 's.camHint': 'Point it at the QR code on the customer\'s phone.', 's.or': 'or type the code',
     's.code': 'Customer code', 's.find': 'Find', 's.undo': 'Remove a stamp', 's.next': 'Next customer',
@@ -126,6 +142,7 @@ I18N.add({
     's.tAdded': 'Stamp added ({have}/{need})', 's.tFull': 'Card full. Give the reward!', 's.tGiven': 'Reward given. The card starts again.', 's.tRemoved': 'Stamp removed'
   },
   pl: {
+    's.vTitle': 'Karta podarunkowa', 's.vSpend': 'Odejmij', 's.vLeft': 'Zostało z {of} · ważna do {date}', 's.vExpired': 'Karta podarunkowa wygasła', 's.vDone': 'Odjęto {x}',
     's.title': 'Skaner pieczątek', 's.dash': 'Panel', 's.scan': 'Zeskanuj kartę klienta',
     's.camOn': 'Włącz aparat', 's.camHint': 'Skieruj go na kod QR w telefonie klienta.', 's.or': 'albo wpisz kod',
     's.code': 'Kod klienta', 's.find': 'Znajdź', 's.undo': 'Usuń pieczątkę', 's.next': 'Następny klient',
@@ -165,7 +182,32 @@ I18N.add({
   const fail = err => { lastErr = null; $('err').textContent = navigator.onLine === false ? t('s.offline') : err.message; UI.toast(navigator.onLine === false ? t('s.offline') : err.message); };
 
   // ---------- find ----------
+  // Gift cards: codes start with G (vouchers table), the balance is taken off at the till.
+  let voucher = null;
+  const eur = c => (c / 100).toLocaleString(I18N.locale(), { style: 'currency', currency: 'EUR' });
+  function drawVoucher() {
+    $('v-biz').textContent = t('s.vTitle') + (voucher.recipient ? ' · ' + voucher.recipient : '');
+    $('v-bal').textContent = eur(voucher.balance);
+    $('v-info').textContent = voucher.expired ? t('s.vExpired') : t('s.vLeft', { of: eur(voucher.amount + voucher.bonus), date: voucher.expires ? new Date(voucher.expires).toLocaleDateString(I18N.locale()) : '' });
+    $('v-form').hidden = voucher.expired || !voucher.balance;
+  }
+  async function openVoucher(code) {
+    let v;
+    try { v = await Remote.voucher(code); } catch (err) { if (/not linked/i.test(err.message)) return showLink(err.message); fail(err); return false; }
+    if (!v) { $('err').textContent = t('s.notFound', { code }); return false; }
+    stopCamera(); voucher = v; $('find').hidden = true; $('stamp').hidden = true; $('voucher').hidden = false; $('v-err').textContent = '';
+    drawVoucher(); return true;
+  }
+  $('v-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const cents = Math.round(parseFloat(String(e.target.eur.value).replace(',', '.')) * 100);
+    if (!(cents > 0)) return;
+    try { voucher = await Remote.voucherSpend(voucher.code, cents); e.target.eur.value = ''; $('v-err').textContent = ''; drawVoucher(); navigator.vibrate && navigator.vibrate(40); UI.toast(t('s.vDone', { x: eur(cents) })); }
+    catch (err) { $('v-err').textContent = err.message; }
+  });
+  $('v-next').addEventListener('click', () => { voucher = null; $('voucher').hidden = true; $('find').hidden = false; });
   async function open(code) {
+    if (/^G[A-Z0-9]{9}$/i.test((code || '').trim()) && Remote.enabled) return openVoucher(code.trim().toUpperCase());
     let r;
     try { r = await api.lookup((code || '').trim()); } catch (err) { if (/not linked/i.test(err.message)) return showLink(err.message); fail(err); return false; }
     if (!r) { lastErr = { key: 's.notFound', v: { code: (code || '').toUpperCase() } }; $('err').textContent = t(lastErr.key, lastErr.v); return false; }

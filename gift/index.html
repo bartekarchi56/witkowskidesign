@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gift card</title>
+<meta name="description" content="Buy a gift card: it arrives in Apple Wallet or Google Wallet.">
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* A café's gift-card shop: gift/?b=<business id>. Payment: supabase/functions/gift-checkout (Stripe). */
+html,body{margin:0;background:#F4F4F6;color:var(--ink);font-family:var(--font)}
+main{max-width:520px;margin:0 auto;padding:28px 18px 60px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.gc{border-radius:22px;padding:26px;color:#fff;min-height:170px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 24px 50px -24px rgba(0,0,0,.45);background:#111}
+.gc small{opacity:.75;font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+.gc b{font-size:24px}
+.gc .amt{font:800 46px/1 var(--font);letter-spacing:-.02em}
+h1{font-size:28px;margin:26px 0 6px}
+.lead{color:var(--ink-2);margin:0 0 18px}
+.amts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.amts button{border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:16px;text-align:left;font:inherit;cursor:pointer}
+.amts button[aria-pressed=true]{border-color:var(--pop);box-shadow:0 0 0 2px var(--pop) inset}
+.amts b{display:block;font-size:24px}
+.amts span{color:var(--pop);font-size:14px;font-weight:600}
+label{display:block;font-weight:600;margin:16px 0 6px}
+input,textarea{width:100%;box-sizing:border-box;border:1.5px solid var(--line);border-radius:12px;padding:12px;font:inherit;background:#fff}
+.pay{margin-top:22px;width:100%}
+.note{color:var(--muted);font-size:13px;margin-top:12px;text-align:center}
+.off{background:#fff;border-radius:18px;padding:22px;text-align:center;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>Timbro</a><div class="lang"></div></div>
+  <div id="app"><p class="off" data-i18n="g.loading"></p></div>
+</main>
+<script src="../assets/vendor/supabase.js"></script>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js?v=20261120b"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/remote.js"></script>
+<script>
+I18N.add({
+  it: { 'g.loading': 'Un momento…', 'g.none': 'Questo locale non vende ancora carte regalo.', 'g.gift': 'Carta regalo', 'g.title': 'Regala una carta regalo', 'g.lead': 'Arriva nel Wallet del telefono (Apple o Google) e si usa alla cassa, anche in più volte.',
+    'g.bonus': '+{x} in regalo', 'g.to': 'Per chi è? (facoltativo)', 'g.msg': 'Un messaggio (facoltativo)', 'g.email': 'La tua email (ricevuta e link alla carta)', 'g.pay': 'Paga {x}', 'g.valid': 'Valida {n} mesi. Pagamento sicuro con Stripe.' },
+  en: { 'g.loading': 'One moment…', 'g.none': 'This place doesn\'t sell gift cards yet.', 'g.gift': 'Gift card', 'g.title': 'Give a gift card', 'g.lead': 'It goes into the phone\'s Wallet (Apple or Google) and is spent at the till, in one go or several.',
+    'g.bonus': '+{x} bonus', 'g.to': 'Who is it for? (optional)', 'g.msg': 'A message (optional)', 'g.email': 'Your email (receipt and link to the card)', 'g.pay': 'Pay {x}', 'g.valid': 'Valid for {n} months. Secure payment with Stripe.' },
+  pl: { 'g.loading': 'Chwileczkę…', 'g.none': 'Ten lokal nie sprzedaje jeszcze kart podarunkowych.', 'g.gift': 'Karta podarunkowa', 'g.title': 'Podaruj kartę podarunkową', 'g.lead': 'Trafia do Portfela w telefonie (Apple lub Google) i płaci się nią przy kasie, za jednym razem albo w kilku.',
+    'g.bonus': '+{x} gratis', 'g.to': 'Dla kogo? (opcjonalnie)', 'g.msg': 'Wiadomość (opcjonalnie)', 'g.email': 'Twój e-mail (potwierdzenie i link do karty)', 'g.pay': 'Zapłać {x}', 'g.valid': 'Ważna {n} mies. Bezpieczna płatność przez Stripe.' }
+});
+(async () => {
+  const $ = id => document.getElementById(id), t = (k, v) => I18N.t(k, v), q = new URLSearchParams(location.search), biz = q.get('b') || '';
+  const eur = c => (c / 100).toLocaleString(I18N.locale(), { style: 'currency', currency: 'EUR', maximumFractionDigits: c % 100 ? 2 : 0 });
+  let shop = null, pick = null;
+  try { shop = await Remote.giftShop(biz); } catch (e) { shop = null; }
+  function draw() {
+    I18N.apply();
+    if (!shop || !shop.ready || !(shop.gift.amounts || []).length) { $('app').innerHTML = `<p class="off">${t('g.none')}</p>`; return; }
+    const c = shop.card || {}, am = shop.gift.amounts;
+    if (!pick) pick = am[Math.min(1, am.length - 1)];
+    document.title = `${t('g.gift')} · ${shop.name}`;
+    $('app').innerHTML = `
+      <div class="gc" style="background:${UI.esc(c.color || '#111')};color:${UI.esc(c.ink && c.color && c.color.toUpperCase() !== '#FFFFFF' ? '#fff' : (c.color || '').toUpperCase() === '#FFFFFF' ? '#111' : '#fff')}">
+        <div><small>${t('g.gift')}</small><br><b>${UI.esc(shop.name)}</b></div><div class="amt">${eur(pick.amount + (pick.bonus || 0))}</div></div>
+      <h1>${t('g.title')}</h1><p class="lead">${t('g.lead')}</p>
+      <div class="amts">${am.map((a, i) => `<button type="button" data-i="${i}" aria-pressed="${a === pick}"><b>${eur(a.amount)}</b>${a.bonus ? `<span>${t('g.bonus', { x: eur(a.bonus) })}</span>` : ''}</button>`).join('')}</div>
+      <form id="f">
+        <label>${t('g.to')}<input name="recipient" maxlength="80"></label>
+        <label>${t('g.msg')}<textarea name="note" rows="2" maxlength="300"></textarea></label>
+        <label>${t('g.email')}<input name="email" type="email" required autocomplete="email"></label>
+        <button class="btn pop pay" type="submit">${t('g.pay', { x: eur(pick.amount) })}</button>
+        <p class="note">${t('g.valid', { n: shop.gift.months || 12 })}</p>
+      </form>`;
+    $('app').querySelectorAll('[data-i]').forEach(b => b.addEventListener('click', () => { pick = am[+b.dataset.i]; draw(); }));
+    $('f').addEventListener('submit', async e => {
+      e.preventDefault(); const f = e.target, btn = f.querySelector('button'); btn.disabled = true;
+      try { const { url } = await Remote.giftBuy({ business: biz, amount: pick.amount, email: f.email.value, recipient: f.recipient.value, note: f.note.value, lang: I18N.lang }); location.href = url; }
+      catch (err) { UI.toast(err.message); btn.disabled = false; }
+    });
+  }
+  document.addEventListener('langchange', draw); draw();
+})();
+</script>
+</body>
+</html>
