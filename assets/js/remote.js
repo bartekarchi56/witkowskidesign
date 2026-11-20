@@ -123,6 +123,17 @@
     importOrders: (cardId, orders) => rpc('owner_import_orders', { p_card_id: cardId, p_orders: orders }),
     clearOrders: (cardId, platform) => rpc('owner_clear_orders', { p_card_id: cardId, p_platform: platform }),
 
+    // ---- gift cards (supabase/updates/32a-b, functions gift-connect and gift-checkout) ----
+    gifts: () => rpc('owner_gifts'),
+    saveGift: gift => rpc('owner_gift_save', { p_gift: gift }),
+    giftConnect: () => edge('gift-connect'),
+    giftShop: business => rpc('gift_shop', { p_business: business }),
+    giftBuy: body => edge('gift-checkout', body),
+    giftGet: code => rpc('gift_get', { p_code: code }),
+    giftBySession: session => rpc('gift_by_session', { p_session: session }),
+    voucher: code => { const d = device(); return rpc('stamper_voucher', { p_token: d && d.token, p_code: code }); },
+    voucherSpend: (code, cents) => { const d = device(); return rpc('stamper_voucher_spend', { p_token: d && d.token, p_code: code, p_amount: cents }); },
+
     // ---- Witkowski Design ----
     adminCards: () => rpc('admin_cards'),
     publish: (cardId, design) => rpc('admin_publish', { p_card_id: cardId, p_design: design }),

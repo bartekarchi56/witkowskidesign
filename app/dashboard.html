@@ -340,6 +340,7 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
     <button role="tab" id="t-results" aria-controls="tab-results" data-tab="results" data-i18n="d.tResults"></button>
     <button role="tab" id="t-notify" aria-controls="tab-notify" data-tab="notify" data-i18n="d.tNotify"></button>
     <button role="tab" id="t-till" aria-controls="tab-till" data-tab="till" data-i18n="d.tTill"></button>
+    <button role="tab" id="t-gift" aria-controls="tab-gift" data-tab="gift" data-i18n="d.tGift"></button>
     <button role="tab" id="t-plan" aria-controls="tab-plan" data-tab="plan" data-i18n="d.tPlan"></button>
   </div>
 
@@ -482,6 +483,35 @@ td code{font:500 13px var(--mono);background:var(--wash);padding:3px 7px;border-
   </section>
 
   <!-- PLAN: the subscription, paid with Stripe -->
+  <!-- Gift cards: Stripe Connect, amounts, expiry, the shop link, cards sold (supabase/updates/32a-b) -->
+  <section role="tabpanel" id="tab-gift" aria-labelledby="t-gift" hidden>
+    <h2 class="sec" data-i18n="d.giftT"></h2>
+    <p class="sec-sub" data-i18n="d.giftSub"></p>
+    <div class="box" style="margin-bottom:16px">
+      <h3 style="margin-top:0" data-i18n="d.gStep1"></h3>
+      <p id="g-conn" class="sec-sub" style="margin:0 0 12px"></p>
+      <button class="btn line" type="button" id="g-connect" data-i18n="d.gConnect"></button>
+    </div>
+    <form class="box" id="g-form" style="margin-bottom:16px">
+      <h3 style="margin-top:0" data-i18n="d.gStep2"></h3>
+      <table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left" data-i18n="d.gAmt"></th><th style="text-align:left" data-i18n="d.gBonus"></th><th></th></tr></thead><tbody id="g-rows"></tbody></table>
+      <button class="link" type="button" id="g-add" data-i18n="d.gAdd" style="margin:10px 0"></button>
+      <label style="display:block;margin:12px 0 6px;font-weight:600" data-i18n="d.gExp"></label>
+      <select name="months"><option value="6">6</option><option value="12">12</option><option value="24">24</option><option value="36">36</option></select> <span data-i18n="d.gMonths"></span>
+      <label style="display:flex;gap:8px;align-items:center;margin:16px 0"><input type="checkbox" name="on"> <span data-i18n="d.gOn"></span></label>
+      <button class="btn pop" type="submit" data-i18n="d.gSave"></button>
+    </form>
+    <div class="box" style="margin-bottom:16px" id="g-shop" hidden>
+      <h3 style="margin-top:0" data-i18n="d.gStep3"></h3>
+      <p class="sec-sub" data-i18n="d.gShopP"></p>
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><div id="g-qr" style="width:120px"></div><div><a id="g-link" target="_blank" rel="noopener" style="word-break:break-all"></a><br><button class="link" type="button" id="g-copy" data-i18n="d.gCopy"></button></div></div>
+    </div>
+    <div class="box">
+      <h3 style="margin-top:0" data-i18n="d.gSold"></h3>
+      <div id="g-list"></div>
+    </div>
+  </section>
+
   <section role="tabpanel" id="tab-plan" aria-labelledby="t-plan" hidden>
     <h2 class="sec" data-i18n="d.planT"></h2>
     <p class="sec-sub" id="bill-status"></p>
@@ -644,6 +674,7 @@ I18N.add({
     'd.money': 'Quanto vale', 'd.moneyN': 'Una stima con i tuoi numeri. Non tutta la spesa nasce dalla carta, ma sono i clienti che tornano.',
     'd.ticket': 'Scontrino medio ({c})', 'd.rewardCost': 'Costo di un premio per te ({c})', 'd.spent': 'spesi dai clienti con la carta', 'd.rewardsCost': 'costo dei premi',
     'd.table': 'Vedi i numeri in tabella', 'd.tDate': 'Periodo', 'd.tVisits': 'Visite', 'd.tMembers': 'Iscritti',
+    'd.tGift': 'Carte regalo', 'd.giftT': 'Carte regalo', 'd.giftSub': 'Vendi credito prepagato online: arriva nel Wallet e si scala alla cassa. I soldi vanno sul tuo conto Stripe; Timbro trattiene il 5% (Start) o il 2% (Pro).', 'd.gStep1': '1. Collega Stripe', 'd.gConnect': 'Collega Stripe', 'd.gStripe': 'Apri Stripe', 'd.gConnected': 'Stripe collegato: i pagamenti arrivano sul tuo conto.', 'd.gNotConnected': 'Serve il tuo conto Stripe (documento e IBAN, 5 minuti).', 'd.gStep2': '2. Importi e scadenza', 'd.gAmt': 'Importo', 'd.gBonus': 'Bonus', 'd.gAdd': '+ Aggiungi importo', 'd.gExp': 'Scadenza', 'd.gMonths': 'mesi', 'd.gOn': 'Vendi le carte regalo', 'd.gSave': 'Salva', 'd.gSaved': 'Salvato', 'd.gStep3': '3. Il tuo negozio', 'd.gShopP': 'Condividi il link o stampa il QR: chiunque può comprare una carta regalo.', 'd.gCopy': 'Copia il link', 'd.gSold': 'Carte vendute', 'd.gNone': 'Ancora nessuna carta venduta.',
     'd.tPlan': 'Abbonamento', 'd.planT': 'Il tuo abbonamento', 'd.monthly': 'Mensile', 'd.yearly': 'Annuale (2 mesi gratis)', 'd.manage': 'Gestisci o disdici', 'd.monthlyShort': 'mensile', 'd.yearlyShort': 'annuale',
     'd.manageHint': 'Per cambiare piano, cambiare carta, scaricare le fatture o disdire, usa "Gestisci o disdici".',
     'd.billNone': 'Scegli un piano: i primi {days} giorni sono gratis, poi paghi con carta o addebito SEPA. Disdici quando vuoi.',
@@ -765,6 +796,7 @@ I18N.add({
     'd.money': 'What it is worth', 'd.moneyN': 'An estimate with your numbers. Not all of this spending comes from the card, but these are the customers who come back.',
     'd.ticket': 'Average ticket ({c})', 'd.rewardCost': 'What a reward costs you ({c})', 'd.spent': 'spent by card customers', 'd.rewardsCost': 'cost of rewards',
     'd.table': 'See the numbers as a table', 'd.tDate': 'Period', 'd.tVisits': 'Visits', 'd.tMembers': 'Members',
+    'd.tGift': 'Gift cards', 'd.giftT': 'Gift cards', 'd.giftSub': 'Sell prepaid credit online: it goes into the Wallet and is deducted at the till. The money goes to your Stripe account; Timbro keeps 5% (Start) or 2% (Pro).', 'd.gStep1': '1. Connect Stripe', 'd.gConnect': 'Connect Stripe', 'd.gStripe': 'Open Stripe', 'd.gConnected': 'Stripe connected: payments go to your account.', 'd.gNotConnected': 'You need your own Stripe account (ID and bank account, 5 minutes).', 'd.gStep2': '2. Amounts and expiry', 'd.gAmt': 'Amount', 'd.gBonus': 'Bonus', 'd.gAdd': '+ Add amount', 'd.gExp': 'Expiry', 'd.gMonths': 'months', 'd.gOn': 'Sell gift cards', 'd.gSave': 'Save', 'd.gSaved': 'Saved', 'd.gStep3': '3. Your shop', 'd.gShopP': 'Share the link or print the QR: anyone can buy a gift card.', 'd.gCopy': 'Copy link', 'd.gSold': 'Cards sold', 'd.gNone': 'No cards sold yet.',
     'd.tPlan': 'Plan', 'd.planT': 'Your subscription', 'd.monthly': 'Monthly', 'd.yearly': 'Yearly (2 months free)', 'd.manage': 'Manage or cancel', 'd.monthlyShort': 'monthly', 'd.yearlyShort': 'yearly',
     'd.manageHint': 'To change plan or card, download invoices or cancel, use "Manage or cancel".',
     'd.billNone': 'Pick a plan: the first {days} days are free, then you pay by card or SEPA direct debit. Cancel any time.',
@@ -887,6 +919,7 @@ I18N.add({
     'd.money': 'Ile to jest warte', 'd.moneyN': 'Szacunek na podstawie Twoich liczb. Nie każdy zakup to zasługa karty, ale to są klienci, którzy wracają.',
     'd.ticket': 'Średni paragon ({c})', 'd.rewardCost': 'Koszt jednej nagrody ({c})', 'd.spent': 'wydali klienci z kartą', 'd.rewardsCost': 'koszt nagród',
     'd.table': 'Zobacz liczby w tabeli', 'd.tDate': 'Okres', 'd.tVisits': 'Wizyty', 'd.tMembers': 'Klienci z kartą',
+    'd.tGift': 'Karty podarunkowe', 'd.giftT': 'Karty podarunkowe', 'd.giftSub': 'Sprzedawaj przedpłacone karty online: trafiają do Portfela, a przy kasie odejmujesz kwotę. Pieniądze idą na Twoje konto Stripe; Timbro pobiera 5% (Start) lub 2% (Pro).', 'd.gStep1': '1. Połącz Stripe', 'd.gConnect': 'Połącz Stripe', 'd.gStripe': 'Otwórz Stripe', 'd.gConnected': 'Stripe połączony: płatności trafiają na Twoje konto.', 'd.gNotConnected': 'Potrzebne jest Twoje konto Stripe (dowód i konto bankowe, 5 minut).', 'd.gStep2': '2. Kwoty i ważność', 'd.gAmt': 'Kwota', 'd.gBonus': 'Bonus', 'd.gAdd': '+ Dodaj kwotę', 'd.gExp': 'Ważność', 'd.gMonths': 'mies.', 'd.gOn': 'Sprzedawaj karty podarunkowe', 'd.gSave': 'Zapisz', 'd.gSaved': 'Zapisano', 'd.gStep3': '3. Twój sklep', 'd.gShopP': 'Udostępnij link albo wydrukuj QR: każdy może kupić kartę podarunkową.', 'd.gCopy': 'Kopiuj link', 'd.gSold': 'Sprzedane karty', 'd.gNone': 'Brak sprzedanych kart.',
     'd.tPlan': 'Plan', 'd.planT': 'Twoja subskrypcja', 'd.monthly': 'Miesięcznie', 'd.yearly': 'Rocznie (2 miesiące gratis)', 'd.manage': 'Zarządzaj lub anuluj', 'd.monthlyShort': 'miesięcznie', 'd.yearlyShort': 'rocznie',
     'd.manageHint': 'Aby zmienić plan lub kartę płatniczą, pobrać faktury albo anulować subskrypcję, użyj „Zarządzaj lub anuluj”.',
     'd.billNone': 'Wybierz plan: pierwsze {days} dni są za darmo, potem płacisz kartą lub poleceniem zapłaty SEPA. Możesz anulować w każdej chwili.',
@@ -1233,6 +1266,7 @@ I18N.add({
     });
     if (name === 'results') renderResults();
     if (name === 'notify') renderNotify();
+    if (name === 'gift') renderGift();
     history.replaceState(null, '', location.search + '#' + name);
   }
   tabs.forEach((tb, i) => {
@@ -1723,12 +1757,44 @@ I18N.add({
   $('bill-manage').addEventListener('click', e => openStripe(() => Remote.billingPortal(), e.currentTarget));
   document.addEventListener('langchange', renderBilling);
 
+
+  // ---------- gift cards ----------
+  let gift = null;
+  const money2 = c => (c / 100).toLocaleString(I18N.locale(), { style: 'currency', currency: 'EUR' });
+  async function renderGift() {
+    if (!Store.remote || Remote.demo) { $('g-conn').textContent = I18N.t('d.billDemo'); return; }
+    try { gift = await Remote.gifts(); } catch (err) { UI.toast(err.message); return; }
+    if (!gift) return;
+    const g = gift.gift || {};
+    $('g-conn').textContent = I18N.t(gift.connected ? 'd.gConnected' : 'd.gNotConnected');
+    $('g-connect').textContent = I18N.t(gift.connected ? 'd.gStripe' : 'd.gConnect');
+    const rows = (g.amounts && g.amounts.length ? g.amounts : [1000, 2500, 5000, 10000].map(a => ({ amount: a, bonus: 0 })));
+    $('g-rows').innerHTML = rows.map(r => `<tr><td><input name="a" inputmode="decimal" value="${r.amount / 100}" style="width:100px"> €</td><td><input name="b" inputmode="decimal" value="${(r.bonus || 0) / 100}" style="width:80px"> €</td><td><button class="link" type="button" data-del>✕</button></td></tr>`).join('');
+    $('g-form').months.value = String(g.months || 12);
+    $('g-form').on.checked = !!g.on;
+    const url = CONFIG.siteUrl.replace(/\/$/, '') + '/gift/?b=' + gift.business;
+    $('g-shop').hidden = !(g.on && gift.connected);
+    $('g-link').href = url; $('g-link').textContent = url; $('g-qr').innerHTML = UI.qrSvg(url);
+    $('g-list').innerHTML = (gift.sold || []).length ? `<table style="width:100%;border-collapse:collapse;font-size:14px">${gift.sold.map(v => `<tr style="border-top:1px solid var(--line)"><td style="padding:8px 4px">${new Date(v.created).toLocaleDateString(I18N.locale())}</td><td>${UI.esc(v.recipient || v.email || '')}</td><td>${money2(v.amount + v.bonus)}</td><td><b>${money2(v.balance)}</b></td><td style="font-family:var(--mono)">${v.code}</td></tr>`).join('')}</table>` : `<p class="sec-sub">${I18N.t('d.gNone')}</p>`;
+  }
+  $('g-add').addEventListener('click', () => $('g-rows').insertAdjacentHTML('beforeend', `<tr><td><input name="a" inputmode="decimal" style="width:100px"> €</td><td><input name="b" inputmode="decimal" value="0" style="width:80px"> €</td><td><button class="link" type="button" data-del>✕</button></td></tr>`));
+  $('g-rows').addEventListener('click', e => { if (e.target.closest('[data-del]')) e.target.closest('tr').remove(); });
+  $('g-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const cents = x => Math.round(parseFloat(String(x).replace(',', '.')) * 100) || 0;
+    const amounts = [...$('g-rows').querySelectorAll('tr')].map(tr => ({ amount: cents(tr.querySelector('[name=a]').value), bonus: cents(tr.querySelector('[name=b]').value) })).filter(a => a.amount >= 100);
+    try { await Remote.saveGift({ on: e.target.on.checked, months: +e.target.months.value, amounts }); UI.toast(I18N.t('d.gSaved')); renderGift(); }
+    catch (err) { UI.toast(err.message); }
+  });
+  $('g-connect').addEventListener('click', e => openStripe(() => Remote.giftConnect(), e.currentTarget));
+  $('g-copy').addEventListener('click', () => UI.copy($('g-link').href));
+
   let profile = {};   // what the owner typed when signing up
   async function start() {
     I18N.apply();
     controls();
     const q = new URLSearchParams(location.search);
-    const startTab = ['design', 'print', 'promote', 'customers', 'results', 'notify', 'till', 'plan'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'design';
+    const startTab = ['design', 'print', 'promote', 'customers', 'results', 'notify', 'till', 'gift', 'plan'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'design';
     // In the demo, keep the till and the dashboard in the demo too.
     if (Remote.demo) document.querySelectorAll('a[href="stamper.html"]').forEach(a => a.href = 'stamper.html?demo');
     if (Remote.enabled) {

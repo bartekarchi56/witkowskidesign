@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gift card</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* A gift card: gift/card.html?code=G... (or ?session=cs_... right after paying). Show the QR at the till. */
+html,body{margin:0;background:#F4F4F6;color:var(--ink);font-family:var(--font)}
+main{max-width:460px;margin:0 auto;padding:28px 18px 60px;text-align:center}
+.gc{border-radius:24px;padding:26px;text-align:left;box-shadow:0 24px 50px -24px rgba(0,0,0,.45)}
+.gc small{opacity:.75;font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+.gc b{display:block;font-size:24px;margin-top:4px}
+.gc .bal{font:800 54px/1 var(--font);letter-spacing:-.02em;margin:26px 0 6px}
+.gc .of{opacity:.75;font-size:14px}
+.qr{background:#fff;border-radius:18px;padding:18px;margin:20px auto 8px;width:220px}
+.qr svg{width:100%;height:auto;display:block}
+.code{font:600 18px/1 var(--mono);letter-spacing:.2em;color:var(--ink-2)}
+.msg{background:#fff;border-radius:16px;padding:16px;margin-top:16px;font-style:italic;color:var(--ink-2)}
+.hint{color:var(--muted);font-size:14px;margin-top:16px}
+</style>
+</head>
+<body>
+<main>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>Timbro</a><div class="lang"></div></div>
+  <div id="app"><p data-i18n="g.wait"></p></div>
+</main>
+<script src="../assets/vendor/supabase.js"></script>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js?v=20261120b"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/remote.js"></script>
+<script>
+I18N.add({
+  it: { 'g.wait': 'Stiamo preparando la carta…', 'g.gift': 'Carta regalo', 'g.left': 'di {of} · valida fino al {date}', 'g.expired': 'Scaduta', 'g.for': 'Per {name}', 'g.hint': 'Mostra questo QR alla cassa. Salva questa pagina tra i preferiti o nella schermata Home.', 'g.notFound': 'Carta non trovata.' },
+  en: { 'g.wait': 'Getting your card ready…', 'g.gift': 'Gift card', 'g.left': 'of {of} · valid until {date}', 'g.expired': 'Expired', 'g.for': 'For {name}', 'g.hint': 'Show this QR at the till. Bookmark this page or add it to your Home screen.', 'g.notFound': 'Card not found.' },
+  pl: { 'g.wait': 'Przygotowujemy kartę…', 'g.gift': 'Karta podarunkowa', 'g.left': 'z {of} · ważna do {date}', 'g.expired': 'Wygasła', 'g.for': 'Dla: {name}', 'g.hint': 'Pokaż ten kod QR przy kasie. Zapisz tę stronę w zakładkach albo na ekranie początkowym.', 'g.notFound': 'Nie znaleziono karty.' }
+});
+(async () => {
+  const $ = id => document.getElementById(id), t = (k, v) => I18N.t(k, v), q = new URLSearchParams(location.search);
+  const eur = c => (c / 100).toLocaleString(I18N.locale(), { style: 'currency', currency: 'EUR' });
+  let v = null;
+  // Right after paying, the card is made by Stripe's webhook a moment later: ask a few times.
+  for (let i = 0; i < 10 && !v; i++) {
+    try { v = q.get('code') ? await Remote.giftGet(q.get('code')) : await Remote.giftBySession(q.get('session') || ''); } catch (e) { v = null; }
+    if (!v && q.get('session')) await new Promise(r => setTimeout(r, 1500)); else break;
+  }
+  if (v && q.get('session')) history.replaceState(null, '', `?code=${v.code}&lang=${I18N.lang}`);
+  function draw() {
+    I18N.apply();
+    if (!v) { $('app').innerHTML = `<p>${t('g.notFound')}</p>`; return; }
+    const c = v.card || {}, white = (c.color || '').toUpperCase() === '#FFFFFF';
+    $('app').innerHTML = `
+      <div class="gc" style="background:${UI.esc(c.color || '#111')};color:${white ? '#111' : '#fff'}">
+        <small>${t('g.gift')}</small><b>${UI.esc(v.business)}</b>
+        <div class="bal">${v.expired ? t('g.expired') : eur(v.balance)}</div>
+        <div class="of">${t('g.left', { of: eur(v.amount + v.bonus), date: v.expires ? new Date(v.expires).toLocaleDateString(I18N.locale()) : '' })}</div>
+        ${v.recipient ? `<div class="of" style="margin-top:6px">${UI.esc(t('g.for', { name: v.recipient }))}</div>` : ''}
+      </div>
+      ${v.note ? `<div class="msg">${UI.esc(v.note)}</div>` : ''}
+      <div class="qr">${UI.qrSvg(v.code)}</div><div class="code">${v.code}</div>
+      <p class="hint">${t('g.hint')}</p>`;
+  }
+  document.addEventListener('langchange', draw); draw();
+})();
+</script>
+</body>
+</html>

@@ -52,6 +52,15 @@ Deno.serve(async req => {
           && (event.data.object as Stripe.Checkout.Session).mode === 'subscription');
     const customer = customerOf(event);
     if (relevant && customer) await sync(customer);
+    // A gift card was paid (gift-checkout): make the card, once per payment.
+    const cs = event.data.object as Stripe.Checkout.Session;
+    if ((event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded')
+        && cs.mode === 'payment' && cs.metadata?.kind === 'gift' && cs.payment_status === 'paid') {
+      const m = cs.metadata;
+      const { error } = await db.rpc('gift_create', { p_session: cs.id, p_business: m.business_id, p_amount: Number(m.amount), p_bonus: Number(m.bonus || 0),
+        p_email: cs.customer_details?.email ?? '', p_recipient: m.recipient ?? '', p_note: m.note ?? '', p_months: Number(m.months || 12) });
+      if (error) throw new Error(error.message);
+    }
     return new Response(JSON.stringify({ received: true }), { headers: { 'content-type': 'application/json' } });
   } catch (e) {
     // A 500 makes Stripe retry later.
