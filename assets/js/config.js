@@ -96,7 +96,7 @@ window.CONFIG = {
     // Plus: no longer sold; kept so cafés already on it still see their plan's name.
     { id: 'plus', hidden: true, design: 'custom', month: 39, locations: 3, cards: 0, staff: 10,
       it: { name: 'Plus', for: 'Ci pensiamo noi', extras: [] }, en: { name: 'Plus', for: 'We handle it', extras: [] }, pl: { name: 'Plus', for: 'Zajmujemy się wszystkim', extras: [] } },
-    { id: 'pro', design: 'custom', month: 39, tiers: [[1, 39], [5, 25], [Infinity, 10]], locations: 10, cards: 0, staff: 50, popular: true,
+    { id: 'pro', design: 'custom', month: 39, tiers: [[1, 39], [5, 25], [Infinity, 10]], locations: 10, cards: 0, staff: 10, popular: true,   // staff: per location
       it: { name: 'Pro', for: 'Prezzo per 1 sede', extras: ['Tutto di Start, più:', 'Più sedi, ognuna costa meno', 'Carte e clienti illimitati', 'Carta disegnata da noi', 'Kit stampato a casa tua', 'Statistiche per sede', 'Esporta i clienti in Excel', 'Più telefoni per lo staff', 'Assistenza prioritaria su WhatsApp'] },
       en: { name: 'Pro', for: 'Price for 1 location', extras: ['Everything in Start, plus:', 'More locations, cheaper with each one', 'Unlimited cards and customers', 'Card designed by us', 'Printed kit sent to you', 'Stats per location', 'Export customers to Excel', 'More staff phones', 'Priority WhatsApp support'] },
       pl: { name: 'Pro', for: 'Cena za 1 lokal', extras: ['Wszystko z Start, plus:', 'Więcej lokali, każdy taniej', 'Bez limitu kart i klientów', 'Karta zaprojektowana przez nas', 'Wydrukowane materiały z wysyłką', 'Statystyki dla każdego lokalu', 'Eksport klientów do Excela', 'Więcej telefonów obsługi', 'Priorytetowe wsparcie na WhatsAppie'] } },
