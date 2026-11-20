@@ -612,7 +612,7 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
 </footer>
 
 <script src="assets/vendor/qrcode.js"></script>
-<script src="assets/js/config.js"></script>
+<script src="assets/js/config.js?v=20261120b"></script>
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/store.js"></script>
 <script src="assets/js/stamps.js"></script>
@@ -675,7 +675,7 @@ I18N.add({
     'p.month': '/ mese', 'p.year': '/ anno', 'p.billedM': 'Pagamento mensile', 'p.billedY': 'Pari a {x} al mese',
     'p.loc': 'sedi', 'p.loc1': 'sede', 'p.cards': 'carte', 'p.cards1': 'carta', 'p.staff': 'baristi',
     'p.popular': 'Il più scelto', 'p.cta': 'Prova 30 giorni gratis',
-    'p.forN': 'Prezzo per {n} sedi', 'p.from': 'da', 'p.perLoc': '/ sede al mese', 'p.chainBilled': 'Prima una prova in alcune sedi', 'p.contact': 'Parliamone',
+    'p.forN': ({ n }) => +n === 1 ? 'Prezzo per 1 sede' : `Prezzo per ${n} sedi`, 'p.from': 'da', 'p.perLoc': '/ sede al mese', 'p.chainBilled': 'Prima una prova in alcune sedi', 'p.contact': 'Parliamone',
     'p.waText': 'Ciao! Vorrei sapere di più sul piano Catene di Timbro.',
     'p.all': 'Tutti i piani: clienti illimitati, timbri illimitati, carta in italiano, inglese e polacco. Prezzi IVA esclusa.',
     'f.title': 'Le domande che ci fanno al bancone',
@@ -743,7 +743,7 @@ I18N.add({
     'p.month': '/ month', 'p.year': '/ year', 'p.billedM': 'Billed monthly', 'p.billedY': 'Works out at {x} a month',
     'p.loc': 'locations', 'p.loc1': 'location', 'p.cards': 'cards', 'p.cards1': 'card', 'p.staff': 'staff',
     'p.popular': 'Most popular', 'p.cta': 'Try 30 days free',
-    'p.forN': 'Price for {n} locations', 'p.from': 'from', 'p.perLoc': '/ location a month', 'p.chainBilled': 'A pilot in a few locations first', 'p.contact': 'Let\'s talk',
+    'p.forN': ({ n }) => +n === 1 ? 'Price for 1 location' : `Price for ${n} locations`, 'p.from': 'from', 'p.perLoc': '/ location a month', 'p.chainBilled': 'A pilot in a few locations first', 'p.contact': 'Let\'s talk',
     'p.waText': 'Hi! I\'d like to know more about the Timbro Chains plan.',
     'p.all': 'All plans: unlimited customers, unlimited stamps, card in English, Italian and Polish. Prices exclude VAT.',
     'f.title': 'Questions we get asked at the counter',
