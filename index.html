@@ -64,13 +64,21 @@ body{overflow-x:clip}
 .type .soon{position:absolute;top:14px;right:14px;font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--pop);color:#fff;padding:6px 9px;border-radius:999px}
 .type .ico{font-size:30px;margin-bottom:12px}
 /* locations slider */
-.loc{border:1.5px solid var(--ink);border-radius:22px;padding:26px 28px;margin:0 0 28px;background:#fff;display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center}
-.loc label{font-weight:700;display:block;margin-bottom:12px}
-.loc input{width:100%;accent-color:var(--pop)}
-.loc .n{font:800 34px/1 var(--font)}
-.loc .res{text-align:right}
-.loc .res b{display:block;font:800 40px/1 var(--font);letter-spacing:-.02em}
-.loc .res span{color:var(--ink-2);font-size:14px}
+.loc{display:flex;align-items:center;gap:18px;max-width:640px;margin:0 auto 28px;background:#EFEFF2;border-radius:999px;padding:10px 22px}
+.loc label{font-weight:600;font-size:15px;white-space:nowrap;color:var(--ink-2)}
+.loc .track{position:relative;flex:1;height:34px}
+.loc .ticks{position:absolute;left:10px;right:10px;top:50%;height:16px;margin-top:-8px;display:flex;justify-content:space-between;pointer-events:none}
+.loc .ticks i{width:2px;height:16px;border-radius:2px;background:#C9C9D1;transition:background .2s,height .2s}
+.loc .ticks i.on{background:var(--ink);height:20px;margin-top:-2px}
+.loc input{position:absolute;inset:0;width:100%;margin:0;opacity:0;cursor:grab}
+.loc .knob{position:absolute;top:50%;width:6px;height:30px;margin:-15px 0 0 -3px;border-radius:4px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);pointer-events:none;transition:left .15s}
+.loc .n{font-weight:700;font-size:15px;white-space:nowrap;min-width:92px;text-align:right}
+/* rolling digits on the Pro price */
+.roll{display:inline-flex;overflow:hidden;height:1em;line-height:1em;vertical-align:top}
+.plan .price .roll,.plan .price .roll span{font:inherit;color:inherit;letter-spacing:inherit;margin:0}
+.roll > span{display:block;height:1em;line-height:1em}
+.roll .col{display:flex;flex-direction:column;transition:transform .55s cubic-bezier(.2,.9,.25,1.15)}
+.roll .col span{display:block;height:1em;line-height:1em}
 @media (max-width:960px){.types{grid-template-columns:1fr 1fr}.loc{grid-template-columns:1fr}.loc .res{text-align:left}}
 @media (max-width:560px){.types{grid-template-columns:1fr}.vid{max-width:none}}
 
@@ -537,7 +545,7 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
         <span data-i18n="bf.p" style="flex:1 1 320px;opacity:.9;line-height:1.5"></span>
         <small data-i18n="bf.low" style="flex-basis:100%;opacity:.6;font-size:12px"></small>
       </div>
-      <div class="loc"><div><label for="locn" data-i18n="lo.q"></label><input type="range" id="locn" min="1" max="11" value="1"><div class="n"><span id="locv">1</span> <small id="locu" style="font-size:16px;font-weight:600"></small></div></div><div class="res"><span data-i18n="lo.best"></span><b id="locp"></b><span id="locw"></span></div></div>
+      <div class="loc"><label for="locn" data-i18n="lo.size"></label><div class="track"><div class="ticks" id="ticks"></div><div class="knob" id="knob"></div><input type="range" id="locn" min="1" max="11" value="1" aria-label="Locations"></div><div class="n"><span id="locv">1</span> <span id="locu"></span></div></div>
       <div class="plans" id="plans"></div>
       <p class="all" data-i18n="p.all"></p>
     </div>
@@ -630,7 +638,7 @@ I18N.add({
     'hero.hDone': 'Premio dato. La carta riparte da zero, e il cliente torna.',
     'cl.title': 'Lo usano già',
     'ty.label': 'Premi', 'ty.title': 'Il premio che vuoi tu.', 'ty.t1': 'Carta timbri', 'ty.t1p': 'La classica: 10 caffè, uno gratis. Senza cartoncino.', 'ty.t2': 'Sconto', 'ty.t2p': 'Carta piena = 50% di sconto, o lo sconto che scegli tu.', 'ty.t3': 'Compleanno e amici', 'ty.t3p': 'Un regalo per il compleanno e un timbro a chi porta un amico.', 'ty.t4': 'Carte regalo', 'ty.t4p': 'Credito prepagato da regalare, direttamente nel Wallet.', 'ty.soon': 'In arrivo',
-    'lo.q': 'Quante sedi hai?', 'lo.unit': 'sedi', 'lo.best': 'Il piano giusto', 'lo.m': 'al mese', 'lo.from': 'da', 'lo.per': 'a sede al mese',
+    'lo.size': 'Dimensione', 'lo.q': 'Quante sedi hai?', 'lo.unit': 'sedi', 'lo.best': 'Il piano giusto', 'lo.m': 'al mese', 'lo.from': 'da', 'lo.per': 'a sede al mese',
     'how.label': 'Come funziona', 'how.title': 'Tre passi e sei pronto.',
     'how.s1': 'Disegniamo la tua carta', 'how.s1p': 'Ci racconti il locale e il premio. Noi disegniamo carta, timbro e poster su misura.', 'how.s1w': 'Tu, una volta',
     'how.s2': 'Il cliente inquadra il QR', 'how.s2p': 'Il poster alla cassa fa il lavoro. In 10 secondi la carta è sul suo telefono.', 'how.s2w': 'Il cliente, 10 secondi',
@@ -698,7 +706,7 @@ I18N.add({
     'hero.hDone': 'Reward given. The card starts again, and the customer comes back.',
     'cl.title': 'Already using it',
     'ty.label': 'Rewards', 'ty.title': 'The reward you choose.', 'ty.t1': 'Stamp card', 'ty.t1p': 'The classic: 10 coffees, one free. Without the paper.', 'ty.t2': 'Discount', 'ty.t2p': 'A full card = 50% off, or any discount you choose.', 'ty.t3': 'Birthdays and friends', 'ty.t3p': 'A birthday treat, and a stamp for bringing a friend.', 'ty.t4': 'Gift cards', 'ty.t4p': 'Prepaid credit to give, straight into their Wallet.', 'ty.soon': 'Coming soon',
-    'lo.q': 'How many locations do you have?', 'lo.unit': 'locations', 'lo.best': 'Your plan', 'lo.m': 'a month', 'lo.from': 'from', 'lo.per': 'per location a month',
+    'lo.size': 'Business size', 'lo.q': 'How many locations do you have?', 'lo.unit': 'locations', 'lo.best': 'Your plan', 'lo.m': 'a month', 'lo.from': 'from', 'lo.per': 'per location a month',
     'how.label': 'How it works', 'how.title': 'Three steps and you\'re ready.',
     'how.s1': 'We design your card', 'how.s1p': 'Tell us about your place and the reward. We design the card, the stamp and the poster for you.', 'how.s1w': 'You, once',
     'how.s2': 'Customers scan the QR', 'how.s2p': 'The poster at the till does the work. In 10 seconds the card is on their phone.', 'how.s2w': 'Your customer, 10 seconds',
@@ -767,7 +775,7 @@ I18N.add({
     'hero.hDone': 'Nagroda wydana. Karta zaczyna się od nowa, a klient wraca.',
     'cl.title': 'Już z nami',
     'ty.label': 'Nagrody', 'ty.title': 'Nagroda, jaką wybierzesz.', 'ty.t1': 'Karta pieczątek', 'ty.t1p': 'Klasyka: 10 kaw, jedna gratis. Bez kartonika.', 'ty.t2': 'Rabat', 'ty.t2p': 'Pełna karta = 50% zniżki albo dowolny rabat.', 'ty.t3': 'Urodziny i znajomi', 'ty.t3p': 'Prezent na urodziny i pieczątka za przyprowadzenie znajomego.', 'ty.t4': 'Karty podarunkowe', 'ty.t4p': 'Przedpłacona kwota na prezent, prosto do Portfela.', 'ty.soon': 'Wkrótce',
-    'lo.q': 'Ile masz lokali?', 'lo.unit': 'lokali', 'lo.best': 'Twój plan', 'lo.m': 'miesięcznie', 'lo.from': 'od', 'lo.per': 'za lokal miesięcznie',
+    'lo.size': 'Wielkość firmy', 'lo.q': 'Ile masz lokali?', 'lo.unit': 'lokali', 'lo.best': 'Twój plan', 'lo.m': 'miesięcznie', 'lo.from': 'od', 'lo.per': 'za lokal miesięcznie',
     'how.label': 'Jak to działa', 'how.title': 'Trzy kroki i gotowe.',
     'how.s1': 'Projektujemy Twoją kartę', 'how.s1p': 'Opowiadasz nam o lokalu i nagrodzie. My projektujemy kartę, pieczątkę i plakat specjalnie dla Ciebie.', 'how.s1w': 'Ty, tylko raz',
     'how.s2': 'Klient skanuje kod QR', 'how.s2p': 'Wystarczy plakat przy kasie. Po 10 sekundach karta jest w telefonie klienta.', 'how.s2w': 'Klient, 10 sekund',
@@ -835,13 +843,13 @@ I18N.add({
   }));
   // ---------- how many locations → which plan ----------
   function locPlan() {
-    const n = +document.getElementById('locn').value, eur = x => '€' + x;
+    const el = document.getElementById('locn'), n = +el.value, max = +el.max;
     document.getElementById('locv').textContent = n > 10 ? '11+' : n;
     document.getElementById('locu').textContent = I18N.t(n === 1 ? 'p.loc1' : 'p.loc', { n });
-    const plan = CONFIG.plans.find(p => !p.hidden && !p.contact && n <= p.locations) || CONFIG.plans.find(p => p.contact);
-    const name = I18N.pick(plan).name;
-    document.getElementById('locp').textContent = plan.contact ? I18N.t('p.contact') : eur(CONFIG.planPrice(plan, n));
-    document.getElementById('locw').textContent = plan.contact ? name : `${name} · ${I18N.t('lo.m')}`;
+    const t = document.getElementById('ticks');
+    if (!t.children.length) t.innerHTML = Array.from({ length: max }, () => '<i></i>').join('');
+    [...t.children].forEach((x, i) => x.classList.toggle('on', i < n));
+    document.getElementById('knob').style.left = `calc(10px + (100% - 20px) * ${(n - 1) / (max - 1)})`;
     if (typeof plans === 'function') plans();
   }
   document.getElementById('locn').addEventListener('input', locPlan);
@@ -948,6 +956,15 @@ I18N.add({
 
   // ---------- pricing ----------
   let bill = 'month';
+  // Rolling digits: each digit is a column 0-9 that slides to its value (from where it was before).
+  let odoPrev = '';
+  const odo = v => {
+    const txt = fmt(v), prev = odoPrev; odoPrev = txt;
+    requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll('.roll .col').forEach(c => { c.style.transform = `translateY(-${c.dataset.d}em)`; })));
+    return `<span class="roll" aria-label="${txt}">${[...txt].map((ch, i) => /\d/.test(ch)
+      ? `<span class="col" data-d="${ch}" style="transform:translateY(-${/\d/.test(prev[i] || '') ? prev[i] : 0}em)">${'0123456789'.split('').map(d => `<span>${d}</span>`).join('')}</span>`
+      : `<span>${ch}</span>`).join('')}</span>`;
+  };
   function plans() {
     const wa = (CONFIG.contact.phone || '').replace(/\D/g, '');
     const n = +((document.getElementById('locn') || {}).value || 1);
@@ -962,8 +979,8 @@ I18N.add({
         <ul>${tx.extras.map(x => `<li>${x}</li>`).join('')}</ul>
         <a class="btn line block" href="${wa ? `https://wa.me/${wa}?text=${encodeURIComponent(I18N.t('p.waText'))}` : '#contact'}">${I18N.t('p.contact')}</a>
       </article>`;
-      const m = CONFIG.planPrice(p, p.tiers ? Math.min(n, p.locations) : 1), yearly = m * CONFIG.yearlyMonths;
-      const price = bill === 'year' ? fmt(yearly) : fmt(m);
+      const k = p.tiers ? Math.min(n, p.locations) : 1, m = CONFIG.planPrice(p, k), yearly = m * CONFIG.yearlyMonths;
+      const price = p.tiers ? odo(bill === 'year' ? yearly : m) : bill === 'year' ? fmt(yearly) : fmt(m);
       const billed = bill === 'year' ? I18N.t('p.billedY', { x: fmt(yearly / 12, 2) }) : I18N.t('p.billedM');
       const lim = (v, one, many) => !v ? `<div><b>∞</b><span>${I18N.t(many, { n: 5 })}</span></div>` : `<div><b>${v}</b><span>${I18N.t(v === 1 ? one : many, { n: v })}</span></div>`;   // 0 = unlimited
       return `<article class="plan${p.popular ? ' popular' : ''}">
@@ -971,7 +988,7 @@ I18N.add({
         <h3>${tx.name}</h3><p class="for">${p.tiers ? I18N.t('p.forN', { n: Math.min(n, p.locations) }) : tx.for}</p>
         <div class="price"><b>${price}</b><span>${I18N.t(bill === 'year' ? 'p.year' : 'p.month')}</span></div>
         <p class="billed">${billed}</p>
-        <div class="limits">${lim(p.locations, 'p.loc1', 'p.loc')}${lim(p.cards, 'p.cards1', 'p.cards')}${lim(p.staff, 'p.staff', 'p.staff')}</div>
+        <div class="limits">${lim(p.tiers ? k : p.locations, 'p.loc1', 'p.loc')}${lim(p.cards, 'p.cards1', 'p.cards')}${lim(p.tiers ? p.staff * k : p.staff, 'p.staff', 'p.staff')}</div>
         <ul>${tx.extras.map(x => `<li>${x}</li>`).join('')}</ul>
         <a class="btn ${p.popular ? 'pop' : 'line'} block" href="#prova">${I18N.t('p.cta')}</a>
       </article>`;
