@@ -143,6 +143,15 @@ body{overflow-x:clip}
 .bill em{font-style:normal;font:500 12px/1 var(--mono);margin-left:6px;color:var(--pop)}
 .bill button[aria-pressed="true"] em{color:#fff;opacity:.8}
 .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+/* full comparison table (only what Timbro really does) */
+.cmp{margin-top:56px;overflow-x:auto}
+.cmp table{width:100%;min-width:640px;border-collapse:collapse;font-size:15px}
+.cmp th{text-align:left;font-weight:700;padding:14px 12px;font-size:16px}
+.cmp th:not(:first-child),.cmp td:not(:first-child){text-align:center;width:20%}
+.cmp tr.grp td{background:#EFEFF2;font:600 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);padding:12px;border-radius:0}
+.cmp td{padding:14px 12px;border-bottom:1px solid var(--line)}
+.cmp .y{color:var(--ink);font-weight:700}.cmp .n{color:#B8B8C0}
+.cmp .soon{font:600 11px/1 var(--mono);text-transform:uppercase;background:var(--pop);color:#fff;padding:5px 8px;border-radius:999px}
 @media (max-width:1180px){.plans{grid-template-columns:repeat(2,minmax(0,1fr));max-width:820px;margin:0 auto}}
 .plan{background:#fff;border:1.5px solid var(--ink);border-radius:20px;padding:26px 22px;display:flex;flex-direction:column;position:relative;min-width:0}
 .plan .price small{color:var(--muted);font-size:15px}
@@ -548,6 +557,7 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
       <div class="loc"><label for="locn" data-i18n="lo.size"></label><div class="track"><div class="ticks" id="ticks"></div><div class="knob" id="knob"></div><input type="range" id="locn" min="1" max="11" value="1" aria-label="Locations"></div><div class="n"><span id="locv">1</span> <span id="locu"></span></div></div>
       <div class="plans" id="plans"></div>
       <p class="all" data-i18n="p.all"></p>
+      <div class="cmp" id="cmp"></div>
     </div>
   </section>
 
@@ -834,6 +844,47 @@ I18N.add({
   const L = () => I18N.lang;
   const fmt = (n, dec = 0) => new Intl.NumberFormat(L() === 'en' ? 'en-IE' : I18N.locale(), { style: 'currency', currency: 'EUR', minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
 
+
+
+  // ---------- full comparison: [group or row, Start, Pro, Chains]; true ✓, false –, 'soon', or text ----------
+  const CMP = [
+    ['g', { it: 'Carte e clienti', en: 'Cards and customers', pl: 'Karty i klienci' }],
+    [{ it: 'Apple Wallet e Google Wallet', en: 'Apple Wallet and Google Wallet', pl: 'Apple Wallet i Google Wallet' }, true, true, true],
+    [{ it: 'Carte attive', en: 'Active cards', pl: 'Aktywne karty' }, '1', '∞', '∞'],
+    [{ it: 'Clienti e timbri', en: 'Customers and stamps', pl: 'Klienci i pieczątki' }, '∞', '∞', '∞'],
+    [{ it: 'Sedi', en: 'Locations', pl: 'Lokale' }, '1', '1–10', '11+'],
+    [{ it: 'Telefoni dello staff', en: 'Staff phones', pl: 'Telefony obsługi' }, '3', { it: '10 a sede', en: '10 per location', pl: '10 na lokal' }, '∞'],
+    [{ it: 'Carta in italiano, inglese e polacco', en: 'Card in English, Italian and Polish', pl: 'Karta po polsku, angielsku i włosku' }, true, true, true],
+    ['g', { it: 'Messaggi e premi', en: 'Messages and rewards', pl: 'Wiadomości i nagrody' }],
+    [{ it: 'Messaggi sul telefono dei clienti', en: 'Messages on customers\' phones', pl: 'Wiadomości na telefony klientów' }, true, true, true],
+    [{ it: 'Promemoria quando passano vicino', en: 'Reminders when they walk past', pl: 'Przypomnienia, gdy przechodzą obok' }, true, true, true],
+    [{ it: 'Regalo di compleanno', en: 'Birthday gift', pl: 'Prezent urodzinowy' }, true, true, true],
+    [{ it: 'Porta un amico', en: 'Bring a friend', pl: 'Poleć znajomego' }, true, true, true],
+    [{ it: 'Timbri doppi nelle ore vuote', en: 'Double stamps in quiet hours', pl: 'Podwójne pieczątki w spokojnych godzinach' }, true, true, true],
+    [{ it: 'Richiesta di recensione Google', en: 'Google review request', pl: 'Prośba o opinię w Google' }, true, true, true],
+    ['g', { it: 'Statistiche', en: 'Analytics', pl: 'Statystyki' }],
+    [{ it: 'Panoramica: clienti, visite, premi', en: 'Overview: customers, visits, rewards', pl: 'Podsumowanie: klienci, wizyty, nagrody' }, true, true, true],
+    [{ it: 'Statistiche per sede', en: 'Per-location breakdown', pl: 'Statystyki dla każdego lokalu' }, false, true, true],
+    [{ it: 'Esporta i clienti in Excel', en: 'Export customers to Excel', pl: 'Eksport klientów do Excela' }, false, true, true],
+    ['g', { it: 'Design e materiali', en: 'Design and print', pl: 'Projekt i materiały' }],
+    [{ it: 'Logo, colori e timbro', en: 'Logo, colours and stamp', pl: 'Logo, kolory i pieczątka' }, { it: 'Fai da te', en: 'You set it', pl: 'Sam ustawiasz' }, { it: 'Lo facciamo noi', en: 'We design it', pl: 'Projektujemy my' }, { it: 'Lo facciamo noi', en: 'We design it', pl: 'Projektujemy my' }],
+    [{ it: 'Poster e QR da stampare', en: 'Printable poster and QR code', pl: 'Plakat i kod QR do wydruku' }, true, true, true],
+    [{ it: 'Kit stampato a casa tua', en: 'Printed kit sent to you', pl: 'Wydrukowane materiały z wysyłką' }, false, true, true],
+    ['g', { it: 'Carte regalo', en: 'Gift cards', pl: 'Karty podarunkowe' }],
+    [{ it: 'Carte regalo nel Wallet, vendute online', en: 'Gift cards in Wallet, sold online', pl: 'Karty podarunkowe w Wallet, sprzedaż online' }, 'soon', 'soon', 'soon'],
+    ['g', { it: 'Assistenza', en: 'Support', pl: 'Wsparcie' }],
+    [{ it: 'Email', en: 'Email', pl: 'E-mail' }, true, true, true],
+    [{ it: 'WhatsApp prioritario', en: 'Priority WhatsApp', pl: 'Priorytetowy WhatsApp' }, false, true, true],
+    [{ it: 'Contratto, fattura e accordo GDPR', en: 'Contract, invoice and GDPR agreement', pl: 'Umowa, faktura i umowa powierzenia danych' }, false, false, true]
+  ];
+  function compare() {
+    const L = I18N.lang, tx = v => typeof v === 'object' ? (v[L] || v.en) : v;
+    const cell = v => v === true ? '<td class="y">✓</td>' : v === false ? '<td class="n">–</td>' : v === 'soon' ? `<td><span class="soon">${I18N.t('ty.soon')}</span></td>` : `<td>${UI.esc(tx(v))}</td>`;
+    const names = CONFIG.plans.filter(p => !p.hidden).map(p => I18N.pick(p).name);
+    document.getElementById('cmp').innerHTML = `<table><thead><tr><th></th>${names.map(n => `<th>${UI.esc(n)}</th>`).join('')}</tr></thead><tbody>${CMP.map(r =>
+      r[0] === 'g' ? `<tr class="grp"><td colspan="4">${UI.esc(tx(r[1]))}</td></tr>` : `<tr><td>${UI.esc(tx(r[0]))}</td>${r.slice(1).map(cell).join('')}</tr>`).join('')}</tbody></table>`;
+  }
+  document.addEventListener('langchange', compare); setTimeout(compare, 0);
 
   // ---------- step videos: tap to play ----------
   document.querySelectorAll('.vid').forEach(v => v.addEventListener('click', () => {
