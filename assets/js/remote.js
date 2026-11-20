@@ -100,7 +100,7 @@
     // ---- owner dashboard ----
     ownerData: () => rpc('owner_data'),
     // Subscriptions (Stripe): each returns { url } to open.
-    checkout: (plan, interval) => edge('stripe-checkout', { plan, interval }),
+    checkout: (plan, interval, locations = 1) => edge('stripe-checkout', { plan, interval, locations }),
     billingPortal: () => edge('stripe-portal'),
     saveCard: card => rpc('owner_save_card', { p_card: card }),
     saveMessages: (cardId, messages) => rpc('owner_save_messages', { p_card_id: cardId, p_messages: messages }),

@@ -653,7 +653,7 @@ I18N.add({
     'd.billPastDue': 'Il pagamento non è riuscito. Aggiorna la carta in "Gestisci o disdici".', 'd.billCanceled': 'Abbonamento disdetto. Puoi riattivarlo quando vuoi.',
     'd.billDemo': 'Questa è la demo: i pagamenti funzionano nell\'area del tuo locale, dopo aver creato l\'account.',
     'd.billChain': 'Il tuo locale è nel piano Catene: si paga con fattura, come da contratto. Domande? Scrivici.',
-    'd.from': 'da', 'd.perLoc': '/ sede al mese', 'd.talk': 'Parliamone', 'd.chainWa': 'Ciao! Sono {business}: vorrei parlare del piano Catene di Timbro.',
+    'd.from': 'da', 'd.perLoc': '/ sede al mese', 'd.talk': 'Parliamone', 'd.locs': 'Sedi', 'd.chainWa': 'Ciao! Sono {business}: vorrei parlare del piano Catene di Timbro.',
     'd.choose': 'Scegli {plan}', 'd.mine': 'Il tuo piano', 'd.perMonth': '/ mese', 'd.perYear': '/ anno', 'd.vat': 'IVA esclusa',
     'd.lockT': 'Scegli un piano per ricevere link e QR', 'd.lockP': 'La tua carta è pronta. Scegli un piano per ricevere il link, il codice QR, il poster e lo scanner per la cassa. I primi {days} giorni sono gratis e puoi disdire quando vuoi.', 'd.lockBtn': 'Scegli il piano',
     'd.billFine': 'Il pagamento è gestito da Stripe: i dati della carta non passano da noi. Ricevi la fattura via email; inserisci la partita IVA al pagamento.',
@@ -774,7 +774,7 @@ I18N.add({
     'd.billPastDue': 'The payment didn\'t go through. Update your card in "Manage or cancel".', 'd.billCanceled': 'Subscription cancelled. You can restart it any time.',
     'd.billDemo': 'This is the demo: payments work in your café\'s dashboard once you have an account.',
     'd.billChain': 'Your café is on the Chains plan: billed by invoice under your contract. Questions? Write to us.',
-    'd.from': 'from', 'd.perLoc': '/ location a month', 'd.talk': 'Let\'s talk', 'd.chainWa': 'Hi! This is {business}: I\'d like to talk about the Timbro Chains plan.',
+    'd.from': 'from', 'd.perLoc': '/ location a month', 'd.talk': 'Let\'s talk', 'd.locs': 'Locations', 'd.chainWa': 'Hi! This is {business}: I\'d like to talk about the Timbro Chains plan.',
     'd.choose': 'Choose {plan}', 'd.mine': 'Your plan', 'd.perMonth': '/ month', 'd.perYear': '/ year', 'd.vat': 'excluding VAT',
     'd.lockT': 'Choose a plan to get your link and QR code', 'd.lockP': 'Your card is ready. Choose a plan to get the link, the QR code, the poster and the till scanner. The first {days} days are free and you can cancel anytime.', 'd.lockBtn': 'Choose a plan',
     'd.billFine': 'Payments are handled by Stripe: your card details never pass through us. Invoices arrive by email; add your VAT number at checkout.',
@@ -897,7 +897,7 @@ I18N.add({
     'd.billDemo': 'To wersja demo: płatności są dostępne w panelu lokalu po założeniu konta.',
     'd.billChain': 'Twój lokal jest w planie Sieci: rozliczenie fakturą według umowy. Pytania? Napisz do nas.',
     'd.choose': 'Wybierz {plan}', 'd.mine': 'Twój plan', 'd.perMonth': '/ miesiąc', 'd.perYear': '/ rok', 'd.vat': 'netto',
-    'd.from': 'od', 'd.perLoc': '/ lokal miesięcznie', 'd.talk': 'Porozmawiajmy', 'd.chainWa': 'Dzień dobry! Tu {business}. Chcemy porozmawiać o planie Sieci w Timbro.',
+    'd.from': 'od', 'd.perLoc': '/ lokal miesięcznie', 'd.talk': 'Porozmawiajmy', 'd.locs': 'Lokale', 'd.chainWa': 'Dzień dobry! Tu {business}. Chcemy porozmawiać o planie Sieci w Timbro.',
     'd.lockT': 'Wybierz plan, aby otrzymać link i kod QR', 'd.lockP': 'Twoja karta jest gotowa. Wybierz plan, aby otrzymać link, kod QR, plakat i skaner przy kasie. Pierwsze {days} dni są za darmo i możesz zrezygnować w każdej chwili.', 'd.lockBtn': 'Wybierz plan',
     'd.billFine': 'Płatności obsługuje Stripe: dane Twojej karty nie trafiają do nas. Faktury przychodzą e-mailem; NIP podasz przy płatności.',
     'd.billTerms': 'Regulamin, rezygnacja i zwroty', 'd.billThanks': 'Dziękujemy! Subskrypcja włączy się za kilka sekund.', 'd.billCancelled': 'Płatność anulowana: nic nie zostało pobrane.',
@@ -1670,6 +1670,7 @@ I18N.add({
     document.querySelectorAll('a[href^="stamper.html"]').forEach(a => { a.style.display = locked ? 'none' : ''; });
   }
   document.addEventListener('click', e => { if (e.target.closest('[data-go-plan]')) showTab('plan'); });
+  let locs = 1;   // Pro: how many locations the café pays for (quantity in Stripe)
   function renderBilling() {
     applyLock();
     const b = billing || {}, live = LIVE.includes(b.status), canPay = Store.remote && !Remote.demo;
@@ -1690,22 +1691,23 @@ I18N.add({
     $('bill-interval').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.i === interval)));
     const wa = (CONFIG.contact.phone || '').replace(/\D/g, '');
     const money = n => new Intl.NumberFormat(I18N.lang === 'en' ? 'en-IE' : I18N.locale(), { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
-    $('bill-plans').innerHTML = CONFIG.plans.map(p => {
+    $('bill-plans').innerHTML = CONFIG.plans.filter(p => !p.hidden || (live && b.plan === p.id)).map(p => {
       const L = I18N.pick(p), mine = (live && b.plan === p.id) || (chain && p.contact);
       // Chains: invoiced, from a price per location; agreed on WhatsApp.
       if (p.contact) return `<div class="bill-plan${mine ? ' mine' : ''}">
         ${mine ? `<span class="tag">${I18N.t('d.mine')}</span>` : ''}
         <h3>${UI.esc(L.name)}</h3>
-        <div class="price"><small>${I18N.t('d.from')}</small> ${money(p.month)} <small>${I18N.t('d.perLoc')} · ${I18N.t('d.vat')}</small></div>
+        <div class="price">${UI.esc(I18N.t('d.talk'))}</div>
         <p>${UI.esc(L.for)}</p>
         ${mine ? '' : `<a class="btn line block" href="${wa ? `https://wa.me/${wa}?text=${encodeURIComponent(I18N.t('d.chainWa', { business: current ? current.business : '' }))}` : '../index.html#prezzi'}" target="_blank" rel="noopener">${I18N.t('d.talk')}</a>`}
       </div>`;
-      const price = interval === 'year' ? p.month * CONFIG.yearlyMonths : p.month;
+      const n = p.tiers ? locs : 1, price = CONFIG.planPrice(p, n) * (interval === 'year' ? CONFIG.yearlyMonths : 1);
       return `<div class="bill-plan${mine ? ' mine' : ''}">
         ${mine ? `<span class="tag">${I18N.t('d.mine')}</span>` : ''}
         <h3>${UI.esc(L.name)}</h3>
         <div class="price">${money(price)} <small>${I18N.t(interval === 'year' ? 'd.perYear' : 'd.perMonth')} · ${I18N.t('d.vat')}</small></div>
         <p>${UI.esc(L.for)}</p>
+        ${p.tiers && !live && !chain ? `<label class="locs">${UI.esc(I18N.t('d.locs'))} <select data-locs>${Array.from({ length: p.locations }, (_, i) => `<option${i + 1 === locs ? ' selected' : ''}>${i + 1}</option>`).join('')}</select></label>` : ''}
         ${live || chain ? '' : `<button class="btn ${p.popular ? 'pop' : 'line'} block" type="button" data-buy="${p.id}"${canPay ? '' : ' disabled'}>${UI.esc(I18N.t('d.choose', { plan: L.name }))}</button>`}
       </div>`;
     }).join('');
@@ -1716,7 +1718,8 @@ I18N.add({
     catch (err) { UI.toast(err.message); btn.disabled = false; }
   }
   $('bill-interval').addEventListener('click', e => { const x = e.target.closest('button'); if (x) { interval = x.dataset.i; renderBilling(); } });
-  $('bill-plans').addEventListener('click', e => { const x = e.target.closest('[data-buy]'); if (x) openStripe(() => Remote.checkout(x.dataset.buy, interval), x); });
+  $('bill-plans').addEventListener('change', e => { if (e.target.matches('[data-locs]')) { locs = +e.target.value; renderBilling(); } });
+  $('bill-plans').addEventListener('click', e => { const x = e.target.closest('[data-buy]'); if (x) openStripe(() => Remote.checkout(x.dataset.buy, interval, x.dataset.buy === 'pro' ? locs : 1), x); });
   $('bill-manage').addEventListener('click', e => openStripe(() => Remote.billingPortal(), e.currentTarget));
   document.addEventListener('langchange', renderBilling);
 

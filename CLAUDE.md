@@ -9,5 +9,5 @@
 - Every update file must end with the whole permissions block from `schema.sql` (revoke all, then the grants): Postgres lets PUBLIC execute new functions, and a per-schema default privilege can't take that away. Check an upgrade with `has_function_privilege('anon', ...)`.
 - Instagram posts and reels: `marketing/instagram/` (`studio.html` draws them with the real card renderer, `make.js` renders PNG and MP4 in IT and EN; captions and posting plan in its README). Rebuild them after copy or price changes.
 - Languages: Italian, English and Polish (`assets/js/i18n.js`). Every `I18N.add` block and every `{ it, en }` object in `config.js` also has `pl`; a page that is not translated lists its languages with `data-langs` on its `.lang` switcher (examples and outreach: IT and EN only). Polish plurals: `I18N.plural(n, [1, 2-4, 5+])` or `UI.stampsWord`.
-- Prices: Start €19, Plus €39, Pro €79 a month; Chains (`contact: true`) is "from €8 per location", invoiced, never in Stripe.
+- Prices: Start €19 a month (1 location); Pro €39 for 1 location, +€25 each for locations 2 to 5, +€10 each from the 6th (one graduated Stripe price, quantity = locations, max 10); Chains (`contact: true`, 11+) shows no price ("Let's talk"), invoiced, never in Stripe. Plus (€39) is no longer sold (`hidden: true`, existing subscribers keep it).
 - No em dashes in user-facing copy.

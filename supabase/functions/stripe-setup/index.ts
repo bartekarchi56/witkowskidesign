@@ -15,7 +15,7 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
 const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'content-type': 'application/json' } });
 const SAAS_BUSINESS = 'txcd_10103001';   // Stripe tax code: software as a service, business use
 
-type Plan = { id: string; name: string; month: number; yearMonths?: number };
+type Plan = { id: string; name: string; month: number; yearMonths?: number; tiers?: [number | null, number][] };
 
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -39,18 +39,26 @@ Deno.serve(async req => {
       else if (product.name !== name) product = await stripe.products.update(product.id, { name });
       const priceIds: string[] = [];
       for (const interval of ['month', 'year'] as const) {
-        const amount = Math.round(plan.month * (interval === 'year' ? (plan.yearMonths ?? 10) : 1) * 100);
+        const times = interval === 'year' ? (plan.yearMonths ?? 10) : 1;
+        const amount = Math.round(plan.month * times * 100);
+        // Per-location plans (Pro): one graduated price, the quantity is the number of locations.
+        const tiers = plan.tiers?.map(([upTo, each]) => ({ up_to: upTo ?? 'inf' as const, unit_amount: Math.round(each * times * 100) }));
+        const sig = tiers ? JSON.stringify(tiers) : String(amount);
         const key = `timbro_${plan.id}_${interval}`;
-        const [current] = (await stripe.prices.list({ lookup_keys: [key], active: true, limit: 1 })).data;
-        if (current && current.unit_amount === amount && current.product === product.id) { priceIds.push(current.id); continue; }
+        const [current] = (await stripe.prices.list({ lookup_keys: [key], active: true, limit: 1, expand: ['data.tiers'] })).data;
+        const same = current && current.product === product.id && (tiers
+          ? current.billing_scheme === 'tiered' && JSON.stringify(current.tiers?.map(t => ({ up_to: t.up_to ?? 'inf', unit_amount: t.unit_amount }))) === sig
+          : current.unit_amount === amount);
+        if (same) { priceIds.push(current.id); continue; }
         // Prices can't be edited in Stripe: make a new one and move the lookup key to it.
         const price = await stripe.prices.create({
-          product: product.id, currency: 'eur', unit_amount: amount, recurring: { interval },
+          product: product.id, currency: 'eur', recurring: { interval },
+          ...(tiers ? { billing_scheme: 'tiered', tiers_mode: 'graduated', tiers } : { unit_amount: amount }),
           tax_behavior: 'exclusive', lookup_key: key, transfer_lookup_key: true
         });
         if (current) await stripe.prices.update(current.id, { active: false });
         priceIds.push(price.id);
-        done.push(`${key}: €${amount / 100}`);
+        done.push(tiers ? `${key}: tiers ${tiers.map(t => '€' + t.unit_amount / 100).join(' / ')}` : `${key}: €${amount / 100}`);
       }
       portalProducts.push({ product: product.id, prices: priceIds });
     }
