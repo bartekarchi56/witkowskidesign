@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stop printing · reel</title>
+<style>
+/* "Stop printing stamp cards. Watch this instead." 25 s, 1080 x 1920, timed to voice-en.mp3 (make.js renders it).
+   Text stays inside Instagram's safe zone: y 230 to 1440, the right 230 px kept clear of words. */
+@font-face{font-family:Archivo;src:url(../../../assets/fonts/archivo-latin.woff2) format('woff2');font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:Archivo;src:url(../../../assets/fonts/archivo-latin-ext.woff2) format('woff2');font-weight:100 900;font-stretch:62% 125%;unicode-range:U+0100-024F}
+html,body{margin:0;background:#000}
+#post{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:Archivo,Arial,sans-serif;color:#fff;
+  background:radial-gradient(120% 70% at 50% 45%,#16205e 0%,#0a0f33 45%,#04061a 100%)}
+.sc{position:absolute;inset:0}
+.ln{position:absolute;left:40px;right:40px;white-space:nowrap;text-align:center;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:1}
+.w{display:inline-block;margin:0 .12em}
+.b{color:#4F6BFF}.g{color:#7BC24A}
+/* paper card */
+.paper{position:absolute;left:190px;top:820px;width:700px;height:420px;background:#F3EAD7;border-radius:18px;box-shadow:0 40px 80px rgba(0,0,0,.5);color:#5a4630;overflow:hidden}
+.paper h3{margin:34px 40px 10px;font-size:40px;font-family:Georgia,serif}
+.paper .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:22px;padding:20px 40px}
+.paper .grid i{width:90px;height:90px;border:4px dashed #b39a74;border-radius:50%;display:block}
+.paper .grid i.on{background:radial-gradient(#b4483a 55%,transparent 56%);border-color:#b4483a}
+.half{position:absolute;top:0;height:100%;width:50%;overflow:hidden}
+.half > .paper{left:0;top:0}
+#photo{position:absolute;inset:0;background:url(../../../assets/img/karta-w-telefonie.jpg) 37% center/cover}
+#photo:after{content:'';position:absolute;inset:0;background:linear-gradient(rgba(4,6,26,.75),rgba(4,6,26,0) 40%,rgba(4,6,26,0) 70%,rgba(4,6,26,.8))}
+/* phones */
+.phone{position:absolute;width:520px;height:1060px;border-radius:78px;background:#05060d;border:10px solid #2a3170;box-shadow:0 0 90px rgba(80,100,255,.55)}
+.scr{position:absolute;inset:14px;border-radius:62px;background:#F2F2F7;overflow:hidden}
+.isl{position:absolute;left:50%;top:20px;width:140px;height:40px;margin-left:-70px;border-radius:22px;background:#000;z-index:3}
+.scr h4{margin:0;position:absolute;left:32px;top:84px;font-size:46px;color:#0b0b0c;font-weight:800}
+.card{position:absolute;left:20px;right:20px;top:160px;border-radius:26px;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.12);overflow:hidden;color:#111}
+.card .hd{display:flex;justify-content:space-between;align-items:center;padding:22px 24px}
+.card .hd img{height:52px}
+.card .hd small{font-size:15px;font-weight:700;letter-spacing:.1em;color:#777;text-align:right}
+.card .hd b{display:block;font-size:34px;color:#111;letter-spacing:0}
+.strip{position:relative;height:210px;background:url(../../../print/kit-parzymy/karta-pasek-parzymy.png) center/cover;display:grid;grid-template-columns:repeat(4,1fr);align-items:center;justify-items:center;padding:6px 10px}
+.strip img{width:88px;height:88px}
+.card .qr{width:170px;height:170px;margin:26px auto 10px;background:conic-gradient(#111 25%,#fff 0 50%,#111 0 75%,#fff 0) 0 0/34px 34px;border:12px solid #fff;outline:5px solid #111}
+.card .code{text-align:center;font-size:20px;letter-spacing:.2em;color:#555;padding-bottom:24px}
+.cam{position:absolute;inset:0;background:#111}
+.cam .frame{position:absolute;left:90px;top:330px;width:300px;height:300px;border:6px solid #7BC24A;border-radius:30px}
+.cam .line{position:absolute;left:100px;width:280px;height:6px;background:#7BC24A;box-shadow:0 0 20px #7BC24A}
+.cam .qr2{position:absolute;left:140px;top:380px;width:200px;height:200px;background:conic-gradient(#111 25%,#fff 0 50%,#111 0 75%,#fff 0) 0 0/40px 40px;border:14px solid #fff}
+.cam .btn{position:absolute;left:60px;right:60px;top:760px;height:120px;border-radius:60px;background:#2B32FF;font-size:44px;font-weight:800;display:grid;place-items:center}
+.ripple{position:absolute;left:50%;top:820px;width:40px;height:40px;margin:-20px;border-radius:50%;border:6px solid #fff}
+.ok{position:absolute;left:50%;top:360px;width:240px;height:240px;margin-left:-120px;border-radius:50%;background:#7BC24A;display:grid;place-items:center;font-size:150px;font-weight:900}
+.chip{position:absolute;left:120px;right:300px;height:150px;border-radius:30px;background:rgba(255,255,255,.08);border:3px solid rgba(140,160,255,.6);display:flex;align-items:center;padding-left:40px;font-size:70px;font-weight:900}
+.logo{position:absolute;left:0;right:0;top:1050px;text-align:center;font-weight:800;font-size:120px;letter-spacing:-.03em}
+.logo em{display:inline-block;width:84px;height:84px;border:20px solid #4F6BFF;border-radius:50%;box-sizing:border-box;vertical-align:-4px;margin-right:24px}
+.cta{position:absolute;left:0;right:0;top:820px;text-align:center}
+.cta span{display:inline-block;padding:36px 70px;border-radius:999px;background:#2B32FF;font-size:64px;font-weight:900}
+</style>
+</head>
+<body>
+<div id="post">
+  <div class="sc" id="s1">
+    <div id="whole"><div class="paper"><h3>Paper stamp card</h3><div class="grid"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+  </div>
+  <div class="sc" id="s2"><div id="photo"></div></div>
+  <div class="sc" id="s3">
+    <div class="phone" id="cust" style="left:80px;top:420px"><div class="scr"><div class="isl"></div><h4>Wallet</h4>
+      <div class="card"><div class="hd"><img src="../../../print/kit-parzymy/logo-parzymy-black-wide.png" alt=""><small>PIECZĄTKI<b id="cnt">2/8</b></small></div>
+        <div class="strip" id="stamps"></div><div class="qr"></div><div class="code">P4RZ7Y</div></div></div></div>
+    <div class="phone" id="staff" style="top:470px"><div class="scr"><div class="isl"></div><div class="cam">
+      <div class="qr2"></div><div class="frame"></div><div class="line" id="scan"></div>
+      <div class="btn" id="btn">+1 STAMP</div><div class="ripple" id="rip"></div><div class="ok" id="ok">✓</div></div></div></div>
+  </div>
+  <div class="sc" id="s4">
+    <div class="chip" id="c1" style="top:560px">NO APP</div>
+    <div class="chip" id="c2" style="top:760px">NO PAPER</div>
+    <div class="chip" id="c3" style="top:960px"><span class="b">€19</span>&nbsp;/ MONTH</div>
+  </div>
+  <div class="sc" id="s5"><div class="cta"><span>COMMENT "TIMBRO"</span></div></div>
+  <div class="sc" id="s6"><div class="logo"><em></em>Timbro</div></div>
+  <div id="lines"></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const cl = x => Math.max(0, Math.min(1, x)), k = (t, a, b) => cl((t - a) / (b - a));
+const ease = x => 1 - Math.pow(1 - cl(x), 3);
+const back = x => { x = cl(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+window.DURATION = 25;
+// [in, out, top, size, text]: timed to voice-en.mp3 (the voice is played from 0.3 s). * = blue, ~ = green.
+const V = 0.3;
+const TEXT = [
+  [0.0, 2.3, 300, 100, 'STOP *PRINTING'], [0.5, 2.3, 410, 100, 'STAMP CARDS.'],
+  [2.4, 3.9, 330, 100, 'WATCH THIS'], [2.8, 3.9, 440, 100, '*INSTEAD.'],
+  [4.1, 7.0, 300, 96, '~PARZYMY TUTAJ'], [5.2, 7.0, 410, 64, 'A CAFÉ IN BYDGOSZCZ'],
+  [7.0, 8.6, 260, 80, "THEIR CARD'S IN"], [7.3, 8.6, 350, 80, 'MY *WALLET.'],
+  [8.7, 11.2, 260, 80, 'THE BARISTA'], [8.9, 11.2, 350, 80, '*SCANS IT.'],
+  [11.3, 13.2, 260, 90, 'ONE TAP.'], [12.2, 13.2, 360, 90, '*TWO SECONDS.'],
+  [13.3, 15.4, 260, 90, 'STAMP *3/8.'], [14.8, 15.4, 360, 90, '~DONE.'],
+  [15.5, 18.9, 300, 90, 'NO APP.'], [15.9, 18.9, 400, 90, 'NO PAPER.'],
+  [19.1, 21.5, 560, 80, "WE'LL DESIGN"], [20.2, 21.5, 660, 80, '*YOURS.'],
+  [21.6, 25, 560, 100, 'STOP PRINTING.'], [22.7, 25, 680, 100, 'START *STAMPING.']
+];
+$('lines').innerHTML = TEXT.map(([a, b, top, size, s], i) => `<div class="ln" style="top:${top}px;font-size:${size}px">${s.split(' ').map((w, j) =>
+  `<span class="w${w[0] === '*' ? ' b' : w[0] === '~' ? ' g' : ''}" data-l="${i}" data-j="${j}">${w.replace(/^[*~]/, '')}</span>`).join(' ')}</div>`).join('');
+const words = [...document.querySelectorAll('.w')];
+$('stamps').innerHTML = Array.from({ length: 8 }, (_, i) => `<img id="st${i}" src="../../../print/kit-parzymy/${i < 2 ? 'pieczatka' : 'pusta-pieczatka'}-parzymy.png" alt="">`).join('');
+const vis = (id, a, b) => { $(id).style.display = 0 ? '' : ''; };
+
+window.renderAt = t => {
+  for (const w of words) {
+    const [a, b] = TEXT[w.dataset.l], s = a + w.dataset.j * 0.1, inn = ease(k(t, s, s + 0.3)), out = k(t, b - 0.25, b);
+    w.style.opacity = inn * (1 - out); w.style.transform = `translateY(${(1 - inn) * 50 - out * 30}px)`; w.style.filter = `blur(${(1 - inn) * 12 + out * 14}px)`;
+  }
+  const scene = (id, a, b, fade = 0.35) => { const el = $(id), on = t >= a - fade && t < b + fade; el.style.display = on ? '' : 'none'; el.style.opacity = on ? Math.min(k(t, a - fade, a), 1 - k(t, b, b + fade)) : 0; return on; };
+  // 1: the paper card shakes, then tears in two on "Watch this instead"
+  if (scene('s1', 0, 3.8)) {
+    const shake = t < 2.3 ? Math.sin(t * 40) * 6 * k(t, 1.0, 2.2) : 0, tear = ease(k(t, 2.4, 3.6));
+    const w = $('whole');
+    if (t < 2.4) { w.innerHTML.includes('half') || 0; w.style.transform = `rotate(${-4 + shake * 0.3}deg) translateX(${shake}px)`; w.style.opacity = 1; }
+    else w.style.transform = '';
+    w.querySelector('.paper').style.clipPath = t < 2.4 ? 'none' : '';
+    if (t >= 2.4) {
+      if (!$('h1')) w.innerHTML = `<div id="h1" class="half" style="left:0"><div class="paper">${w.querySelector('.paper').innerHTML}</div></div><div id="h2" class="half" style="left:540px"><div class="paper" style="left:-540px">${w.querySelector('.paper').innerHTML}</div></div>`;
+      $('h1').style.transform = `translate(${-tear * 500}px,${tear * tear * 900}px) rotate(${-tear * 40}deg)`;
+      $('h2').style.transform = `translate(${tear * 500}px,${tear * tear * 900}px) rotate(${tear * 40}deg)`;
+    }
+  }
+  // 2: the real photo, slow push in
+  if (scene('s2', 3.8, 6.9)) $('photo').style.transform = `scale(${1.15 - 0.12 * k(t, 3.5, 7.2)})`;
+  // 3: customer phone, staff phone scans, tap, stamp 3
+  if (scene('s3', 6.9, 15.4)) {
+    const c = ease(k(t, 6.8, 7.6));
+    $('cust').style.transform = `translateY(${(1 - c) * 1300}px) rotate(${(1 - c) * 6}deg) scale(${1 - 0.06 * k(t, 8.5, 9.2)})`;
+    const sIn = ease(k(t, 8.5, 9.3)), sOut = 0;
+    $('staff').style.left = `${1100 - sIn * 600}px`;
+    $('staff').style.transform = `rotate(${(1 - sIn) * 10 - 3}deg)`;
+    $('scan').style.top = `${350 + 260 * (0.5 + 0.5 * Math.sin(t * 6))}px`;
+    $('scan').style.opacity = t < 11.3 ? 1 : 0;
+    const tap = k(t, 11.35, 11.9);
+    $('rip').style.opacity = tap > 0 && tap < 1 ? 1 - tap : 0; $('rip').style.transform = `scale(${1 + tap * 8})`;
+    $('btn').style.transform = `scale(${1 - 0.06 * Math.sin(tap * Math.PI)})`;
+    const okk = back(k(t, 14.8, 15.2));
+    $('ok').style.opacity = cl(okk); $('ok').style.transform = `scale(${okk})`;
+    const got = t >= 13.35;
+    $('cnt').textContent = got ? '3/8' : '2/8';
+    const st = $('st2'); st.src = `../../../print/kit-parzymy/${got ? 'pieczatka' : 'pusta-pieczatka'}-parzymy.png`;
+    st.style.transform = got ? `scale(${1 + 0.6 * Math.sin(k(t, 13.35, 13.9) * Math.PI)}) rotate(${-8 * (1 - k(t, 13.35, 13.9))}deg)` : '';
+  }
+  // 4: no app, no paper, €19
+  if (scene('s4', 15.4, 18.9)) [['c1', 15.5], ['c2', 16.0], ['c3', 17.3]].forEach(([id, a]) => { const e = back(k(t, a, a + 0.5)); $(id).style.opacity = cl(e); $(id).style.transform = `translateX(${(1 - e) * -200}px)`; });
+  ['s4'].forEach(() => { const l = document.querySelectorAll('.ln'); });
+  // 5: comment TIMBRO
+  if (scene('s5', 18.9, 21.5)) { const e = back(k(t, 19.0, 19.6)); $('s5').firstElementChild.style.transform = `scale(${0.6 + 0.4 * e})`; }
+  // 6: the end
+  if (scene('s6', 21.5, 25.5)) { const e = ease(k(t, 21.5, 22.2)); $('s6').firstElementChild.style.transform = `translateY(${(1 - e) * 60}px)`; }
+};
+// The words for scene 4 sit beside the chips, so hide the duplicates there.
+TEXT[14][2] = -999; TEXT[15][2] = -999;
+document.querySelectorAll('.ln')[14].style.display = 'none'; document.querySelectorAll('.ln')[15].style.display = 'none';
+window.READY = false;
+Promise.all([document.fonts.ready, ...[...document.images].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }))]).then(() => { window.renderAt(0); window.READY = true; });
+</script>
+</body>
+</html>
