@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gift card poster</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+/* A4 poster for a café's gift cards: gift/poster.html?b=<business>. "Save as PDF" prints it. */
+@page{size:A4;margin:0}
+html,body{margin:0;background:#E9E9EE;font-family:var(--font)}
+.bar{max-width:794px;margin:16px auto;display:flex;justify-content:space-between;align-items:center;padding:0 10px}
+.a4{width:210mm;height:297mm;margin:0 auto 30px;box-sizing:border-box;padding:22mm 18mm;display:flex;flex-direction:column;align-items:center;text-align:center;background:#1B1B19;color:#fff;box-shadow:0 20px 60px -30px rgba(0,0,0,.5);overflow:hidden}
+.a4 .logo{height:22mm;display:flex;align-items:center;justify-content:center}
+.a4 .logo img{max-height:22mm;max-width:120mm}
+.a4 .logo b{font:900 13mm/1 var(--font);letter-spacing:.02em}
+.a4 h1{font:900 25mm/0.95 var(--font);font-stretch:120%;letter-spacing:-.02em;margin:14mm 0 6mm;text-transform:uppercase}
+.a4 .sub{font-size:6.5mm;opacity:.85;max-width:150mm;margin:0}
+.a4 .strip{width:174mm;height:40mm;margin:10mm 0;border-radius:6mm;background:center/cover}
+.a4 .qr{width:78mm;height:78mm;background:#fff;border-radius:6mm;padding:6mm;box-sizing:border-box;margin-top:auto}
+.a4 .qr svg{width:100%;height:100%}
+.a4 .how{font-size:5.5mm;margin:6mm 0 0;opacity:.9}
+.a4 .by{font-size:3.6mm;opacity:.55;margin-top:6mm}
+@media print{html,body{background:none}.bar{display:none}.a4{margin:0;box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="lang"></div><button class="btn pop" type="button" onclick="print()" data-i18n="p.pdf"></button></div>
+<div class="a4" id="a4"><p data-i18n="p.wait"></p></div>
+<script src="../assets/vendor/supabase.js"></script>
+<script src="../assets/vendor/qrcode.js"></script>
+<script src="../assets/js/config.js?v=20261120b"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/remote.js"></script>
+<script>
+I18N.add({
+  it: { 'p.pdf': 'Salva come PDF', 'p.wait': 'Un momento…', 'p.h': 'Regala una carta regalo', 'p.sub': 'Scegli l\'importo, paga online e la carta arriva subito sul telefono.', 'p.how': 'Inquadra il QR con la fotocamera', 'p.by': 'Carte regalo con Timbro' },
+  en: { 'p.pdf': 'Save as PDF', 'p.wait': 'One moment…', 'p.h': 'Give a gift card', 'p.sub': 'Pick an amount, pay online and the card arrives on the phone right away.', 'p.how': 'Scan the QR with your camera', 'p.by': 'Gift cards by Timbro' },
+  pl: { 'p.pdf': 'Zapisz jako PDF', 'p.wait': 'Chwileczkę…', 'p.h': 'Podaruj kartę podarunkową', 'p.sub': 'Wybierz kwotę, zapłać online, a karta od razu trafi na telefon.', 'p.how': 'Zeskanuj kod QR aparatem', 'p.by': 'Karty podarunkowe z Timbro' }
+});
+(async () => {
+  const biz = new URLSearchParams(location.search).get('b') || '', t = (k, v) => I18N.t(k, v);
+  let shop = null; try { shop = await Remote.giftShop(biz); } catch (e) { shop = null; }
+  const url = CONFIG.siteUrl.replace(/\/$/, '') + '/gift/?b=' + biz;
+  function draw() {
+    I18N.apply();
+    const d = (shop && shop.gift && shop.gift.design) || {}, a4 = document.getElementById('a4');
+    a4.style.background = d.color || '#1B1B19'; a4.style.color = d.text || '#FFFFFF';
+    a4.innerHTML = `<div class="logo">${d.logo ? `<img src="${d.logo}" alt="">` : `<b>${UI.esc(shop ? shop.name : '')}</b>`}</div>
+      <h1>${t('p.h')}</h1><p class="sub">${t('p.sub')}</p>
+      ${d.bg ? `<div class="strip" style="background-image:url(${d.bg})"></div>` : ''}
+      <div class="qr">${UI.qrSvg(url)}</div><p class="how">${t('p.how')}</p><p class="by">${t('p.by')}</p>`;
+    document.title = t('p.h') + (shop ? ' · ' + shop.name : '');
+  }
+  document.addEventListener('langchange', draw); draw();
+})();
+</script>
+</body>
+</html>
