@@ -72,6 +72,34 @@ header.nav .wrap{display:flex;justify-content:space-between;align-items:center;h
 .cta{padding:0 0 90px;text-align:center}
 @media (max-width:900px){.demo{grid-template-columns:1fr}.stage{aspect-ratio:4/4}.panel{width:86%}.link{width:40px}.node{min-width:0}}
 @media (prefers-reduced-motion:reduce){.scene{transition:none}}
+
+/* how customers buy: three phones */
+.buy{padding:20px 0 90px}
+.buy h2{font-size:clamp(28px,3.6vw,44px);letter-spacing:-.02em;margin:0 0 34px}
+.buy .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.buy .shot{background:#fff;border-radius:26px;height:400px;overflow:hidden;display:flex;justify-content:center;align-items:flex-start;padding-top:34px;box-sizing:border-box}
+.buy h3{margin:20px 0 8px;font-size:20px;display:flex;gap:10px}.buy h3 b{color:var(--pop)}
+.buy p{margin:0 0 0 30px;color:var(--ink-2)}
+.ph{width:210px;height:430px;border-radius:38px;background:#111;padding:8px;box-sizing:border-box;box-shadow:0 30px 50px -30px rgba(0,0,0,.6)}
+.ph .sc{position:relative;height:100%;border-radius:31px;overflow:hidden;background:#fff;font-size:11px}
+.ph .isl{position:absolute;left:50%;top:8px;width:66px;height:18px;margin-left:-33px;border-radius:10px;background:#000;z-index:3}
+.cam{background:#222;height:100%;display:flex;align-items:center;justify-content:center}
+.stand{width:120px;background:#2B32FF;border-radius:6px;padding:12px 10px 14px;color:#fff;text-align:center;transform:perspective(400px) rotateX(6deg);box-shadow:0 18px 0 -6px #C9A27A}
+.stand b{display:block;font:900 13px/1.1 var(--font);margin-bottom:8px}
+.stand .q{width:64px;height:64px;margin:0 auto;background:#fff;border-radius:6px;padding:5px}.stand .q svg{width:100%;height:100%}
+.frame{position:absolute;inset:34% 22%;border:3px solid #FFD54A;border-radius:12px}
+.pill{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:#FFD54A;color:#111;font-weight:700;padding:5px 10px;border-radius:999px;white-space:nowrap}
+.shop{padding:40px 14px 0}.shop h5{margin:0 0 4px;font-size:14px}.shop small{color:#777}
+.shop .a{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}.shop .a span{border:1px solid #ddd;border-radius:8px;padding:8px;text-align:center;font-weight:700}
+.shop .a span.on{border-color:#2B32FF;box-shadow:0 0 0 1px #2B32FF inset}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.15);padding:12px}
+.sheet .p{display:block;background:#111;color:#fff;border-radius:7px;padding:7px;text-align:center;font-weight:700;margin-top:6px}
+.sheet .c{background:#2B32FF}
+.gift{padding:42px 12px 0;text-align:center}
+.gift .g{border-radius:14px;padding:12px;color:#fff;background:#1F6F4A;text-align:left}
+.gift .g small{opacity:.8;letter-spacing:.1em;font-size:9px}.gift .g b{display:block;font-size:13px}.gift .g .v{font:800 26px/1 var(--font);margin:16px 0 4px}
+.gift .q{width:80px;height:80px;margin:14px auto 4px;padding:6px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.12)}.gift .q svg{width:100%;height:100%}
+@media (max-width:900px){.buy .grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -130,6 +158,19 @@ header.nav .wrap{display:flex;justify-content:space-between;align-items:center;h
     </div>
   </section>
 
+  <section class="buy wrap">
+    <h2 data-i18n="b.h"></h2>
+    <div class="grid">
+      <div><div class="shot"><div class="ph"><div class="sc"><div class="isl"></div><div class="cam"><div class="stand"><b data-i18n="b.stand"></b><div class="q" id="q1"></div></div></div><div class="frame"></div><span class="pill" data-i18n="b.open"></span></div></div></div>
+        <h3><b>1.</b><span data-i18n="b.s1"></span></h3><p data-i18n="b.s1p"></p></div>
+      <div><div class="shot"><div class="ph"><div class="sc"><div class="isl"></div><div class="shop"><h5>Bar Brera</h5><small data-i18n="b.choose"></small><div class="a"><span>€10</span><span>€25</span><span>€50</span><span class="on">€100</span></div></div>
+        <div class="sheet"><b>€100.00</b><span class="p"> Pay</span><span class="p">G Pay</span><span class="p c" data-i18n="b.card"></span></div></div></div></div>
+        <h3><b>2.</b><span data-i18n="b.s2"></span></h3><p data-i18n="b.s2p"></p></div>
+      <div><div class="shot"><div class="ph"><div class="sc"><div class="isl"></div><div class="gift"><div class="g"><small data-i18n="b.gc"></small><b>Bar Brera</b><div class="v">€100</div><small data-i18n="b.valid"></small></div><div class="q" id="q2"></div><small style="color:#777">GK7M2QX9P</small></div></div></div></div>
+        <h3><b>3.</b><span data-i18n="b.s3"></span></h3><p data-i18n="b.s3p"></p></div>
+    </div>
+  </section>
+
   <section class="cta wrap">
     <h2 style="font-size:clamp(28px,4vw,48px);margin:0 0 12px" data-i18n="k.ctaT"></h2>
     <p style="color:var(--ink-2);margin:0 0 22px" data-i18n="k.ctaP"></p>
@@ -142,17 +183,17 @@ header.nav .wrap{display:flex;justify-content:space-between;align-items:center;h
 <script src="../assets/js/ui.js"></script>
 <script>
 I18N.add({
-  it: { 'k.label': 'Carte regalo', 'k.h1': 'Carte regalo, pronte in pochi minuti.', 'k.lede': 'I clienti le comprano online per regalarle. Arrivano nel Wallet del telefono e si spendono alla cassa, anche in più volte. I soldi vanno sul tuo conto.', 'k.start': 'Crea le tue carte regalo',
+  it: { 'b.h': 'Come i clienti comprano le carte regalo', 'b.stand': 'REGALA UNA CARTA REGALO', 'b.open': 'Apri il link', 'b.s1': 'Aprono il tuo link', 'b.s1p': 'Inquadrano il QR alla cassa o aprono il link che condividi.', 'b.choose': 'Scegli un importo', 'b.card': 'Paga con carta', 'b.s2': 'Scelgono l\'importo e pagano', 'b.s2p': 'Pagano con carta, Apple Pay o Google Pay.', 'b.gc': 'CARTA REGALO', 'b.valid': 'Valida 12 mesi', 'b.s3': 'La carta è pronta', 'b.s3p': 'La carta con saldo e QR si apre subito sul telefono, da regalare o usare alla cassa.', 'k.label': 'Carte regalo', 'k.h1': 'Carte regalo, pronte in pochi minuti.', 'k.lede': 'I clienti le comprano online per regalarle. Arrivano nel Wallet del telefono e si spendono alla cassa, anche in più volte. I soldi vanno sul tuo conto.', 'k.start': 'Crea le tue carte regalo',
     'k.h2': 'Quattro passi e vendi.', 'k.sub': 'Importi, design e pagamenti, tutto in un posto.',
     'k.s1': 'Scegli gli importi', 'k.s1p': 'Gli importi tra cui scegliere, un eventuale bonus e per quanto tempo vale la carta.', 'k.s2': 'Disegna la carta', 'k.s2p': 'Logo e colori del tuo locale: la carta regalo è uguale alla tua carta fedeltà.', 'k.s3': 'Collega Stripe', 'k.s3p': 'Un conto Stripe in 5 minuti: ogni vendita arriva direttamente a te. Timbro trattiene il 5% (Start) o il 2% (Pro).', 'k.s4': 'Inizia a vendere', 'k.s4p': 'Condividi il link o stampa il QR. Alla cassa scali l\'importo con il telefono.',
     'k.amounts': 'Importi', 'k.amountsP': 'Quello che il cliente sceglie quando compra', 'k.amt': 'Importo', 'k.bonus': 'Bonus', 'k.total': 'Credito', 'k.exp': 'Scadenza', 'k.custom': 'Altro', 'k.balance': 'Saldo', 'k.giftCard': 'CARTA REGALO', 'k.you': 'Il tuo locale', 'k.connected': 'Collegato', 'k.sale': 'Nuova vendita', 'k.share': 'Condividi la carta', 'k.shareP': 'Ecco come farla arrivare ai clienti.', 'k.qr': '⬇ Codice QR', 'k.poster': '⧉ Copia il link', 'k.golive': '● Pubblica', 'k.live': 'Le carte regalo sono online', 'k.liveP': 'I clienti possono comprarle da subito.',
     'k.ctaT': 'Regali che riportano clienti.', 'k.ctaP': 'Incluse in ogni piano Timbro. Attivale dal pannello in pochi minuti.' },
-  en: { 'k.label': 'Gift cards', 'k.h1': 'Gift cards, ready in minutes.', 'k.lede': 'Customers buy them online as a present. They go into the phone\'s Wallet and are spent at the till, in one go or several. The money goes to your account.', 'k.start': 'Create your gift cards',
+  en: { 'b.h': 'How customers buy your gift cards', 'b.stand': 'GIVE A GIFT CARD', 'b.open': 'Open the link', 'b.s1': 'They open your link', 'b.s1p': 'They scan the QR at your counter or open the link you share.', 'b.choose': 'Choose an amount', 'b.card': 'Pay by card', 'b.s2': 'They pick an amount and pay', 'b.s2p': 'They pay by card, Apple Pay or Google Pay.', 'b.gc': 'GIFT CARD', 'b.valid': 'Valid for 12 months', 'b.s3': 'The card is ready', 'b.s3p': 'The card with its balance and QR opens on their phone right away, to give as a present or use at the till.', 'k.label': 'Gift cards', 'k.h1': 'Gift cards, ready in minutes.', 'k.lede': 'Customers buy them online as a present. They go into the phone\'s Wallet and are spent at the till, in one go or several. The money goes to your account.', 'k.start': 'Create your gift cards',
     'k.h2': 'Four steps and you\'re selling.', 'k.sub': 'Amounts, design and payments, all in one place.',
     'k.s1': 'Pick your amounts', 'k.s1p': 'The amounts customers choose from, an optional bonus, and how long a card stays valid.', 'k.s2': 'Design your card', 'k.s2p': 'Your logo and colours: the gift card matches your loyalty card.', 'k.s3': 'Connect Stripe', 'k.s3p': 'A Stripe account in 5 minutes: every sale goes straight to you. Timbro keeps 5% (Start) or 2% (Pro).', 'k.s4': 'Start selling', 'k.s4p': 'Share the link or print the QR. At the till, deduct the amount with your phone.',
     'k.amounts': 'Amounts', 'k.amountsP': 'What customers choose from when buying', 'k.amt': 'Amount', 'k.bonus': 'Bonus', 'k.total': 'Credit', 'k.exp': 'Expiry', 'k.custom': 'Custom', 'k.balance': 'Balance', 'k.giftCard': 'GIFT CARD', 'k.you': 'Your café', 'k.connected': 'Connected', 'k.sale': 'New sale', 'k.share': 'Share your card', 'k.shareP': 'Here\'s how to get it to your customers.', 'k.qr': '⬇ QR code', 'k.poster': '⧉ Copy link', 'k.golive': '● Go live', 'k.live': 'Your gift cards are live', 'k.liveP': 'Customers can start buying right away.',
     'k.ctaT': 'Presents that bring customers back.', 'k.ctaP': 'Included in every Timbro plan. Switch them on in your dashboard in minutes.' },
-  pl: { 'k.label': 'Karty podarunkowe', 'k.h1': 'Karty podarunkowe gotowe w kilka minut.', 'k.lede': 'Klienci kupują je online na prezent. Trafiają do Portfela w telefonie i płaci się nimi przy kasie, za jednym razem albo w kilku. Pieniądze idą na Twoje konto.', 'k.start': 'Utwórz karty podarunkowe',
+  pl: { 'b.h': 'Jak klienci kupują karty podarunkowe', 'b.stand': 'PODARUJ KARTĘ PODARUNKOWĄ', 'b.open': 'Otwórz link', 'b.s1': 'Otwierają Twój link', 'b.s1p': 'Skanują QR przy kasie albo otwierają link, który udostępniasz.', 'b.choose': 'Wybierz kwotę', 'b.card': 'Zapłać kartą', 'b.s2': 'Wybierają kwotę i płacą', 'b.s2p': 'Płacą kartą, Apple Pay albo Google Pay.', 'b.gc': 'KARTA PODARUNKOWA', 'b.valid': 'Ważna 12 miesięcy', 'b.s3': 'Karta jest gotowa', 'b.s3p': 'Karta z saldem i kodem QR od razu otwiera się w telefonie, na prezent albo do użycia przy kasie.', 'k.label': 'Karty podarunkowe', 'k.h1': 'Karty podarunkowe gotowe w kilka minut.', 'k.lede': 'Klienci kupują je online na prezent. Trafiają do Portfela w telefonie i płaci się nimi przy kasie, za jednym razem albo w kilku. Pieniądze idą na Twoje konto.', 'k.start': 'Utwórz karty podarunkowe',
     'k.h2': 'Cztery kroki i sprzedajesz.', 'k.sub': 'Kwoty, wygląd i płatności w jednym miejscu.',
     'k.s1': 'Wybierz kwoty', 'k.s1p': 'Kwoty do wyboru, opcjonalny bonus i jak długo karta jest ważna.', 'k.s2': 'Zaprojektuj kartę', 'k.s2p': 'Twoje logo i kolory: karta podarunkowa wygląda jak Twoja karta lojalnościowa.', 'k.s3': 'Połącz Stripe', 'k.s3p': 'Konto Stripe w 5 minut: każda sprzedaż trafia prosto do Ciebie. Timbro pobiera 5% (Start) lub 2% (Pro).', 'k.s4': 'Zacznij sprzedawać', 'k.s4p': 'Udostępnij link albo wydrukuj QR. Przy kasie odejmujesz kwotę telefonem.',
     'k.amounts': 'Kwoty', 'k.amountsP': 'Z czego klient wybiera przy zakupie', 'k.amt': 'Kwota', 'k.bonus': 'Bonus', 'k.total': 'Saldo', 'k.exp': 'Ważność', 'k.custom': 'Inna', 'k.balance': 'Saldo', 'k.giftCard': 'KARTA PODARUNKOWA', 'k.you': 'Twój lokal', 'k.connected': 'Połączono', 'k.sale': 'Nowa sprzedaż', 'k.share': 'Udostępnij kartę', 'k.shareP': 'Tak dotrzesz z nią do klientów.', 'k.qr': '⬇ Kod QR', 'k.poster': '⧉ Kopiuj link', 'k.golive': '● Uruchom', 'k.live': 'Karty podarunkowe działają', 'k.liveP': 'Klienci mogą je kupować od razu.',
@@ -162,6 +203,7 @@ I18N.apply();
 (function () {
   const $ = id => document.getElementById(id), t = (k, v) => I18N.t(k, v), sleep = ms => new Promise(r => setTimeout(r, ms));
   $('gqr').innerHTML = UI.qrSvg('https://timbro.witkowskidesign.com/gift/');
+  $('q1').innerHTML = $('q2').innerHTML = UI.qrSvg('https://timbro.witkowskidesign.com/gift/');
   const COLORS = ['#1F6F4A', '#2B32FF', '#B4483A', '#111111'];
   $('sw').innerHTML = COLORS.map(c => `<i style="background:${c}"></i>`).join('');
   const DUR = 7000;
