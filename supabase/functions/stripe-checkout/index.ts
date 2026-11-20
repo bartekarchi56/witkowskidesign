@@ -13,7 +13,7 @@ const serverKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || (() => { try { re
 const db = createClient(Deno.env.get('SUPABASE_URL')!, serverKey, { db: { schema: 'timbro' } });
 const SITE = (Deno.env.get('SITE_URL') ?? 'https://timbro.witkowskidesign.com/').replace(/\/?$/, '/');
 const TRIAL = Number(Deno.env.get('TRIAL_DAYS') ?? 30);
-const PLANS = ['start', 'plus', 'pro'], INTERVALS = ['month', 'year'];
+const PLANS = ['start', 'pro']   // plus is no longer sold (existing subscribers keep it), INTERVALS = ['month', 'year'];
 // Black Friday 2026: whoever subscribes by 30 November gets the coupon (50% off, forever) without a
 // code. After the end date, or if the coupon is missing in Stripe, checkout works as before.
 const PROMO = { coupon: Deno.env.get('PROMO_COUPON') ?? 'TIMBRO_BF_2026', until: Date.parse('2026-11-30T23:59:59+01:00') };
@@ -27,7 +27,9 @@ Deno.serve(async req => {
     const jwt = (req.headers.get('authorization') ?? '').replace(/^Bearer /, '');
     const { data: { user } } = await db.auth.getUser(jwt);
     if (!user) return reply({ error: 'Please log in again.' }, 401);
-    const { plan, interval } = await req.json().catch(() => ({}));
+    const { plan, interval, locations } = await req.json().catch(() => ({}));
+    // Pro is priced per location (a graduated Stripe price, quantity = locations, 1 to 10).
+    const qty = plan === 'pro' ? Math.min(10, Math.max(1, Math.floor(Number(locations) || 1))) : 1;
     if (!PLANS.includes(plan) || !INTERVALS.includes(interval)) return reply({ error: 'Choose a plan.' }, 400);
 
     let { data: biz } = await db.rpc('stripe_business', { p_user: user.id });
@@ -60,7 +62,7 @@ Deno.serve(async req => {
       mode: 'subscription',
       customer: biz.customer,
       client_reference_id: biz.id,
-      line_items: [{ price: prices.data[0].id, quantity: 1 }],
+      line_items: [{ price: prices.data[0].id, quantity: qty }],
       subscription_data: { metadata: { business_id: biz.id }, ...(biz.trialUsed || !TRIAL ? {} : { trial_period_days: TRIAL }) },
       // Cafés are businesses: their VAT number goes on the invoice (reverse charge in the EU).
       tax_id_collection: { enabled: true },

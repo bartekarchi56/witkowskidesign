@@ -84,23 +84,26 @@ window.CONFIG = {
   // cards: 0 = unlimited (every plan: as many customer cards as people want; shown as ∞).
   // contact: true = not sold online: the price is "from", per location, and the
   //                 button opens WhatsApp. Witkowski Design sets the plan in Studio.
+  // A plan's monthly price for n locations (Pro: graduated tiers).
+  planPrice(p, n = 1) { if (!p.tiers) return p.month; let sum = 0, prev = 0; for (const [upTo, each] of p.tiers) { const k = Math.max(0, Math.min(n, upTo) - prev); sum += k * each; prev = upTo; if (n <= upTo) break; } return sum; },
   plans: [
-    { id: 'start', design: 'self', month: 19, locations: 1, cards: 0, staff: 3,
-      it: { name: 'Start', for: 'Un bar, una sede', extras: ['Personalizzi tu logo, colori, sfondo e timbro', 'Poster e QR da stampare', 'Piano di lancio di 7 giorni', 'Post Instagram pronti'] },
-      en: { name: 'Start', for: 'One café, one location', extras: ['Customise logo, colours, background and stamp', 'Printable poster and QR code', '7-day launch plan', 'Ready-made Instagram posts'] },
-      pl: { name: 'Start', for: 'Jeden lokal', extras: ['Sam ustawiasz logo, kolory, tło i pieczątkę', 'Plakat i kod QR do wydruku', '7-dniowy plan startu', 'Gotowe posty na Instagrama'] } },
-    { id: 'plus', design: 'custom', month: 39, locations: 3, cards: 0, staff: 10, popular: true,
-      it: { name: 'Plus', for: 'Vuoi che ci pensiamo noi', extras: ['Tutto di Start', 'Carta disegnata su misura da noi', 'Kit stampato a casa tua', 'Nuovi post e messaggi ogni mese'] },
-      en: { name: 'Plus', for: 'You want us to handle it', extras: ['Everything in Start', 'Card custom-designed by us', 'Printed kit sent to you', 'New posts and messages every month'] },
-      pl: { name: 'Plus', for: 'Chcesz, żebyśmy zajęli się wszystkim', extras: ['Wszystko z planu Start', 'Karta zaprojektowana przez nas', 'Wydrukowane materiały z wysyłką do Ciebie', 'Nowe posty i wiadomości co miesiąc'] } },
-    { id: 'pro', design: 'custom', month: 79, locations: 10, cards: 0, staff: 50,
-      it: { name: 'Pro', for: 'Più sedi', extras: ['Tutto di Plus', 'Statistiche per sede', 'Esporta i clienti in Excel', 'Assistenza prioritaria su WhatsApp'] },
-      en: { name: 'Pro', for: 'Several locations', extras: ['Everything in Plus', 'Stats per location', 'Export customers to Excel', 'Priority WhatsApp support'] },
-      pl: { name: 'Pro', for: 'Kilka lokali', extras: ['Wszystko z planu Plus', 'Statystyki dla każdego lokalu', 'Eksport klientów do Excela', 'Priorytetowe wsparcie na WhatsAppie'] } },
+    // Start: one location. Pro: the first location €39, locations 2 to 5 €25 each, from the 6th €10 each
+    // (Stripe: one graduated price, quantity = locations). Chains (11+): agreed in a conversation, no price shown.
+    { id: 'start', design: 'self', month: 19, locations: 1, cards: 1, staff: 3,
+      it: { name: 'Start', for: 'Una sede', extras: ['1 sede, 1 carta', 'Apple Wallet e Google Wallet', 'Messaggi ai clienti', 'Promemoria quando passano vicino', 'Statistiche di base', 'Personalizzi tu logo, colori e timbro', 'Poster e QR da stampare', 'Assistenza via email'] },
+      en: { name: 'Start', for: 'One location', extras: ['1 location, 1 card', 'Apple Wallet and Google Wallet', 'Messages to your customers', 'Reminders when they walk past', 'Basic stats', 'You set the logo, colours and stamp', 'Printable poster and QR code', 'Email support'] },
+      pl: { name: 'Start', for: 'Jeden lokal', extras: ['1 lokal, 1 karta', 'Apple Wallet i Google Wallet', 'Wiadomości do klientów', 'Przypomnienia, gdy przechodzą obok', 'Podstawowe statystyki', 'Sam ustawiasz logo, kolory i pieczątkę', 'Plakat i kod QR do wydruku', 'Wsparcie mailowe'] } },
+    // Plus: no longer sold; kept so cafés already on it still see their plan's name.
+    { id: 'plus', hidden: true, design: 'custom', month: 39, locations: 3, cards: 0, staff: 10,
+      it: { name: 'Plus', for: 'Ci pensiamo noi', extras: [] }, en: { name: 'Plus', for: 'We handle it', extras: [] }, pl: { name: 'Plus', for: 'Zajmujemy się wszystkim', extras: [] } },
+    { id: 'pro', design: 'custom', month: 39, tiers: [[1, 39], [5, 25], [Infinity, 10]], locations: 10, cards: 0, staff: 50, popular: true,
+      it: { name: 'Pro', for: 'Prezzo per 1 sede', extras: ['Tutto di Start, più:', 'Più sedi, ognuna costa meno', 'Carte e clienti illimitati', 'Carta disegnata da noi', 'Kit stampato a casa tua', 'Statistiche per sede', 'Esporta i clienti in Excel', 'Più telefoni per lo staff', 'Assistenza prioritaria su WhatsApp'] },
+      en: { name: 'Pro', for: 'Price for 1 location', extras: ['Everything in Start, plus:', 'More locations, cheaper with each one', 'Unlimited cards and customers', 'Card designed by us', 'Printed kit sent to you', 'Stats per location', 'Export customers to Excel', 'More staff phones', 'Priority WhatsApp support'] },
+      pl: { name: 'Pro', for: 'Cena za 1 lokal', extras: ['Wszystko z Start, plus:', 'Więcej lokali, każdy taniej', 'Bez limitu kart i klientów', 'Karta zaprojektowana przez nas', 'Wydrukowane materiały z wysyłką', 'Statystyki dla każdego lokalu', 'Eksport klientów do Excela', 'Więcej telefonów obsługi', 'Priorytetowe wsparcie na WhatsAppie'] } },
     { id: 'chain', design: 'custom', month: 8, contact: true, locations: 0, cards: 0, staff: 0,
-      it: { name: 'Catene', for: 'Da 11 sedi in su', extras: ['Tutto di Pro', 'Prezzo per sede, con sconto sui volumi', 'Prova in alcune sedi prima di partire', 'Avvio, formazione e kit per ogni sede', 'Contratto, fattura e accordo GDPR'] },
-      en: { name: 'Chains', for: '11 locations or more', extras: ['Everything in Pro', 'Price per location, with volume discounts', 'Pilot in a few locations first', 'Setup, training and a kit for every location', 'Contract, invoice and GDPR agreement'] },
-      pl: { name: 'Sieci', for: 'Od 11 lokali', extras: ['Wszystko z planu Pro', 'Cena za lokal, niższa przy większej sieci', 'Najpierw pilotaż w kilku lokalach', 'Wdrożenie, szkolenie i zestaw dla każdego lokalu', 'Umowa, faktura i umowa powierzenia przetwarzania danych (RODO)'] } }
+      it: { name: 'Catene', for: 'Da 11 sedi in su', extras: ['Tutto di Pro, più:', 'Un prezzo per tutta l\'organizzazione', 'Prova in alcune sedi prima di partire', 'Avvio, formazione e kit per ogni sede', 'Contratto, fattura e accordo GDPR'] },
+      en: { name: 'Chains', for: '11 locations or more', extras: ['Everything in Pro, plus:', 'One price for the whole organisation', 'Pilot in a few locations first', 'Setup, training and a kit for every location', 'Contract, invoice and GDPR agreement'] },
+      pl: { name: 'Sieci', for: 'Od 11 lokali', extras: ['Wszystko z Pro, plus:', 'Jedna cena dla całej organizacji', 'Najpierw pilotaż w kilku lokalach', 'Wdrożenie, szkolenie i zestaw dla każdego lokalu', 'Umowa, faktura i umowa powierzenia danych'] } }
   ],
 
   // Card styles. A style sets the whole look; every part can still be changed.

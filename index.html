@@ -134,7 +134,7 @@ body{overflow-x:clip}
 .bill button[aria-pressed="true"]{background:var(--ink);color:#fff}
 .bill em{font-style:normal;font:500 12px/1 var(--mono);margin-left:6px;color:var(--pop)}
 .bill button[aria-pressed="true"] em{color:#fff;opacity:.8}
-.plans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 @media (max-width:1180px){.plans{grid-template-columns:repeat(2,minmax(0,1fr));max-width:820px;margin:0 auto}}
 .plan{background:#fff;border:1.5px solid var(--ink);border-radius:20px;padding:26px 22px;display:flex;flex-direction:column;position:relative;min-width:0}
 .plan .price small{color:var(--muted);font-size:15px}
@@ -537,7 +537,7 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
         <span data-i18n="bf.p" style="flex:1 1 320px;opacity:.9;line-height:1.5"></span>
         <small data-i18n="bf.low" style="flex-basis:100%;opacity:.6;font-size:12px"></small>
       </div>
-      <div class="loc"><div><label for="locn" data-i18n="lo.q"></label><input type="range" id="locn" min="1" max="30" value="1"><div class="n"><span id="locv">1</span> <small data-i18n="lo.unit" style="font-size:16px;font-weight:600"></small></div></div><div class="res"><span data-i18n="lo.best"></span><b id="locp"></b><span id="locw"></span></div></div>
+      <div class="loc"><div><label for="locn" data-i18n="lo.q"></label><input type="range" id="locn" min="1" max="11" value="1"><div class="n"><span id="locv">1</span> <small id="locu" style="font-size:16px;font-weight:600"></small></div></div><div class="res"><span data-i18n="lo.best"></span><b id="locp"></b><span id="locw"></span></div></div>
       <div class="plans" id="plans"></div>
       <p class="all" data-i18n="p.all"></p>
     </div>
@@ -614,7 +614,7 @@ footer .lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
 <script>
 I18N.add({
   it: {
-    'bf.t': 'Black Friday: −50% per sempre', 'bf.p': 'Abbonati entro il 30 novembre e paghi metà prezzo ogni mese, finché resti con noi: Start 9,50 €, Plus 19,50 €, Pro 39,50 € al mese (anche l\'annuale a metà). Lo sconto si applica da solo al pagamento.', 'bf.low': 'Prezzo più basso degli ultimi 30 giorni prima dello sconto: Start 19 €, Plus 39 €, Pro 79 € al mese.',
+    'bf.t': 'Black Friday: −50% per sempre', 'bf.p': 'Abbonati entro il 30 novembre e paghi metà prezzo ogni mese, finché resti con noi: Start 9,50 €, Pro da 19,50 € al mese (anche l\'annuale a metà). Lo sconto si applica da solo al pagamento.', 'bf.low': 'Prezzo più basso degli ultimi 30 giorni prima dello sconto: Start 19 €, Pro 39 € al mese (1 sede).',
     'bz.label': 'Biglietti da visita', 'bz.title': 'Il biglietto da visita, nel telefono.', 'bz.lede': 'Con la stessa tecnologia della carta fedeltà facciamo biglietti da visita per Apple Wallet e Google Wallet, con il logo e i colori della tua azienda.',
     'bz.l1': 'Mostri un QR: il cliente salva il biglietto in 5 secondi', 'bz.l2': 'iPhone e Android, più il contatto in rubrica', 'bz.l3': 'Numero o ruolo nuovo? Il biglietto si aggiorna da solo',
     'bz.price': 'Da 12 €', 'bz.once': 'una tantum, senza abbonamento', 'bz.cta': 'Scopri i biglietti', 'bz.ex': 'Vedi un esempio', 'bz.alt': 'Un telefono con un biglietto da visita in Wallet',
@@ -667,7 +667,7 @@ I18N.add({
     'p.month': '/ mese', 'p.year': '/ anno', 'p.billedM': 'Pagamento mensile', 'p.billedY': 'Pari a {x} al mese',
     'p.loc': 'sedi', 'p.loc1': 'sede', 'p.cards': 'carte', 'p.cards1': 'carta', 'p.staff': 'baristi',
     'p.popular': 'Il più scelto', 'p.cta': 'Prova 30 giorni gratis',
-    'p.from': 'da', 'p.perLoc': '/ sede al mese', 'p.chainBilled': 'Prima una prova in alcune sedi', 'p.contact': 'Parliamone',
+    'p.forN': 'Prezzo per {n} sedi', 'p.from': 'da', 'p.perLoc': '/ sede al mese', 'p.chainBilled': 'Prima una prova in alcune sedi', 'p.contact': 'Parliamone',
     'p.waText': 'Ciao! Vorrei sapere di più sul piano Catene di Timbro.',
     'p.all': 'Tutti i piani: clienti illimitati, timbri illimitati, carta in italiano, inglese e polacco. Prezzi IVA esclusa.',
     'f.title': 'Le domande che ci fanno al bancone',
@@ -682,7 +682,7 @@ I18N.add({
     'ft.dash': 'Area locale', 'ft.stamper': 'Timbratore per baristi', 'ft.example': 'Esempio: The Coffee', 'ft.terms': 'Termini e disdetta', 'ft.privacy': 'Privacy', 'ft.by': 'Un progetto Witkowski Design'
   },
   en: {
-    'bf.t': 'Black Friday: 50% off for life', 'bf.p': 'Subscribe by 30 November and pay half price every month for as long as you stay: Start €9.50, Plus €19.50, Pro €39.50 a month (yearly is half price too). Applied automatically at checkout.', 'bf.low': 'Lowest price in the 30 days before the discount: Start €19, Plus €39, Pro €79 a month.',
+    'bf.t': 'Black Friday: 50% off for life', 'bf.p': 'Subscribe by 30 November and pay half price every month for as long as you stay: Start €9.50, Pro from €19.50 a month (yearly is half price too). Applied automatically at checkout.', 'bf.low': 'Lowest price in the 30 days before the discount: Start €19, Pro €39 a month (1 location).',
     'bz.label': 'Business cards', 'bz.title': 'Your business card, in the phone.', 'bz.lede': 'With the same technology as the loyalty card we make business cards for Apple Wallet and Google Wallet, in your company\'s logo and colours.',
     'bz.l1': 'Show a QR code: the other person saves your card in 5 seconds', 'bz.l2': 'iPhone and Android, plus the contact in their address book', 'bz.l3': 'New number or role? The card updates itself',
     'bz.price': 'From €12', 'bz.once': 'one-time, no subscription', 'bz.cta': 'See business cards', 'bz.ex': 'See an example', 'bz.alt': 'A phone with a business card in Wallet',
@@ -735,7 +735,7 @@ I18N.add({
     'p.month': '/ month', 'p.year': '/ year', 'p.billedM': 'Billed monthly', 'p.billedY': 'Works out at {x} a month',
     'p.loc': 'locations', 'p.loc1': 'location', 'p.cards': 'cards', 'p.cards1': 'card', 'p.staff': 'staff',
     'p.popular': 'Most popular', 'p.cta': 'Try 30 days free',
-    'p.from': 'from', 'p.perLoc': '/ location a month', 'p.chainBilled': 'A pilot in a few locations first', 'p.contact': 'Let\'s talk',
+    'p.forN': 'Price for {n} locations', 'p.from': 'from', 'p.perLoc': '/ location a month', 'p.chainBilled': 'A pilot in a few locations first', 'p.contact': 'Let\'s talk',
     'p.waText': 'Hi! I\'d like to know more about the Timbro Chains plan.',
     'p.all': 'All plans: unlimited customers, unlimited stamps, card in English, Italian and Polish. Prices exclude VAT.',
     'f.title': 'Questions we get asked at the counter',
@@ -750,7 +750,7 @@ I18N.add({
     'ft.dash': 'Business login', 'ft.stamper': 'Stamper for staff', 'ft.example': 'Example: The Coffee', 'ft.terms': 'Terms and cancellation', 'ft.privacy': 'Privacy', 'ft.by': 'A Witkowski Design project'
   },
   pl: {
-    'bf.t': 'Black Friday: −50% na zawsze', 'bf.p': 'Zapisz się do 30 listopada i płać połowę ceny co miesiąc, tak długo, jak jesteś z nami: Start 9,50 €, Plus 19,50 €, Pro 39,50 € miesięcznie (rocznie też o połowę taniej). Zniżka nalicza się sama przy płatności.', 'bf.low': 'Najniższa cena z 30 dni przed obniżką: Start 19 €, Plus 39 €, Pro 79 € miesięcznie.',
+    'bf.t': 'Black Friday: −50% na zawsze', 'bf.p': 'Zapisz się do 30 listopada i płać połowę ceny co miesiąc, tak długo, jak jesteś z nami: Start 9,50 €, Pro od 19,50 € miesięcznie (rocznie też o połowę taniej). Zniżka nalicza się sama przy płatności.', 'bf.low': 'Najniższa cena z 30 dni przed obniżką: Start 19 €, Pro 39 € miesięcznie (1 lokal).',
     'bz.label': 'Wizytówki', 'bz.title': 'Wizytówka w telefonie.', 'bz.lede': 'Tą samą technologią co kartę lojalnościową robimy wizytówki do Apple Wallet i Google Wallet, z logo i w kolorach Twojej firmy.',
     'bz.l1': 'Pokazujesz kod QR: rozmówca zapisuje wizytówkę w 5 sekund', 'bz.l2': 'iPhone i Android, do tego kontakt w telefonie', 'bz.l3': 'Nowy numer lub stanowisko? Wizytówka sama się aktualizuje',
     'bz.price': 'Od 49 zł', 'bz.once': 'jednorazowo, bez abonamentu', 'bz.cta': 'Zobacz wizytówki', 'bz.ex': 'Zobacz przykład', 'bz.alt': 'Telefon z wizytówką w Wallet',
@@ -806,7 +806,7 @@ I18N.add({
     'p.cards': ({ n }) => I18N.plural(+n || 5, ['karta', 'karty', 'kart']), 'p.cards1': 'karta',
     'p.staff': ({ n }) => I18N.plural(+n || 5, ['osoba z obsługi', 'osoby z obsługi', 'osób z obsługi']),
     'p.popular': 'Najczęściej wybierany', 'p.cta': 'Wypróbuj 30 dni za darmo',
-    'p.from': 'od', 'p.perLoc': '/ lokal miesięcznie', 'p.chainBilled': 'Najpierw pilotaż w kilku lokalach', 'p.contact': 'Porozmawiajmy',
+    'p.forN': ({ n }) => `Cena za ${n} ${I18N.plural(+n, ['lokal', 'lokale', 'lokali'])}`, 'p.from': 'od', 'p.perLoc': '/ lokal miesięcznie', 'p.chainBilled': 'Najpierw pilotaż w kilku lokalach', 'p.contact': 'Porozmawiajmy',
     'p.waText': 'Dzień dobry! Chcę dowiedzieć się więcej o planie Sieci w Timbro.',
     'p.all': 'W każdym planie: bez limitu klientów i pieczątek, karta po polsku, włosku i angielsku. Ceny netto (bez VAT).',
     'f.title': 'Pytania, które słyszymy przy ladzie',
@@ -836,11 +836,13 @@ I18N.add({
   // ---------- how many locations → which plan ----------
   function locPlan() {
     const n = +document.getElementById('locn').value, eur = x => '€' + x;
-    document.getElementById('locv').textContent = n;
-    const plan = CONFIG.plans.find(p => !p.contact && n <= p.locations) || CONFIG.plans.find(p => p.contact);
-    const L = I18N.lang, name = (plan[L] || plan.en).name;
-    document.getElementById('locp').textContent = plan.contact ? `${I18N.t('lo.from')} ${eur(plan.month * n)}` : eur(plan.month);
-    document.getElementById('locw').textContent = plan.contact ? `${name} · ${eur(plan.month)} ${I18N.t('lo.per')}` : `${name} · ${I18N.t('lo.m')}`;
+    document.getElementById('locv').textContent = n > 10 ? '11+' : n;
+    document.getElementById('locu').textContent = I18N.t(n === 1 ? 'p.loc1' : 'p.loc', { n });
+    const plan = CONFIG.plans.find(p => !p.hidden && !p.contact && n <= p.locations) || CONFIG.plans.find(p => p.contact);
+    const name = I18N.pick(plan).name;
+    document.getElementById('locp').textContent = plan.contact ? I18N.t('p.contact') : eur(CONFIG.planPrice(plan, n));
+    document.getElementById('locw').textContent = plan.contact ? name : `${name} · ${I18N.t('lo.m')}`;
+    if (typeof plans === 'function') plans();
   }
   document.getElementById('locn').addEventListener('input', locPlan);
   document.addEventListener('langchange', locPlan); setTimeout(locPlan, 0);
@@ -948,24 +950,25 @@ I18N.add({
   let bill = 'month';
   function plans() {
     const wa = (CONFIG.contact.phone || '').replace(/\D/g, '');
-    document.getElementById('plans').innerHTML = CONFIG.plans.map(p => {
+    const n = +((document.getElementById('locn') || {}).value || 1);
+    document.getElementById('plans').innerHTML = CONFIG.plans.filter(p => !p.hidden).map(p => {
       const tx = I18N.pick(p);
       // Chains: a price per location, agreed in a conversation.
-      if (p.contact) return `<article class="plan chain">
+      if (p.contact) return `<article class="plan chain${n > 10 ? ' popular' : ''}">
         <h3>${tx.name}</h3><p class="for">${tx.for}</p>
-        <div class="price"><small>${I18N.t('p.from')}</small> <b>${fmt(p.month)}</b><span>${I18N.t('p.perLoc')}</span></div>
+        <div class="price"><b>${I18N.t('p.contact')}</b></div>
         <p class="billed">${I18N.t('p.chainBilled')}</p>
         <div class="limits"><div><b>11+</b><span>${I18N.t('p.loc', { n: 11 })}</span></div><div><b>∞</b><span>${I18N.t('p.cards', { n: 5 })}</span></div><div><b>∞</b><span>${I18N.t('p.staff', { n: 5 })}</span></div></div>
         <ul>${tx.extras.map(x => `<li>${x}</li>`).join('')}</ul>
         <a class="btn line block" href="${wa ? `https://wa.me/${wa}?text=${encodeURIComponent(I18N.t('p.waText'))}` : '#contact'}">${I18N.t('p.contact')}</a>
       </article>`;
-      const yearly = p.month * CONFIG.yearlyMonths;
-      const price = bill === 'year' ? fmt(yearly) : fmt(p.month);
+      const m = CONFIG.planPrice(p, p.tiers ? Math.min(n, p.locations) : 1), yearly = m * CONFIG.yearlyMonths;
+      const price = bill === 'year' ? fmt(yearly) : fmt(m);
       const billed = bill === 'year' ? I18N.t('p.billedY', { x: fmt(yearly / 12, 2) }) : I18N.t('p.billedM');
       const lim = (v, one, many) => !v ? `<div><b>∞</b><span>${I18N.t(many, { n: 5 })}</span></div>` : `<div><b>${v}</b><span>${I18N.t(v === 1 ? one : many, { n: v })}</span></div>`;   // 0 = unlimited
       return `<article class="plan${p.popular ? ' popular' : ''}">
         ${p.popular ? `<span class="badge">${I18N.t('p.popular')}</span>` : ''}
-        <h3>${tx.name}</h3><p class="for">${tx.for}</p>
+        <h3>${tx.name}</h3><p class="for">${p.tiers ? I18N.t('p.forN', { n: Math.min(n, p.locations) }) : tx.for}</p>
         <div class="price"><b>${price}</b><span>${I18N.t(bill === 'year' ? 'p.year' : 'p.month')}</span></div>
         <p class="billed">${billed}</p>
         <div class="limits">${lim(p.locations, 'p.loc1', 'p.loc')}${lim(p.cards, 'p.cards1', 'p.cards')}${lim(p.staff, 'p.staff', 'p.staff')}</div>
@@ -1012,7 +1015,7 @@ I18N.add({
     const members = Math.round(v.regulars * v.join / 100), visits = members * v.extra, month = visits * v.ticket;
     // Customers join over the first three months, then the card runs at full speed.
     const ramp = [0.35, 0.7, 1], months = Array.from({ length: 12 }, (_, i) => month * (ramp[i] ?? 1));
-    const year = months.reduce((a, b) => a + b, 0), plus = CONFIG.plans.find(p => p.id === 'plus').month;
+    const year = months.reduce((a, b) => a + b, 0), plus = CONFIG.plans.find(p => p.id === 'start').month;
     const set = (k, n, f) => ANALYTICS.roll(document.querySelector(`[data-c="${k}"]`), n, f);
     set('month', month, n => eur(n)); set('members', members, n => Math.round(n).toLocaleString(loc));
     set('visits', visits, n => Math.round(n).toLocaleString(loc)); set('year', year, n => eur(n));

@@ -234,7 +234,7 @@ I18N.add({
       $('stripe-setup').addEventListener('click', async e => {
         const btn = e.currentTarget; btn.disabled = true;
         try {
-          const r = await Remote.stripeSetup(CONFIG.plans.filter(p => !p.contact).map(p => ({ id: p.id, name: p.en.name, month: p.month, yearMonths: CONFIG.yearlyMonths })));
+          const r = await Remote.stripeSetup(CONFIG.plans.filter(p => !p.contact && !p.hidden).map(p => ({ id: p.id, name: p.en.name, month: p.month, yearMonths: CONFIG.yearlyMonths, tiers: p.tiers && p.tiers.map(([u, e]) => [u === Infinity ? null : u, e]) })));
           UI.toast(r.changed.length ? I18N.t('s.stripeDone', { list: r.changed.join(', ') }) : I18N.t('s.stripeSame'));
         } catch (err) { UI.toast(err.message); }
         btn.disabled = false;
