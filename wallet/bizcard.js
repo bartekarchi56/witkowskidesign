@@ -25,8 +25,8 @@ export const PEOPLE = {
     dir: '', page: '', bg: [27, 27, 25], fg: [250, 250, 248], label: [150, 150, 146], hex: '#1B1B19',
     googleLogo: 'abit-icon.png', hero: 'abit-hero.png', about: ['Timbro', TIMBRO_TEXT]
   },
-  'witold-witkowski': { ...LAMARE, name: 'Witold Witkowski', role: 'CEO', phone: '+48 516 005 998', email: 'biuro@lamare.pl' },
-  'michal-witkowski': { ...LAMARE, name: 'Michał Witkowski', role: 'Sprzedawca', phone: '+48 531 005 988', email: 'info@lamare.pl' },
+  'witold-witkowski': { ...LAMARE, name: 'Witold Witkowski', hero: 'lamare-dubai-hero.jpg', role: 'CEO', phone: '+48 516 005 998', email: 'biuro@lamare.pl' },
+  'michal-witkowski': { ...LAMARE, name: 'Michał Witkowski', hero: 'lamare-dubai-hero.jpg', role: 'Sprzedawca', phone: '+48 531 005 988', email: 'info@lamare.pl' },
   'malgorzata-witkowska': { ...LAMARE, name: 'Małgorzata Witkowska', role: 'Designer', phone: '+48 516 005 988', email: 'info@lamare.pl' }
 };
 export const ME = PEOPLE['bartosz-witkowski'];
