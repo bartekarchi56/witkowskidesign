@@ -100,6 +100,47 @@ header.nav .wrap{display:flex;justify-content:space-between;align-items:center;h
 .gift .g small{opacity:.8;letter-spacing:.1em;font-size:9px}.gift .g b{display:block;font-size:13px}.gift .g .v{font:800 26px/1 var(--font);margin:16px 0 4px}
 .gift .q{width:80px;height:80px;margin:14px auto 4px;padding:6px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.12)}.gift .q svg{width:100%;height:100%}
 @media (max-width:900px){.buy .grid{grid-template-columns:1fr}}
+
+/* demo, detailed: a cursor clicks through the panels like a screen recording */
+.cursor{position:absolute;left:50%;top:60%;z-index:9;filter:drop-shadow(0 3px 6px rgba(0,0,0,.25));transition:left .7s cubic-bezier(.3,.7,.2,1),top .7s cubic-bezier(.3,.7,.2,1),transform .15s;pointer-events:none}
+.cursor.click{transform:scale(.8)}
+.p1 .row.head{background:none;color:var(--muted);font-size:11px;font-weight:600;margin-top:12px;padding-bottom:0}
+.p1 .row.head span:last-child{color:var(--muted)}
+.p1 .add{margin-top:8px;text-align:center;background:#F4F4F8;border-radius:12px;padding:9px;font-weight:700;transition:background .3s}
+.p1 .add.hit{background:#E6E9FF}
+.p1 .lab{margin-top:14px;font-weight:700}
+.row.new{animation:in .45s both}
+.designer{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:88%;align-items:start}
+.pass{border-radius:18px;padding:14px;color:#fff;background:#1B1B19;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);transition:background .6s,color .6s;font-size:12px}
+.pass small{display:block;font-size:9px;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.pass .ph1,.pass .ph2{display:flex;justify-content:space-between;align-items:flex-start}
+.pass .logo{font:900 13px/1 var(--font);letter-spacing:.06em;opacity:.35;transition:opacity .5s}
+.pass .logo.on{opacity:1}
+.pass .balance{text-align:right}.pass .balance b{font-size:20px}
+.pass .strip{height:78px;margin:12px -14px;display:grid;place-items:center;background:rgba(255,255,255,.08);transition:background .6s}
+.pass .strip span{font:900 22px/1 var(--font);letter-spacing:.02em;font-stretch:120%;opacity:.6}
+.pass .strip.img{background:linear-gradient(90deg,#B4483A 0 14%,#1F6F4A 14% 86%,#B4483A 86%)}
+.pass .strip.img span{opacity:1}
+.pass .ph2 b{font-size:13px}
+.pass .pqr{width:78px;height:78px;margin:12px auto 0;background:#fff;border-radius:8px;padding:6px}.pass .pqr svg{width:100%;height:100%}
+.tools{display:flex;flex-direction:column;gap:10px}
+.tool{background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 20px 40px -26px rgba(20,22,60,.5);font-size:12px;transition:box-shadow .3s}
+.tool.hit{box-shadow:0 0 0 2px var(--pop),0 20px 40px -26px rgba(20,22,60,.5)}
+.tool h5{margin:0 0 8px;font-size:13px}.tool small{color:var(--muted);font-size:10px}
+.drop{border:1.5px dashed #C9CBE0;border-radius:10px;height:44px;display:grid;place-items:center;color:var(--muted);margin-bottom:6px;overflow:hidden;font-size:11px}
+.drop.done{border-style:solid;border-color:#E3E5F2;color:var(--ink);font-weight:800}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hex{display:flex;align-items:center;gap:6px;background:#F4F4F8;border-radius:8px;padding:6px;margin-top:4px;font:600 11px/1 var(--mono)}
+.hex i{width:16px;height:16px;border-radius:5px;background:currentColor;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+#htext i{background:#fff}
+.link em{cursor:pointer;transition:transform .2s,background .3s}
+.link em.on{background:#E6E9FF}
+.share .mini{font-size:11px;color:var(--muted);margin-top:12px}
+.share .btns div{display:flex;flex-direction:column;gap:2px}.share .btns small{color:var(--muted);font-size:10px;font-weight:500}
+.share .btns div.done small{color:var(--pop)}
+.note{position:absolute;top:16px;right:16px;background:#fff;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;box-shadow:0 10px 24px -14px rgba(0,0,0,.5);opacity:0;transition:opacity .3s}
+.note.on{opacity:1}
+@media (max-width:900px){.designer{grid-template-columns:1fr 1fr;width:94%}.tool:nth-child(3){display:none}}
 </style>
 </head>
 <body>
@@ -125,36 +166,49 @@ header.nav .wrap{display:flex;justify-content:space-between;align-items:center;h
     </div>
     <div class="stage" id="stage" aria-hidden="true">
       <!-- 1: amounts -->
-      <div class="scene" data-s="0"><div class="panel">
+      <div class="scene" data-s="0"><div class="panel p1">
         <h4 data-i18n="k.amounts"></h4><small data-i18n="k.amountsP"></small>
-        <div class="row" style="background:none;color:var(--muted);font-size:12px;font-weight:600"><span data-i18n="k.amt"></span><span data-i18n="k.bonus"></span><span style="color:var(--muted)" data-i18n="k.total"></span></div>
+        <div class="row head"><span data-i18n="k.amt"></span><span data-i18n="k.bonus"></span><span data-i18n="k.total"></span></div>
         <div id="rows"></div>
-        <div style="margin-top:16px;font-weight:700" data-i18n="k.exp"></div>
-        <div class="seg" id="exp"><span>6</span><span>12</span><span>24</span><span data-i18n="k.custom"></span></div>
+        <div class="add" id="addrow" data-i18n="k.add"></div>
+        <div class="lab" data-i18n="k.exp"></div>
+        <div class="seg" id="exp"><span>6 m</span><span>12 m</span><span>24 m</span><span data-i18n="k.custom"></span></div>
       </div></div>
       <!-- 2: design -->
-      <div class="scene" data-s="1"><div style="display:flex;flex-direction:column;align-items:center">
-        <div class="gcard" id="gcard"><div class="t"><span>Bar Brera</span><span data-i18n="k.balance"></span></div><b style="text-align:right">€50</b><div class="big" data-i18n="k.giftCard"></div><div class="qr" id="gqr"></div></div>
-        <div class="sw" id="sw"></div>
+      <div class="scene" data-s="1"><div class="designer">
+        <div class="pass" id="pass">
+          <div class="ph1"><span class="logo" id="plogo">BAR BRERA</span><span class="balance"><small data-i18n="k.balance"></small><b>€100</b></span></div>
+          <div class="strip" id="pstrip"><span data-i18n="k.giftCard"></span></div>
+          <div class="ph2"><span><small data-i18n="k.name"></small><b>Giulia</b></span><span style="text-align:right"><small data-i18n="k.valid"></small><b>30.11.2027</b></span></div>
+          <div class="pqr" id="gqr"></div>
+        </div>
+        <div class="tools">
+          <div class="tool" id="tlogo"><h5 data-i18n="k.logo"></h5><div class="drop" id="dlogo"><span data-i18n="k.drop"></span></div><small data-i18n="k.logoP"></small></div>
+          <div class="tool" id="tbg"><h5 data-i18n="k.bgImg"></h5><div class="drop" id="dbg"><span data-i18n="k.drop"></span></div><small data-i18n="k.bgP"></small></div>
+          <div class="tool"><div class="cols"><div><small data-i18n="k.textC"></small><div class="hex" id="htext"><i></i><span>#FFFFFF</span></div></div><div><small data-i18n="k.bgC"></small><div class="hex" id="hbg"><i></i><span>#1B1B19</span></div></div></div></div>
+        </div>
       </div></div>
       <!-- 3: Stripe -->
       <div class="scene" data-s="2">
         <div class="toasts" id="toasts"></div>
         <div class="flow">
-          <div class="node"><div class="ic" style="background:#2B32FF">☕</div><div><b data-i18n="k.you"></b><small>Bar Brera</small></div></div>
-          <div class="link"><em>⇄</em><span class="ok" id="ok">✓ <span data-i18n="k.connected"></span></span></div>
+          <div class="node"><div class="ic" style="background:#2B32FF">☕</div><div><b data-i18n="k.acct"></b><small>barbrera@gmail.com</small></div></div>
+          <div class="link"><em id="plug">⇄</em><span class="ok" id="ok">✓ <span data-i18n="k.connected"></span></span></div>
           <div class="node"><div class="ic" style="background:#635BFF">S</div><div><small data-i18n="k.balance"></small><b id="bal">€0</b></div></div>
         </div>
       </div>
       <!-- 4: share -->
       <div class="scene" data-s="3">
+        <div class="note" id="note"></div>
         <div class="panel share"><h4 data-i18n="k.share"></h4><small data-i18n="k.shareP"></small>
-          <div class="btns"><div id="b1" data-i18n="k.qr"></div><div id="b2" data-i18n="k.poster"></div></div>
-          <div class="url"><span>timbro…/gift/?b=bar-brera</span><span id="cp">⧉</span></div>
+          <div class="mini" data-i18n="k.dl"></div>
+          <div class="btns"><div id="b1"><b data-i18n="k.qr"></b><small data-i18n="k.qrP"></small></div><div id="b2"><b data-i18n="k.poster"></b><small data-i18n="k.posterP"></small></div></div>
+          <div class="url"><span>timbro.witkowskidesign.com/gift/?b=…</span><span id="cp">⧉</span></div>
           <div class="live"><span id="golive" data-i18n="k.golive"></span></div>
         </div>
         <div class="done-box" id="done"><div><i>✓</i><h4 style="margin:14px 0 4px;font-size:20px" data-i18n="k.live"></h4><small data-i18n="k.liveP"></small></div></div>
       </div>
+      <svg class="cursor" id="cur" width="22" height="26" viewBox="0 0 22 26"><path d="M2 2l17 9-7 2-3 7z" fill="#2B32FF" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
     </div>
   </section>
 
@@ -183,20 +237,20 @@ header.nav .wrap{display:flex;justify-content:space-between;align-items:center;h
 <script src="../assets/js/ui.js"></script>
 <script>
 I18N.add({
-  it: { 'b.h': 'Come i clienti comprano le carte regalo', 'b.stand': 'REGALA UNA CARTA REGALO', 'b.open': 'Apri il link', 'b.s1': 'Aprono il tuo link', 'b.s1p': 'Inquadrano il QR alla cassa o aprono il link che condividi.', 'b.choose': 'Scegli un importo', 'b.card': 'Paga con carta', 'b.s2': 'Scelgono l\'importo e pagano', 'b.s2p': 'Pagano con carta, Apple Pay o Google Pay.', 'b.gc': 'CARTA REGALO', 'b.valid': 'Valida 12 mesi', 'b.s3': 'La carta è pronta', 'b.s3p': 'La carta con saldo e QR si apre subito sul telefono, da regalare o usare alla cassa.', 'k.label': 'Carte regalo', 'k.h1': 'Carte regalo, pronte in pochi minuti.', 'k.lede': 'I clienti le comprano online per regalarle. Arrivano nel Wallet del telefono e si spendono alla cassa, anche in più volte. I soldi vanno sul tuo conto.', 'k.start': 'Crea le tue carte regalo',
+  it: { 'k.add': '+ Aggiungi importo', 'k.name': 'Nome', 'k.valid': 'Valida fino al', 'k.logo': 'Logo', 'k.logoP': 'Consigliato: 480 × 150 px', 'k.bgImg': 'Immagine di sfondo', 'k.bgP': 'Consigliato: 1125 × 432 px', 'k.drop': 'Trascina qui o scegli', 'k.textC': 'Testo', 'k.bgC': 'Sfondo', 'k.acct': 'Il tuo account', 'k.dl': 'Scarica i materiali', 'k.qrP': 'SVG vettoriale', 'k.posterP': 'A4 pronto da stampare', 'k.done': 'Scaricato', 'k.qrDone': 'Codice QR scaricato', 'k.posterDone': 'Poster scaricato', 'k.copied': 'Link copiato', 'b.h': 'Come i clienti comprano le carte regalo', 'b.stand': 'REGALA UNA CARTA REGALO', 'b.open': 'Apri il link', 'b.s1': 'Aprono il tuo link', 'b.s1p': 'Inquadrano il QR alla cassa o aprono il link che condividi.', 'b.choose': 'Scegli un importo', 'b.card': 'Paga con carta', 'b.s2': 'Scelgono l\'importo e pagano', 'b.s2p': 'Pagano con carta, Apple Pay o Google Pay.', 'b.gc': 'CARTA REGALO', 'b.valid': 'Valida 12 mesi', 'b.s3': 'La carta è pronta', 'b.s3p': 'La carta con saldo e QR si apre subito sul telefono, da regalare o usare alla cassa.', 'k.label': 'Carte regalo', 'k.h1': 'Carte regalo, pronte in pochi minuti.', 'k.lede': 'I clienti le comprano online per regalarle. Arrivano nel Wallet del telefono e si spendono alla cassa, anche in più volte. I soldi vanno sul tuo conto.', 'k.start': 'Crea le tue carte regalo',
     'k.h2': 'Quattro passi e vendi.', 'k.sub': 'Importi, design e pagamenti, tutto in un posto.',
     'k.s1': 'Scegli gli importi', 'k.s1p': 'Gli importi tra cui scegliere, un eventuale bonus e per quanto tempo vale la carta.', 'k.s2': 'Disegna la carta', 'k.s2p': 'Logo e colori del tuo locale: la carta regalo è uguale alla tua carta fedeltà.', 'k.s3': 'Collega Stripe', 'k.s3p': 'Un conto Stripe in 5 minuti: ogni vendita arriva direttamente a te. Timbro trattiene il 5% (Start) o il 2% (Pro).', 'k.s4': 'Inizia a vendere', 'k.s4p': 'Condividi il link o stampa il QR. Alla cassa scali l\'importo con il telefono.',
-    'k.amounts': 'Importi', 'k.amountsP': 'Quello che il cliente sceglie quando compra', 'k.amt': 'Importo', 'k.bonus': 'Bonus', 'k.total': 'Credito', 'k.exp': 'Scadenza', 'k.custom': 'Altro', 'k.balance': 'Saldo', 'k.giftCard': 'CARTA REGALO', 'k.you': 'Il tuo locale', 'k.connected': 'Collegato', 'k.sale': 'Nuova vendita', 'k.share': 'Condividi la carta', 'k.shareP': 'Ecco come farla arrivare ai clienti.', 'k.qr': '⬇ Codice QR', 'k.poster': '⧉ Copia il link', 'k.golive': '● Pubblica', 'k.live': 'Le carte regalo sono online', 'k.liveP': 'I clienti possono comprarle da subito.',
+    'k.amounts': 'Importi', 'k.amountsP': 'Quello che il cliente sceglie quando compra', 'k.amt': 'Importo', 'k.bonus': 'Bonus', 'k.total': 'Credito', 'k.exp': 'Scadenza', 'k.custom': 'Altro', 'k.balance': 'Saldo', 'k.giftCard': 'CARTA REGALO', 'k.you': 'Il tuo locale', 'k.connected': 'Collegato', 'k.sale': 'Nuova vendita', 'k.share': 'Condividi la carta', 'k.shareP': 'Ecco come farla arrivare ai clienti.', 'k.qr': '⬇ Codice QR', 'k.poster': '⬇ Poster PDF', 'k.golive': '● Pubblica', 'k.live': 'Le carte regalo sono online', 'k.liveP': 'I clienti possono comprarle da subito.',
     'k.ctaT': 'Regali che riportano clienti.', 'k.ctaP': 'Incluse in ogni piano Timbro. Attivale dal pannello in pochi minuti.' },
-  en: { 'b.h': 'How customers buy your gift cards', 'b.stand': 'GIVE A GIFT CARD', 'b.open': 'Open the link', 'b.s1': 'They open your link', 'b.s1p': 'They scan the QR at your counter or open the link you share.', 'b.choose': 'Choose an amount', 'b.card': 'Pay by card', 'b.s2': 'They pick an amount and pay', 'b.s2p': 'They pay by card, Apple Pay or Google Pay.', 'b.gc': 'GIFT CARD', 'b.valid': 'Valid for 12 months', 'b.s3': 'The card is ready', 'b.s3p': 'The card with its balance and QR opens on their phone right away, to give as a present or use at the till.', 'k.label': 'Gift cards', 'k.h1': 'Gift cards, ready in minutes.', 'k.lede': 'Customers buy them online as a present. They go into the phone\'s Wallet and are spent at the till, in one go or several. The money goes to your account.', 'k.start': 'Create your gift cards',
+  en: { 'k.add': '+ Add amount', 'k.name': 'Name', 'k.valid': 'Valid until', 'k.logo': 'Logo', 'k.logoP': 'Recommended: 480 × 150 px', 'k.bgImg': 'Background image', 'k.bgP': 'Recommended: 1125 × 432 px', 'k.drop': 'Drop here or choose', 'k.textC': 'Text', 'k.bgC': 'Background', 'k.acct': 'Your account', 'k.dl': 'Download materials', 'k.qrP': 'Vector SVG', 'k.posterP': 'Print-ready A4', 'k.done': 'Downloaded', 'k.qrDone': 'QR code downloaded', 'k.posterDone': 'Poster downloaded', 'k.copied': 'Link copied', 'b.h': 'How customers buy your gift cards', 'b.stand': 'GIVE A GIFT CARD', 'b.open': 'Open the link', 'b.s1': 'They open your link', 'b.s1p': 'They scan the QR at your counter or open the link you share.', 'b.choose': 'Choose an amount', 'b.card': 'Pay by card', 'b.s2': 'They pick an amount and pay', 'b.s2p': 'They pay by card, Apple Pay or Google Pay.', 'b.gc': 'GIFT CARD', 'b.valid': 'Valid for 12 months', 'b.s3': 'The card is ready', 'b.s3p': 'The card with its balance and QR opens on their phone right away, to give as a present or use at the till.', 'k.label': 'Gift cards', 'k.h1': 'Gift cards, ready in minutes.', 'k.lede': 'Customers buy them online as a present. They go into the phone\'s Wallet and are spent at the till, in one go or several. The money goes to your account.', 'k.start': 'Create your gift cards',
     'k.h2': 'Four steps and you\'re selling.', 'k.sub': 'Amounts, design and payments, all in one place.',
     'k.s1': 'Pick your amounts', 'k.s1p': 'The amounts customers choose from, an optional bonus, and how long a card stays valid.', 'k.s2': 'Design your card', 'k.s2p': 'Your logo and colours: the gift card matches your loyalty card.', 'k.s3': 'Connect Stripe', 'k.s3p': 'A Stripe account in 5 minutes: every sale goes straight to you. Timbro keeps 5% (Start) or 2% (Pro).', 'k.s4': 'Start selling', 'k.s4p': 'Share the link or print the QR. At the till, deduct the amount with your phone.',
-    'k.amounts': 'Amounts', 'k.amountsP': 'What customers choose from when buying', 'k.amt': 'Amount', 'k.bonus': 'Bonus', 'k.total': 'Credit', 'k.exp': 'Expiry', 'k.custom': 'Custom', 'k.balance': 'Balance', 'k.giftCard': 'GIFT CARD', 'k.you': 'Your café', 'k.connected': 'Connected', 'k.sale': 'New sale', 'k.share': 'Share your card', 'k.shareP': 'Here\'s how to get it to your customers.', 'k.qr': '⬇ QR code', 'k.poster': '⧉ Copy link', 'k.golive': '● Go live', 'k.live': 'Your gift cards are live', 'k.liveP': 'Customers can start buying right away.',
+    'k.amounts': 'Amounts', 'k.amountsP': 'What customers choose from when buying', 'k.amt': 'Amount', 'k.bonus': 'Bonus', 'k.total': 'Credit', 'k.exp': 'Expiry', 'k.custom': 'Custom', 'k.balance': 'Balance', 'k.giftCard': 'GIFT CARD', 'k.you': 'Your café', 'k.connected': 'Connected', 'k.sale': 'New sale', 'k.share': 'Share your card', 'k.shareP': 'Here\'s how to get it to your customers.', 'k.qr': '⬇ QR code', 'k.poster': '⬇ PDF poster', 'k.golive': '● Go live', 'k.live': 'Your gift cards are live', 'k.liveP': 'Customers can start buying right away.',
     'k.ctaT': 'Presents that bring customers back.', 'k.ctaP': 'Included in every Timbro plan. Switch them on in your dashboard in minutes.' },
-  pl: { 'b.h': 'Jak klienci kupują karty podarunkowe', 'b.stand': 'PODARUJ KARTĘ PODARUNKOWĄ', 'b.open': 'Otwórz link', 'b.s1': 'Otwierają Twój link', 'b.s1p': 'Skanują QR przy kasie albo otwierają link, który udostępniasz.', 'b.choose': 'Wybierz kwotę', 'b.card': 'Zapłać kartą', 'b.s2': 'Wybierają kwotę i płacą', 'b.s2p': 'Płacą kartą, Apple Pay albo Google Pay.', 'b.gc': 'KARTA PODARUNKOWA', 'b.valid': 'Ważna 12 miesięcy', 'b.s3': 'Karta jest gotowa', 'b.s3p': 'Karta z saldem i kodem QR od razu otwiera się w telefonie, na prezent albo do użycia przy kasie.', 'k.label': 'Karty podarunkowe', 'k.h1': 'Karty podarunkowe gotowe w kilka minut.', 'k.lede': 'Klienci kupują je online na prezent. Trafiają do Portfela w telefonie i płaci się nimi przy kasie, za jednym razem albo w kilku. Pieniądze idą na Twoje konto.', 'k.start': 'Utwórz karty podarunkowe',
+  pl: { 'k.add': '+ Dodaj kwotę', 'k.name': 'Imię', 'k.valid': 'Ważna do', 'k.logo': 'Logo', 'k.logoP': 'Zalecane: 480 × 150 px', 'k.bgImg': 'Zdjęcie w tle', 'k.bgP': 'Zalecane: 1125 × 432 px', 'k.drop': 'Upuść tutaj lub wybierz', 'k.textC': 'Tekst', 'k.bgC': 'Tło', 'k.acct': 'Twoje konto', 'k.dl': 'Pobierz materiały', 'k.qrP': 'Wektorowy SVG', 'k.posterP': 'A4 do druku', 'k.done': 'Pobrano', 'k.qrDone': 'Kod QR pobrany', 'k.posterDone': 'Plakat pobrany', 'k.copied': 'Link skopiowany', 'b.h': 'Jak klienci kupują karty podarunkowe', 'b.stand': 'PODARUJ KARTĘ PODARUNKOWĄ', 'b.open': 'Otwórz link', 'b.s1': 'Otwierają Twój link', 'b.s1p': 'Skanują QR przy kasie albo otwierają link, który udostępniasz.', 'b.choose': 'Wybierz kwotę', 'b.card': 'Zapłać kartą', 'b.s2': 'Wybierają kwotę i płacą', 'b.s2p': 'Płacą kartą, Apple Pay albo Google Pay.', 'b.gc': 'KARTA PODARUNKOWA', 'b.valid': 'Ważna 12 miesięcy', 'b.s3': 'Karta jest gotowa', 'b.s3p': 'Karta z saldem i kodem QR od razu otwiera się w telefonie, na prezent albo do użycia przy kasie.', 'k.label': 'Karty podarunkowe', 'k.h1': 'Karty podarunkowe gotowe w kilka minut.', 'k.lede': 'Klienci kupują je online na prezent. Trafiają do Portfela w telefonie i płaci się nimi przy kasie, za jednym razem albo w kilku. Pieniądze idą na Twoje konto.', 'k.start': 'Utwórz karty podarunkowe',
     'k.h2': 'Cztery kroki i sprzedajesz.', 'k.sub': 'Kwoty, wygląd i płatności w jednym miejscu.',
     'k.s1': 'Wybierz kwoty', 'k.s1p': 'Kwoty do wyboru, opcjonalny bonus i jak długo karta jest ważna.', 'k.s2': 'Zaprojektuj kartę', 'k.s2p': 'Twoje logo i kolory: karta podarunkowa wygląda jak Twoja karta lojalnościowa.', 'k.s3': 'Połącz Stripe', 'k.s3p': 'Konto Stripe w 5 minut: każda sprzedaż trafia prosto do Ciebie. Timbro pobiera 5% (Start) lub 2% (Pro).', 'k.s4': 'Zacznij sprzedawać', 'k.s4p': 'Udostępnij link albo wydrukuj QR. Przy kasie odejmujesz kwotę telefonem.',
-    'k.amounts': 'Kwoty', 'k.amountsP': 'Z czego klient wybiera przy zakupie', 'k.amt': 'Kwota', 'k.bonus': 'Bonus', 'k.total': 'Saldo', 'k.exp': 'Ważność', 'k.custom': 'Inna', 'k.balance': 'Saldo', 'k.giftCard': 'KARTA PODARUNKOWA', 'k.you': 'Twój lokal', 'k.connected': 'Połączono', 'k.sale': 'Nowa sprzedaż', 'k.share': 'Udostępnij kartę', 'k.shareP': 'Tak dotrzesz z nią do klientów.', 'k.qr': '⬇ Kod QR', 'k.poster': '⧉ Kopiuj link', 'k.golive': '● Uruchom', 'k.live': 'Karty podarunkowe działają', 'k.liveP': 'Klienci mogą je kupować od razu.',
+    'k.amounts': 'Kwoty', 'k.amountsP': 'Z czego klient wybiera przy zakupie', 'k.amt': 'Kwota', 'k.bonus': 'Bonus', 'k.total': 'Saldo', 'k.exp': 'Ważność', 'k.custom': 'Inna', 'k.balance': 'Saldo', 'k.giftCard': 'KARTA PODARUNKOWA', 'k.you': 'Twój lokal', 'k.connected': 'Połączono', 'k.sale': 'Nowa sprzedaż', 'k.share': 'Udostępnij kartę', 'k.shareP': 'Tak dotrzesz z nią do klientów.', 'k.qr': '⬇ Kod QR', 'k.poster': '⬇ Plakat PDF', 'k.golive': '● Uruchom', 'k.live': 'Karty podarunkowe działają', 'k.liveP': 'Klienci mogą je kupować od razu.',
     'k.ctaT': 'Prezenty, które sprowadzają klientów.', 'k.ctaP': 'W każdym planie Timbro. Włączasz je w panelu w kilka minut.' }
 });
 I18N.apply();
@@ -204,26 +258,41 @@ I18N.apply();
   const $ = id => document.getElementById(id), t = (k, v) => I18N.t(k, v), sleep = ms => new Promise(r => setTimeout(r, ms));
   $('gqr').innerHTML = UI.qrSvg('https://timbro.witkowskidesign.com/gift/');
   $('q1').innerHTML = $('q2').innerHTML = UI.qrSvg('https://timbro.witkowskidesign.com/gift/');
-  const COLORS = ['#1F6F4A', '#2B32FF', '#B4483A', '#111111'];
-  $('sw').innerHTML = COLORS.map(c => `<i style="background:${c}"></i>`).join('');
-  const DUR = 7000;
-  let cur = 0, run = 0;
-  const amounts = [[10, 0], [25, 0], [50, 5], [100, 15]];
-  // Each scene plays its own little story; a newer run stops an older one.
+  const DUR = 9000, stage = $('stage'), cur = $('cur');
+  let step = 0, run = 0;
+  // The cursor glides to an element, then "clicks" it.
+  const to = el => { const s = stage.getBoundingClientRect(), r = el.getBoundingClientRect(); cur.style.left = (r.left - s.left + r.width * .6) + 'px'; cur.style.top = (r.top - s.top + r.height * .55) + 'px'; };
+  const click = async (el, id) => { to(el); await sleep(750); if (id !== run) throw 0; cur.classList.add('click'); await sleep(140); cur.classList.remove('click'); };
+  const note = async txt => { $('note').textContent = '✓ ' + txt; $('note').classList.add('on'); await sleep(900); $('note').classList.remove('on'); };
   const plays = [
     async id => {
-      $('rows').innerHTML = amounts.map(([a, b]) => `<div class="row"><span>€${a}</span><span>+€${b}</span><span>€${a + b}</span></div>`).join('');
-      const rows = [...$('rows').children], seg = [...$('exp').children];
-      for (let i = 0; i < rows.length && id === run; i++) { rows.forEach(r => r.classList.remove('sel')); rows[i].classList.add('sel'); await sleep(900); }
-      for (let i = 0; i < 3 && id === run; i++) { seg.forEach(s => s.classList.remove('on')); seg[i].classList.add('on'); await sleep(700); }
+      const rows = [[10, 0], [25, 0], [50, 5]];
+      $('rows').innerHTML = rows.map(([a, b]) => `<div class="row"><span>€${a}</span><span>+€${b}</span><span>€${a + b}</span></div>`).join('');
+      const seg = [...$('exp').children]; seg.forEach((x, i) => x.classList.toggle('on', i === 0));
+      await sleep(300);
+      for (const r of $('rows').children) { await click(r, id); [...$('rows').children].forEach(x => x.classList.remove('sel')); r.classList.add('sel'); }
+      await click($('addrow'), id); $('addrow').classList.add('hit');
+      $('rows').insertAdjacentHTML('beforeend', '<div class="row new sel"><span>€100</span><span>+€15</span><span>€115</span></div>');
+      [...$('rows').children].slice(0, -1).forEach(x => x.classList.remove('sel'));
+      await sleep(500); $('addrow').classList.remove('hit');
+      await click(seg[1], id); seg.forEach((x, i) => x.classList.toggle('on', i === 1));
     },
-    async id => { for (let i = 0; id === run; i = (i + 1) % COLORS.length) { $('gcard').style.background = COLORS[i]; await sleep(1500); } },
     async id => {
-      $('ok').style.opacity = 0; $('toasts').innerHTML = ''; $('bal').textContent = '€0';
-      await sleep(900); if (id !== run) return; $('ok').style.opacity = 1;
+      const pass = $('pass'); pass.style.background = '#1B1B19'; $('plogo').classList.remove('on'); $('pstrip').classList.remove('img');
+      ['dlogo', 'dbg'].forEach(d => { $(d).classList.remove('done'); $(d).innerHTML = `<span>${t('k.drop')}</span>`; });
+      $('hbg').querySelector('span').textContent = '#1B1B19'; $('hbg').style.color = '#1B1B19';
+      await sleep(300);
+      await click($('dlogo'), id); $('tlogo').classList.add('hit'); $('dlogo').classList.add('done'); $('dlogo').textContent = 'BAR BRERA'; $('plogo').classList.add('on'); await sleep(500); $('tlogo').classList.remove('hit');
+      await click($('dbg'), id); $('tbg').classList.add('hit'); $('dbg').classList.add('done'); $('dbg').textContent = '🖼 strip.png'; $('pstrip').classList.add('img'); await sleep(500); $('tbg').classList.remove('hit');
+      for (const c of ['#2B32FF', '#1F6F4A']) { await click($('hbg'), id); $('hbg').querySelector('span').textContent = c; $('hbg').style.color = c; pass.style.background = c; await sleep(600); }
+    },
+    async id => {
+      $('ok').style.opacity = 0; $('toasts').innerHTML = ''; $('bal').textContent = '€0'; $('plug').classList.remove('on');
+      await sleep(300); await click($('plug'), id); $('plug').classList.add('on'); $('ok').style.opacity = 1;
+      cur.style.top = '92%';
       let total = 0;
       for (const x of [10, 25, 50, 25, 100]) {
-        await sleep(950); if (id !== run) return;
+        await sleep(900); if (id !== run) return;
         total += x; $('bal').textContent = '€' + total;
         $('toasts').insertAdjacentHTML('afterbegin', `<div class="toast2"><span>🎁 ${t('k.sale')}</span><b>+€${x}</b></div>`);
         if ($('toasts').children.length > 3) $('toasts').lastElementChild.remove();
@@ -231,24 +300,28 @@ I18N.apply();
     },
     async id => {
       ['b1', 'b2'].forEach(b => $(b).classList.remove('done')); $('golive').classList.remove('on'); $('done').style.opacity = 0; $('cp').textContent = '⧉';
-      for (const step of [() => $('b1').classList.add('done'), () => $('b2').classList.add('done'), () => { $('cp').textContent = '✓'; }, () => $('golive').classList.add('on'), () => { $('done').style.opacity = 1; }]) {
-        await sleep(1000); if (id !== run) return; step();
-      }
+      $('b1').querySelector('small').textContent = t('k.qrP'); $('b2').querySelector('small').textContent = t('k.posterP');
+      await sleep(300);
+      await click($('b1'), id); $('b1').classList.add('done'); $('b1').querySelector('small').textContent = '✓ ' + t('k.done'); note(t('k.qrDone'));
+      await click($('b2'), id); $('b2').classList.add('done'); $('b2').querySelector('small').textContent = '✓ ' + t('k.done'); note(t('k.posterDone'));
+      await click($('cp'), id); $('cp').textContent = '✓'; note(t('k.copied'));
+      await click($('golive'), id); $('golive').classList.add('on');
+      await sleep(400); if (id === run) $('done').style.opacity = 1;
     }
   ];
   function show(i) {
-    cur = i; const id = ++run;
+    step = i; const id = ++run;
     document.querySelectorAll('.scene').forEach(s => s.classList.toggle('on', +s.dataset.s === i));
     document.querySelectorAll('#steps li').forEach(li => {
       li.classList.toggle('on', +li.dataset.s === i);
       const bar = li.querySelector('.bar i'); bar.style.transition = 'none'; bar.style.width = '0';
       if (+li.dataset.s === i) requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.transition = `width ${DUR}ms linear`; bar.style.width = '100%'; }));
     });
-    plays[i](id);
-    clearTimeout(show.t); show.t = setTimeout(() => show((cur + 1) % 4), DUR);
+    plays[i](id).catch(() => {});
+    clearTimeout(show.t); show.t = setTimeout(() => show((step + 1) % 4), DUR);
   }
   document.querySelectorAll('#steps li').forEach(li => li.addEventListener('click', () => show(+li.dataset.s)));
-  document.addEventListener('langchange', () => show(cur));
+  document.addEventListener('langchange', () => show(step));
   show(0);
 })();
 </script>
