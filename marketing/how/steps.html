@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How it works · step clips</title>
+<style>
+/* The three "How it works" clips on the home page (assets/video/how-<n>.mp4), 540 x 960, 8 s each,
+   no words so they work in every language. make.js renders ?step=1..3 frame by frame via renderAt(t). */
+html,body{margin:0;background:#000}
+#v{position:relative;width:540px;height:960px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;
+  background:radial-gradient(120% 80% at 50% 40%,#EEF0FF 0%,#DDE2FF 55%,#C9D0FF 100%)}
+.abs{position:absolute}
+.phone{position:absolute;width:300px;height:620px;border-radius:48px;background:#111;padding:9px;box-sizing:border-box;box-shadow:0 40px 80px -30px rgba(20,22,80,.55)}
+.scr{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:#F2F2F7}
+.isl{position:absolute;left:50%;top:10px;width:86px;height:24px;margin-left:-43px;border-radius:14px;background:#000;z-index:5}
+/* the loyalty card */
+.card{position:absolute;left:14px;right:14px;top:70px;border-radius:20px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.12);overflow:hidden}
+.card .hd{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 12px}
+.card .nm{font-weight:800;letter-spacing:.08em;font-size:16px;color:#111}
+.card .ct{font-size:10px;color:#888;text-align:right;font-weight:700;letter-spacing:.08em}.card .ct b{display:block;font-size:20px;color:#111;letter-spacing:0}
+.card .strip{background:#111;padding:18px 14px;display:grid;grid-template-columns:repeat(5,1fr);gap:12px 0;justify-items:center}
+.dot{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.45);box-sizing:border-box}
+.dot.on{background:#fff;border-color:#fff}
+.card .qr{width:120px;height:120px;margin:18px auto 8px;background:conic-gradient(#111 25%,#fff 0 50%,#111 0 75%,#fff 0) 0 0/24px 24px;outline:4px solid #111;border:10px solid #fff}
+.card .code{text-align:center;font-size:12px;letter-spacing:.2em;color:#666;padding-bottom:16px}
+/* dashboard (step 1) */
+.dash{position:absolute;left:30px;right:30px;top:90px;bottom:90px;background:#fff;border-radius:28px;box-shadow:0 30px 60px -30px rgba(20,22,80,.5);padding:24px;box-sizing:border-box}
+.row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.sw{width:34px;height:34px;border-radius:50%;box-shadow:0 0 0 3px #fff,0 0 0 4px #ddd}
+.sw.sel{box-shadow:0 0 0 3px #fff,0 0 0 6px #2B32FF}
+.stamp{width:46px;height:46px;border-radius:12px;background:#F2F3F8;display:grid;place-items:center}
+.stamp.sel{box-shadow:0 0 0 3px #2B32FF}
+.bar{height:12px;border-radius:6px;background:#E9EBF5}
+.btn{display:inline-block;background:#2B32FF;color:#fff;font-weight:800;border-radius:999px;padding:12px 22px;font-size:16px}
+.cursor{position:absolute;z-index:20;filter:drop-shadow(0 3px 5px rgba(0,0,0,.3))}
+/* poster (step 2) */
+.poster{position:absolute;left:150px;top:250px;width:240px;height:330px;background:#fff;border-radius:16px;box-shadow:0 30px 60px -30px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;padding:24px 18px;box-sizing:border-box}
+.poster .t{width:150px;height:16px;border-radius:8px;background:#111;margin-bottom:10px}
+.poster .t2{width:110px;height:10px;border-radius:5px;background:#ccc;margin-bottom:22px}
+.pqr{width:150px;height:150px;background:conic-gradient(#111 25%,#fff 0 50%,#111 0 75%,#fff 0) 0 0/30px 30px;border:10px solid #fff;outline:4px solid #111}
+.wallet-btn{position:absolute;left:24px;right:24px;bottom:40px;height:54px;border-radius:14px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800;font-size:17px}
+.wallet-ic{width:30px;height:22px;border-radius:5px;background:linear-gradient(#36C5F0 0 25%,#FBBC05 25% 50%,#34A853 50% 75%,#EA4335 75%)}
+.scanbox{position:absolute;inset:150px 50px 230px;border:4px solid #FFD54A;border-radius:22px}
+.ok{position:absolute;width:150px;height:150px;border-radius:50%;background:#34C759;display:grid;place-items:center}
+.ok svg{width:80px;height:80px}
+.tap{position:absolute;width:40px;height:40px;border-radius:50%;border:5px solid #2B32FF}
+.notif{position:absolute;left:30px;right:30px;height:84px;border-radius:24px;background:rgba(255,255,255,.97);box-shadow:0 20px 40px -16px rgba(0,0,0,.4);display:flex;align-items:center;gap:14px;padding:0 18px;box-sizing:border-box}
+.notif i{width:48px;height:48px;border-radius:12px;background:#111;flex:none}
+.notif .l1{width:150px;height:12px;border-radius:6px;background:#222;margin-bottom:8px}.notif .l2{width:210px;height:10px;border-radius:5px;background:#bbb}
+</style>
+</head>
+<body>
+<div id="v"></div>
+<script>
+const v = document.getElementById('v'), q = new URLSearchParams(location.search), STEP = +(q.get('step') || 1);
+const cl = x => Math.max(0, Math.min(1, x)), k = (t, a, b) => cl((t - a) / (b - a)), ease = x => 1 - Math.pow(1 - cl(x), 3);
+const back = x => { x = cl(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+window.DURATION = 8;
+const cursor = '<svg class="cursor" id="cur" width="30" height="36" viewBox="0 0 22 26"><path d="M2 2l17 9-7 2-3 7z" fill="#111" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>';
+const card = (n, color, ink) => `<div class="card"><div class="hd"><span class="nm">YOUR CAFÉ</span><span class="ct">STAMPS<b id="cnt">${n}/10</b></span></div>
+  <div class="strip" id="strip" style="background:${color}">${Array.from({ length: 10 }, (_, i) => `<div class="dot${i < n ? ' on' : ''}" style="${i < n ? `background:${ink};border-color:${ink}` : ''}"></div>`).join('')}</div>
+  <div class="qr"></div><div class="code">K7M2QX</div></div>`;
+const $ = id => document.getElementById(id), place = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; };
+const lerp = (a, b, p) => a + (b - a) * p;
+// cursor path: [time, x, y] keyframes
+const path = (t, pts) => { let i = 1; while (i < pts.length - 1 && t > pts[i][0]) i++; const [t0, x0, y0] = pts[i - 1], [t1, x1, y1] = pts[i]; const p = ease(k(t, t0, t1)); return [lerp(x0, x1, p), lerp(y0, y1, p)]; };
+
+const STEPS = {
+  // 1: the café designs its card in the dashboard: colour, stamp, then the card appears on a phone
+  1: {
+    html: `<div class="dash" id="dash">
+        <div class="bar" style="width:55%;height:16px;background:#111;margin-bottom:24px"></div>
+        <div class="row" id="sws"><div class="sw" style="background:#111"></div><div class="sw" style="background:#2B32FF"></div><div class="sw" style="background:#1F6F4A"></div><div class="sw" style="background:#B4483A"></div></div>
+        <div class="row" id="sts"><div class="stamp"><div class="dot on" style="background:#111;border-color:#111"></div></div><div class="stamp">☕</div><div class="stamp">★</div><div class="stamp">♥</div></div>
+        <div id="mini" style="position:relative;height:330px;margin-top:8px;transform:scale(.9);transform-origin:top center"></div>
+        <div style="position:absolute;left:24px;bottom:24px"><span class="btn" id="save">✓</span></div>
+      </div>
+      <div class="phone" id="ph" style="left:120px;top:960px"><div class="scr"><div class="isl"></div><div id="pc"></div></div></div>${cursor}`,
+    render(t) {
+      const sws = [...$('sws').children], sts = [...$('sts').children];
+      const color = t < 2.1 ? '#111' : t < 3.0 ? '#2B32FF' : '#1F6F4A';
+      sws.forEach((s, i) => s.classList.toggle('sel', (i === 0 && t < 2.1) || (i === 1 && t >= 2.1 && t < 3.0) || (i === 2 && t >= 3.0)));
+      sts.forEach((s, i) => s.classList.toggle('sel', i === (t < 4.0 ? 0 : 1)));
+      $('mini').innerHTML = card(3, color, '#fff').replace('top:70px', 'top:0');
+      if (t >= 4.0) $('mini').querySelectorAll('.dot.on').forEach(d => { d.textContent = '☕'; d.style.cssText += ';display:grid;place-items:center;font-size:15px;background:transparent;border-color:transparent'; });
+      const [x, y] = path(t, [[0, 420, 820], [1.6, 135, 220], [2.4, 185, 220], [2.8, 235, 220], [3.6, 140, 290], [4.4, 80, 820], [5.0, 80, 820]]);
+      place($('cur'), x, y); $('cur').style.transform = [2.1, 3.0, 4.0, 4.9].some(c => t > c && t < c + .15) ? 'scale(.8)' : '';
+      $('save').style.transform = t > 4.9 && t < 5.1 ? 'scale(.9)' : '';
+      const d = ease(k(t, 5.1, 5.9)); $('dash').style.transform = `translateY(${-d * 120}px) scale(${1 - d * .15})`; $('dash').style.opacity = 1 - d;
+      $('ph').style.top = lerp(960, 170, back(k(t, 5.2, 6.2))) + 'px';
+      $('pc').innerHTML = card(3, color, '#fff');
+      $('pc').querySelectorAll('.dot.on').forEach(d => { d.textContent = '☕'; d.style.cssText += ';display:grid;place-items:center;font-size:15px;background:transparent;border-color:transparent'; });
+      $('cur').style.opacity = t > 5.1 ? 0 : 1;
+    }
+  },
+  // 2: the customer scans the poster with the camera, adds the card to Wallet
+  2: {
+    html: `<div class="poster" id="pst"><div class="t"></div><div class="t2"></div><div class="pqr"></div></div>
+      <div class="phone" id="ph" style="left:120px;top:960px"><div class="scr" id="scr"><div class="isl"></div>
+        <div class="abs" id="cam" style="inset:0;background:#2a2a2a"><div class="abs" style="left:45px;top:180px;width:190px;height:240px;background:#fff;border-radius:12px;display:grid;place-items:center"><div class="pqr" style="width:110px;height:110px;background-size:22px 22px"></div></div><div class="scanbox" id="sb"></div></div>
+        <div class="abs" id="add" style="inset:0;background:#F2F2F7;opacity:0"><div id="pc"></div><div class="wallet-btn" id="wb"><span class="wallet-ic"></span>Wallet</div></div>
+        <div class="ok" id="ok" style="left:66px;top:220px;opacity:0"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div></div><div class="tap" id="tap" style="opacity:0"></div>`,
+    render(t) {
+      const up = back(k(t, .3, 1.4));
+      $('ph').style.top = lerp(960, 170, up) + 'px';
+      $('pst').style.opacity = 1 - k(t, .9, 1.4); $('pst').style.transform = `scale(${1 + k(t, .3, 1.4) * .2})`;
+      const lock = k(t, 1.9, 2.4); $('sb').style.borderColor = lock > .5 ? '#34C759' : '#FFD54A'; $('sb').style.transform = `scale(${1 - lock * .08})`;
+      $('add').style.opacity = k(t, 2.6, 3.0); $('cam').style.opacity = 1 - k(t, 2.6, 3.0);
+      if (!$('pc').innerHTML) $('pc').innerHTML = card(0, '#111', '#fff');
+      const tp = k(t, 4.2, 4.8); $('tap').style.opacity = tp > 0 && tp < 1 ? 1 - tp : 0; place($('tap'), 250, 870); $('tap').style.transform = `scale(${1 + tp * 2})`;
+      $('wb').style.transform = t > 4.2 && t < 4.4 ? 'scale(.95)' : '';
+      const o = back(k(t, 4.9, 5.5)); $('ok').style.opacity = cl(o) * (1 - k(t, 6.6, 7)); $('ok').style.transform = `scale(${o})`;
+      $('add').style.filter = t > 4.9 && t < 6.6 ? 'blur(3px)' : '';
+      $('wb').style.opacity = 1 - k(t, 6.6, 7);
+    }
+  },
+  // 3: staff scan the customer's card with their phone, tap once, the stamp lands on the customer's card
+  3: {
+    html: `<div class="phone" id="cust" style="left:30px;top:200px;transform:scale(.82);transform-origin:left top"><div class="scr"><div class="isl"></div><div id="pc"></div></div></div>
+      <div class="phone" id="staff" style="left:560px;top:250px;transform:scale(.82);transform-origin:left top"><div class="scr" style="background:#151515"><div class="isl"></div>
+        <div class="abs" style="left:50px;top:170px;width:180px;height:180px;border:5px solid #34C759;border-radius:22px"></div>
+        <div class="abs" id="line" style="left:60px;width:160px;height:5px;background:#34C759;box-shadow:0 0 14px #34C759"></div>
+        <div class="abs" id="plus" style="left:40px;right:40px;top:430px;height:70px;border-radius:35px;background:#2B32FF;color:#fff;display:grid;place-items:center;font:900 30px Arial">+1</div>
+      </div></div><div class="tap" id="tap" style="opacity:0"></div>
+      <div class="notif" id="nt" style="top:-120px"><i></i><div><div class="l1"></div><div class="l2"></div></div></div>`,
+    render(t) {
+      const n = t < 5.0 ? 3 : 4;
+      $('pc').innerHTML = card(n, '#111', '#fff');
+      if (n === 4) { const d = $('pc').querySelectorAll('.dot')[3]; const p = k(t, 5.0, 5.5); d.style.transform = `scale(${1 + .7 * Math.sin(p * Math.PI)})`; }
+      $('staff').style.left = lerp(560, 270, ease(k(t, .6, 1.6))) + 'px';
+      $('line').style.top = (180 + 160 * (.5 + .5 * Math.sin(t * 5))) + 'px'; $('line').style.opacity = t < 3.6 ? 1 : 0;
+      const tp = k(t, 3.8, 4.4); $('tap').style.opacity = tp > 0 && tp < 1 ? 1 - tp : 0; place($('tap'), 395, 640); $('tap').style.transform = `scale(${1 + tp * 2})`;
+      $('plus').style.transform = t > 3.8 && t < 4.0 ? 'scale(.92)' : ''; $('plus').style.background = t > 4.0 ? '#34C759' : '#2B32FF'; $('plus').textContent = t > 4.0 ? '✓' : '+1';
+      const nt = back(k(t, 5.6, 6.2)) * (1 - k(t, 7.4, 7.9)); $('nt').style.top = lerp(-120, 40, nt) + 'px';
+    }
+  }
+};
+v.innerHTML = STEPS[STEP].html;
+window.renderAt = t => STEPS[STEP].render(t);
+renderAt(0); window.READY = true;
+if (!q.has('capture')) { const t0 = performance.now(); (function loop() { renderAt(((performance.now() - t0) / 1000) % 8); requestAnimationFrame(loop); })(); }
+</script>
+</body>
+</html>
