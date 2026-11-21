@@ -21,7 +21,8 @@ html,body{margin:0;background:#000}
 .card .strip{background:#111;padding:18px 14px;display:grid;grid-template-columns:repeat(5,1fr);gap:12px 0;justify-items:center}
 .dot{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.45);box-sizing:border-box}
 .dot.on{background:#fff;border-color:#fff}
-.card .qr{width:120px;height:120px;margin:18px auto 8px;background:conic-gradient(#111 25%,#fff 0 50%,#111 0 75%,#fff 0) 0 0/24px 24px;outline:4px solid #111;border:10px solid #fff}
+.card .qr{width:124px;height:124px;margin:18px auto 8px;background:#fff;padding:6px;box-sizing:border-box}
+.qr svg,.pqr svg{width:100%;height:100%;display:block}
 .card .code{text-align:center;font-size:12px;letter-spacing:.2em;color:#666;padding-bottom:16px}
 /* dashboard (step 1) */
 .dash{position:absolute;left:30px;right:30px;top:90px;bottom:90px;background:#fff;border-radius:28px;box-shadow:0 30px 60px -30px rgba(20,22,80,.5);padding:24px;box-sizing:border-box}
@@ -37,7 +38,7 @@ html,body{margin:0;background:#000}
 .poster{position:absolute;left:150px;top:250px;width:240px;height:330px;background:#fff;border-radius:16px;box-shadow:0 30px 60px -30px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;padding:24px 18px;box-sizing:border-box}
 .poster .t{width:150px;height:16px;border-radius:8px;background:#111;margin-bottom:10px}
 .poster .t2{width:110px;height:10px;border-radius:5px;background:#ccc;margin-bottom:22px}
-.pqr{width:150px;height:150px;background:conic-gradient(#111 25%,#fff 0 50%,#111 0 75%,#fff 0) 0 0/30px 30px;border:10px solid #fff;outline:4px solid #111}
+.pqr{width:150px;height:150px;background:#fff;padding:8px;box-sizing:border-box}
 .wallet-btn{position:absolute;left:24px;right:24px;bottom:40px;height:54px;border-radius:14px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800;font-size:17px}
 .wallet-ic{width:30px;height:22px;border-radius:5px;background:linear-gradient(#36C5F0 0 25%,#FBBC05 25% 50%,#34A853 50% 75%,#EA4335 75%)}
 .scanbox{position:absolute;inset:150px 50px 230px;border:4px solid #FFD54A;border-radius:22px}
@@ -51,7 +52,10 @@ html,body{margin:0;background:#000}
 </head>
 <body>
 <div id="v"></div>
+<script src="../../assets/vendor/qrcode.js"></script>
 <script>
+// A real QR code to the Timbro website.
+const QR = (() => { const q = qrcode(0, 'M'); q.addData('https://timbro.witkowskidesign.com'); q.make(); return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); })();
 const v = document.getElementById('v'), q = new URLSearchParams(location.search), STEP = +(q.get('step') || 1);
 const cl = x => Math.max(0, Math.min(1, x)), k = (t, a, b) => cl((t - a) / (b - a)), ease = x => 1 - Math.pow(1 - cl(x), 3);
 const back = x => { x = cl(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
@@ -59,7 +63,7 @@ window.DURATION = 8;
 const cursor = '<svg class="cursor" id="cur" width="30" height="36" viewBox="0 0 22 26"><path d="M2 2l17 9-7 2-3 7z" fill="#111" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>';
 const card = (n, color, ink) => `<div class="card"><div class="hd"><span class="nm">YOUR CAFÉ</span><span class="ct">STAMPS<b id="cnt">${n}/10</b></span></div>
   <div class="strip" id="strip" style="background:${color}">${Array.from({ length: 10 }, (_, i) => `<div class="dot${i < n ? ' on' : ''}" style="${i < n ? `background:${ink};border-color:${ink}` : ''}"></div>`).join('')}</div>
-  <div class="qr"></div><div class="code">K7M2QX</div></div>`;
+  <div class="qr">${QR}</div><div class="code">K7M2QX</div></div>`;
 const $ = id => document.getElementById(id), place = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; };
 const lerp = (a, b, p) => a + (b - a) * p;
 // cursor path: [time, x, y] keyframes
@@ -95,9 +99,9 @@ const STEPS = {
   },
   // 2: the customer scans the poster with the camera, adds the card to Wallet
   2: {
-    html: `<div class="poster" id="pst"><div class="t"></div><div class="t2"></div><div class="pqr"></div></div>
+    html: `<div class="poster" id="pst"><div class="t"></div><div class="t2"></div><div class="pqr">${QR}</div></div>
       <div class="phone" id="ph" style="left:120px;top:960px"><div class="scr" id="scr"><div class="isl"></div>
-        <div class="abs" id="cam" style="inset:0;background:#2a2a2a"><div class="abs" style="left:45px;top:180px;width:190px;height:240px;background:#fff;border-radius:12px;display:grid;place-items:center"><div class="pqr" style="width:110px;height:110px;background-size:22px 22px"></div></div><div class="scanbox" id="sb"></div></div>
+        <div class="abs" id="cam" style="inset:0;background:#2a2a2a"><div class="abs" style="left:45px;top:180px;width:190px;height:240px;background:#fff;border-radius:12px;display:grid;place-items:center"><div class="pqr" style="width:120px;height:120px">${QR}</div></div><div class="scanbox" id="sb"></div></div>
         <div class="abs" id="add" style="inset:0;background:#F2F2F7;opacity:0"><div id="pc"></div><div class="wallet-btn" id="wb"><span class="wallet-ic"></span>Wallet</div></div>
         <div class="ok" id="ok" style="left:66px;top:220px;opacity:0"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div></div><div class="tap" id="tap" style="opacity:0"></div>`,
