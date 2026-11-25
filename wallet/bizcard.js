@@ -32,6 +32,10 @@ export const PEOPLE = {
 export const ME = PEOPLE['bartosz-witkowski'];
 const person = id => PEOPLE[id] || ME;
 const rgb = c => `rgb(${c.join(', ')})`;
+// The QR on the card opens the card's web page (Wallet buttons and "save contact"), not just the contact file.
+const CARD_SITE = 'https://timbro.witkowskidesign.com';
+const PAGES = { 'witold-witkowski': 'lamare/witold/', 'michal-witkowski': 'lamare/michal/', 'malgorzata-witkowska': 'lamare/malgorzata/' };
+const pageUrl = id => `${CARD_SITE}/wizytowka/${PAGES[id] || ''}`;
 const vcfUrl = id => id === 'bartosz-witkowski' ? `${settings.publicUrl}/bizcard.vcf` : `${settings.publicUrl}/bizcard/${id}.vcf`;
 const ascii = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ł/g, 'l').replace(/Ł/g, 'L');
 
@@ -89,7 +93,7 @@ export async function buildBizcard(id = 'bartosz-witkowski') {
       ]
     },
     // Scanning the code saves the contact.
-    barcodes: [{ format: 'PKBarcodeFormatQR', message: vcfUrl(id), messageEncoding: 'iso-8859-1' }]
+    barcodes: [{ format: 'PKBarcodeFormatQR', message: pageUrl(id), messageEncoding: 'iso-8859-1' }]
   };
   const files = { 'pass.json': Buffer.from(JSON.stringify(passJson)) };
   for (const n of ['icon.png', 'icon@2x.png', 'icon@3x.png', 'logo.png', 'logo@2x.png', 'logo@3x.png', ...(ME.strip ? ['strip.png', 'strip@2x.png', 'strip@3x.png'] : [])]) files[n] = file(ME.dir, n.startsWith('strip') ? n.replace('strip', `strip-${id}`) : n);
@@ -125,7 +129,7 @@ export function bizcardGoogleUrl(origin, id = 'bartosz-witkowski') {
       { id: 'mail', uri: `mailto:${ME.email}`, description: 'Napisz e-mail' },
       { id: 'web', uri: ME.web, description: ME.web.replace('https://', '') }
     ] },
-    barcode: { type: 'QR_CODE', value: vcfUrl(id) }
+    barcode: { type: 'QR_CODE', value: pageUrl(id) }
   };
   const token = jwt.sign({
     iss: serviceAccount.client_email, aud: 'google', typ: 'savetowallet', origins: origin ? [origin] : [],
