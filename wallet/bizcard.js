@@ -15,7 +15,7 @@ const LAMARE = {
   vcardOrg: 'La Mare Houseboats', note: 'Houseboats production from Poland',   // what the saved contact shows
   bg: [2, 20, 34], fg: [250, 250, 248], label: [255, 174, 58], hex: '#021422',
   logo: 'lamare-white.png', googleLogo: 'lamare-icon.png', hero: 'lamare-photo-hero.jpg', strip: true,   // strip: Apple card with the houseboat photo
-  about: ['La Mare Houseboats', 'Pływające domy na wodzie: producent houseboatów.']
+  about: ['La Mare Houseboats', 'Houseboats production from Poland.'], en: true   // en: the card is in English
 };
 // Each card: /bizcard/<id>.pkpass, /bizcard/<id>.vcf, /bizcard/<id>/google (Bartek's also at the old /bizcard.* paths).
 export const PEOPLE = {
@@ -26,11 +26,13 @@ export const PEOPLE = {
     googleLogo: 'abit-icon.png', hero: 'abit-hero.png', about: ['Timbro', TIMBRO_TEXT]
   },
   'witold-witkowski': { ...LAMARE, name: 'Witold Witkowski', hero: 'lamare-dubai-hero.jpg', role: 'CEO', phone: '+48 516 005 998', email: 'biuro@lamare.pl' },
-  'michal-witkowski': { ...LAMARE, name: 'Michał Witkowski', hero: 'lamare-dubai-hero.jpg', role: 'Sprzedawca', phone: '+48 531 005 988', email: 'info@lamare.pl' },
+  'michal-witkowski': { ...LAMARE, name: 'Michał Witkowski', hero: 'lamare-dubai-hero.jpg', role: 'Sales', phone: '+48 531 005 988', email: 'info@lamare.pl' },
   'malgorzata-witkowska': { ...LAMARE, name: 'Małgorzata Witkowska', role: 'Designer', phone: '+48 516 005 988', email: 'info@lamare.pl' }
 };
 export const ME = PEOPLE['bartosz-witkowski'];
 const person = id => PEOPLE[id] || ME;
+// Card wording: Polish, or English for cards with en: true.
+const W = ME => (pl, en) => ME.en ? en : pl;
 const rgb = c => `rgb(${c.join(', ')})`;
 // The QR on the card opens the card's web page (Wallet buttons and "save contact"), not just the contact file.
 const CARD_SITE = 'https://timbro.witkowskidesign.com';
@@ -52,12 +54,12 @@ export function vcard(id = 'bartosz-witkowski') {
 
 export async function buildBizcard(id = 'bartosz-witkowski') {
   const ME = person(id);
-  const tel = ME.phone.replace(/\s/g, '');
+  const tel = ME.phone.replace(/\s/g, ''), w = W(ME);
   const passJson = {
     formatVersion: 1,
     passTypeIdentifier: settings.apple.passTypeIdentifier,
     teamIdentifier: settings.apple.teamIdentifier,
-    serialNumber: `bizcard-${id}-v2`,   // v2: the QR opens the card page (a new number, so phones take the new card)
+    serialNumber: `bizcard-${id}-v3`,   // v3: the QR opens the card page (a new number, so phones take the new card)
     organizationName: ME.name,
     description: `${ME.name} · ${ME.company}`,
     backgroundColor: rgb(ME.bg),
@@ -70,25 +72,25 @@ export async function buildBizcard(id = 'bartosz-witkowski') {
         primaryFields: [],   // nothing over the photo (bizcard/lamare/strip-<id>.png)
         secondaryFields: [{ key: 'name', label: ME.company.toUpperCase(), value: ME.name }],   // the name under the photo, the company as its label
         auxiliaryFields: [
-          { key: 'phone', label: 'TELEFON', value: ME.phone },
+          { key: 'phone', label: w('TELEFON', 'PHONE'), value: ME.phone },
           { key: 'email', label: 'E-MAIL', value: ME.email, textAlignment: 'PKTextAlignmentRight' }
         ]
       } : {
         primaryFields: [{ key: 'name', label: ME.role.toUpperCase(), value: ME.name }],
-        secondaryFields: [{ key: 'company', label: 'FIRMA', value: ME.company }],
+        secondaryFields: [{ key: 'company', label: w('FIRMA', 'COMPANY'), value: ME.company }],
         auxiliaryFields: [
-          { key: 'phone', label: 'TELEFON', value: ME.phone },
+          { key: 'phone', label: w('TELEFON', 'PHONE'), value: ME.phone },
           { key: 'email', label: 'E-MAIL', value: ME.email, textAlignment: 'PKTextAlignmentRight' }
         ]
       }),
       backFields: [
-        { key: 'b-phone', label: 'Telefon', value: ME.phone, attributedValue: `<a href="tel:${tel}">${ME.phone}</a>` },
+        { key: 'b-phone', label: w('Telefon', 'Phone'), value: ME.phone, attributedValue: `<a href="tel:${tel}">${ME.phone}</a>` },
         { key: 'b-email', label: 'E-mail', value: ME.email, attributedValue: `<a href="mailto:${ME.email}">${ME.email}</a>` },
-        { key: 'b-web', label: 'Strona', value: ME.web, attributedValue: `<a href="${ME.web}">${ME.web.replace('https://', '')}</a>` },
-        { key: 'b-name', label: 'Imię i nazwisko', value: ME.name },
-        { key: 'b-company', label: 'Firma', value: ME.company },
+        { key: 'b-web', label: w('Strona', 'Website'), value: ME.web, attributedValue: `<a href="${ME.web}">${ME.web.replace('https://', '')}</a>` },
+        { key: 'b-name', label: w('Imię i nazwisko', 'Name'), value: ME.name },
+        { key: 'b-company', label: w('Firma', 'Company'), value: ME.company },
         ...(ME.instagram ? [{ key: 'b-ig', label: 'Instagram', value: ME.instagram }] : []),
-        ...(ME.city ? [{ key: 'b-where', label: 'Gdzie', value: ME.city }] : []),
+        ...(ME.city ? [{ key: 'b-where', label: w('Gdzie', 'Where'), value: ME.city }] : []),
         { key: 'b-what', label: ME.about[0], value: ME.about[1] }
       ]
     },
@@ -105,28 +107,28 @@ export async function buildBizcard(id = 'bartosz-witkowski') {
 // The logo and banner are public files of the website (wizytowka/).
 const SITE = 'https://timbro.witkowskidesign.com/wizytowka';
 export function bizcardGoogleUrl(origin, id = 'bartosz-witkowski') {
-  const ME = person(id);
+  const ME = person(id), w = W(ME), lang = ME.en ? 'en' : 'pl';
   const site = ME.page ? `${SITE}/${ME.page}` : SITE;
   const { issuerId, serviceAccount } = settings.google;
-  const objectId = `${issuerId}.bizcard_${ascii(id).replace(/-/g, '_')}_v2`;
-  const img = (n, d) => ({ sourceUri: { uri: `${site}/${n}` }, contentDescription: { defaultValue: { language: 'pl', value: d } } });
+  const objectId = `${issuerId}.bizcard_${ascii(id).replace(/-/g, '_')}_v3`;
+  const img = (n, d) => ({ sourceUri: { uri: `${site}/${n}` }, contentDescription: { defaultValue: { language: lang, value: d } } });
   const genericObject = {
     id: objectId, classId: `${issuerId}.bizcard`, state: 'ACTIVE',
-    cardTitle: { defaultValue: { language: 'pl', value: ME.company } },
-    subheader: { defaultValue: { language: 'pl', value: ME.role } },
-    header: { defaultValue: { language: 'pl', value: ME.name } },
+    cardTitle: { defaultValue: { language: lang, value: ME.company } },
+    subheader: { defaultValue: { language: lang, value: ME.role } },
+    header: { defaultValue: { language: lang, value: ME.name } },
     hexBackgroundColor: ME.hex,
     logo: img(ME.googleLogo, ME.company),
     heroImage: img(ME.hero, ME.company),
     textModulesData: [
-      { id: 'phone', header: 'Telefon', body: ME.phone },
+      { id: 'phone', header: w('Telefon', 'Phone'), body: ME.phone },
       { id: 'email', header: 'E-mail', body: ME.email },
       ...(ME.instagram ? [{ id: 'ig', header: 'Instagram', body: ME.instagram }] : []),
       { id: 'about', header: ME.about[0], body: ME.about[1] }
     ],
     linksModuleData: { uris: [
-      { id: 'tel', uri: `tel:${ME.phone.replace(/\s/g, '')}`, description: 'Zadzwoń' },
-      { id: 'mail', uri: `mailto:${ME.email}`, description: 'Napisz e-mail' },
+      { id: 'tel', uri: `tel:${ME.phone.replace(/\s/g, '')}`, description: w('Zadzwoń', 'Call') },
+      { id: 'mail', uri: `mailto:${ME.email}`, description: w('Napisz e-mail', 'Send an email') },
       { id: 'web', uri: ME.web, description: ME.web.replace('https://', '') }
     ] },
     barcode: { type: 'QR_CODE', value: pageUrl(id) }
