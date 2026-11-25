@@ -28,7 +28,7 @@ export const PEOPLE = {
   'witold-witkowski': { ...LAMARE, name: 'Witold Witkowski', hero: 'lamare-dubai-hero.jpg', role: 'CEO', phone: '+48 516 005 998', email: 'biuro@lamare.pl' },
   'michal-witkowski': { ...LAMARE, name: 'Michał Witkowski', hero: 'lamare-dubai-hero.jpg', role: 'Sales', phone: '+48 531 005 988', email: 'info@lamare.pl' },
   'malgorzata-witkowska': { ...LAMARE, name: 'Małgorzata Witkowska', role: 'Designer', phone: '+48 516 005 988', email: 'info@lamare.pl' },
-  'bartosz-witkowski-lamare': { ...LAMARE, name: 'Bartosz Witkowski', role: 'Architect', phone: '+48 530 340 988', email: 'bartek.archi56@gmail.com' }
+  'bartosz-witkowski-lamare': { ...LAMARE, name: 'Bartosz Witkowski', role: 'Designer', phone: '+48 530 340 988', email: 'bartek.archi56@gmail.com' }
 };
 export const ME = PEOPLE['bartosz-witkowski'];
 const person = id => PEOPLE[id] || ME;
