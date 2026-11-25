@@ -57,7 +57,7 @@ export async function buildBizcard(id = 'bartosz-witkowski') {
     formatVersion: 1,
     passTypeIdentifier: settings.apple.passTypeIdentifier,
     teamIdentifier: settings.apple.teamIdentifier,
-    serialNumber: `bizcard-${id}`,
+    serialNumber: `bizcard-${id}-v2`,   // v2: the QR opens the card page (a new number, so phones take the new card)
     organizationName: ME.name,
     description: `${ME.name} · ${ME.company}`,
     backgroundColor: rgb(ME.bg),
@@ -108,7 +108,7 @@ export function bizcardGoogleUrl(origin, id = 'bartosz-witkowski') {
   const ME = person(id);
   const site = ME.page ? `${SITE}/${ME.page}` : SITE;
   const { issuerId, serviceAccount } = settings.google;
-  const objectId = `${issuerId}.bizcard_${ascii(id).replace(/-/g, '_')}`;
+  const objectId = `${issuerId}.bizcard_${ascii(id).replace(/-/g, '_')}_v2`;
   const img = (n, d) => ({ sourceUri: { uri: `${site}/${n}` }, contentDescription: { defaultValue: { language: 'pl', value: d } } });
   const genericObject = {
     id: objectId, classId: `${issuerId}.bizcard`, state: 'ACTIVE',
