@@ -27,7 +27,8 @@ export const PEOPLE = {
   },
   'witold-witkowski': { ...LAMARE, name: 'Witold Witkowski', hero: 'lamare-dubai-hero.jpg', role: 'CEO', phone: '+48 516 005 998', email: 'biuro@lamare.pl' },
   'michal-witkowski': { ...LAMARE, name: 'Michał Witkowski', hero: 'lamare-dubai-hero.jpg', role: 'Sales', phone: '+48 531 005 988', email: 'info@lamare.pl' },
-  'malgorzata-witkowska': { ...LAMARE, name: 'Małgorzata Witkowska', role: 'Designer', phone: '+48 516 005 988', email: 'info@lamare.pl' }
+  'malgorzata-witkowska': { ...LAMARE, name: 'Małgorzata Witkowska', role: 'Designer', phone: '+48 516 005 988', email: 'info@lamare.pl' },
+  'bartosz-witkowski-lamare': { ...LAMARE, name: 'Bartosz Witkowski', role: 'Architect', phone: '+48 530 340 988', email: 'bartek.archi56@gmail.com' }
 };
 export const ME = PEOPLE['bartosz-witkowski'];
 const person = id => PEOPLE[id] || ME;
@@ -36,7 +37,7 @@ const W = ME => (pl, en) => ME.en ? en : pl;
 const rgb = c => `rgb(${c.join(', ')})`;
 // The QR on the card opens the card's web page (Wallet buttons and "save contact"), not just the contact file.
 const CARD_SITE = 'https://timbro.witkowskidesign.com';
-const PAGES = { 'witold-witkowski': 'lamare/witold/', 'michal-witkowski': 'lamare/michal/', 'malgorzata-witkowska': 'lamare/malgorzata/' };
+const PAGES = { 'witold-witkowski': 'lamare/witold/', 'michal-witkowski': 'lamare/michal/', 'malgorzata-witkowska': 'lamare/malgorzata/', 'bartosz-witkowski-lamare': 'lamare/bartosz/' };
 const pageUrl = id => `${CARD_SITE}/wizytowka/${PAGES[id] || ''}`;
 const vcfUrl = id => id === 'bartosz-witkowski' ? `${settings.publicUrl}/bizcard.vcf` : `${settings.publicUrl}/bizcard/${id}.vcf`;
 const ascii = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ł/g, 'l').replace(/Ł/g, 'L');
