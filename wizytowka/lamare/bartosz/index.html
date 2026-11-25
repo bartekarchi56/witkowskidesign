@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bartosz Witkowski · LA MARE</title>
+<meta name="description" content="Bartosz Witkowski, Architect, LA MARE Sp. z o.o. Add the business card to Apple Wallet or Google Wallet, or save the contact.">
+<link rel="icon" href="../lamare-icon.png">
+<link rel="stylesheet" href="../../../assets/css/base.css">
+<style>
+/* Bartosz Witkowski's business card (wallet server: /bizcard/bartosz-witkowski-lamare.pkpass, .vcf, /google; details in wallet/bizcard.js). */
+html,body{margin:0;background:#021422;color:#FAFAF8;font-family:var(--font)}
+main{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box;text-align:center}
+.card{width:100%;max-width:360px;background:#0A2233;border-radius:22px;padding:28px 24px;box-sizing:border-box;box-shadow:0 30px 60px -30px rgba(0,0,0,.8);text-align:left}
+.card{overflow:hidden}
+.ph{height:190px;margin:-28px -24px 22px;background:linear-gradient(180deg,rgba(10,34,51,0) 45%,#0A2233),url(../lamare-photo.jpg) center/cover}
+.card img{height:44px;display:block;margin-bottom:30px}
+.card small{display:block;font:600 11px/1 var(--font);letter-spacing:.12em;color:#FFAE3A;text-transform:uppercase;margin-bottom:6px}
+.card h1{margin:0 0 18px;font-size:30px;line-height:1.1;letter-spacing:-.02em}
+.card p{margin:0 0 4px;font-size:15px;color:#C9D3DA}
+.card a{color:#FAFAF8;text-decoration:none}
+.btns{display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px;margin-top:22px}
+.btns a{display:flex;justify-content:center}
+.btns img{height:52px}
+.vcf{display:block;padding:15px;border-radius:14px;border:1.5px solid #2A4558;color:#FAFAF8;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <div class="ph" role="img" aria-label="La Mare houseboats"></div>
+    <img src="../lamare-white.png" alt="La Mare Houseboats">
+    <small>Architect</small>
+    <h1>Bartosz Witkowski</h1>
+    <p>LA MARE Sp. z o.o.</p>
+    <p style="color:#FFAE3A">Houseboats production from Poland</p>
+    <p><a href="tel:+48530340988">+48 530 340 988</a></p>
+    <p><a href="mailto:bartek.archi56@gmail.com">bartek.archi56@gmail.com</a></p>
+    <p><a href="https://lamare.pl">lamare.pl</a></p>
+  </div>
+  <div class="btns">
+    <a id="apple" href="#"><img src="../../../assets/wallet/apple-wallet-en.svg" alt="Add to Apple Wallet"></a>
+    <a id="google" href="#"><img src="../../../assets/wallet/google-wallet-en.svg" alt="Add to Google Wallet"></a>
+    <a class="vcf" id="vcf" href="#">Save contact</a>
+    <a class="vcf" href="https://lamare.pl/">Visit lamare.pl</a>
+  </div>
+</main>
+<script src="../../../assets/js/config.js"></script>
+<script>
+  const api = CONFIG.walletApi.replace(/\/$/, '') + '/bizcard/bartosz-witkowski-lamare';
+  document.getElementById('apple').href = api + '.pkpass';
+  document.getElementById('google').href = api + '/google';
+  document.getElementById('vcf').href = api + '.vcf';
+</script>
+</body>
+</html>
